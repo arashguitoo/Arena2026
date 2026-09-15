@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Liga-Konsole – Jugendintegrationskurs Plön</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14223B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690;
+  --floor-line:#D5B57A;
+  --paper:#FFFBF3;
+  --ink:#1D1A17;
+  --muted:#6E6358;
+  --board:#14223B;
+  --board-2:#1C2E4D;
+  --led:#FFC53D;
+  --line:#E8DCC6;
+  --ok:#1E9E6A;
+  --warn:#E4412F;
+  --display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --body:Calibri, Carlito, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --r-lg:18px; --r-md:12px; --r-sm:8px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;font-family:var(--body);font-size:17px;line-height:1.45;color:var(--ink);
+  background-color:var(--floor);
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 71px, var(--floor-line) 71px 73px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 3px, transparent 3px 11px);
+  min-height:100vh;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+
+/* ---------- Kopfzeile ---------- */
+.top{
+  background:var(--board);color:#fff;position:sticky;top:0;z-index:40;
+  box-shadow:0 3px 0 var(--led);
+}
+.top-in{max-width:1180px;margin:0 auto;padding:12px 18px 0;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.brand{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;letter-spacing:.01em}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:13px;opacity:.7;letter-spacing:0;margin-top:3px}
+.chips{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:999px;background:var(--board-2);font-size:14px;border:1px solid rgba(255,255,255,.12);cursor:pointer}
+.dot{width:9px;height:9px;border-radius:50%;background:#7c8698;flex:none}
+.dot.on{background:#39d98a;box-shadow:0 0 0 3px rgba(57,217,138,.25)}
+.dot.bad{background:var(--warn);box-shadow:0 0 0 3px rgba(228,65,47,.3)}
+.dot.mid{background:var(--led)}
+.tabs{width:100%;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-top:4px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{background:none;border:0;color:#c9d2e3;padding:10px 14px 12px;font-family:var(--display);font-weight:800;font-size:19px;cursor:pointer;white-space:nowrap;border-bottom:4px solid transparent;letter-spacing:.02em}
+.tab[aria-selected="true"]{color:var(--led);border-bottom-color:var(--led)}
+
+/* ---------- Layout ---------- */
+main{max-width:1180px;margin:0 auto;padding:22px 18px 120px}
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+.panel{background:var(--paper);border-radius:var(--r-lg);padding:18px 18px 20px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.panel + .panel{margin-top:18px}
+.grid2 .panel + .panel,.grid3 .panel + .panel{margin-top:0}
+h2{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;margin:0 0 4px}
+h3{font-family:var(--display);font-weight:800;font-size:23px;line-height:1.05;margin:0 0 10px}
+.lead{color:var(--muted);margin:0 0 14px;font-size:15.5px;max-width:68ch}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:6px 0 14px}
+.sec-head h2{color:var(--board)}
+.small{font-size:14px;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+hr.court{border:0;height:3px;background:var(--line);margin:18px 0;border-radius:2px}
+
+/* ---------- Formulare ---------- */
+label.f{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);flex:1;min-width:140px}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  background:#fff;border:2px solid var(--line);border-radius:var(--r-sm);padding:9px 11px;min-height:44px;width:100%;color:var(--ink)
+}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--board);outline:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;padding:9px 16px;border-radius:var(--r-md);border:2px solid var(--board);background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;font-size:16px}
+.btn:hover{filter:brightness(1.12)}
+.btn.led{background:var(--led);border-color:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;color:var(--board)}
+.btn.red{background:transparent;color:var(--warn);border-color:var(--warn)}
+.btn.sm{min-height:36px;padding:5px 11px;font-size:14px;border-radius:var(--r-sm)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.switch{display:inline-flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.switch input{appearance:none;width:48px;height:28px;border-radius:999px;background:#cfc4b2;position:relative;cursor:pointer;transition:background .2s;flex:none;margin:0}
+.switch input::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch input:checked{background:var(--ok)}
+.switch input:checked::after{transform:translateX(20px)}
+.seg{display:inline-flex;background:#efe5d3;border-radius:var(--r-md);padding:3px;gap:3px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:7px 12px;border-radius:9px;cursor:pointer;font-weight:700;font-size:15px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--board);box-shadow:0 1px 0 rgba(0,0,0,.12)}
+
+/* ---------- Anzeigetafel ---------- */
+.board{
+  background:var(--board);color:#fff;border-radius:var(--r-lg);padding:18px 18px 14px;position:relative;overflow:hidden;
+  background-image:radial-gradient(rgba(255,255,255,.055) 1.2px, transparent 1.3px);background-size:9px 9px;
+}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.board-title{font-family:var(--display);font-weight:900;font-size:34px;line-height:1;color:#fff}
+.board-meta{font-size:14px;color:#aebad0}
+.days{font-family:var(--display);font-weight:800;color:var(--led);font-size:22px}
+.trow{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)}
+.trow:first-of-type{border-top:0}
+.rank{font-family:var(--display);font-weight:900;font-size:28px;color:#6f7f9c;text-align:center}
+.trow.lead-1 .rank{color:var(--led)}
+.tname{font-family:var(--display);font-weight:800;font-size:24px;line-height:1;display:flex;align-items:center;gap:9px}
+.swatch{width:14px;height:26px;border-radius:4px;flex:none;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.bar{height:7px;border-radius:4px;background:rgba(255,255,255,.1);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:4px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.pts{font-family:var(--display);font-weight:900;font-size:44px;line-height:.9;color:var(--led);font-variant-numeric:tabular-nums;text-align:right;min-width:74px;text-shadow:0 0 14px rgba(255,197,61,.35)}
+.pts small{display:block;font-family:var(--body);font-weight:400;font-size:12px;color:#aebad0;text-shadow:none;margin-top:3px}
+
+/* ---------- Listen ---------- */
+.list{list-style:none;margin:0;padding:0}
+.li{display:flex;gap:10px;align-items:center;padding:10px 2px;border-top:2px solid var(--line)}
+.li:first-child{border-top:0}
+.li .grow{flex:1;min-width:0}
+.li .name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.num{font-family:var(--display);font-weight:800;font-size:24px;font-variant-numeric:tabular-nums;min-width:48px;text-align:right}
+.num.neg{color:var(--warn)}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:999px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap}
+.badge.plain{background:#efe5d3;color:var(--muted)}
+.icon-btn{border:0;background:transparent;width:38px;height:38px;border-radius:10px;cursor:pointer;font-size:18px;color:var(--muted);flex:none}
+.icon-btn:hover{background:#f1e7d6;color:var(--ink)}
+.empty{border:3px dashed var(--line);border-radius:var(--r-lg);padding:28px 20px;text-align:center;color:var(--muted)}
+.empty b{display:block;font-family:var(--display);font-size:26px;color:var(--board);margin-bottom:6px}
+
+/* ---------- Spieler:innen ---------- */
+.ptable{width:100%;border-collapse:collapse}
+.ptable th{text-align:left;font-size:13px;color:var(--muted);font-weight:700;padding:6px 6px}
+.ptable td{padding:6px;border-top:2px solid var(--line);vertical-align:middle}
+.ptable input[type=text]{min-height:38px;padding:6px 9px}
+.ptable select{min-height:38px;padding:5px 8px;width:auto}
+.tbl-wrap{overflow-x:auto}
+@media (max-width:700px){
+  .ptable thead{display:none}
+  .ptable tr{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:10px 0;border-top:2px solid var(--line)}
+  .ptable td{border:0;padding:0}
+  .ptable td.c-full{grid-column:1/-1}
+  .ptable td.c-act{grid-column:1/-1;display:flex;gap:8px;align-items:center;justify-content:space-between}
+}
+
+/* ---------- Teams ---------- */
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.team{background:#fff;border-radius:var(--r-md);overflow:hidden;box-shadow:0 2px 0 rgba(0,0,0,.1)}
+.team-top{padding:10px 12px;color:#fff;display:flex;gap:8px;align-items:center;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.09) 0 10px,transparent 10px 20px)}
+.team-top input{background:rgba(255,255,255,.18);border:0;color:#fff;font-family:var(--display);font-weight:800;font-size:22px;min-height:38px;padding:4px 8px;border-radius:8px}
+.team-top input::placeholder{color:rgba(255,255,255,.7)}
+.team-top select{width:auto;min-height:38px;padding:4px;border:0;border-radius:8px}
+.team-body{padding:6px 12px 12px}
+.member{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:15.5px}
+.member:first-child{border-top:0}
+.member span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.member select{width:auto;min-height:32px;padding:2px 4px;font-size:13px}
+.niv{font-size:11px;font-weight:700;border-radius:5px;padding:1px 5px;background:#efe5d3;color:var(--muted)}
+
+/* ---------- Punkte ---------- */
+.score-team{margin-top:16px;border-radius:var(--r-md);background:#fff;overflow:hidden}
+.score-team-head{display:flex;align-items:center;gap:10px;padding:9px 12px;color:#fff;flex-wrap:wrap}
+.score-team-head b{font-family:var(--display);font-size:22px;font-weight:800;flex:1}
+.score-team-head .quick{display:flex;gap:5px;align-items:center;font-size:13px}
+.score-team-head .quick button{border:0;background:rgba(255,255,255,.22);color:#fff;border-radius:8px;padding:5px 9px;cursor:pointer;font-weight:700}
+.srow{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:7px 12px;border-top:1px solid var(--line)}
+.srow .who{min-width:0}
+.srow .who b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srow .who small{color:var(--muted);font-size:13px}
+.stepper{display:flex;align-items:center;gap:4px}
+.stepper button{width:40px;height:40px;border-radius:10px;border:2px solid var(--line);background:#fbf6ec;font-size:22px;font-weight:700;cursor:pointer;line-height:1}
+.stepper input{width:64px;text-align:center;min-height:40px;padding:4px;font-family:var(--display);font-weight:800;font-size:22px}
+.stepper input.has{border-color:var(--led);background:#fff6dc}
+.srow.bonus{background:#faf4e8}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--board);color:#fff;box-shadow:0 -3px 0 var(--led);padding:10px 18px calc(10px + env(safe-area-inset-bottom))}
+.savebar-in{max-width:1180px;margin:0 auto;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.savebar .sum{font-family:var(--display);font-weight:800;font-size:22px;flex:1;min-width:180px}
+
+/* ---------- Toast & Dialog ---------- */
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:12px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:100;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+dialog{border:0;border-radius:var(--r-lg);padding:0;max-width:520px;width:calc(100% - 28px);background:var(--paper);color:var(--ink)}
+dialog::backdrop{background:rgba(20,34,59,.55)}
+.dlg{padding:20px}
+.dlg h3{font-size:28px}
+.dlg .row{justify-content:flex-end;margin-top:16px}
+.notice{background:#fff3d1;border-left:5px solid var(--led);padding:10px 12px;border-radius:8px;font-size:15px;margin:10px 0}
+.notice.red{background:#fde6e2;border-left-color:var(--warn)}
+/* ---------- Aufgaben & Statistik ---------- */
+.task-li{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:12px 2px;border-top:2px solid var(--line)}
+.task-li:first-child{border-top:0}
+.task-ic{width:52px;height:52px;border-radius:12px;background:var(--board);color:var(--led);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.task-ic b{font-family:var(--display);font-weight:900;font-size:20px}
+.task-ic span{font-size:18px}
+.task-li .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:700px){.task-li{grid-template-columns:52px 1fr}.task-li .acts{grid-column:1/-1;justify-content:flex-start}}
+.st-bald{background:#8a8f9c}.st-offen{background:var(--ok)}.st-neu{background:#d99a00}.st-fertig{background:#39465f}
+.checks{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0}
+.checks label{display:inline-flex;align-items:center;gap:6px;font-size:15.5px;cursor:pointer}
+.checks input{width:18px;height:18px;accent-color:var(--board)}
+details.box{border:2px solid var(--line);border-radius:10px;padding:8px 12px;margin-top:8px;background:#fff}
+details.box summary{cursor:pointer;font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+@media (max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--board);color:#fff;border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-family:var(--display);font-weight:900;font-size:40px;line-height:1;color:var(--led);font-variant-numeric:tabular-nums}
+.kpi span{font-size:14px;color:#c9d2e3}
+.stable{width:100%;border-collapse:collapse;font-size:15.5px}
+.stable th{text-align:left;font-size:13px;color:var(--muted);padding:6px;white-space:nowrap}
+.stable td{padding:7px 6px;border-top:2px solid var(--line);vertical-align:top}
+.stable td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mx th.rot{writing-mode:vertical-rl;transform:rotate(180deg);white-space:nowrap;padding:6px 2px;max-height:150px}
+.mx td{padding:3px;border-top:1px solid var(--line);text-align:center}
+.mx td.nm{text-align:left;white-space:nowrap;padding-right:10px;font-weight:700}
+.cell{width:40px;height:32px;border-radius:7px;border:0;font-family:var(--display);font-weight:800;font-size:17px;cursor:pointer;background:#f4ecdd;color:var(--muted)}
+.cell.none{background:transparent;color:#cfc4b2;cursor:pointer}
+.cell.open{background:#fde6e2;color:var(--warn)}
+.hb{display:grid;grid-template-columns:110px 1fr 56px;gap:10px;align-items:center;padding:5px 0}
+.hb .t{height:14px;border-radius:7px;background:#efe5d3;overflow:hidden}
+.hb .t i{display:block;height:100%;border-radius:7px;background:var(--board)}
+.hb .v{text-align:right;font-family:var(--display);font-weight:800;font-size:19px}
+/* ---------- Anmeldung ---------- */
+.gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;
+  background-color:var(--board);background-image:radial-gradient(rgba(255,255,255,.055) 1.2px, transparent 1.3px);background-size:9px 9px}
+.gate.hidden{display:none}
+.gate-card{background:var(--paper);border-radius:22px;padding:26px 22px 22px;width:100%;max-width:400px;box-shadow:0 0 0 6px var(--board-2)}
+.gate-card h1{font-family:var(--display);font-weight:900;font-size:46px;line-height:.9;margin:0 0 6px;color:var(--board)}
+.gate-card p{margin:0 0 16px;color:var(--muted);font-size:15.5px}
+.gate-card label.f{margin-bottom:12px}
+.gate-card .btn{width:100%;margin-top:4px}
+.gate-err{color:var(--warn);font-weight:700;font-size:15px;min-height:22px;margin:8px 0 0}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:14px;padding:8px 0 0}
+.code{font-family:Consolas,"Courier New",monospace;font-size:13px;background:#fff;border:2px solid var(--line);border-radius:8px;padding:10px;white-space:pre;overflow-x:auto;min-height:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <form class="gate-card" id="gate-form" autocomplete="on">
+    <h1>Liga-Konsole</h1>
+    <p id="gate-msg">Prüfe Anmeldung …</p>
+    <div id="gate-fields" hidden>
+      <label class="f">E-Mail<input type="email" id="g-mail" autocomplete="username" required style="background:#fff;border:2px solid var(--line);border-radius:8px;padding:9px 11px;min-height:44px;width:100%"></label>
+      <label class="f">Passwort<input type="password" id="g-pass" autocomplete="current-password" required style="background:#fff;border:2px solid var(--line);border-radius:8px;padding:9px 11px;min-height:44px;width:100%"></label>
+      <button class="btn led" type="submit" id="g-btn">Anmelden</button>
+      <div class="gate-err" id="g-err" role="alert"></div>
+      <button class="linkbtn" type="button" id="g-reset">Passwort vergessen?</button>
+    </div>
+  </form>
+</div>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><span id="h-liga">Plöner Liga</span><small id="h-kurs">Liga-Konsole</small></div>
+    <div class="chips">
+      <button class="chip" data-act="goto" data-tab="sicherung" id="chip-sync"><span class="dot"></span><span>Sync</span></button>
+      <button class="chip" data-act="goto" data-tab="sicherung" id="chip-live"><span class="dot"></span><span>Arena</span></button>
+      <button class="chip" data-act="logout" title="Abmelden" aria-label="Abmelden">Abmelden</button>
+    </div>
+    <nav class="tabs" role="tablist" id="tabs">
+      <button class="tab" role="tab" data-act="goto" data-tab="tabelle">Tabelle</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="punkte">Punkte eintragen</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="teams">Teams &amp; Runden</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="spieler">Spieler:innen</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="aufgaben">Aufgaben</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="statistik">Statistik</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="sicherung">Sicherung &amp; Arena</button>
+    </nav>
+  </div>
+</header>
+
+<main id="view"></main>
+<div id="savebar-slot"></div>
+<div class="toast" id="toast"></div>
+<dialog id="dlg"><div class="dlg" id="dlg-body"></div></dialog>
+<input type="file" id="file-import" accept=".json,application/json" hidden>
+
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<!-- GoatCounter -->
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* =========================================================
+   LIGA-KONSOLE (online) – Jugendintegrationskurs Plön
+   Daten: Firebase (Hauptspeicher) + Browser-Kopie + Backups
+   ========================================================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+  authDomain: "lern-deutsch-arash.firebaseapp.com",
+  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lern-deutsch-arash",
+  storageBucket: "lern-deutsch-arash.firebasestorage.app",
+  messagingSenderId: "845503292114",
+  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+};
+const FB_ROOT = "jugendliga";
+/* Kurs-Code: muss in index.html und in jeder Aufgabe gleich sein */
+const KURS_CODE = "ploen-jik";
+
+const LS_KEY = "jugendliga_konsole_v1";
+const SNAP_KEY = "jugendliga_snapshots_v1";
+const LASTBACKUP_KEY = "jugendliga_lastbackup_v1";
+const MAX_SNAPS = 20;
+
+const COLORS = [
+  {k:"rot",    hex:"#E4412F", name:"Rot"},
+  {k:"blau",   hex:"#1F6FD1", name:"Blau"},
+  {k:"gruen",  hex:"#1E9E6A", name:"Grün"},
+  {k:"violett",hex:"#7B4BC9", name:"Violett"},
+  {k:"orange", hex:"#E9800E", name:"Orange"},
+  {k:"tuerkis",hex:"#0E9FB0", name:"Türkis"}
+];
+const ANIMALS = ["Haie","Adler","Füchse","Wölfe","Falken","Luchse"];
+const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const STATUS = [["bald","Bald (gesperrt)"],["offen","Offen"],["neu","Neu"],["fertig","Erledigt (gesperrt)"]];
+
+/* ---------- Hilfen ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n => String(n).padStart(2,"0");
+const isoOf = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const todayISO = () => isoOf(new Date());
+const addDaysISO = (iso, n) => { const d=new Date(iso+"T12:00:00"); d.setDate(d.getDate()+n); return isoOf(d); };
+const fmtDate = iso => { if(!iso) return "–"; const [y,m,d]=iso.split("-"); return `${d}.${m}.${y}`; };
+const fmtTs = ts => { if(!ts) return "–"; const d=new Date(ts); return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const colorHex = k => (COLORS.find(c=>c.k===k)||COLORS[0]).hex;
+const fmtScore = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1).replace(".",",");
+function rand(){ try{ return crypto.getRandomValues(new Uint32Array(1))[0]/4294967296; }catch(e){ return Math.random(); } }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function daysLeft(end){ if(!end) return null; return Math.ceil((new Date(end+"T23:59:59")-new Date())/86400000); }
+function slugify(t){
+  return String(t||"").toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss")
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40) || "aufgabe";
+}
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),3000);
+}
+
+/* ---------- Zustand ---------- */
+function fresh(){
+  return {
+    version:2, updated:Date.now(),
+    settings:{ ligaName:"Plöner Liga", kursName:"Jugendintegrationskurs Plön", arenaUrl:"",
+      showTable:true, nameMode:"vorname", showTop:false, wertung:"summe" },
+    students:[], tasks:[], rounds:[], activeRoundId:null, entries:[]
+  };
+}
+function migrate(d){
+  const f=fresh();
+  if(d.settings && d.settings.live===false && d.settings.showTable===undefined) d.settings.showTable=false;
+  d.settings = Object.assign(f.settings, d.settings||{});
+  delete d.settings.live; delete d.settings.kursCode;
+  ["students","tasks","rounds","entries"].forEach(k=>{ if(!Array.isArray(d[k])) d[k]=[]; });
+  d.rounds.forEach(r=>{ if(!Array.isArray(r.teams)) r.teams=[]; r.teams.forEach(t=>{ if(!Array.isArray(t.members)) t.members=[]; }); });
+  const keys=new Set();
+  d.tasks.forEach((t,i)=>{
+    if(!t.key){ let k=slugify(t.title), n=2, base=k; while(keys.has(k)) k=`${base}-${n++}`; t.key=k; }
+    keys.add(t.key);
+    if(!t.assign) t.assign={alle:true, teams:{}, players:{}};
+    t.assign.teams=t.assign.teams||{}; t.assign.players=t.assign.players||{};
+    if(!t.max) t.max=Number(t.maxPoints)||10;
+    if(!t.status) t.status="offen";
+    if(!t.icon) t.icon="🎯";
+    if(!t.art) t.art="Einzel";
+    if(t.nr===undefined) t.nr=i+1;
+    if(t.file===undefined) t.file=t.link||"";
+    if(t.text===undefined) t.text="";
+  });
+  if(d.activeRoundId===undefined) d.activeRoundId=null;
+  return d;
+}
+function load(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw) return migrate(JSON.parse(raw)); }catch(e){ console.warn(e); }
+  return fresh();
+}
+let state = load();
+let auto = {live:{}, proof:{}, tries:{}};
+let tab = "tabelle";
+let pending = {};
+let scoreTask = {taskId:"", newTitle:"", date:todayISO(), note:""};
+let logFilter = "";
+let editTaskId = null;
+let statRoundId = null;
+
+function genCode(taken){
+  const used=taken||new Set(state.students.map(s=>s.code).filter(Boolean));
+  let c; do{ c=Array.from({length:5},()=>CODE_CHARS[Math.floor(rand()*CODE_CHARS.length)]).join(""); }while(used.has(c));
+  used.add(c); return c;
+}
+function ensureCodes(){
+  const used=new Set(state.students.map(s=>s.code).filter(Boolean)); let n=0;
+  state.students.forEach(s=>{ if(!s.code){ s.code=genCode(used); n++; } });
+  return n;
+}
+function cacheLocal(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+
+function save(opts={}){
+  state.updated=Date.now();
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+  dailySnapshot();
+  scheduleCloudWrite();
+  schedulePublish();
+  if(opts.render!==false) render();
+}
+
+/* ---------- Wiederherstellungspunkte ---------- */
+function getSnaps(){ try{ return JSON.parse(localStorage.getItem(SNAP_KEY))||[]; }catch(e){ return []; } }
+function snapshot(label, dataStr){
+  const snaps=getSnaps();
+  snaps.unshift({ts:Date.now(), label, data:dataStr||JSON.stringify(state)});
+  while(snaps.length>MAX_SNAPS) snaps.pop();
+  try{ localStorage.setItem(SNAP_KEY, JSON.stringify(snaps)); }
+  catch(e){ snaps.splice(6); try{ localStorage.setItem(SNAP_KEY, JSON.stringify(snaps)); }catch(_){} }
+}
+function dailySnapshot(){
+  const t=todayISO();
+  const has=getSnaps().some(x=>isoOf(new Date(x.ts))===t && x.label==="Tagessicherung");
+  if(!has && (state.students.length||state.entries.length)) snapshot("Tagessicherung");
+  if(currentUser && syncReady && localStorage.getItem("jugendliga_cloudday")!==t && (state.students.length||state.entries.length)){
+    localStorage.setItem("jugendliga_cloudday", t); setTimeout(()=>cloudSave(true), 3000);
+  }
+}
+function lastBackup(){ return Number(localStorage.getItem(LASTBACKUP_KEY))||0; }
+function markBackup(){ localStorage.setItem(LASTBACKUP_KEY, String(Date.now())); }
+
+/* ---------- Berechnungen ---------- */
+const activeRound = () => state.rounds.find(r=>r.id===state.activeRoundId) || null;
+const student = id => state.students.find(s=>s.id===id);
+const studentName = id => { const s=student(id); return s ? s.name : "(gelöscht)"; };
+const teamOf = (round, sid) => round ? round.teams.find(t=>t.members.includes(sid)) || null : null;
+const taskByKey = k => state.tasks.find(t=>t.key===k);
+const taskTitle = k => { const t=taskByKey(k); return t ? t.title : k; };
+const isOpen = t => t.status==="offen" || t.status==="neu";
+
+function autoVal(roundId, sid, key){ const r=auto.live[roundId]; const p=r&&r[sid]; return p && p[key]!==undefined && p[key]!==null ? Number(p[key]) : null; }
+function autoOf(roundId, sid){ const r=auto.live[roundId]; const p=r&&r[sid]; if(!p) return 0; return Object.values(p).reduce((a,v)=>a+(Number(v)||0),0); }
+function triesOf(roundId, sid, key){ const r=auto.tries[roundId]; const o=r&&r[sid]&&r[sid][key]; return o ? Object.keys(o).length : 0; }
+function manualTeam(round, team){ return state.entries.filter(e=>e.roundId===round.id && e.teamId===team.id).reduce((a,e)=>a+e.points,0); }
+function manualPlayer(round, sid){ return state.entries.filter(e=>e.roundId===round.id && e.studentId===sid).reduce((a,e)=>a+e.points,0); }
+function teamPoints(round, team){ return manualTeam(round,team) + team.members.reduce((a,m)=>a+autoOf(round.id,m),0); }
+function teamScore(round, team){
+  const sum=teamPoints(round, team);
+  if(state.settings.wertung==="schnitt"){ const n=team.members.length||1; return Math.round(sum/n*10)/10; }
+  return sum;
+}
+function standings(round){
+  if(!round) return [];
+  return round.teams.map(t=>({team:t, score:teamScore(round,t), sum:teamPoints(round,t)})).sort((a,b)=>b.score-a.score);
+}
+function studentRoundPoints(round, sid){ return manualPlayer(round,sid) + autoOf(round.id,sid); }
+function studentTotal(sid){ return state.entries.filter(e=>e.studentId===sid).reduce((a,e)=>a+e.points,0) + state.rounds.reduce((a,r)=>a+autoOf(r.id,sid),0); }
+function assignedPids(task, round){
+  if(!round) return [];
+  const all=round.teams.flatMap(t=>t.members);
+  const a=task.assign||{};
+  if(a.alle) return all;
+  const set=new Set();
+  round.teams.forEach(t=>{ if(a.teams&&a.teams[t.id]) t.members.forEach(m=>set.add(m)); });
+  Object.keys(a.players||{}).forEach(p=>{ if(a.players[p] && student(p)) set.add(p); });
+  return [...set];
+}
+function assignLabel(task, round){
+  const a=task.assign||{};
+  if(a.alle) return "Für alle";
+  const parts=[];
+  if(round) round.teams.forEach(t=>{ if(a.teams&&a.teams[t.id]) parts.push(t.name); });
+  const np=Object.keys(a.players||{}).filter(p=>a.players[p]&&student(p)).length;
+  if(np) parts.push(`${np} ${np===1?"Person":"Personen"}`);
+  return parts.length ? "Für "+parts.join(", ") : "Noch niemandem zugeteilt";
+}
+
+/* ---------- Rendering ---------- */
+function render(){
+  if(!currentUser){ $("#view").innerHTML=""; $("#savebar-slot").innerHTML=""; renderHeader(); return; }
+  renderHeader();
+  $$(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab));
+  const views={tabelle:vTabelle, punkte:vPunkte, teams:vTeams, spieler:vSpieler, aufgaben:vAufgaben, statistik:vStatistik, sicherung:vSicherung};
+  $("#view").innerHTML=(views[tab]||vTabelle)();
+  renderSavebar();
+}
+function renderHeader(){
+  $("#h-liga").textContent=state.settings.ligaName||"Liga";
+  const r=activeRound();
+  $("#h-kurs").textContent=(state.settings.kursName||"")+(r?` – ${r.name}`:"");
+  document.title=`Konsole – ${state.settings.ligaName}`;
+  const map={ idle:["", "Verbinde …"], saved:["on","Gespeichert"], saving:["mid","Speichert …"], offline:["bad","Offline – wird nachgeholt"], error:["bad","Nicht gespeichert"] };
+  let key=syncState; if(syncState==="saving" && !fbConnected) key="offline";
+  const [cls,txt]=map[key]||map.idle;
+  $("#chip-sync").innerHTML=`<span class="dot ${cls}"></span><span>${txt}</span>`;
+  const show=state.settings.showTable;
+  $("#chip-live").innerHTML=`<span class="dot ${fbConnected?(show?"on":"mid"):"bad"}"></span><span>${!fbConnected?"Arena offline":show?"Arena live":"Tabelle verborgen"}</span>`;
+}
+
+/* ----- Tabelle ----- */
+function boardHTML(round){
+  const st=standings(round);
+  const max=Math.max(1,...st.map(x=>Math.abs(x.score)));
+  const dl=daysLeft(round.end);
+  const dtxt = dl===null ? "" : dl>1 ? `noch ${dl} Tage` : dl===1 ? "letzter Tag" : dl===0 ? "endet heute" : "Zeitraum vorbei";
+  const sch=state.settings.wertung==="schnitt";
+  return `<div class="board">
+    <div class="board-head">
+      <div><div class="board-title">${esc(round.name)}</div>
+      <div class="board-meta">${fmtDate(round.start)} bis ${fmtDate(round.end)}${sch?" – Wertung: Punkte pro Kopf":""}</div></div>
+      <div class="days">${dtxt}</div>
+    </div>
+    ${st.length?st.map((x,i)=>`<div class="trow ${i===0&&x.score>0?"lead-1":""}">
+      <div class="rank">${i+1}</div>
+      <div><div class="tname"><span class="swatch" style="background:${colorHex(x.team.color)}"></span>${esc(x.team.name)}</div>
+        <div class="bar"><i style="width:${Math.max(0,x.score)/max*100}%;background:${colorHex(x.team.color)}"></i></div></div>
+      <div class="pts">${fmtScore(x.score)}<small>${sch?`${x.sum} gesamt, ${x.team.members.length} Pers.`:`${x.team.members.length} Personen`}</small></div>
+    </div>`).join(""):`<p class="board-meta">Diese Runde hat noch keine Teams.</p>`}
+  </div>`;
+}
+function recentFeed(round, limit){
+  const items=state.entries.filter(e=>e.roundId===round.id).map(e=>({ts:e.ts, m:e}));
+  const pr=auto.proof[round.id]||{};
+  Object.keys(pr).forEach(sid=>Object.keys(pr[sid]||{}).forEach(key=>{ const p=pr[sid][key]; if(p) items.push({ts:Number(p.ts)||0, a:{sid,key,points:Number(p.points)||0,by:p.by}}); }));
+  return items.sort((a,b)=>b.ts-a.ts).slice(0,limit);
+}
+function feedLi(it, round){
+  if(it.m) return entryLi(it.m);
+  const t=teamOf(round, it.a.sid);
+  return `<li class="li">
+    <span class="swatch" style="background:${t?colorHex(t.color):"#bbb"};height:22px;width:8px"></span>
+    <div class="grow"><div class="name">${esc(studentName(it.a.sid))}${t?` <span class="small">(${esc(t.name)})</span>`:""}</div>
+      <div class="small">${esc(taskTitle(it.a.key))} – ${it.a.by==="admin"?"von dir korrigiert":"automatisch"} – ${fmtTs(it.ts)}</div></div>
+    <span class="num">${it.a.points}</span>
+    <button class="icon-btn" title="Ergebnis bearbeiten" aria-label="Ergebnis bearbeiten" data-act="auto-edit" data-sid="${it.a.sid}" data-key="${esc(it.a.key)}" data-round="${round.id}">✎</button>
+  </li>`;
+}
+function vTabelle(){
+  const r=activeRound();
+  if(!r){
+    return `<div class="sec-head"><h2>Tabelle</h2></div>
+    <div class="panel"><div class="empty"><b>Noch keine Runde aktiv</b>
+      ${state.students.length?"Starte eine Runde – die Teams werden dabei zufällig ausgelost.":"Trage zuerst deine Spieler:innen ein, dann startest du die erste Runde."}
+      <div class="row" style="justify-content:center;margin-top:14px">
+        <button class="btn" data-act="goto" data-tab="${state.students.length?"teams":"spieler"}">${state.students.length?"Runde starten":"Spieler:innen eintragen"}</button>
+      </div></div></div>`;
+  }
+  const players=r.teams.flatMap(t=>t.members.map(sid=>({sid,t,p:studentRoundPoints(r,sid)}))).sort((a,b)=>b.p-a.p);
+  const feed=recentFeed(r,14);
+  return `<div class="sec-head"><h2>Tabelle</h2>
+    <div class="row"><button class="btn ghost sm" data-act="csv">Tabelle als CSV</button><button class="btn led sm" data-act="goto" data-tab="punkte">Punkte eintragen</button></div></div>
+  <div class="grid2">
+    <div>${boardHTML(r)}</div>
+    <div class="panel"><h3>Einzelwertung dieser Runde</h3>
+      ${players.length?`<ol class="list">${players.map((x,i)=>`<li class="li">
+        <span class="small" style="width:22px;text-align:right">${i+1}</span>
+        <span class="swatch" style="background:${colorHex(x.t.color)};height:18px;width:8px"></span>
+        <span class="grow name">${esc(studentName(x.sid))}</span>
+        <span class="num ${x.p<0?"neg":""}">${x.p}</span></li>`).join("")}</ol>`:`<p class="small">Noch niemand in den Teams.</p>`}
+    </div>
+  </div>
+  <div class="panel" style="margin-top:18px"><div class="row"><h3 style="margin:0">Zuletzt</h3><span class="spacer"></span><button class="btn ghost sm" data-act="goto" data-tab="statistik">Statistik</button></div>
+    ${feed.length?`<ul class="list" style="margin-top:8px">${feed.map(it=>feedLi(it,r)).join("")}</ul>`:`<p class="small">Noch keine Punkte in dieser Runde.</p>`}
+  </div>`;
+}
+function entryLi(e){
+  const r=state.rounds.find(x=>x.id===e.roundId);
+  const t=r?r.teams.find(x=>x.id===e.teamId):null;
+  const who=e.studentId?esc(studentName(e.studentId)):`Team-Bonus`;
+  return `<li class="li">
+    <span class="swatch" style="background:${t?colorHex(t.color):"#bbb"};height:22px;width:8px"></span>
+    <div class="grow"><div class="name">${who}${t?` <span class="small">(${esc(t.name)})</span>`:` <span class="small">(ohne Team)</span>`}</div>
+      <div class="small">${esc(e.taskTitle||"ohne Aufgabe")} – von Hand – ${fmtDate(e.date)}${e.note?` – ${esc(e.note)}`:""}</div></div>
+    <span class="num ${e.points<0?"neg":""}">${e.points>0?"+":""}${e.points}</span>
+    <button class="icon-btn" title="Eintrag löschen" aria-label="Eintrag löschen" data-act="del-entry" data-id="${e.id}">✕</button>
+  </li>`;
+}
+
+/* ----- Punkte von Hand ----- */
+function vPunkte(){
+  const r=activeRound();
+  if(!r) return `<div class="sec-head"><h2>Punkte eintragen</h2></div><div class="panel"><div class="empty"><b>Keine aktive Runde</b>Punkte werden immer einer Runde zugeordnet.<div class="row" style="justify-content:center;margin-top:14px"><button class="btn" data-act="goto" data-tab="teams">Runde starten</button></div></div></div>`;
+  const unassigned=state.students.filter(s=>s.active!==false && !teamOf(r,s.id));
+  const taskOpts=state.tasks.map(t=>`<option value="${t.id}" ${scoreTask.taskId===t.id?"selected":""}>${esc(t.title)}</option>`).join("");
+  const entries=state.entries.filter(e=>e.roundId===r.id && (!logFilter || (e.taskTitle||"")===logFilter)).sort((a,b)=>b.ts-a.ts);
+  const titles=[...new Set(state.entries.filter(e=>e.roundId===r.id).map(e=>e.taskTitle||""))].filter(Boolean);
+  const row = sid => { const v=pending[sid]||0; const au=autoOf(r.id,sid); return `<div class="srow">
+      <div class="who"><b>${esc(studentName(sid))}</b><small>${studentRoundPoints(r,sid)} Punkte in dieser Runde${au?`, davon ${au} automatisch`:""}</small></div>
+      <span></span>
+      <div class="stepper">
+        <button data-act="step" data-key="${sid}" data-d="-1" aria-label="minus">−</button>
+        <input type="number" inputmode="numeric" data-act="pend" data-key="${sid}" value="${v||""}" placeholder="0" class="${v?"has":""}" aria-label="Punkte für ${esc(studentName(sid))}">
+        <button data-act="step" data-key="${sid}" data-d="1" aria-label="plus">+</button>
+      </div></div>`; };
+  return `<div class="sec-head"><h2>Punkte eintragen</h2><span class="small">${esc(r.name)}</span></div>
+  <div class="panel">
+    <p class="lead">Ergebnisse aus den Aufgaben kommen automatisch. Hier trägst du zusätzliche Punkte von Hand ein – zum Beispiel für Mitarbeit, Präsentationen oder einen Team-Bonus.</p>
+    <div class="row">
+      <label class="f">Wofür?
+        <select data-act="st-task"><option value="">– ohne Aufgabe –</option>${taskOpts}<option value="__new" ${scoreTask.taskId==="__new"?"selected":""}>+ Neue Aufgabe anlegen …</option></select></label>
+      ${scoreTask.taskId==="__new"?`<label class="f">Name der neuen Aufgabe<input type="text" data-act="st-new" value="${esc(scoreTask.newTitle)}" placeholder="z. B. Präsentation"></label>`:""}
+      <label class="f" style="max-width:190px">Datum<input type="date" data-act="st-date" value="${scoreTask.date}"></label>
+      <label class="f">Notiz (optional)<input type="text" data-act="st-note" value="${esc(scoreTask.note)}" placeholder="z. B. Bonus für Teamarbeit"></label>
+    </div>
+    ${unassigned.length?`<div class="notice">${unassigned.length} aktive Person(en) sind keinem Team zugeordnet: ${unassigned.map(s=>esc(s.name)).join(", ")}. <button class="btn ghost sm" data-act="goto" data-tab="teams">Zuordnen</button></div>`:""}
+    ${r.teams.map(t=>`<div class="score-team">
+      <div class="score-team-head" style="background:${colorHex(t.color)}">
+        <b>${esc(t.name)}</b>
+        <span class="quick">Alle: <button data-act="team-all" data-tid="${t.id}" data-d="1">+1</button><button data-act="team-all" data-tid="${t.id}" data-d="2">+2</button><button data-act="team-all" data-tid="${t.id}" data-d="5">+5</button></span>
+      </div>
+      ${t.members.map(row).join("")||`<div class="srow"><span class="small">Keine Mitglieder</span></div>`}
+      <div class="srow bonus">
+        <div class="who"><b>Team-Bonus</b><small>zählt nur fürs Team, nicht für einzelne Personen</small></div><span></span>
+        <div class="stepper">
+          <button data-act="step" data-key="team:${t.id}" data-d="-1" aria-label="minus">−</button>
+          <input type="number" inputmode="numeric" data-act="pend" data-key="team:${t.id}" value="${pending["team:"+t.id]||""}" placeholder="0" class="${pending["team:"+t.id]?"has":""}" aria-label="Team-Bonus ${esc(t.name)}">
+          <button data-act="step" data-key="team:${t.id}" data-d="1" aria-label="plus">+</button>
+        </div>
+      </div>
+    </div>`).join("")}
+  </div>
+  <div class="panel">
+    <div class="row"><h3 style="margin:0">Von Hand eingetragen</h3><span class="spacer"></span>
+      <select data-act="log-filter" style="width:auto"><option value="">Alle</option>${titles.map(x=>`<option ${logFilter===x?"selected":""}>${esc(x)}</option>`).join("")}</select></div>
+    ${entries.length?`<ul class="list" style="margin-top:8px">${entries.map(entryLi).join("")}</ul>`:`<p class="small">Noch keine Einträge.</p>`}
+  </div>`;
+}
+function pendingSummary(){ let n=0,sum=0; Object.values(pending).forEach(v=>{ if(v){ n++; sum+=v; } }); return {n,sum}; }
+const pendText = (n,sum) => n?`${sum>0?"+":""}${sum} Punkte – ${n} ${n===1?"Eintrag":"Einträge"}`:"Noch nichts eingegeben";
+function renderSavebar(){
+  const slot=$("#savebar-slot");
+  if(tab!=="punkte" || !activeRound()){ slot.innerHTML=""; return; }
+  const {n,sum}=pendingSummary();
+  slot.innerHTML=`<div class="savebar"><div class="savebar-in">
+    <div class="sum" id="sb-sum">${pendText(n,sum)}</div>
+    <button class="btn ghost sm" style="color:#fff;border-color:#fff" data-act="pend-clear" ${n?"":"disabled"}>Leeren</button>
+    <button class="btn led" data-act="pend-save" ${n?"":"disabled"}>Punkte eintragen</button>
+  </div></div>`;
+}
+function updatePendingUI(key){
+  const inp=document.querySelector(`input[data-key="${CSS.escape(key)}"]`);
+  if(inp){ const v=pending[key]||0; inp.value=v||""; inp.classList.toggle("has",!!v); }
+  const {n,sum}=pendingSummary();
+  const s=$("#sb-sum"); if(s) s.textContent=pendText(n,sum);
+  $$('[data-act="pend-save"],[data-act="pend-clear"]').forEach(b=>b.disabled=!n);
+}
+function makeTask(title){
+  const keys=new Set(state.tasks.map(t=>t.key));
+  let k=slugify(title), base=k, n=2; while(keys.has(k)) k=`${base}-${n++}`;
+  return {id:uid(), key:k, nr:(Math.max(0,...state.tasks.map(t=>Number(t.nr)||0))+1), title, text:"", file:"", icon:"🎯", art:"Einzel", max:10, due:"", status:"offen", assign:{alle:true,teams:{},players:{}}, created:Date.now()};
+}
+function savePending(){
+  const r=activeRound(); if(!r) return;
+  let taskId=scoreTask.taskId, title="";
+  if(taskId==="__new"){
+    const nt=scoreTask.newTitle.trim();
+    if(!nt){ toast("Bitte gib der neuen Aufgabe einen Namen."); return; }
+    const t=makeTask(nt); t.status="fertig"; state.tasks.push(t); taskId=t.id; title=nt;
+    scoreTask.taskId=t.id; scoreTask.newTitle="";
+  } else if(taskId){ title=(state.tasks.find(t=>t.id===taskId)||{}).title||""; }
+  const ts=Date.now(); let count=0;
+  Object.entries(pending).forEach(([k,v])=>{
+    v=Number(v)||0; if(!v) return;
+    const isTeam=k.startsWith("team:");
+    const sid=isTeam?null:k; const t=isTeam?null:teamOf(r,k);
+    state.entries.push({id:uid(),ts,roundId:r.id,studentId:sid,teamId:isTeam?k.slice(5):(t?t.id:null),taskId:taskId||null,taskTitle:title,points:v,date:scoreTask.date,note:scoreTask.note});
+    count++;
+  });
+  pending={}; scoreTask.note="";
+  save(); toast(`${count} ${count===1?"Eintrag":"Einträge"} gespeichert.`);
+}
+
+/* ----- Teams & Runden ----- */
+function vTeams(){
+  const r=activeRound();
+  const activeStudents=state.students.filter(s=>s.active!==false);
+  const past=state.rounds.filter(x=>x.id!==state.activeRoundId).sort((a,b)=>(b.start||"").localeCompare(a.start||""));
+  let html=`<div class="sec-head"><h2>Teams &amp; Runden</h2></div>`;
+  if(r){
+    const unassigned=activeStudents.filter(s=>!teamOf(r,s.id));
+    const teamSelect=(sid,cur)=>`<select data-act="move" data-sid="${sid}" aria-label="Team wechseln">
+      ${r.teams.map(t=>`<option value="${t.id}" ${cur===t.id?"selected":""}>${esc(t.name)}</option>`).join("")}
+      <option value="" ${cur?"":"selected"}>kein Team</option></select>`;
+    html+=`<div class="panel">
+      <div class="row" style="align-items:flex-end">
+        <label class="f">Name der Runde<input type="text" data-act="r-name" value="${esc(r.name)}"></label>
+        <label class="f" style="max-width:180px">Start<input type="date" data-act="r-start" value="${r.start||""}"></label>
+        <label class="f" style="max-width:180px">Ende<input type="date" data-act="r-end" value="${r.end||""}"></label>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button class="btn ghost sm" data-act="redraw">Teams neu auslosen</button>
+        <button class="btn ghost sm" data-act="add-team" ${r.teams.length>=6?"disabled":""}>Team hinzufügen</button>
+        <span class="spacer"></span>
+        <button class="btn red sm" data-act="close-round">Runde abschließen</button>
+      </div>
+      <p class="small" style="margin:10px 0 0">Wechselt jemand das Team, nimmt die Person ihre automatischen Punkte mit. Von Hand eingetragene Punkte bleiben beim alten Team.</p>
+      <hr class="court">
+      ${unassigned.length?`<div class="notice"><b>Ohne Team:</b> ${unassigned.map(s=>`<span class="row" style="display:inline-flex;gap:6px;margin:3px 8px 3px 0">${esc(s.name)} ${teamSelect(s.id,"")}</span>`).join("")}
+        <div style="margin-top:6px"><button class="btn sm" data-act="fill-small">Alle auf die kleinsten Teams verteilen</button></div></div>`:""}
+      <div class="teams">${r.teams.map(t=>`<div class="team">
+        <div class="team-top" style="background-color:${colorHex(t.color)}">
+          <input type="text" value="${esc(t.name)}" data-act="t-name" data-tid="${t.id}" aria-label="Teamname">
+          <select data-act="t-color" data-tid="${t.id}" aria-label="Teamfarbe">${COLORS.map(c=>`<option value="${c.k}" ${c.k===t.color?"selected":""}>${c.name}</option>`).join("")}</select>
+          <button class="icon-btn" style="color:#fff" title="Team entfernen" aria-label="Team entfernen" data-act="del-team" data-tid="${t.id}">✕</button>
+        </div>
+        <div class="team-body">
+          <div class="small" style="padding:4px 0">${t.members.length} Personen – ${fmtScore(teamScore(r,t))} Punkte</div>
+          ${t.members.map(sid=>{ const s=student(sid); return `<div class="member"><span>${esc(s?s.name:"(gelöscht)")}</span>${s&&s.niveau?`<span class="niv">${s.niveau}</span>`:""}${teamSelect(sid,t.id)}</div>`; }).join("")||`<p class="small">Noch leer</p>`}
+        </div></div>`).join("")}</div>
+    </div>`;
+  }
+  html+=`<div class="panel">
+    <h3>${r?"Neue Runde starten":"Erste Runde starten"}</h3>
+    <p class="lead">Die Teams werden zufällig aus allen aktiven Spieler:innen (${activeStudents.length}) ausgelost. ${r?"Die laufende Runde wird dabei abgeschlossen – ihre Punkte bleiben im Archiv.":""}</p>
+    <div class="row" style="align-items:flex-end">
+      <label class="f">Name<input type="text" id="nr-name" value="Runde ${state.rounds.length+1}"></label>
+      <label class="f" style="max-width:180px">Start<input type="date" id="nr-start" value="${todayISO()}"></label>
+      <label class="f" style="max-width:180px">Ende<input type="date" id="nr-end" value="${addDaysISO(todayISO(),13)}"></label>
+      <label class="f" style="max-width:130px">Teams<select id="nr-count">${[2,3,4,5,6].map(n=>`<option ${n===4?"selected":""}>${n}</option>`).join("")}</select></label>
+    </div>
+    <div class="row" style="margin-top:12px;align-items:flex-end">
+      <label class="f">Teamnamen<select id="nr-names"><option value="farben">Farben (Team Rot, Team Blau …)</option><option value="tiere">Tiere (Haie, Adler …)</option></select></label>
+      <label class="f">Auslosung<select id="nr-mode"><option value="zufall">Ganz zufällig</option><option value="niveau">Zufällig, aber Niveaus gemischt (A/B/C)</option></select></label>
+    </div>
+    <div class="row" style="margin-top:14px"><button class="btn led" data-act="new-round" ${activeStudents.length<2?"disabled":""}>Runde starten &amp; Teams auslosen</button>
+      ${activeStudents.length<2?`<span class="small">Dafür brauchst du mindestens 2 aktive Spieler:innen.</span>`:""}</div>
+    ${state.tasks.some(t=>!t.assign.alle && Object.values(t.assign.teams).some(Boolean))?`<p class="small" style="margin-top:10px">Achtung: Aufgaben, die du einzelnen Teams zugeteilt hast, musst du nach einer neuen Auslosung neu zuteilen.</p>`:""}
+  </div>`;
+  if(past.length){
+    html+=`<div class="panel"><h3>Archiv</h3><ul class="list">${past.map(p=>{
+      const st=standings(p); const w=st[0];
+      return `<li class="li"><div class="grow"><div class="name">${esc(p.name)}</div>
+        <div class="small">${fmtDate(p.start)} bis ${fmtDate(p.end)}${w?` – Sieg: ${esc(w.team.name)} (${fmtScore(w.score)})`:""}</div>
+        <div class="row" style="margin-top:4px;gap:6px">${st.map(x=>`<span class="badge" style="background:${colorHex(x.team.color)}">${esc(x.team.name)} ${fmtScore(x.score)}</span>`).join("")}</div></div>
+        <button class="btn ghost sm" data-act="reopen" data-id="${p.id}">Wieder aktivieren</button>
+        <button class="icon-btn" title="Runde löschen" aria-label="Runde löschen" data-act="del-round" data-id="${p.id}">✕</button></li>`;
+    }).join("")}</ul></div>`;
+  }
+  return html;
+}
+function teamNameFor(style, i, colorKey){ return style==="tiere" ? ANIMALS[i%ANIMALS.length] : `Team ${(COLORS.find(c=>c.k===colorKey)||COLORS[0]).name}`; }
+function drawTeams(ids, count, mode){
+  const buckets=Array.from({length:count},()=>[]);
+  if(mode==="niveau"){
+    const groups={A:[],B:[],C:[],"":[]};
+    ids.forEach(id=>{ const n=(student(id)||{}).niveau||""; (groups[n]||groups[""]).push(id); });
+    let order=[]; ["A","B","C",""].forEach(g=>order=order.concat(shuffle(groups[g])));
+    const offset=Math.floor(rand()*count); let dir=1, i=0;
+    order.forEach(id=>{ buckets[((dir===1?i:count-1-i)+offset)%count].push(id); i++; if(i===count){ i=0; dir*=-1; } });
+  } else shuffle(ids).forEach((id,i)=>buckets[i%count].push(id));
+  return shuffle(buckets);
+}
+function newRound(){
+  const name=$("#nr-name").value.trim()||`Runde ${state.rounds.length+1}`;
+  const start=$("#nr-start").value||todayISO();
+  const end=$("#nr-end").value||addDaysISO(start,13);
+  const count=Number($("#nr-count").value)||4;
+  const style=$("#nr-names").value, mode=$("#nr-mode").value;
+  const ids=state.students.filter(s=>s.active!==false).map(s=>s.id);
+  const cur=activeRound();
+  const go=()=>{
+    snapshot(`Vor dem Start von „${name}“`);
+    const buckets=drawTeams(ids, Math.min(count, ids.length), mode);
+    const teams=buckets.map((m,i)=>{ const c=COLORS[i%COLORS.length].k; return {id:uid(), name:teamNameFor(style,i,c), color:c, members:m}; });
+    const r={id:uid(), name, start, end, teams, created:Date.now()};
+    state.rounds.push(r); state.activeRoundId=r.id; pending={};
+    save(); toast(`${name} gestartet – ${teams.length} Teams ausgelost.`);
+  };
+  if(cur) confirmDlg("Neue Runde starten?", `„${esc(cur.name)}“ wird abgeschlossen und ins Archiv verschoben. Die Punkte bleiben erhalten.`, "Starten", go);
+  else go();
+}
+function fillSmallest(){
+  const r=activeRound(); if(!r||!r.teams.length) return;
+  const un=shuffle(state.students.filter(s=>s.active!==false && !teamOf(r,s.id)).map(s=>s.id));
+  un.forEach(id=>{ r.teams.slice().sort((a,b)=>a.members.length-b.members.length)[0].members.push(id); });
+  save(); toast(`${un.length} Person(en) zugeordnet.`);
+}
+
+/* ----- Spieler:innen ----- */
+function vSpieler(){
+  const r=activeRound();
+  const list=state.students.slice().sort((a,b)=>(b.active!==false)-(a.active!==false) || a.name.localeCompare(b.name,"de"));
+  const missing=state.students.filter(s=>!s.code).length;
+  return `<div class="sec-head"><h2>Spieler:innen</h2><span class="small">${state.students.filter(s=>s.active!==false).length} aktiv, ${state.students.length} gesamt</span></div>
+  <div class="grid2">
+    <div class="panel">
+      <h3>Eine Person hinzufügen</h3>
+      <div class="row" style="align-items:flex-end">
+        <label class="f">Name<input type="text" id="ns-name" placeholder="Vorname Nachname" autocomplete="off"></label>
+        <label class="f">Spielername (optional)<input type="text" id="ns-nick" placeholder="z. B. Blitz" autocomplete="off"></label>
+        <button class="btn" data-act="add-student">Hinzufügen</button>
+      </div>
+      <p class="small" style="margin:10px 0 0">Jede Person bekommt automatisch einen Code. Mit dem Code melden sich die TN in der Arena und in den Aufgaben an.</p>
+    </div>
+    <div class="panel">
+      <h3>Ganze Liste einfügen</h3>
+      <textarea id="ns-bulk" placeholder="Eine Person pro Zeile&#10;Optional: Name ; Spielername"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn ghost" data-act="add-bulk">Alle hinzufügen</button></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:18px">
+    ${list.length?`<div class="row" style="margin-bottom:10px">
+        <button class="btn led sm" data-act="print-cards">Codekarten drucken</button>
+        ${missing?`<button class="btn ghost sm" data-act="gen-codes">${missing} fehlende Codes erzeugen</button>`:""}
+      </div>
+      <div class="tbl-wrap"><table class="ptable">
+      <thead><tr><th>Name</th><th>Spielername</th><th>Code</th><th>Niveau</th><th>Team</th><th style="text-align:right">Punkte</th><th></th></tr></thead>
+      <tbody>${list.map(s=>{ const t=teamOf(r,s.id); return `<tr style="${s.active===false?"opacity:.55":""}">
+        <td class="c-full"><input type="text" value="${esc(s.name)}" data-act="s-name" data-sid="${s.id}" aria-label="Name"></td>
+        <td><input type="text" value="${esc(s.nick||"")}" placeholder="–" data-act="s-nick" data-sid="${s.id}" aria-label="Spielername"></td>
+        <td><input type="text" value="${esc(s.code||"")}" data-act="s-code" data-sid="${s.id}" aria-label="Code" maxlength="8" style="font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.08em;text-transform:uppercase;width:110px"></td>
+        <td><select data-act="s-niveau" data-sid="${s.id}" aria-label="Niveau (nur für dich)"><option value="">–</option>${["A","B","C"].map(n=>`<option ${s.niveau===n?"selected":""}>${n}</option>`).join("")}</select></td>
+        <td>${t?`<span class="badge" style="background:${colorHex(t.color)}">${esc(t.name)}</span>`:`<span class="badge plain">kein Team</span>`}</td>
+        <td style="text-align:right"><span class="num">${studentTotal(s.id)}</span></td>
+        <td class="c-act"><label class="switch" title="aktiv"><input type="checkbox" data-act="s-active" data-sid="${s.id}" ${s.active!==false?"checked":""}><span class="small">aktiv</span></label>
+          <button class="icon-btn" title="Löschen" aria-label="${esc(s.name)} löschen" data-act="del-student" data-sid="${s.id}">✕</button></td>
+      </tr>`; }).join("")}</tbody></table></div>
+      <p class="small" style="margin:12px 0 0">Codes: 4 bis 8 Zeichen, nur Buchstaben und Zahlen. Inaktive Personen können sich mit ihrem Code nicht mehr anmelden. Niveau A/B/C siehst nur du.</p>`
+    :`<div class="empty"><b>Noch niemand eingetragen</b>Füge oben einzelne Namen hinzu oder kopiere deine Kursliste in das Feld rechts.</div>`}
+  </div>`;
+}
+function addStudent(name, nick){
+  name=(name||"").trim(); if(!name) return false;
+  if(state.students.some(s=>s.name.toLowerCase()===name.toLowerCase())) return false;
+  state.students.push({id:uid(), name, nick:(nick||"").trim(), niveau:"", code:genCode(), active:true, created:Date.now()});
+  return true;
+}
+function printCards(){
+  const list=state.students.filter(s=>s.active!==false && s.code).sort((a,b)=>a.name.localeCompare(b.name,"de"));
+  const r=activeRound(); const url=state.settings.arenaUrl||"";
+  const w=window.open("","_blank");
+  if(!w){ toast("Pop-up blockiert – bitte für diese Seite erlauben."); return; }
+  const cards=list.map(s=>{ const t=teamOf(r,s.id); return `<div class="c" style="border-top-color:${t?colorHex(t.color):"#14223B"}">
+    <div class="l">${esc(state.settings.ligaName)}</div><div class="n">${esc(s.name.split(/\s+/)[0])}</div>
+    <div class="k">${esc(s.code)}</div>${url?`<div class="u">${esc(url)}</div>`:""}</div>`; }).join("");
+  w.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Codekarten</title>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&display=swap" rel="stylesheet">
+  <style>body{font-family:Calibri,Carlito,sans-serif;margin:12mm}.g{display:grid;grid-template-columns:1fr 1fr;gap:6mm}
+  .c{border:1.5px dashed #999;border-top:6mm solid #14223B;border-radius:4mm;padding:5mm 6mm;page-break-inside:avoid}
+  .l{font-size:10pt;color:#666}.n{font-size:16pt;font-weight:700;margin-top:1mm}
+  .k{font-family:"Big Shoulders Display","Arial Narrow",sans-serif;font-weight:900;font-size:40pt;letter-spacing:.12em;line-height:1.1}
+  .u{font-size:9pt;color:#444;word-break:break-all}</style></head><body><div class="g">${cards}</div>
+  <script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>`);
+  w.document.close();
+}
+
+/* ----- Aufgaben ----- */
+function vAufgaben(){
+  const r=activeRound();
+  const t=editTaskId?state.tasks.find(x=>x.id===editTaskId):null;
+  const hasResults = t ? state.rounds.some(rd=>Object.values(auto.live[rd.id]||{}).some(p=>p&&p[t.key]!==undefined)) : false;
+  const a=t?t.assign:{alle:true,teams:{},players:{}};
+  const nextNr=Math.max(0,...state.tasks.map(x=>Number(x.nr)||0))+1;
+  const sorted=state.tasks.slice().sort((x,y)=>(Number(y.nr)||0)-(Number(x.nr)||0));
+  const form=`<div class="panel">
+    <h3>${t?"Aufgabe bearbeiten":"Neue Aufgabe"}</h3>
+    <div class="row" style="align-items:flex-end">
+      <label class="f" style="max-width:90px">Nr.<input type="number" id="ta-nr" value="${t?t.nr:nextNr}"></label>
+      <label class="f" style="max-width:90px">Icon<input type="text" id="ta-icon" value="${esc(t?t.icon:"🎯")}" maxlength="4"></label>
+      <label class="f" style="min-width:220px">Titel<input type="text" id="ta-title" value="${esc(t?t.title:"")}" placeholder="z. B. Wörter-Jagd"></label>
+    </div>
+    <div class="row" style="align-items:flex-end;margin-top:10px">
+      <label class="f">Kennung<input type="text" id="ta-key" value="${esc(t?t.key:"")}" placeholder="wird aus dem Titel erzeugt" ${hasResults?"disabled":""}></label>
+      <label class="f">Datei<input type="text" id="ta-file" value="${esc(t?t.file:"")}" placeholder="z. B. woerter-jagd.html"></label>
+    </div>
+    <p class="small" style="margin:4px 0 0">${hasResults?"Die Kennung ist gesperrt, weil es schon Ergebnisse gibt.":"Die Kennung muss genau so auch in der Aufgabendatei stehen."}</p>
+    <div class="row" style="align-items:flex-end;margin-top:10px">
+      <label class="f" style="max-width:140px">Max. Punkte<input type="number" id="ta-max" min="1" value="${t?t.max:10}"></label>
+      <label class="f" style="max-width:150px">Art<select id="ta-art">${["Einzel","Team"].map(x=>`<option ${t&&t.art===x?"selected":""}>${x}</option>`).join("")}</select></label>
+      <label class="f" style="max-width:190px">Status<select id="ta-status">${STATUS.map(([k,l])=>`<option value="${k}" ${(t?t.status:"bald")===k?"selected":""}>${l}</option>`).join("")}</select></label>
+      <label class="f" style="max-width:190px">Abgabe bis<input type="date" id="ta-due" value="${t?t.due||"":""}"></label>
+    </div>
+    <label class="f" style="margin-top:10px">Kurze Beschreibung für die TN<textarea id="ta-text" style="min-height:70px">${esc(t?t.text:"")}</textarea></label>
+    <hr class="court">
+    <h3 style="font-size:20px">Wer bekommt die Aufgabe?</h3>
+    <label class="switch"><input type="checkbox" id="ta-alle" ${a.alle?"checked":""}><b>Alle</b></label>
+    <div id="ta-more" ${a.alle?"hidden":""} style="margin-top:10px">
+      ${r&&r.teams.length?`<div class="small">Teams aus „${esc(r.name)}“</div>
+      <div class="checks">${r.teams.map(tm=>`<label><input type="checkbox" class="ta-team" data-tid="${tm.id}" ${a.teams[tm.id]?"checked":""}><span class="swatch" style="background:${colorHex(tm.color)};width:8px;height:16px"></span>${esc(tm.name)}</label>`).join("")}</div>`:`<p class="small">Starte eine Runde, um Aufgaben an Teams zu vergeben.</p>`}
+      <details class="box" ${Object.values(a.players).some(Boolean)?"open":""}><summary>Einzelne Personen (${Object.values(a.players).filter(Boolean).length})</summary>
+        <div class="checks">${state.students.filter(s=>s.active!==false).sort((x,y)=>x.name.localeCompare(y.name,"de")).map(s=>{ const tm=teamOf(r,s.id); return `<label><input type="checkbox" class="ta-player" data-sid="${s.id}" ${a.players[s.id]?"checked":""}>${tm?`<span class="swatch" style="background:${colorHex(tm.color)};width:6px;height:14px"></span>`:""}${esc(s.name)}${s.niveau?` <span class="niv">${s.niveau}</span>`:""}</label>`; }).join("")}</div>
+      </details>
+      <p class="small">Teams und Personen lassen sich kombinieren.</p>
+    </div>
+    <div class="row" style="margin-top:16px"><button class="btn led" data-act="task-save">${t?"Änderungen speichern":"Aufgabe anlegen"}</button>${t?`<button class="btn ghost" data-act="task-cancel">Abbrechen</button>`:""}</div>
+  </div>`;
+  const list=`<div class="panel">
+    ${sorted.length?`<ul class="list">${sorted.map(x=>{
+      const pids=assignedPids(x,r);
+      const done=r?pids.filter(p=>autoVal(r.id,p,x.key)!==null).length:0;
+      const stLabel=(STATUS.find(s=>s[0]===x.status)||STATUS[1])[1].replace(/ \(.*\)/,"");
+      return `<li class="task-li">
+        <div class="task-ic"><span>${esc(x.icon)}</span><b>${esc(x.nr)}</b></div>
+        <div style="min-width:0"><div class="name" style="font-weight:700">${esc(x.title)} <span class="badge st-${x.status}">${stLabel}</span></div>
+          <div class="small">${esc(assignLabel(x,r))} – max. ${x.max} Punkte${x.due?` – bis ${fmtDate(x.due)}`:""}${r&&pids.length?` – ${done}/${pids.length} erledigt`:""}</div>
+          <div class="small">Kennung: <b>${esc(x.key)}</b>${x.file?` – Datei: ${esc(x.file)}`:" – keine Datei"}</div></div>
+        <div class="acts">
+          <select data-act="task-status" data-id="${x.id}" aria-label="Status" style="width:auto;min-height:36px;padding:4px 8px">${STATUS.map(([k,l])=>`<option value="${k}" ${x.status===k?"selected":""}>${l.replace(/ \(.*\)/,"")}</option>`).join("")}</select>
+          <button class="btn ghost sm" data-act="task-edit" data-id="${x.id}">Bearbeiten</button>
+          <button class="icon-btn" title="Aufgabe löschen" aria-label="Aufgabe löschen" data-act="del-task" data-id="${x.id}">✕</button>
+        </div></li>`; }).join("")}</ul>`
+    :`<div class="empty"><b>Noch keine Aufgaben</b>Leg oben die erste Aufgabe an. Sie erscheint dann sofort in der Arena.</div>`}
+  </div>`;
+  return `<div class="sec-head"><h2>Aufgaben</h2></div>
+  <p class="lead">Aufgaben, die du hier anlegst, erscheinen automatisch in der Arena. Für eine neue Aufgabe lädst du nur noch die Aufgabendatei auf GitHub hoch – die index.html bleibt, wie sie ist.</p>
+  <div class="grid2" style="align-items:start">${form}${list}</div>`;
+}
+function saveTaskForm(){
+  const title=$("#ta-title").value.trim();
+  if(!title){ $("#ta-title").focus(); toast("Bitte gib der Aufgabe einen Titel."); return; }
+  const t=editTaskId?state.tasks.find(x=>x.id===editTaskId):null;
+  let key=$("#ta-key").disabled ? t.key : slugify($("#ta-key").value.trim()||title);
+  if(state.tasks.some(x=>x.key===key && x!==t)){ toast(`Die Kennung „${key}“ gibt es schon.`); $("#ta-key").focus(); return; }
+  const max=Math.max(1, parseInt($("#ta-max").value,10)||10);
+  const assign={alle:$("#ta-alle").checked, teams:{}, players:{}};
+  $$(".ta-team").forEach(c=>{ if(c.checked) assign.teams[c.dataset.tid]=true; });
+  $$(".ta-player").forEach(c=>{ if(c.checked) assign.players[c.dataset.sid]=true; });
+  const data={nr:parseInt($("#ta-nr").value,10)||0, icon:$("#ta-icon").value.trim()||"🎯", title, key, file:$("#ta-file").value.trim(),
+    max, art:$("#ta-art").value, status:$("#ta-status").value, due:$("#ta-due").value, text:$("#ta-text").value.trim(), assign};
+  if(t) Object.assign(t,data); else state.tasks.push(Object.assign(makeTask(title),data));
+  if(!assign.alle && !Object.keys(assign.teams).length && !Object.keys(assign.players).length) toast("Gespeichert – aber noch niemandem zugeteilt.");
+  else toast(t?"Aufgabe gespeichert.":"Aufgabe angelegt.");
+  editTaskId=null; save();
+}
+
+/* ----- Statistik ----- */
+function hbars(rows, maxOverride){
+  const max=maxOverride||Math.max(1,...rows.map(x=>x.v));
+  return rows.map(x=>`<div class="hb"><span class="small" style="color:var(--ink)">${x.label}</span><span class="t"><i style="width:${Math.max(0,x.v)/max*100}%;${x.color?`background:${x.color}`:""}"></i></span><span class="v">${x.txt!==undefined?x.txt:x.v}</span></div>`).join("");
+}
+function vStatistik(){
+  if(!state.rounds.length) return `<div class="sec-head"><h2>Statistik</h2></div><div class="panel"><div class="empty"><b>Noch keine Daten</b>Sobald eine Runde läuft und Ergebnisse eintreffen, siehst du hier die Auswertung.</div></div>`;
+  const rounds=state.rounds.slice().sort((a,b)=>(a.start||"").localeCompare(b.start||""));
+  const r=state.rounds.find(x=>x.id===statRoundId) || activeRound() || rounds[rounds.length-1];
+  const tasks=state.tasks.filter(t=>t.status!=="bald" || Object.values(auto.live[r.id]||{}).some(p=>p&&p[t.key]!==undefined)).sort((a,b)=>(Number(a.nr)||0)-(Number(b.nr)||0));
+  const players=r.teams.flatMap(t=>t.members.map(sid=>({sid,t})));
+  const liveR=auto.live[r.id]||{};
+  let results=0, assignedTotal=0, doneTotal=0, triesSum=0, triesN=0, autoPts=0;
+  Object.values(liveR).forEach(p=>Object.values(p||{}).forEach(v=>{ results++; autoPts+=Number(v)||0; }));
+  const taskRows=tasks.map(t=>{
+    const pids=assignedPids(t,r);
+    const done=pids.filter(p=>autoVal(r.id,p,t.key)!==null);
+    const vals=Object.keys(liveR).map(p=>autoVal(r.id,p,t.key)).filter(v=>v!==null);
+    const tr=Object.keys(liveR).map(p=>triesOf(r.id,p,t.key)).filter(n=>n>0);
+    assignedTotal+=pids.length; doneTotal+=done.length; tr.forEach(n=>{ triesSum+=n; triesN++; });
+    const missing=pids.filter(p=>autoVal(r.id,p,t.key)===null);
+    return {t,pids,done,vals,tr,missing};
+  });
+  const manualPts=state.entries.filter(e=>e.roundId===r.id).reduce((a,e)=>a+e.points,0);
+  // Wochentage & Uhrzeiten
+  const wd=[0,0,0,0,0,0,0], hours={"vor 8":0,"8–12":0,"12–16":0,"16–20":0,"ab 20":0};
+  const trR=auto.tries[r.id]||{};
+  Object.values(trR).forEach(p=>Object.values(p||{}).forEach(tk=>Object.values(tk||{}).forEach(x=>{
+    if(!x||!x.ts) return; const d=new Date(Number(x.ts)); wd[(d.getDay()+6)%7]++;
+    const h=d.getHours(); hours[h<8?"vor 8":h<12?"8–12":h<16?"12–16":h<20?"16–20":"ab 20"]++;
+  })));
+  const niv={A:[],B:[],C:[],"–":[]};
+  players.forEach(x=>{ const n=(student(x.sid)||{}).niveau||"–"; niv[n].push(studentRoundPoints(r,x.sid)); });
+  const avg=a=>a.length?Math.round(a.reduce((s,v)=>s+v,0)/a.length*10)/10:0;
+  const st=standings(r);
+
+  return `<div class="sec-head"><h2>Statistik</h2>
+    <label class="f" style="max-width:260px;min-width:180px">Runde<select data-act="stat-round">${rounds.map(x=>`<option value="${x.id}" ${x.id===r.id?"selected":""}>${esc(x.name)}${x.id===state.activeRoundId?" (läuft)":""}</option>`).join("")}</select></label></div>
+  <div class="kpis">
+    <div class="kpi"><b>${results}</b><span>Ergebnisse aus Aufgaben</span></div>
+    <div class="kpi"><b>${assignedTotal?Math.round(doneTotal/assignedTotal*100):0}%</b><span>der zugeteilten Aufgaben erledigt</span></div>
+    <div class="kpi"><b>${triesN?fmtScore(Math.round(triesSum/triesN*10)/10):"–"}</b><span>Versuche pro Person und Aufgabe</span></div>
+    <div class="kpi"><b>${autoPts+manualPts}</b><span>Punkte: ${autoPts} automatisch, ${manualPts} von Hand</span></div>
+  </div>
+
+  <div class="panel"><h3>Aufgaben</h3>
+    ${taskRows.length?`<div class="tbl-wrap"><table class="stable"><thead><tr><th>Aufgabe</th><th>Erledigt</th><th>Ø Punkte</th><th>Ø Versuche</th><th>Fehlt noch</th></tr></thead><tbody>
+    ${taskRows.map(x=>`<tr><td><b>${esc(x.t.icon)} ${esc(x.t.title)}</b><div class="small">${esc(assignLabel(x.t,r))}</div></td>
+      <td class="n">${x.done.length}/${x.pids.length}${x.pids.length?`<div class="small">${Math.round(x.done.length/x.pids.length*100)}%</div>`:""}</td>
+      <td class="n">${x.vals.length?fmtScore(avg(x.vals)):"–"}<div class="small">von ${x.t.max}</div></td>
+      <td class="n">${x.tr.length?fmtScore(avg(x.tr)):"–"}</td>
+      <td>${x.missing.length?`<details><summary class="small">${x.missing.length} Person(en)</summary><div class="small" style="margin-top:4px">${x.missing.map(p=>esc(studentName(p))).join(", ")}</div></details>`:`<span class="small">niemand</span>`}</td></tr>`).join("")}
+    </tbody></table></div>`:`<p class="small">Noch keine offenen oder erledigten Aufgaben.</p>`}
+  </div>
+
+  <div class="panel"><h3>Ergebnisse pro Person</h3>
+    <p class="small" style="margin-top:0">Zahl = bestes Ergebnis. Rot = zugeteilt, aber noch nicht gemacht. Antippen zum Korrigieren.</p>
+    ${players.length&&tasks.length?`<div class="tbl-wrap"><table class="mx"><thead><tr><th></th>${tasks.map(t=>`<th class="rot small" title="${esc(t.title)}">${esc(t.nr)}. ${esc(t.title)}</th>`).join("")}<th class="rot small">Runde gesamt</th></tr></thead><tbody>
+    ${players.map(x=>`<tr><td class="nm"><span class="swatch" style="display:inline-block;background:${colorHex(x.t.color)};width:6px;height:14px;vertical-align:middle;margin-right:6px"></span>${esc(studentName(x.sid))}</td>
+      ${tasks.map(t=>{ const v=autoVal(r.id,x.sid,t.key); const asg=assignedPids(t,r).includes(x.sid);
+        const cls=v!==null?"":asg?"open":"none"; const n=triesOf(r.id,x.sid,t.key);
+        return `<td><button class="cell ${cls}" data-act="auto-edit" data-sid="${x.sid}" data-key="${esc(t.key)}" data-round="${r.id}" title="${esc(t.title)}${n?` – ${n} Versuch(e)`:""}">${v!==null?v:asg?"!":"·"}</button></td>`; }).join("")}
+      <td class="n" style="font-family:var(--display);font-weight:800;font-size:19px;text-align:right">${studentRoundPoints(r,x.sid)}</td></tr>`).join("")}
+    </tbody></table></div>`:`<p class="small">Noch keine Teams oder Aufgaben.</p>`}
+  </div>
+
+  <div class="grid3" style="margin-top:18px">
+    <div class="panel"><h3>Teams</h3>${hbars(st.map(x=>({label:esc(x.team.name), v:x.score, txt:fmtScore(x.score), color:colorHex(x.team.color)})))}
+      <p class="small">${state.settings.wertung==="schnitt"?"Punkte pro Kopf":"Summe aller Punkte"}</p></div>
+    <div class="panel"><h3>Niveaus</h3>${hbars(Object.entries(niv).filter(([k,a])=>a.length).map(([k,a])=>({label:`${k==="–"?"ohne Niveau":"Niveau "+k} (${a.length})`, v:avg(a), txt:fmtScore(avg(a))})))}
+      <p class="small">Ø Punkte pro Person in dieser Runde</p></div>
+    <div class="panel"><h3>Wann gespielt wird</h3>${hbars(["Mo","Di","Mi","Do","Fr","Sa","So"].map((d,i)=>({label:d, v:wd[i]})))}
+      <hr class="court">${hbars(Object.entries(hours).map(([k,v])=>({label:k+" Uhr", v})))}
+      <p class="small">Anzahl Versuche</p></div>
+  </div>
+
+  <div class="panel" style="margin-top:18px"><h3>Verlauf über alle Runden</h3>
+    <div class="tbl-wrap"><table class="stable"><thead><tr><th>Name</th>${rounds.map(x=>`<th style="text-align:right">${esc(x.name)}</th>`).join("")}<th style="text-align:right">Gesamt</th></tr></thead><tbody>
+    ${state.students.filter(s=>s.active!==false).sort((a,b)=>a.name.localeCompare(b.name,"de")).map(s=>`<tr><td>${esc(s.name)}</td>${rounds.map(x=>`<td class="n">${teamOf(x,s.id)?studentRoundPoints(x,s.id):"–"}</td>`).join("")}<td class="n"><b>${studentTotal(s.id)}</b></td></tr>`).join("")}
+    </tbody></table></div>
+  </div>`;
+}
+function editAuto(sid, key, roundId){
+  const s=student(sid); const t=taskByKey(key);
+  const cur=autoVal(roundId, sid, key); const n=triesOf(roundId, sid, key);
+  confirmDlg(`${esc(s?s.name:"")} – ${esc(t?t.title:key)}`,
+    `<p class="small">${cur!==null?`Bestes Ergebnis: <b>${cur}</b>`:"Noch kein Ergebnis"}${n?` – ${n} Versuch(e)`:""}</p>
+     <label class="f">Punkte (leer = Ergebnis löschen)<input type="number" id="dlg-num" min="0" value="${cur!==null?cur:""}"></label>`,
+    "Speichern", ()=>{
+      const raw=$("#dlg-num").value.trim(); const base=`${FB_ROOT}/${codePath()}`;
+      const upd={};
+      if(raw===""){ upd[`live/${roundId}/${sid}/${key}`]=null; upd[`proof/${roundId}/${sid}/${key}`]=null; }
+      else { const v=Math.max(0,parseInt(raw,10)||0);
+        upd[`live/${roundId}/${sid}/${key}`]=v;
+        upd[`proof/${roundId}/${sid}/${key}`]={code:(s&&s.code)||"-", points:v, ts:firebase.database.ServerValue.TIMESTAMP, by:"admin"}; }
+      fb.ref(base).update(upd).then(()=>toast("Ergebnis gespeichert.")).catch(()=>toast("Speichern fehlgeschlagen."));
+    });
+  setTimeout(()=>{ const i=$("#dlg-num"); if(i) i.focus(); },50);
+}
+
+/* ----- Sicherung & Arena ----- */
+function vSicherung(){
+  const lb=lastBackup(); const snaps=getSnaps(); const S=state.settings;
+  return `<div class="sec-head"><h2>Sicherung &amp; Arena</h2></div>
+  <div class="grid2">
+    <div>
+      <div class="panel">
+        <h3>Backup</h3>
+        <p class="lead">Alles liegt online in Firebase und ist auf jedem Gerät gleich, auf dem du angemeldet bist. Einmal am Tag wird automatisch eine Cloud-Sicherung angelegt. Lade trotzdem ab und zu ein Backup auf den Laptop.</p>
+        <p class="small">Letztes Backup: <b>${lb?fmtTs(lb):"noch keins"}</b></p>
+        <div class="row">
+          <button class="btn led" data-act="export">Backup herunterladen</button>
+          <button class="btn ghost" data-act="import">Backup einspielen</button>
+        </div>
+        <hr class="court">
+        <h3>Cloud-Sicherungen</h3>
+        <div class="row"><button class="btn" data-act="cloud-save" ${fb?"":"disabled"}>Jetzt in Cloud sichern</button><button class="btn ghost" data-act="cloud-list" ${fb?"":"disabled"}>Anzeigen</button></div>
+        <div id="cloud-list"></div>
+        <hr class="court">
+        <h3>Wiederherstellungspunkte</h3>
+        <p class="small">Auf diesem Gerät, einmal täglich und vor großen Änderungen. Sie betreffen nur Namen, Teams, Aufgaben und Punkte von Hand – die automatischen Ergebnisse bleiben unberührt.</p>
+        ${snaps.length?`<ul class="list">${snaps.slice(0,10).map((s,i)=>`<li class="li"><div class="grow"><div class="name">${esc(s.label)}</div><div class="small">${fmtTs(s.ts)}</div></div><button class="btn ghost sm" data-act="restore-snap" data-i="${i}">Zurückholen</button></li>`).join("")}</ul>`:`<p class="small">Noch keine.</p>`}
+      </div>
+    </div>
+    <div>
+      <div class="panel">
+        <h3>Arena</h3>
+        <div class="row" style="margin-bottom:12px">
+          <label class="switch"><input type="checkbox" data-act="set-show" ${S.showTable?"checked":""}><b>Tabelle in der Arena zeigen</b></label>
+        </div>
+        <p class="small" style="margin-top:0">Aufgaben und Anmeldung funktionieren immer – der Schalter blendet nur die Punkte aus, zum Beispiel für ein spannendes Rundenfinale.</p>
+        <label class="f" style="margin:12px 0 4px">Namen in der Arena</label>
+        <div class="seg" role="group" aria-label="Namen in der Arena">
+          ${[["vorname","Vorname"],["spielername","Spielername"],["keine","Keine Namen"]].map(([k,l])=>`<button data-act="set-namemode" data-v="${k}" aria-pressed="${S.nameMode===k}">${l}</button>`).join("")}
+        </div>
+        <div style="margin-top:14px"><label class="switch"><input type="checkbox" data-act="set-top" ${S.showTop?"checked":""}><span>Top 5 der Einzelwertung zeigen</span></label></div>
+        <label class="f" style="margin-top:14px">Adresse der Arena (für die Codekarten)<input type="text" data-act="set-url" value="${esc(S.arenaUrl)}" placeholder="https://arashguitoo.github.io/…"></label>
+        <div class="row" style="margin-top:12px"><span class="small">Kurs-Code: <b>${esc(codePath())}</b></span><span class="spacer"></span><button class="btn ghost sm" data-act="publish-now">Arena jetzt aktualisieren</button></div>
+      </div>
+      <div class="panel">
+        <h3>Einstellungen</h3>
+        <label class="f" style="margin-bottom:10px">Name der Liga<input type="text" data-act="set-liga" value="${esc(S.ligaName)}"></label>
+        <label class="f" style="margin-bottom:10px">Kurs<input type="text" data-act="set-kurs" value="${esc(S.kursName)}"></label>
+        <label class="f">Teamwertung</label>
+        <div class="seg" role="group" aria-label="Teamwertung" style="margin-top:4px">
+          <button data-act="set-wertung" data-v="summe" aria-pressed="${S.wertung==="summe"}">Summe aller Punkte</button>
+          <button data-act="set-wertung" data-v="schnitt" aria-pressed="${S.wertung==="schnitt"}">Punkte pro Kopf</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Konto &amp; Datenbank-Regeln</h3>
+        <p class="small">Angemeldet als <b>${esc(currentUser?currentUser.email:"–")}</b></p>
+        <p class="lead" style="margin-top:10px">Diese Regeln ersetzen <b>alle</b> Regeln in Firebase (Realtime Database → Regeln). Die Liga ist damit geschützt, alle anderen Spiele bleiben offen wie bisher.</p>
+        <div class="code" style="max-height:280px">${esc(rulesJSON())}</div>
+        <div class="row" style="margin-top:8px"><button class="btn led sm" data-act="copy-rules">Regeln kopieren</button><button class="btn ghost sm" data-act="copy-uid">Nur Benutzer-ID kopieren</button></div>
+        <hr class="court">
+        <button class="btn red sm" data-act="reset">Alle Daten löschen</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Export / Import ---------- */
+function download(filename, text, type="application/json"){
+  const blob=new Blob([text],{type}); const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob); a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+function exportBackup(){
+  const d=new Date(); const stamp=`${isoOf(d)}_${pad(d.getHours())}-${pad(d.getMinutes())}`;
+  download(`jugendliga-backup_${stamp}.json`, JSON.stringify({app:"jugendliga-konsole", version:2, exported:Date.now(), data:state, auto},null,2));
+  markBackup(); toast("Backup heruntergeladen.");
+}
+function restoreAll(data, autoData, label){
+  snapshot(label);
+  state=migrate(data); pending={}; editTaskId=null;
+  save();
+  if(autoData && fb && currentUser){
+    fb.ref(`${FB_ROOT}/${codePath()}`).update({live:autoData.live||null, proof:autoData.proof||null, tries:autoData.tries||null})
+      .then(()=>toast("Backup eingespielt – inklusive Aufgaben-Ergebnissen.")).catch(()=>toast("Ergebnisse konnten nicht zurückgeschrieben werden."));
+  } else toast("Backup eingespielt.");
+}
+function importBackup(file){
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const obj=JSON.parse(rd.result); const data=obj.data||obj;
+      if(!Array.isArray(data.students)) throw new Error("kein Liga-Backup");
+      const d=migrate(JSON.parse(JSON.stringify(data)));
+      const hasAuto=!!(obj.auto && (obj.auto.live||obj.auto.proof));
+      confirmDlg("Backup einspielen?", `Die Datei enthält <b>${d.students.length}</b> Spieler:innen, <b>${d.rounds.length}</b> Runden, <b>${d.tasks.length}</b> Aufgaben${hasAuto?" und die Aufgaben-Ergebnisse":""}${obj.exported?` (Stand ${fmtTs(obj.exported)})`:""}.<div class="notice">Die aktuellen Daten werden ersetzt – auf allen Geräten.</div>`, "Einspielen",
+        ()=>restoreAll(data, hasAuto?obj.auto:null, "Vor dem Einspielen eines Backups"));
+    }catch(e){ toast("Diese Datei ist kein gültiges Liga-Backup."); }
+  };
+  rd.readAsText(file);
+}
+function exportCSV(){
+  const r=activeRound(); if(!r) return;
+  const rows=[["Rang","Team","Punkte","Personen"]];
+  standings(r).forEach((x,i)=>rows.push([i+1,x.team.name,x.score,x.team.members.length]));
+  rows.push([]); rows.push(["Name","Team","Punkte Runde","davon automatisch","Punkte gesamt"]);
+  r.teams.forEach(t=>t.members.forEach(sid=>rows.push([studentName(sid),t.name,studentRoundPoints(r,sid),autoOf(r.id,sid),studentTotal(sid)])));
+  const csv="\uFEFF"+rows.map(row=>row.map(c=>`"${String(c??"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
+  download(`${r.name.replace(/\s+/g,"-")}_tabelle.csv`, csv, "text/csv;charset=utf-8");
+}
+
+/* ---------- Firebase ---------- */
+let fb=null, auth=null, fbConnected=false, pubTimer=null;
+let currentUser=null, syncReady=false, syncState="idle", adminRef=null, cloudTimer=null, pendingRemoteRender=false, autoTimer=null, lastProofTs=null;
+const autoRefs=[];
+const DEVICE_ID=(()=>{ let d=localStorage.getItem("jugendliga_device"); if(!d){ d=uid(); localStorage.setItem("jugendliga_device",d); } return d; })();
+const codePath = () => String(KURS_CODE||"kurs").trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase() || "kurs";
+const kursRef = () => fb.ref(`${FB_ROOT}/${codePath()}`);
+try{
+  if(window.firebase){ firebase.initializeApp(firebaseConfig); fb=firebase.database(); auth=firebase.auth();
+    fb.ref(".info/connected").on("value", s=>{ fbConnected=!!s.val(); renderHeader(); if(fbConnected) schedulePublish(); });
+  }
+}catch(e){ console.warn("Firebase:", e); fb=null; auth=null; }
+
+function setSync(st){ syncState=st; renderHeader(); }
+function scheduleCloudWrite(){ if(!fb||!currentUser||!syncReady) return; setSync("saving"); clearTimeout(cloudTimer); cloudTimer=setTimeout(cloudWrite,500); }
+function cloudWrite(){
+  if(!adminRef) return Promise.resolve();
+  setSync("saving");
+  return adminRef.set({data:JSON.stringify(state), updated:state.updated||Date.now(), device:DEVICE_ID})
+    .then(()=>setSync("saved"))
+    .catch(e=>{ console.warn(e); setSync("error"); toast("Speichern in Firebase fehlgeschlagen – bitte die Datenbank-Regeln prüfen."); });
+}
+function safeRender(){
+  const ae=document.activeElement;
+  if(ae && $("#view").contains(ae) && ae.matches("input,textarea,select")){ pendingRemoteRender=true; renderHeader(); }
+  else render();
+}
+function startSync(){
+  adminRef=kursRef().child("admin/state");
+  adminRef.once("value").then(snap=>{
+    const v=snap.val();
+    const localHas=state.students.length||state.entries.length||state.rounds.length;
+    const localStr=JSON.stringify(state);
+    const finish=()=>{ syncReady=true; const n=ensureCodes(); listenRemote(); listenAuto(); if(n) save(); else render(); schedulePublish(); };
+    if(!v){
+      if(localHas){ finish(); cloudWrite().then(()=>toast("Daten dieses Geräts nach Firebase übernommen.")); }
+      else { setSync("saved"); finish(); }
+      return;
+    }
+    let remote; try{ remote=migrate(JSON.parse(v.data)); }catch(e){ toast("Online-Daten beschädigt – bitte Cloud-Sicherung zurückholen."); finish(); return; }
+    if(localHas && v.data!==localStr && (state.updated||0)>(v.updated||0) && v.device!==DEVICE_ID){
+      confirmDlg("Welcher Stand soll gelten?",
+        `Auf diesem Gerät gibt es neuere Änderungen als online.<div class="notice">Online: ${remote.students.length} Spieler:innen, ${remote.entries.length} Einträge (${fmtTs(v.updated)})<br>Dieses Gerät: ${state.students.length} Spieler:innen, ${state.entries.length} Einträge (${fmtTs(state.updated)})</div>Der andere Stand wird als Wiederherstellungspunkt aufgehoben.`,
+        "Stand von diesem Gerät", ()=>{ snapshot("Online-Stand vor dem Überschreiben", v.data); finish(); cloudWrite(); },
+        false, "Online-Stand", ()=>{ snapshot("Gerätestand vor dem Laden von online"); state=remote; cacheLocal(); setSync("saved"); finish(); });
+      return;
+    }
+    state=remote; cacheLocal(); setSync("saved"); finish();
+  }).catch(e=>{ console.warn(e); setSync("error"); toast("Kein Zugriff auf die Daten – stimmen die Firebase-Regeln?"); });
+}
+function listenRemote(){
+  adminRef.on("value", snap=>{
+    const v=snap.val(); if(!v || v.device===DEVICE_ID) return;
+    if(v.data===JSON.stringify(state)) return;
+    try{ state=migrate(JSON.parse(v.data)); }catch(e){ return; }
+    cacheLocal(); safeRender();
+    toast("Neuer Stand von einem anderen Gerät geladen.");
+  });
+}
+function listenAuto(){
+  ["live","proof","tries"].forEach(n=>{
+    const ref=kursRef().child(n); autoRefs.push(ref);
+    ref.on("value", s=>{
+      auto[n]=s.val()||{};
+      if(n==="proof") announceNewResult();
+      clearTimeout(autoTimer); autoTimer=setTimeout(safeRender,300);
+    }, err=>console.warn(n, err));
+  });
+}
+function announceNewResult(){
+  let newest=null;
+  Object.entries(auto.proof).forEach(([rid,ps])=>Object.entries(ps||{}).forEach(([sid,tk])=>Object.entries(tk||{}).forEach(([key,p])=>{
+    if(p && p.by!=="admin" && (!newest || Number(p.ts)>newest.ts)) newest={ts:Number(p.ts)||0,sid,key,points:p.points};
+  })));
+  if(lastProofTs!==null && newest && newest.ts>lastProofTs) toast(`Neues Ergebnis: ${studentName(newest.sid)} – ${taskTitle(newest.key)}: ${newest.points} Punkte`);
+  lastProofTs = newest ? Math.max(newest.ts, lastProofTs||0) : (lastProofTs||0);
+}
+function stopSync(){
+  if(adminRef) adminRef.off(); adminRef=null;
+  autoRefs.splice(0).forEach(r=>r.off());
+  auto={live:{},proof:{},tries:{}}; lastProofTs=null;
+  syncReady=false; setSync("idle");
+}
+function displayName(s){
+  if(!s) return "";
+  if(state.settings.nameMode==="spielername") return s.nick||s.name.split(/\s+/)[0];
+  return s.name.split(/\s+/)[0];
+}
+function publicSnapshot(){
+  const r=activeRound(); const S=state.settings;
+  const snap={liga:S.ligaName, kurs:S.kursName, updated:Date.now(), wertung:S.wertung, showTable:!!S.showTable,
+    showTop:!!(S.showTop && S.nameMode!=="keine"), round:null, teams:[], roster:{}, names:{}, manualTeam:{}, manualPlayer:{}, tasks:{}};
+  state.tasks.forEach(t=>{
+    const a=t.assign||{}; const teams={}, players={};
+    Object.keys(a.teams||{}).forEach(k=>{ if(a.teams[k]) teams[k]=true; });
+    Object.keys(a.players||{}).forEach(k=>{ if(a.players[k]) players[k]=true; });
+    snap.tasks[t.key]={nr:Number(t.nr)||0, title:t.title, text:t.text||"", file:t.file||"", icon:t.icon||"🎯", art:t.art||"Einzel",
+      max:Number(t.max)||10, due:t.due||"", status:t.status, open:isOpen(t), assign:{alle:!!a.alle, teams, players}};
+  });
+  if(r){
+    snap.round={id:r.id, name:r.name, start:r.start||"", end:r.end||""};
+    snap.teams=r.teams.map(t=>({id:t.id, name:t.name, color:colorHex(t.color), size:t.members.length,
+      members:S.nameMode==="keine"?[]:t.members.map(m=>displayName(student(m))).filter(Boolean)}));
+    r.teams.forEach(t=>{
+      snap.manualTeam[t.id]=manualTeam(r,t);
+      t.members.forEach(m=>{
+        snap.roster[m]=t.id;
+        const mp=manualPlayer(r,m); if(mp) snap.manualPlayer[m]=mp;
+        if(S.nameMode!=="keine"){ const n=displayName(student(m)); if(n) snap.names[m]=n; }
+      });
+    });
+  }
+  return snap;
+}
+function codesMap(){
+  const m={};
+  state.students.forEach(s=>{ if(s.active!==false && s.code && /^[A-Z0-9]{4,8}$/.test(s.code)) m[s.code]={pid:s.id, name:state.settings.nameMode==="keine"?"":displayName(s)}; });
+  return m;
+}
+function publish(){
+  if(!fb||!currentUser||!syncReady) return Promise.resolve(false);
+  return kursRef().update({public:publicSnapshot(), codes:codesMap()}).then(()=>true)
+    .catch(e=>{ console.warn(e); toast("Aktualisieren der Arena fehlgeschlagen."); return false; });
+}
+function schedulePublish(){ if(!fb||!currentUser||!syncReady) return; clearTimeout(pubTimer); pubTimer=setTimeout(publish,700); }
+function cloudSave(silent){
+  if(!fb||!currentUser) return;
+  const ts=Date.now();
+  kursRef().child(`backups/${ts}`).set({ts, students:state.students.length, entries:state.entries.length, data:JSON.stringify(state), auto:JSON.stringify(auto)})
+    .then(()=>{ if(!silent){ markBackup(); toast("In der Cloud gesichert."); } })
+    .catch(()=>{ if(!silent) toast("Cloud-Sicherung fehlgeschlagen."); });
+}
+function cloudList(){
+  if(!fb) return;
+  const box=$("#cloud-list"); if(box) box.innerHTML=`<p class="small">Lade …</p>`;
+  kursRef().child("backups").orderByKey().limitToLast(10).once("value").then(s=>{
+    const items=[]; s.forEach(c=>{ items.push(c.val()); }); items.reverse();
+    const b=$("#cloud-list"); if(!b) return;
+    b.innerHTML = items.length ? `<ul class="list" style="margin-top:10px">${items.map(x=>`<li class="li"><div class="grow"><div class="name">${fmtTs(x.ts)}</div><div class="small">${x.students} Spieler:innen, ${x.entries} Einträge von Hand</div></div><button class="btn ghost sm" data-act="cloud-restore" data-ts="${x.ts}">Zurückholen</button></li>`).join("")}</ul>` : `<p class="small">Noch keine Cloud-Sicherungen.</p>`;
+  }).catch(()=>{ const b=$("#cloud-list"); if(b) b.innerHTML=`<p class="small">Laden fehlgeschlagen.</p>`; });
+}
+function cloudRestore(ts){
+  kursRef().child(`backups/${ts}`).once("value").then(s=>{
+    const v=s.val(); if(!v) return toast("Sicherung nicht gefunden.");
+    confirmDlg("Cloud-Sicherung zurückholen?", `Stand ${fmtTs(v.ts)}: ${v.students} Spieler:innen.<div class="notice">Die aktuellen Daten werden ersetzt – auf allen Geräten, inklusive der Aufgaben-Ergebnisse.</div>`, "Zurückholen", ()=>{
+      let a=null; try{ a=v.auto?JSON.parse(v.auto):null; }catch(e){}
+      restoreAll(JSON.parse(v.data), a, "Vor dem Zurückholen aus der Cloud");
+    });
+  });
+}
+function rulesJSON(){
+  const u=currentUser?currentUser.uid:"DEINE_BENUTZER_ID";
+  const me=`auth != null && auth.uid === '${u}'`;
+  const K="'jugendliga/' + $kurs";
+  const task=`root.child(${K} + '/public/tasks/' + $task`;
+  const codeOk=`root.child(${K} + '/codes/' + newData.child('code').val() + '/pid').val() === $pid`;
+  const ptsOk=`newData.child('points').isNumber() && newData.child('points').val() >= 0 && newData.child('points').val() <= ${task} + '/max').val()`;
+  const roundOk=`root.child(${K} + '/public/round/id').val() === $round`;
+  const assigned=`(${task} + '/assign/alle').val() === true || ${task} + '/assign/players/' + $pid).val() === true || ${task} + '/assign/teams/' + root.child(${K} + '/public/roster/' + $pid).val()).val() === true)`;
+  const rules={ rules:{
+    jugendliga:{ "$kurs":{
+      ".read":me, ".write":me,
+      public:{ ".read":true },
+      codes:{ "$code":{ ".read":true } },
+      live:{ ".read":true, "$round":{ "$pid":{ "$task":{
+        ".write":`newData.isNumber() && root.child(${K} + '/proof/' + $round + '/' + $pid + '/' + $task + '/points').val() === newData.val() && (!data.exists() || newData.val() > data.val())`
+      }}}},
+      proof:{ "$round":{ "$pid":{ "$task":{
+        ".write":`newData.hasChildren(['code', 'points']) && ${ptsOk} && ${codeOk} && ${roundOk} && ${task} + '/open').val() === true && ${assigned} && (!data.exists() || newData.child('points').val() > data.child('points').val())`
+      }}}},
+      tries:{ "$round":{ "$pid":{ "$task":{ "$try":{
+        ".write":`!data.exists() && ${ptsOk} && ${codeOk} && ${roundOk}`
+      }}}}}
+    }},
+    "$other":{ ".read":true, ".write":true }
+  }};
+  return JSON.stringify(rules,null,2);
+}
+
+/* ---------- Anmeldung ---------- */
+const gate=$("#gate");
+function showGate(mode, msg){
+  gate.classList.remove("hidden");
+  $("#gate-msg").textContent=msg;
+  $("#gate-fields").hidden = mode!=="login";
+  if(mode==="login") setTimeout(()=>$("#g-mail").focus(),50);
+}
+function authError(e){
+  const c=(e&&e.code)||"";
+  if(/invalid-credential|wrong-password|user-not-found|invalid-email|invalid-login/.test(c)) return "E-Mail oder Passwort stimmt nicht.";
+  if(c.includes("too-many-requests")) return "Zu viele Versuche. Bitte kurz warten.";
+  if(c.includes("network")) return "Keine Internetverbindung.";
+  if(c.includes("operation-not-allowed")) return "Die E-Mail-Anmeldung ist in Firebase noch nicht eingeschaltet.";
+  return "Anmeldung fehlgeschlagen ("+c+").";
+}
+if(!auth){
+  showGate("error","Firebase konnte nicht geladen werden. Bitte prüfe die Internetverbindung und lade die Seite neu.");
+} else {
+  auth.onAuthStateChanged(user=>{
+    currentUser=user;
+    if(user){ gate.classList.add("hidden"); startSync(); render(); }
+    else { stopSync(); render(); showGate("login","Bitte melde dich an."); }
+  });
+  $("#gate-form").addEventListener("submit", e=>{
+    e.preventDefault();
+    const btn=$("#g-btn"); btn.disabled=true; $("#g-err").textContent="";
+    auth.signInWithEmailAndPassword($("#g-mail").value.trim(), $("#g-pass").value)
+      .then(()=>{ $("#g-pass").value=""; })
+      .catch(err=>{ $("#g-err").textContent=authError(err); })
+      .finally(()=>{ btn.disabled=false; });
+  });
+  $("#g-reset").addEventListener("click", ()=>{
+    const m=$("#g-mail").value.trim();
+    if(!m){ $("#g-err").textContent="Bitte zuerst deine E-Mail eintragen."; return; }
+    auth.sendPasswordResetEmail(m).then(()=>{ $("#g-err").textContent=""; toast("E-Mail zum Zurücksetzen verschickt."); })
+      .catch(err=>{ $("#g-err").textContent=authError(err); });
+  });
+}
+function doLogout(){
+  confirmDlg("Abmelden?", `<p>Deine Daten bleiben online gespeichert.</p><label class="switch"><input type="checkbox" id="dlg-wipe"><span>Kopie auf diesem Gerät löschen (bei fremden Computern)</span></label>`, "Abmelden", ()=>{
+    const wipe=$("#dlg-wipe")&&$("#dlg-wipe").checked;
+    const go=()=>{
+      if(wipe){ [LS_KEY,SNAP_KEY,LASTBACKUP_KEY,"jugendliga_cloudday"].forEach(k=>localStorage.removeItem(k)); state=fresh(); pending={}; }
+      auth.signOut();
+    };
+    if(syncState==="saving") cloudWrite().finally(go); else go();
+  });
+}
+
+/* ---------- Dialog ---------- */
+function confirmDlg(title, html, okLabel, onOk, danger=false, cancelLabel="Abbrechen", onCancel=null){
+  const d=$("#dlg");
+  $("#dlg-body").innerHTML=`<h3>${title}</h3><div>${html}</div><div class="row"><button class="btn ghost" data-dlg="cancel">${cancelLabel}</button><button class="btn ${danger?"red":"led"}" data-dlg="ok">${okLabel}</button></div>`;
+  d.oncancel = onCancel ? (ev=>ev.preventDefault()) : null;
+  $("#dlg-body").onclick=e=>{
+    const b=e.target.closest("[data-dlg]"); if(!b) return;
+    if(b.dataset.dlg==="ok"){ const input=$("#dlg-confirm"); if(input && input.value.trim().toUpperCase()!=="LÖSCHEN"){ input.focus(); return; } d.close(); onOk(); }
+    else { d.close(); if(onCancel) onCancel(); }
+  };
+  $("#dlg-body").onkeydown=e=>{ if(e.key==="Enter" && e.target.id==="dlg-num"){ e.preventDefault(); $('#dlg-body [data-dlg="ok"]').click(); } };
+  if(typeof d.showModal==="function") d.showModal(); else if(confirm(title)) onOk();
+}
+function copyText(t, msg){
+  const done=()=>toast(msg);
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(done).catch(()=>fallbackCopy(t,done));
+  else fallbackCopy(t,done);
+}
+function fallbackCopy(t,done){ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); done(); }catch(e){} ta.remove(); }
+
+/* ---------- Ereignisse ---------- */
+document.addEventListener("click", e=>{
+  const el=e.target.closest("[data-act]"); if(!el) return;
+  const a=el.dataset.act;
+  const r=activeRound();
+  switch(a){
+    case "goto": tab=el.dataset.tab; render(); window.scrollTo({top:0}); break;
+    case "logout": doLogout(); break;
+    case "csv": exportCSV(); break;
+    case "export": exportBackup(); break;
+    case "import": $("#file-import").click(); break;
+    case "copy-uid": copyText(currentUser?currentUser.uid:"", "Benutzer-ID kopiert."); break;
+    case "copy-rules": copyText(rulesJSON(), "Regeln kopiert."); break;
+    case "restore-snap": {
+      const s=getSnaps()[Number(el.dataset.i)]; if(!s) return;
+      confirmDlg("Wiederherstellungspunkt zurückholen?", `„${esc(s.label)}“ vom ${fmtTs(s.ts)}.<div class="notice">Die aktuellen Daten werden ersetzt. Der jetzige Stand wird vorher selbst gesichert.</div>`, "Zurückholen", ()=>{
+        snapshot("Vor dem Zurückholen eines Wiederherstellungspunkts"); state=migrate(JSON.parse(s.data)); pending={}; save(); toast("Stand zurückgeholt.");
+      }); break;
+    }
+    case "cloud-save": cloudSave(); break;
+    case "cloud-list": cloudList(); break;
+    case "cloud-restore": cloudRestore(el.dataset.ts); break;
+    case "publish-now": publish().then(ok=>{ if(ok) toast("Arena aktualisiert."); }); break;
+    case "set-namemode": state.settings.nameMode=el.dataset.v; save(); break;
+    case "set-wertung": state.settings.wertung=el.dataset.v; save(); break;
+    case "reset":
+      confirmDlg("Alle Daten löschen?", `Spieler:innen, Runden, Aufgaben, Punkte und alle Aufgaben-Ergebnisse werden gelöscht – auf allen Geräten.<label class="f" style="margin-top:12px">Zum Bestätigen LÖSCHEN eintippen<input type="text" id="dlg-confirm" autocomplete="off"></label>`, "Endgültig löschen", ()=>{
+        snapshot("Vor dem Löschen aller Daten"); cloudSave(true);
+        const keep=state.settings; state=fresh(); state.settings=keep; pending={}; save();
+        if(fb&&currentUser) kursRef().update({live:null, proof:null, tries:null});
+        toast("Alle Daten gelöscht.");
+      }, true); break;
+
+    case "add-student": {
+      const n=$("#ns-name"), k=$("#ns-nick");
+      if(!n.value.trim()){ n.focus(); return; }
+      if(addStudent(n.value,k.value)){ save(); toast("Hinzugefügt."); setTimeout(()=>$("#ns-name")&&$("#ns-name").focus(),0); }
+      else toast("Diesen Namen gibt es schon.");
+      break;
+    }
+    case "add-bulk": {
+      const lines=$("#ns-bulk").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+      let c=0; lines.forEach(l=>{ const [nm,nk]=l.split(/[;\t]/); if(addStudent(nm,nk)) c++; });
+      save(); toast(`${c} Person(en) hinzugefügt${lines.length-c?`, ${lines.length-c} übersprungen`:""}.`); break;
+    }
+    case "gen-codes": { const n=ensureCodes(); save(); toast(`${n} Codes erzeugt.`); break; }
+    case "print-cards": printCards(); break;
+    case "del-student": {
+      const s=student(el.dataset.sid); if(!s) return;
+      confirmDlg(`${esc(s.name)} löschen?`, `Die Person wird aus allen Teams und Zuteilungen entfernt, ihr Code gilt nicht mehr. <div class="notice">Tipp: Wer den Kurs verlässt, lieber auf „inaktiv“ stellen – dann bleibt die Statistik vollständig.</div>`, "Löschen", ()=>{
+        snapshot(`Vor dem Löschen von ${s.name}`);
+        state.students=state.students.filter(x=>x.id!==s.id);
+        state.rounds.forEach(rd=>rd.teams.forEach(t=>t.members=t.members.filter(m=>m!==s.id)));
+        state.tasks.forEach(t=>{ delete t.assign.players[s.id]; });
+        save();
+      }, true); break;
+    }
+
+    case "new-round": newRound(); break;
+    case "redraw": {
+      if(!r) return;
+      const hasPts=state.entries.some(x=>x.roundId===r.id) || Object.keys(auto.live[r.id]||{}).length;
+      confirmDlg("Teams neu auslosen?", `Alle aktiven Spieler:innen werden neu auf ${r.teams.length} Teams verteilt.${hasPts?`<div class="notice red">In dieser Runde gibt es schon Punkte. Automatische Punkte wandern mit der Person ins neue Team, Punkte von Hand bleiben beim alten Team.</div>`:""}`, "Neu auslosen", ()=>{
+        snapshot(`Vor dem Neu-Auslosen von „${r.name}“`);
+        const ids=state.students.filter(s=>s.active!==false).map(s=>s.id);
+        const buckets=drawTeams(ids, r.teams.length, "zufall");
+        r.teams.forEach((t,i)=>t.members=buckets[i]||[]);
+        save(); toast("Teams neu ausgelost.");
+      }); break;
+    }
+    case "add-team": {
+      if(!r||r.teams.length>=6) return;
+      const used=r.teams.map(t=>t.color); const c=(COLORS.find(x=>!used.includes(x.k))||COLORS[0]).k;
+      r.teams.push({id:uid(), name:`Team ${COLORS.find(x=>x.k===c).name}`, color:c, members:[]}); save(); break;
+    }
+    case "del-team": {
+      const t=r&&r.teams.find(x=>x.id===el.dataset.tid); if(!t) return;
+      confirmDlg(`${esc(t.name)} entfernen?`, `Die ${t.members.length} Mitglieder werden „ohne Team“ und können Aufgaben für Teams nicht mehr lösen, bis du sie neu zuordnest.`, "Entfernen", ()=>{
+        snapshot(`Vor dem Entfernen von ${t.name}`); r.teams=r.teams.filter(x=>x.id!==t.id); save();
+      }, true); break;
+    }
+    case "fill-small": fillSmallest(); break;
+    case "close-round":
+      if(!r) return;
+      confirmDlg("Runde abschließen?", `„${esc(r.name)}“ kommt ins Archiv. Bis zur nächsten Runde können keine Aufgaben-Punkte gesammelt werden.`, "Abschließen", ()=>{
+        snapshot(`Abschluss von „${r.name}“`); state.activeRoundId=null; save(); toast("Runde abgeschlossen.");
+      }); break;
+    case "reopen": {
+      const p=state.rounds.find(x=>x.id===el.dataset.id); if(!p) return;
+      confirmDlg("Runde wieder aktivieren?", `„${esc(p.name)}“ wird wieder die laufende Runde.${r?` „${esc(r.name)}“ kommt ins Archiv.`:""}`, "Aktivieren", ()=>{ state.activeRoundId=p.id; save(); }); break;
+    }
+    case "del-round": {
+      const p=state.rounds.find(x=>x.id===el.dataset.id); if(!p) return;
+      confirmDlg("Runde löschen?", `„${esc(p.name)}“ und alle ihre Punkte werden gelöscht.`, "Löschen", ()=>{
+        snapshot(`Vor dem Löschen von „${p.name}“`);
+        state.rounds=state.rounds.filter(x=>x.id!==p.id); state.entries=state.entries.filter(x=>x.roundId!==p.id); save();
+        if(fb&&currentUser){ const u={}; u[`live/${p.id}`]=null; u[`proof/${p.id}`]=null; u[`tries/${p.id}`]=null; kursRef().update(u); }
+      }, true); break;
+    }
+
+    case "step": { const k=el.dataset.key; pending[k]=(Number(pending[k])||0)+Number(el.dataset.d); if(!pending[k]) delete pending[k]; updatePendingUI(k); break; }
+    case "team-all": {
+      const t=r&&r.teams.find(x=>x.id===el.dataset.tid); if(!t) return;
+      t.members.forEach(sid=>{ pending[sid]=(Number(pending[sid])||0)+Number(el.dataset.d); if(!pending[sid]) delete pending[sid]; updatePendingUI(sid); }); break;
+    }
+    case "pend-clear": pending={}; render(); break;
+    case "pend-save": savePending(); break;
+    case "del-entry": {
+      const en=state.entries.find(x=>x.id===el.dataset.id); if(!en) return;
+      state.entries=state.entries.filter(x=>x.id!==en.id); save();
+      toast(`Eintrag gelöscht (${en.points>0?"+":""}${en.points}).`); break;
+    }
+
+    case "task-save": saveTaskForm(); break;
+    case "task-cancel": editTaskId=null; render(); break;
+    case "task-edit": editTaskId=el.dataset.id; render(); window.scrollTo({top:0,behavior:"smooth"}); break;
+    case "del-task": {
+      const t=state.tasks.find(x=>x.id===el.dataset.id); if(!t) return;
+      confirmDlg("Aufgabe löschen?", `„${esc(t.title)}“ verschwindet aus der Arena und kann nicht mehr gespielt werden. Bereits erreichte Punkte bleiben erhalten.`, "Löschen", ()=>{
+        state.tasks=state.tasks.filter(x=>x.id!==t.id); if(scoreTask.taskId===t.id) scoreTask.taskId=""; if(editTaskId===t.id) editTaskId=null; save();
+      }, true); break;
+    }
+    case "auto-edit": editAuto(el.dataset.sid, el.dataset.key, el.dataset.round); break;
+  }
+});
+
+document.addEventListener("change", e=>{
+  const el=e.target.closest("[data-act]");
+  if(e.target.id==="ta-alle"){ const m=$("#ta-more"); if(m) m.hidden=e.target.checked; return; }
+  if(!el) return;
+  const a=el.dataset.act; const r=activeRound();
+  const s=el.dataset.sid?student(el.dataset.sid):null;
+  switch(a){
+    case "s-name": if(s&&el.value.trim()){ s.name=el.value.trim(); save({render:false}); } break;
+    case "s-nick": if(s){ s.nick=el.value.trim(); save({render:false}); } break;
+    case "s-code": {
+      if(!s) return;
+      const c=el.value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+      if(c.length<4||c.length>8){ toast("Der Code braucht 4 bis 8 Buchstaben oder Zahlen."); el.value=s.code||""; return; }
+      if(state.students.some(x=>x!==s && x.code===c)){ toast(`Den Code ${c} hat schon jemand.`); el.value=s.code||""; return; }
+      s.code=c; el.value=c; save({render:false}); toast("Code gespeichert."); break;
+    }
+    case "s-niveau": if(s){ s.niveau=el.value; save({render:false}); } break;
+    case "s-active": if(s){ s.active=el.checked; save(); } break;
+    case "r-name": if(r){ r.name=el.value.trim()||r.name; save({render:false}); renderHeader(); } break;
+    case "r-start": if(r){ r.start=el.value; save({render:false}); } break;
+    case "r-end": if(r){ r.end=el.value; save({render:false}); } break;
+    case "t-name": { const t=r&&r.teams.find(x=>x.id===el.dataset.tid); if(t){ t.name=el.value.trim()||t.name; save({render:false}); } break; }
+    case "t-color": { const t=r&&r.teams.find(x=>x.id===el.dataset.tid); if(t){ t.color=el.value; save(); } break; }
+    case "move": {
+      if(!r) return; const sid=el.dataset.sid;
+      r.teams.forEach(t=>t.members=t.members.filter(m=>m!==sid));
+      const t=r.teams.find(x=>x.id===el.value); if(t) t.members.push(sid);
+      save(); break;
+    }
+    case "st-task": scoreTask.taskId=el.value; render(); break;
+    case "st-date": scoreTask.date=el.value||todayISO(); break;
+    case "log-filter": logFilter=el.value; render(); break;
+    case "stat-round": statRoundId=el.value; render(); break;
+    case "task-status": { const t=state.tasks.find(x=>x.id===el.dataset.id); if(t){ t.status=el.value; save(); toast("Status geändert."); } break; }
+    case "set-show": state.settings.showTable=el.checked; save(); break;
+    case "set-top": state.settings.showTop=el.checked; save(); break;
+    case "set-url": state.settings.arenaUrl=el.value.trim(); save({render:false}); break;
+    case "set-liga": state.settings.ligaName=el.value.trim()||"Liga"; save(); break;
+    case "set-kurs": state.settings.kursName=el.value.trim(); save(); break;
+  }
+});
+document.addEventListener("input", e=>{
+  if(e.target.id==="ta-title" && !editTaskId){ const k=$("#ta-key"); if(k && !k.dataset.touched) k.value=slugify(e.target.value); }
+  if(e.target.id==="ta-key") e.target.dataset.touched="1";
+  const el=e.target.closest("[data-act]"); if(!el) return;
+  if(el.dataset.act==="pend"){
+    const k=el.dataset.key; const v=parseInt(el.value,10);
+    if(v) pending[k]=v; else delete pending[k];
+    el.classList.toggle("has",!!v); updatePendingUI("__none__");
+  }
+  if(el.dataset.act==="st-new") scoreTask.newTitle=el.value;
+  if(el.dataset.act==="st-note") scoreTask.note=el.value;
+});
+document.addEventListener("keydown", e=>{
+  if(e.key==="Enter" && (e.target.id==="ns-name"||e.target.id==="ns-nick")){ e.preventDefault(); document.querySelector('[data-act="add-student"]').click(); }
+});
+document.addEventListener("focusout", ()=>{ if(pendingRemoteRender){ pendingRemoteRender=false; setTimeout(render,0); } });
+$("#file-import").addEventListener("change", e=>{ const f=e.target.files[0]; if(f) importBackup(f); e.target.value=""; });
+window.addEventListener("beforeunload", e=>{
+  if(Object.keys(pending).length || syncState==="saving" || syncState==="error"){ e.preventDefault(); e.returnValue=""; }
+});
+
+render();
+</script>
+</body>
+</html>
