@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<title>A1-Spielhalle – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
+  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
+  --der:#1F6FD1; --die:#E4412F; --das:#1E9E6A;
+  --accent:#14223B;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* Kopf */
+.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:10}
+.bar-in{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;min-height:54px}
+.bar a{color:#c9d2e3;text-decoration:none;font-weight:700;font-size:15px}
+.bar .who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:15px;min-width:0}
+.bar .who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .who i{width:10px;height:22px;border-radius:3px;flex:none}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+
+/* Titel */
+.head{display:flex;align-items:center;gap:14px;margin:4px 0 16px}
+.head .ic{width:64px;height:64px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px;flex:none;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.head h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,11vw,62px);line-height:.88;margin:0;color:var(--board)}
+.head small{display:block;font-size:15px;color:var(--muted);font-family:var(--body);font-weight:700;letter-spacing:.02em;margin-bottom:2px}
+
+/* Karten & Knöpfe */
+.card{background:var(--paper);border-radius:18px;padding:20px 18px;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.card h2{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;margin:0 0 8px;color:var(--board)}
+.card p{margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 20px;border-radius:12px;border:0;background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn.led{background:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;color:var(--board);box-shadow:inset 0 0 0 2px var(--board)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:grid;gap:10px;margin-top:14px}
+.codein{display:flex;gap:8px;margin-top:12px}
+.codein input{flex:1;min-width:0;min-height:54px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:var(--ink)}
+.codein input:focus{outline:none;border-color:var(--board)}
+.err{color:var(--bad);font-weight:700;min-height:24px;margin-top:8px}
+.rules{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.rules li{background:#fff;border-radius:10px;padding:9px 12px;border-left:5px solid var(--accent);font-size:17px}
+.best{font-weight:700;color:var(--muted);font-size:16px;margin-bottom:12px}
+
+/* Menü */
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.tile{display:grid;grid-template-rows:auto 1fr;background:var(--paper);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.tile-top{padding:14px 14px 10px;color:#fff;display:flex;align-items:center;gap:10px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
+.tile-top span{font-size:30px}
+.tile-top b{font-family:var(--display);font-weight:900;font-size:26px;line-height:1}
+.tile p{margin:0;padding:10px 14px 14px;font-size:15.5px;color:var(--muted)}
+
+/* Spielfeld */
+.hud{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hud .pill{background:var(--board);color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px;white-space:nowrap}
+.hud .pill b{font-family:var(--display);font-size:22px;color:var(--led);margin-left:4px}
+.hud .grow{flex:1}
+.timer{height:12px;background:rgba(20,34,59,.15);border-radius:6px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .12s linear}
+.timer.low i{background:var(--bad)}
+.stage{background:var(--paper);border-radius:18px;padding:18px 16px 20px;box-shadow:0 3px 0 rgba(0,0,0,.14);position:relative;overflow:hidden}
+.prompt{text-align:center;margin:8px 0 18px}
+.prompt .emo{font-size:64px;line-height:1.1;display:block}
+.prompt .big{font-family:var(--display);font-weight:900;font-size:clamp(34px,9vw,48px);line-height:1.02;display:block}
+.prompt .hint{color:var(--muted);font-size:16px;display:block;margin-top:4px}
+.gap{display:inline-block;min-width:2.6em;border-bottom:4px solid var(--accent);color:var(--accent)}
+.opts{display:grid;gap:10px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{min-height:62px;border-radius:14px;border:3px solid var(--line);background:#fff;font-family:var(--display);font-weight:900;font-size:28px;cursor:pointer;color:var(--ink);padding:6px 8px;line-height:1.05;transition:transform .08s}
+.opt:active{transform:scale(.97)}
+.opt.txt{font-family:var(--body);font-weight:700;font-size:18px;text-align:left;padding:12px 14px}
+.opt.right{border-color:var(--ok);background:#d6f2e5}
+.opt.wrong{border-color:var(--bad);background:#fde6e2}
+.opt.der{border-color:var(--der);color:var(--der)} .opt.die{border-color:var(--die);color:var(--die)} .opt.das{border-color:var(--das);color:var(--das)}
+.flash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s}
+.flash.ok{background:rgba(30,158,106,.18);opacity:1}
+.flash.bad{background:rgba(228,65,47,.18);opacity:1}
+.tip{min-height:26px;text-align:center;font-weight:700;margin-top:12px;font-size:17px}
+.tip.bad{color:#a3281a} .tip.ok{color:#12704a}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .2s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake .25s}
+
+/* Einkaufswagen */
+.baskets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.basket{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:6px;text-align:center;min-height:64px}
+.basket b{display:block;font-size:13px;color:var(--muted)}
+.basket div{font-size:22px;line-height:1.2;word-break:break-all}
+
+/* Memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mc{aspect-ratio:3/4;border:0;border-radius:12px;cursor:pointer;position:relative;perspective:600px;background:transparent;padding:0}
+.mc .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.mc.open .in,.mc.done .in{transform:rotateY(180deg)}
+.mc .f,.mc .b{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center}
+.mc .f{background:var(--accent);color:rgba(255,255,255,.85);font-family:var(--display);font-weight:900;font-size:30px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
+.mc .b{background:#fff;border:3px solid var(--line);transform:rotateY(180deg);font-weight:700;font-size:clamp(12px,3.4vw,16px);line-height:1.15}
+.mc .b .e{font-size:clamp(20px,6vw,30px);line-height:1.1}
+.mc .b.p{background:#f4ecff;border-color:#c9b3ef}
+.mc.done .b{border-color:var(--ok);background:#d6f2e5}
+
+/* Satz-Baustelle */
+.line{min-height:64px;background:#fff;border:3px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.line.ok{border-style:solid;border-color:var(--ok);background:#d6f2e5}
+.line.bad{border-style:solid;border-color:var(--bad);background:#fde6e2}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;justify-content:center;min-height:52px}
+.tile-w{min-height:46px;padding:6px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:19px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.line .tile-w{background:var(--board)}
+.tile-w.used{visibility:hidden}
+
+/* Café */
+.chat{display:flex;flex-direction:column;gap:8px;min-height:220px;max-height:46vh;overflow-y:auto;padding:4px 2px 8px}
+.bub{max-width:82%;padding:9px 13px;border-radius:16px;font-size:17px;line-height:1.3}
+.bub.them{background:#fff;border:2px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.bub.me.wrong{background:#a3281a}
+.bub small{display:block;font-size:12px;opacity:.7;font-weight:700}
+.scene{display:flex;align-items:center;gap:10px;background:var(--board);color:#fff;border-radius:12px;padding:8px 12px;margin-bottom:10px}
+.scene span{font-size:28px}
+.scene b{font-family:var(--display);font-weight:800;font-size:22px}
+
+/* Ende */
+.score{font-family:var(--display);font-weight:900;font-size:104px;line-height:.9;color:var(--board);text-align:center;margin:8px 0 2px}
+.score-sub{text-align:center;color:var(--muted);margin-bottom:12px}
+.send{margin:12px 0 4px;padding:12px 14px;border-radius:12px;background:#efe5d3;font-weight:700;text-align:center}
+.send.ok{background:#d6f2e5;color:#12704a}
+.send.bad{background:#fde6e2;color:#a3281a}
+.stars{text-align:center;font-size:34px;letter-spacing:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="bar-in">
+  <a href="index.html">‹ Arena</a>
+  <span class="who hidden" id="who"><i id="who-color"></i><span id="who-name"></span></span>
+</div></header>
+
+<main>
+  <div class="head" id="head">
+    <div class="ic" id="head-ic">🎮</div>
+    <div><small id="head-sub">Plöner Liga</small><h1 id="head-title">A1-Spielhalle</h1></div>
+  </div>
+
+  <section id="scr-menu" class="hidden">
+    <p>Sechs Spiele zu Präsens, Artikeln, Akkusativ, Possessivpronomen, Modalverben und Einkaufen. Welche Spiele Punkte bringen, siehst du in der Arena.</p>
+    <div class="menu" id="menu"></div>
+  </section>
+
+  <section class="card" id="scr-loading"><h2>Einen Moment …</h2><p>Das Spiel wird geladen.</p></section>
+
+  <section class="card hidden" id="scr-code">
+    <h2>Dein Code</h2>
+    <p>Gib deinen Code ein, damit deine Punkte für dich und dein Team zählen.</p>
+    <form class="codein" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn" type="submit">Los</button></form>
+    <div class="err" id="code-err" role="alert"></div>
+    <button class="btn ghost wide" type="button" data-practice style="margin-top:6px">Ohne Code üben (keine Punkte)</button>
+  </section>
+
+  <section class="card hidden" id="scr-block">
+    <h2 id="block-title">Gesperrt</h2>
+    <p id="block-text"></p>
+    <div class="stack">
+      <button class="btn led" type="button" data-practice>Trotzdem üben (keine Punkte)</button>
+      <button class="btn ghost hidden" id="block-other" type="button">Anderen Code eingeben</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+
+  <section class="card hidden" id="scr-start">
+    <h2>So geht’s</h2>
+    <ul class="rules" id="start-rules"></ul>
+    <div class="best" id="start-best"></div>
+    <button class="btn led wide" id="start-btn" type="button">Spiel starten</button>
+  </section>
+
+  <section class="hidden" id="scr-game"><div id="area"></div></section>
+
+  <section class="card hidden" id="scr-end">
+    <div class="stars" id="end-stars"></div>
+    <div class="score" id="end-score">0</div>
+    <div class="score-sub" id="end-sub"></div>
+    <div class="send" id="send-msg"></div>
+    <div class="stack">
+      <button class="btn led" id="again" type="button">Nochmal spielen</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* ==========================================================
+   A1-SPIELHALLE – sechs Spiele, jedes ist eine Liga-Aufgabe
+   Aufruf: a1-spielhalle.html?spiel=artikel  (siehe SPIELE)
+   ========================================================== */
+const KURS_CODE = "ploen-jik";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function rnd(n){ try{ return Math.floor(crypto.getRandomValues(new Uint32Array(1))[0]/4294967296*n); }catch(e){ return Math.floor(Math.random()*n); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+let cleanup = [];
+function onCleanup(fn){ cleanup.push(fn); }
+function runCleanup(){ cleanup.splice(0).forEach(f=>{ try{ f(); }catch(e){} }); }
+
+/* ==========================================================
+   INHALTE
+   ========================================================== */
+// Präsens: [ich, du, er/sie, wir, ihr, sie/Sie]
+const VERBEN = {
+  lernen:["lerne","lernst","lernt","lernen","lernt","lernen"],
+  wohnen:["wohne","wohnst","wohnt","wohnen","wohnt","wohnen"],
+  trinken:["trinke","trinkst","trinkt","trinken","trinkt","trinken"],
+  kochen:["koche","kochst","kocht","kochen","kocht","kochen"],
+  spielen:["spiele","spielst","spielt","spielen","spielt","spielen"],
+  kommen:["komme","kommst","kommt","kommen","kommt","kommen"],
+  hören:["höre","hörst","hört","hören","hört","hören"],
+  arbeiten:["arbeite","arbeitest","arbeitet","arbeiten","arbeitet","arbeiten"],
+  frühstücken:["frühstücke","frühstückst","frühstückt","frühstücken","frühstückt","frühstücken"],
+  schlafen:["schlafe","schläfst","schläft","schlafen","schlaft","schlafen"],
+  fahren:["fahre","fährst","fährt","fahren","fahrt","fahren"],
+  lesen:["lese","liest","liest","lesen","lest","lesen"],
+  essen:["esse","isst","isst","essen","esst","essen"],
+  sprechen:["spreche","sprichst","spricht","sprechen","sprecht","sprechen"],
+  sein:["bin","bist","ist","sind","seid","sind"],
+  haben:["habe","hast","hat","haben","habt","haben"]
+};
+const SUBJEKTE = [[0,"ich"],[1,"du"],[2,"er"],[2,"Ali"],[2,"Sara"],[2,"Frau Weber"],[3,"wir"],[4,"ihr"],[5,"die Kinder"],[5,"Sie"]];
+const FALSCH = {lernen:"lernet",wohnen:"wohnet",trinken:"trinket",kochen:"kochet",spielen:"spielet",kommen:"kommet",hören:"höret",arbeiten:"arbeitst",frühstücken:"frühstücket",schlafen:"schlafst",fahren:"fahrst",lesen:"lesst",essen:"esst",sprechen:"sprechst",sein:"seist",haben:"habst"};
+
+const NOMEN = [
+  ["der","Apfel","🍎"],["der","Kaffee","☕"],["der","Tee","🍵"],["der","Saft","🧃"],["der","Käse","🧀"],["der","Reis","🍚"],
+  ["der","Hund","🐕"],["der","Stuhl","🪑"],["der","Schlüssel","🔑"],["der","Stift","✏️"],["der","Bus","🚌"],["der","Vater","👨"],
+  ["der","Bruder","👦"],["der","Ball","⚽"],["der","Computer","💻"],["der","Montag","📅"],["der","Kuchen","🍰"],["der","Fisch","🐟"],
+  ["die","Banane","🍌"],["die","Tomate","🍅"],["die","Milch","🥛"],["die","Cola","🥤"],["die","Lampe","💡"],["die","Tasche","👜"],
+  ["die","Zeitung","📰"],["die","Uhr","⏰"],["die","Blume","🌸"],["die","Katze","🐈"],["die","Mutter","👩"],["die","Pizza","🍕"],
+  ["die","Flasche","🍾"],["die","Brille","👓"],["die","Gitarre","🎸"],["die","Schwester","👩‍🦰"],["die","Rechnung","🧾"],["die","Wohnung","🏢"],
+  ["das","Buch","📖"],["das","Brot","🍞"],["das","Brötchen","🥐"],["das","Ei","🥚"],["das","Wasser","💧"],["das","Handy","📱"],
+  ["das","Auto","🚗"],["das","Fenster","🪟"],["das","Mädchen","👧"],["das","Haus","🏠"],["das","Fahrrad","🚲"],["das","Kind","🧒"],
+  ["das","Eis","🍦"],["das","Bett","🛏️"],["das","Kilo","⚖️"],["das","Foto","📷"]
+];
+const TIPPS_ARTIKEL = {Mädchen:"-chen → immer das", Zeitung:"-ung → immer die", Rechnung:"-ung → immer die", Wohnung:"-ung → immer die", Montag:"Wochentage → der", Brötchen:"-chen → immer das"};
+
+const EINKAUF = [
+  {s:"Ich kaufe ___ Apfel.", e:"🍎", o:["einen","eine","ein"], a:"einen", t:"der Apfel → einen Apfel"},
+  {s:"Ich brauche ___ Tasche.", e:"👜", o:["einen","eine","ein"], a:"eine", t:"die Tasche → eine Tasche"},
+  {s:"Wir kaufen ___ Brot.", e:"🍞", o:["einen","eine","ein"], a:"ein", t:"das Brot → ein Brot"},
+  {s:"Er möchte ___ Saft.", e:"🧃", o:["einen","eine","ein"], a:"einen", t:"der Saft → einen Saft"},
+  {s:"Ich nehme ___ Banane.", e:"🍌", o:["einen","eine","ein"], a:"eine", t:"die Banane → eine Banane"},
+  {s:"Sara kauft ___ Ei.", e:"🥚", o:["einen","eine","ein"], a:"ein", t:"das Ei → ein Ei"},
+  {s:"Du brauchst ___ Stift.", e:"✏️", o:["einen","eine","ein"], a:"einen", t:"der Stift → einen Stift"},
+  {s:"Wir bestellen ___ Pizza.", e:"🍕", o:["einen","eine","ein"], a:"eine", t:"die Pizza → eine Pizza"},
+  {s:"Ich habe ___ Handy.", e:"📱", o:["einen","eine","ein"], a:"ein", t:"das Handy → ein Handy"},
+  {s:"Ich habe ___ Hund.", e:"🐕", o:["keinen","keine","kein"], a:"keinen", t:"der Hund → keinen Hund"},
+  {s:"Wir haben ___ Milch mehr.", e:"🥛", o:["keinen","keine","kein"], a:"keine", t:"die Milch → keine Milch"},
+  {s:"Ali hat ___ Auto.", e:"🚗", o:["keinen","keine","kein"], a:"kein", t:"das Auto → kein Auto"},
+  {s:"___ Käse ist lecker.", e:"🧀", o:["Der","Den","Das"], a:"Der", t:"Achtung: Der Käse ist hier Subjekt → der"},
+  {s:"Ich sehe ___ Bus.", e:"🚌", o:["den","der","das"], a:"den", t:"sehen + Akkusativ: der Bus → den Bus"}
+];
+
+const MEMORY = [
+  {a:["👤","ich","der Vater"], b:"mein Vater"},
+  {a:["👤","ich","die Tasche"], b:"meine Tasche"},
+  {a:["👉","du","der Stift"], b:"dein Stift"},
+  {a:["👨","Ali","die Katze"], b:"seine Katze"},
+  {a:["👩","Sara","der Bruder"], b:"ihr Bruder"},
+  {a:["👨‍👩‍👧","wir","die Eltern"], b:"unsere Eltern"},
+  {a:["🧑‍🤝‍🧑","ihr","das Auto"], b:"euer Auto"},
+  {a:["🎩","Sie (formell)","das Handy"], b:"Ihr Handy"}
+];
+
+const SAETZE = [
+  {w:["ich","kann","gut","kochen"], a:["ich kann gut kochen"], p:"."},
+  {w:["wir","müssen","heute","Deutsch","lernen"], a:["wir müssen heute Deutsch lernen","heute müssen wir Deutsch lernen"], p:"."},
+  {w:["möchtest","du","einen","Kaffee","trinken"], a:["möchtest du einen Kaffee trinken"], p:"?"},
+  {w:["er","will","am","Wochenende","Fußball","spielen"], a:["er will am Wochenende Fußball spielen","am Wochenende will er Fußball spielen"], p:"."},
+  {w:["hier","darf","man","nicht","parken"], a:["hier darf man nicht parken","man darf hier nicht parken"], p:"."},
+  {w:["kannst","du","mir","helfen"], a:["kannst du mir helfen"], p:"?"},
+  {w:["morgens","trinke","ich","Tee"], a:["morgens trinke ich Tee","ich trinke morgens Tee"], p:"."},
+  {w:["ich","besuche","meinen","Opa"], a:["ich besuche meinen Opa"], p:"."}
+];
+
+const CAFE = [
+  {ort:"☕", titel:"Im Café", wer:"Kellnerin", steps:[
+    {q:"Hallo! Was möchten Sie trinken?", o:["Einen Kaffee, bitte.","Ein Kaffee, bitte.","Eine Kaffee, bitte."]},
+    {q:"Gern. Möchten Sie auch etwas essen?", o:["Ja, ich nehme ein Brötchen.","Ja, ich nehme einen Brötchen.","Ja, ich nehme eine Brötchen."]},
+    {q:"Sonst noch etwas?", o:["Nein, danke. Das ist alles.","Nein, bitte. Das ist alles.","Ja, danke. Das ist nichts."]},
+    {q:"(Du willst den Preis wissen.)", o:["Was kostet der Kaffee?","Was kostet den Kaffee?","Was kosten der Kaffee?"], ask:true},
+    {q:"Der Kaffee kostet 2,80 Euro.", o:["Ich möchte bitte bezahlen.","Ich möchte bitte bestellen.","Ich möchte bitte kosten."]}
+  ]},
+  {ort:"🛒", titel:"Im Supermarkt", wer:"Verkäufer", steps:[
+    {q:"Guten Tag! Was brauchen Sie?", o:["Ich brauche eine Flasche Wasser.","Ich brauche einen Flasche Wasser.","Ich brauche ein Flasche Wasser."]},
+    {q:"Noch etwas?", o:["Ja, ein Kilo Tomaten, bitte.","Ja, einen Kilo Tomaten, bitte.","Ja, eine Kilo Tomaten, bitte."]},
+    {q:"Möchten Sie auch Käse?", o:["Nein, danke. Ich möchte keinen Käse.","Nein, danke. Ich möchte kein Käse.","Nein, danke. Ich möchte keine Käse."]},
+    {q:"Das macht 4,20 Euro.", o:["Hier, bitte.","Das ist alles, danke.","Ich möchte bitte bestellen."]}
+  ]},
+  {ort:"📱", titel:"Nachricht von Mina", wer:"Mina", steps:[
+    {q:"Hey! Möchtest du heute ins Café kommen?", o:["Nein, ich kann nicht. Ich muss arbeiten.","Nein, ich kann nicht. Ich arbeiten muss.","Nein, ich nicht kann. Ich muss arbeiten."]},
+    {q:"Schade! Kannst du am Samstag kommen?", o:["Ja, am Samstag habe ich Zeit.","Ja, am Samstag ich habe Zeit.","Ja, ich am Samstag habe Zeit."]},
+    {q:"Super! Was trinkst du gern?", o:["Ich trinke gern eine Cola.","Ich trinke gern einen Cola.","Ich trinken gern eine Cola."]}
+  ]}
+];
+
+/* ==========================================================
+   SPIELE
+   ========================================================== */
+const SPIELE = {
+  verben:  {key:"a1-verb-sprint",     nr:1, icon:"⚡", title:"Verb-Sprint",     thema:"Präsens",               color:"#E4412F", run:spielVerben,
+    text:"60 Sekunden: Wähle so schnell wie möglich die richtige Verbform.",
+    rules:["Du siehst eine Person und ein Verb.","Tippe auf die richtige Form.","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","15 richtige Antworten = volle Punktzahl."]},
+  artikel: {key:"a1-artikel-blitz",   nr:2, icon:"🎯", title:"Artikel-Blitz",   thema:"der, die, das",         color:"#1F6FD1", run:spielArtikel,
+    text:"45 Sekunden: der, die oder das? Sammle eine Serie!",
+    rules:["Du siehst ein Wort mit Bild.","Tippe auf der, die oder das.","Du hast 45 Sekunden. Fehler kosten einen Punkt.","18 richtige Antworten = volle Punktzahl."]},
+  einkauf: {key:"a1-einkaufswagen",   nr:3, icon:"🛒", title:"Einkaufswagen",   thema:"Akkusativ",             color:"#1E9E6A", run:spielEinkauf,
+    text:"Pack den Wagen: einen, eine oder ein? Achtung vor Fallen!",
+    rules:["Lies den Satz und schau auf das Bild.","Wähle den richtigen Artikel.","14 Sätze. Pass auf: Nicht jeder Satz braucht den Akkusativ!"]},
+  memory:  {key:"a1-familien-memory", nr:4, icon:"🃏", title:"Familien-Memory", thema:"Possessivpronomen",     color:"#7B4BC9", run:spielMemory,
+    text:"Finde die Paare: ich + der Vater = mein Vater.",
+    rules:["Decke zwei Karten auf.","Passen Person + Wort und das Possessivpronomen zusammen, bleiben sie offen.","Je weniger Züge, desto mehr Punkte."]},
+  saetze:  {key:"a1-satz-baustelle",  nr:5, icon:"🧱", title:"Satz-Baustelle",  thema:"Modalverben & Satzbau", color:"#E9800E", run:spielSaetze,
+    text:"Bau richtige Sätze aus Wörtern. Wo steht das Verb?",
+    rules:["Tippe die Wörter in der richtigen Reihenfolge an.","Tippe ein Wort in der Zeile an, um es zurückzulegen.","Richtig beim 1. Versuch = 1 Punkt, beim 2. Versuch = ½ Punkt."]},
+  cafe:    {key:"a1-cafe-kiel",       nr:6, icon:"☕", title:"Café Kiel",       thema:"Einkaufen & Bestellen", color:"#0E9FB0", run:spielCafe,
+    text:"Bestellen, einkaufen, verabreden: Wähle die richtige Antwort.",
+    rules:["Du bist im Café, im Supermarkt und schreibst mit Mina.","Wähle immer die richtige Antwort.","12 Antworten. Jede richtige Antwort zählt."]}
+};
+const PARAM = new URLSearchParams(location.search).get("spiel");
+const SPIEL = SPIELE[PARAM] || null;
+
+/* Hilfsbausteine */
+function hud(extra){ return `<div class="hud">${extra}</div>`; }
+function makeTimer(seconds, onTick, onEnd){
+  const t0=Date.now(); let stopped=false;
+  const id=setInterval(()=>{
+    const left=Math.max(0, seconds*1000-(Date.now()-t0));
+    onTick(left/1000, left/(seconds*1000));
+    if(left<=0){ clearInterval(id); if(!stopped){ stopped=true; onEnd(); } }
+  },100);
+  const stop=()=>{ stopped=true; clearInterval(id); };
+  onCleanup(stop);
+  return stop;
+}
+function flash(stage, ok){ const f=stage.querySelector(".flash"); if(!f) return; f.className="flash "+(ok?"ok":"bad"); setTimeout(()=>f.className="flash",220); }
+
+/* 1 · Verb-Sprint */
+function spielVerben(area, finish){
+  const ZIEL=15, ZEIT=60;
+  let richtig=0, falsch=0, locked=false, cur=null;
+  area.innerHTML = hud(`<span class="pill">✓<b id="v-ok">0</b></span><span class="pill">✗<b id="v-bad">0</b></span><div class="grow timer" id="v-timer"><i style="width:100%"></i></div><span class="pill"><b id="v-sec">${ZEIT}</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="prompt" id="v-prompt"></div><div class="opts three" id="v-opts"></div><div class="tip" id="v-tip"></div></div>`;
+  const verbs=Object.keys(VERBEN);
+  let last="";
+  function neu(){
+    let v, s, key;
+    do{ v=verbs[rnd(verbs.length)]; s=SUBJEKTE[rnd(SUBJEKTE.length)]; key=v+s[1]; }while(key===last);
+    last=key;
+    const forms=VERBEN[v], ok=forms[s[0]];
+    const pool=[...new Set(forms.filter(f=>f!==ok))];
+    const wrong=shuffle(pool).slice(0,2);
+    if(wrong.length<2) wrong.push(FALSCH[v]);
+    cur={ok, v, s:s[1]};
+    $("#v-prompt").innerHTML=`<span class="big pop">${esc(s[1].charAt(0).toUpperCase()+s[1].slice(1))} <span class="gap">&nbsp;</span></span><span class="hint">(${esc(v)})</span>`;
+    $("#v-opts").innerHTML=shuffle([ok,...wrong]).map(o=>`<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("");
+    locked=false;
+  }
+  $("#v-opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const ok=b.dataset.o===cur.ok;
+    const stage=area.querySelector(".stage");
+    if(ok){ richtig++; b.classList.add("right"); $("#v-tip").className="tip ok"; $("#v-tip").textContent=`${cur.s} ${cur.ok}`; }
+    else { falsch++; b.classList.add("wrong"); area.querySelector(`.opt[data-o="${CSS.escape(cur.ok)}"]`).classList.add("right"); $("#v-tip").className="tip bad"; $("#v-tip").textContent=`${cur.s} ${cur.ok}`; }
+    flash(stage, ok);
+    $("#v-ok").textContent=richtig; $("#v-bad").textContent=falsch;
+    setTimeout(neu, ok?350:900);
+  });
+  neu();
+  makeTimer(ZEIT, (sec, frac)=>{ const t=$("#v-timer"); if(!t) return; t.firstElementChild.style.width=(frac*100)+"%"; t.classList.toggle("low", sec<10); $("#v-sec").textContent=Math.ceil(sec); },
+    ()=>{ locked=true; const netto=Math.max(0, richtig-falsch*0.5); finish(Math.min(1, netto/ZIEL), `${richtig} richtig, ${falsch} falsch`); });
+}
+
+/* 2 · Artikel-Blitz */
+function spielArtikel(area, finish){
+  const ZIEL=18, ZEIT=45;
+  let richtig=0, falsch=0, serie=0, best=0, locked=false, cur=null, order=shuffle(NOMEN), i=0;
+  area.innerHTML = hud(`<span class="pill">✓<b id="a-ok">0</b></span><span class="pill">🔥<b id="a-serie">0</b></span><div class="grow timer" id="a-timer"><i style="width:100%"></i></div><span class="pill"><b id="a-sec">${ZEIT}</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="prompt" id="a-prompt"></div><div class="opts three"><button class="opt der" data-o="der">der</button><button class="opt die" data-o="die">die</button><button class="opt das" data-o="das">das</button></div><div class="tip" id="a-tip"></div></div>`;
+  function neu(){
+    if(i>=order.length){ order=shuffle(NOMEN); i=0; }
+    cur=order[i++];
+    $("#a-prompt").innerHTML=`<span class="emo pop">${cur[2]}</span><span class="big pop">${esc(cur[1])}</span>`;
+    area.querySelectorAll(".opt").forEach(b=>b.classList.remove("right","wrong"));
+    locked=false;
+  }
+  area.querySelector(".opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const ok=b.dataset.o===cur[0];
+    const tip=$("#a-tip");
+    if(ok){ richtig++; serie++; best=Math.max(best,serie); b.classList.add("right"); tip.className="tip ok"; tip.textContent=serie>=5?`${serie}er-Serie! 🔥`:`${cur[0]} ${cur[1]}`; }
+    else { falsch++; serie=0; b.classList.add("wrong"); area.querySelector(`.opt[data-o="${cur[0]}"]`).classList.add("right"); tip.className="tip bad"; tip.textContent=`${cur[0]} ${cur[1]}${TIPPS_ARTIKEL[cur[1]]?" – "+TIPPS_ARTIKEL[cur[1]]:""}`; area.querySelector(".stage").classList.add("shake"); setTimeout(()=>area.querySelector(".stage")&&area.querySelector(".stage").classList.remove("shake"),260); }
+    flash(area.querySelector(".stage"), ok);
+    $("#a-ok").textContent=richtig; $("#a-serie").textContent=serie;
+    setTimeout(neu, ok?300:1100);
+  });
+  neu();
+  makeTimer(ZEIT, (sec, frac)=>{ const t=$("#a-timer"); if(!t) return; t.firstElementChild.style.width=(frac*100)+"%"; t.classList.toggle("low", sec<10); $("#a-sec").textContent=Math.ceil(sec); },
+    ()=>{ locked=true; finish(Math.min(1, Math.max(0, richtig-falsch)/ZIEL), `${richtig} richtig, ${falsch} falsch, beste Serie: ${best}`); });
+}
+
+/* 3 · Einkaufswagen */
+function spielEinkauf(area, finish){
+  const items=shuffle(EINKAUF.slice(0,12)).concat(shuffle(EINKAUF.slice(12)));
+  // Fallen nicht immer am Ende: an zufälliger Stelle einmischen
+  const list=shuffle(items.slice(0,12)); items.slice(12).forEach(x=>list.splice(3+rnd(9),0,x));
+  let n=0, richtig=0, locked=false;
+  const korb={einen:[],eine:[],ein:[]};
+  area.innerHTML = hud(`<span class="pill">Satz<b id="e-n">1</b>/${list.length}</span><span class="grow"></span><span class="pill">✓<b id="e-ok">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="prompt" id="e-prompt"></div><div class="opts three" id="e-opts"></div><div class="tip" id="e-tip"></div>
+       <div class="baskets"><div class="basket"><b>einen / keinen</b><div id="k-einen"></div></div><div class="basket"><b>eine / keine</b><div id="k-eine"></div></div><div class="basket"><b>ein / kein</b><div id="k-ein"></div></div></div></div>`;
+  function show(){
+    const it=list[n];
+    $("#e-n").textContent=n+1;
+    $("#e-prompt").innerHTML=`<span class="emo pop">${it.e}</span><span class="big pop" style="font-size:clamp(28px,7.5vw,40px)">${esc(it.s).replace("___",'<span class="gap">&nbsp;</span>')}</span>`;
+    $("#e-opts").innerHTML=shuffle(it.o).map(o=>`<button class="opt" data-o="${esc(o)}">${esc(o)}</button>`).join("");
+    $("#e-tip").textContent=""; locked=false;
+  }
+  $("#e-opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const it=list[n]; const ok=b.dataset.o===it.a;
+    if(ok){ richtig++; b.classList.add("right"); }
+    else { b.classList.add("wrong"); area.querySelector(`#e-opts .opt[data-o="${CSS.escape(it.a)}"]`).classList.add("right"); }
+    const tip=$("#e-tip"); tip.className="tip "+(ok?"ok":"bad"); tip.textContent=ok?it.s.replace("___",it.a):it.t;
+    flash(area.querySelector(".stage"), ok);
+    const k=it.a.toLowerCase().replace(/^k/,"");
+    if(ok && korb[k]){ korb[k].push(it.e); $("#k-"+k).textContent=korb[k].join(""); }
+    $("#e-ok").textContent=richtig;
+    setTimeout(()=>{ n++; n<list.length ? show() : finish(richtig/list.length, `${richtig} von ${list.length} Sätzen richtig`); }, ok?700:1700);
+  });
+  show();
+}
+
+/* 4 · Familien-Memory */
+function spielMemory(area, finish){
+  const cards=shuffle(MEMORY.flatMap((m,i)=>[{id:i,t:"a",m},{id:i,t:"b",m}]));
+  let open=[], done=0, zuege=0, locked=false, t0=Date.now();
+  area.innerHTML = hud(`<span class="pill">Züge<b id="m-z">0</b></span><span class="pill">Paare<b id="m-p">0</b>/${MEMORY.length}</span><span class="grow"></span><span class="pill"><b id="m-t">0</b> s</span>`)
+    + `<div class="stage"><div class="mem" id="mem">${cards.map((c,i)=>`<button class="mc" data-i="${i}" aria-label="Karte ${i+1}"><span class="in"><span class="f">?</span>${c.t==="a"
+        ?`<span class="b"><span class="e">${c.m.a[0]}</span>${esc(c.m.a[1])}<br>+ ${esc(c.m.a[2])}</span>`
+        :`<span class="b p"><span class="e">🔗</span>${esc(c.m.b)}</span>`}</span></button>`).join("")}</div><div class="tip" id="m-tip"></div></div>`;
+  const tick=setInterval(()=>{ const el=$("#m-t"); if(el) el.textContent=Math.floor((Date.now()-t0)/1000); },500);
+  onCleanup(()=>clearInterval(tick));
+  $("#mem").addEventListener("click", e=>{
+    const b=e.target.closest(".mc"); if(!b||locked||b.classList.contains("open")||b.classList.contains("done")) return;
+    b.classList.add("open"); open.push(b);
+    if(open.length<2) return;
+    zuege++; $("#m-z").textContent=zuege; locked=true;
+    const [x,y]=open.map(o=>cards[Number(o.dataset.i)]);
+    const tip=$("#m-tip");
+    if(x.id===y.id && x.t!==y.t){
+      open.forEach(o=>{ o.classList.remove("open"); o.classList.add("done"); });
+      done++; $("#m-p").textContent=done; tip.className="tip ok"; tip.textContent=`${x.m.a[1]} + ${x.m.a[2]} → ${x.m.b}`;
+      open=[]; locked=false;
+      if(done===MEMORY.length){ clearInterval(tick); const zeit=Math.floor((Date.now()-t0)/1000);
+        setTimeout(()=>finish(Math.max(0.3, Math.min(1, 1-(zuege-12)/16)), `${zuege} Züge in ${zeit} Sekunden`), 900); }
+    } else {
+      tip.className="tip"; tip.textContent="Kein Paar – merk dir die Karten!";
+      setTimeout(()=>{ open.forEach(o=>o.classList.remove("open")); open=[]; locked=false; }, 950);
+    }
+  });
+}
+
+/* 5 · Satz-Baustelle */
+function spielSaetze(area, finish){
+  const list=shuffle(SAETZE);
+  let n=0, punkte=0, versuch=1, chosen=[], tiles=[];
+  const norm=s=>s.toLowerCase().replace(/[.,?!]/g,"").replace(/\s+/g," ").trim();
+  const nice=(words,p)=>{ const s=words.join(" "); return s.charAt(0).toUpperCase()+s.slice(1)+p; };
+  area.innerHTML = hud(`<span class="pill">Satz<b id="s-n">1</b>/${list.length}</span><span class="grow"></span><span class="pill">Punkte<b id="s-p">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="line" id="s-line"></div><div class="pool" id="s-pool"></div>
+       <div class="stack" style="grid-template-columns:1fr 2fr;margin-top:0"><button class="btn ghost" id="s-reset" type="button">Neu legen</button><button class="btn led" id="s-check" type="button" disabled>Prüfen</button></div>
+       <div class="tip" id="s-tip"></div></div>`;
+  function show(){
+    const it=list[n]; chosen=[]; versuch=1;
+    tiles=shuffle(it.w.map((w,i)=>({w,i})));
+    if(tiles.map(t=>t.w).join(" ")===it.a[0] && tiles.length>2) tiles.push(tiles.shift());
+    $("#s-n").textContent=n+1; $("#s-tip").textContent="";
+    $("#s-line").className="line";
+    draw();
+  }
+  function draw(){
+    const it=list[n];
+    $("#s-line").innerHTML=chosen.map((t,k)=>`<button class="tile-w" data-k="${k}">${esc(t.w)}</button>`).join("")+(chosen.length===it.w.length?`<b style="font-size:22px">${it.p}</b>`:"");
+    $("#s-pool").innerHTML=tiles.map((t,k)=>`<button class="tile-w ${chosen.includes(t)?"used":""}" data-t="${k}">${esc(t.w)}</button>`).join("");
+    $("#s-check").disabled=chosen.length!==it.w.length;
+  }
+  area.addEventListener("click", e=>{
+    const t=e.target.closest(".tile-w"); if(!t) return;
+    if($("#s-line").classList.contains("ok")) return;
+    $("#s-line").className="line"; 
+    if(t.dataset.t!==undefined){ const tile=tiles[Number(t.dataset.t)]; if(!chosen.includes(tile)) chosen.push(tile); }
+    else if(t.dataset.k!==undefined){ chosen.splice(Number(t.dataset.k),1); }
+    draw();
+  });
+  $("#s-reset").addEventListener("click", ()=>{ if($("#s-line").classList.contains("ok")) return; chosen=[]; $("#s-line").className="line"; draw(); });
+  $("#s-check").addEventListener("click", ()=>{
+    const it=list[n]; const words=chosen.map(t=>t.w);
+    const ok=it.a.some(a=>norm(a)===norm(words.join(" ")));
+    const tip=$("#s-tip"); const stage=area.querySelector(".stage");
+    flash(stage, ok);
+    if(ok){
+      const p=versuch===1?1:0.5; punkte+=p; $("#s-p").textContent=String(punkte).replace(".",",");
+      $("#s-line").className="line ok"; tip.className="tip ok"; tip.textContent=`${nice(words,it.p)}  +${String(p).replace(".",",")}`;
+      $("#s-check").disabled=true;
+      setTimeout(next, 1100);
+    } else if(versuch===1){
+      versuch=2; $("#s-line").className="line bad"; tip.className="tip bad";
+      const posVerb = it.p==="?" && !/^(was|wo|wie|wann)$/i.test(it.w[0]) ? "Frage ohne Fragewort: Das Verb steht am Anfang." : "Tipp: Das konjugierte Verb steht auf Position 2, das zweite Verb am Ende.";
+      tip.textContent="Noch nicht. "+posVerb;
+    } else {
+      $("#s-line").className="line bad"; tip.className="tip bad"; tip.textContent=`Richtig ist: ${nice(it.a[0].split(" "), it.p)}`;
+      $("#s-check").disabled=true;
+      setTimeout(next, 2200);
+    }
+  });
+  function next(){ n++; if(n<list.length) show(); else finish(punkte/list.length, `${String(punkte).replace(".",",")} von ${list.length} Punkten`); }
+  show();
+}
+
+/* 6 · Café Kiel */
+async function spielCafe(area, finish){
+  const total=CAFE.reduce((a,s)=>a+s.steps.length,0);
+  let richtig=0, nr=0, alive=true;
+  onCleanup(()=>{ alive=false; });
+  area.innerHTML = hud(`<span class="pill">Antwort<b id="c-n">1</b>/${total}</span><span class="grow"></span><span class="pill">✓<b id="c-ok">0</b></span>`)
+    + `<div class="stage"><div class="scene" id="c-scene"></div><div class="chat" id="c-chat" aria-live="polite"></div><div class="opts" id="c-opts" style="margin-top:10px"></div></div>`;
+  const chat=$("#c-chat");
+  const say=(txt, cls, who)=>{ const d=document.createElement("div"); d.className="bub "+cls+" pop"; d.innerHTML=(who?`<small>${esc(who)}</small>`:"")+esc(txt); chat.appendChild(d); chat.scrollTop=chat.scrollHeight; return d; };
+  for(const sz of CAFE){
+    if(!alive) return;
+    $("#c-scene").innerHTML=`<span>${sz.ort}</span><b>${esc(sz.titel)}</b>`;
+    chat.innerHTML="";
+    for(const st of sz.steps){
+      if(!alive) return;
+      nr++; $("#c-n").textContent=nr;
+      await sleep(350);
+      if(st.ask) say(st.q, "them", "Du denkst"); else say(st.q, "them", sz.wer);
+      const pick=await new Promise(res=>{
+        $("#c-opts").innerHTML=shuffle(st.o).map(o=>`<button class="opt txt" data-o="${esc(o)}">${esc(o)}</button>`).join("");
+        $("#c-opts").onclick=e=>{ const b=e.target.closest(".opt"); if(b){ $("#c-opts").onclick=null; res(b); } };
+      });
+      const ok=pick.dataset.o===st.o[0];
+      pick.classList.add(ok?"right":"wrong");
+      if(!ok) $("#c-opts").querySelector(`.opt[data-o="${CSS.escape(st.o[0])}"]`).classList.add("right");
+      if(ok) richtig++;
+      $("#c-ok").textContent=richtig;
+      await sleep(ok?500:1500);
+      $("#c-opts").innerHTML="";
+      if(!ok) say(pick.dataset.o, "me wrong");
+      say(st.o[0], "me", ok?"":"richtig wäre");
+    }
+    await sleep(900);
+  }
+  if(alive) finish(richtig/total, `${richtig} von ${total} Antworten richtig`);
+}
+
+/* ==========================================================
+   LIGA-ANSCHLUSS (wie in der Vorlage, erweitert um Übungsmodus)
+   ========================================================== */
+const Liga = (() => {
+  const cfg = {
+    apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+    authDomain: "lern-deutsch-arash.firebaseapp.com",
+    databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "lern-deutsch-arash",
+    storageBucket: "lern-deutsch-arash.firebasestorage.app",
+    messagingSenderId: "845503292114",
+    appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+  };
+  const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+  const BASE = `jugendliga/${KURS}`;
+  const CODE_KEY = `liga_code_${KURS}`;
+  const screens = ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"];
+  let db=null, ctx=null, kennung=null, onReady=null;
+
+  function show(id){ screens.forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+  function block(title, text, allowOther){ $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  function getMe(){ try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); return c&&c.code?c:null; }catch(e){ return null; } }
+  const once = path => db.ref(`${BASE}/${path}`).once("value").then(s=>s.val());
+  const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+
+  function practice(max){ ctx={practice:true, max:max||10, best:null}; if(onReady) onReady(ctx); }
+
+  async function check(){
+    show("scr-loading");
+    if(!db){ block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); return; }
+    const me=getMe();
+    if(!me){ show("scr-code"); return; }
+    try{
+      const [c, pub] = await Promise.all([once(`codes/${me.code}`), once("public")]);
+      if(!c || !c.pid){ localStorage.removeItem(CODE_KEY); $("#code-err").textContent="Dein gespeicherter Code gilt nicht mehr."; show("scr-code"); return; }
+      const me2={code:me.code, pid:c.pid, name:c.name||""};
+      localStorage.setItem(CODE_KEY, JSON.stringify(me2));
+      const team = pub && pub.roster ? arr(pub.teams).find(t=>t.id===pub.roster[c.pid]) || null : null;
+      if(team||me2.name){ $("#who").classList.remove("hidden"); $("#who-name").textContent=[me2.name, team&&team.name].filter(Boolean).join(" – "); $("#who-color").style.background=team?team.color:"transparent"; }
+      const task = pub && pub.tasks ? pub.tasks[kennung] : null;
+      if(!pub || !pub.round){ block("Gerade keine Runde", "Die Liga macht gerade Pause. Du kannst trotzdem üben.", false); return; }
+      if(!task){ block("Noch nicht in der Liga", "Dieses Spiel bringt gerade keine Punkte. Du kannst trotzdem üben.", false); return; }
+      if(!task.open){ block(task.status==="fertig"?"Aufgabe beendet":"Noch gesperrt", task.status==="fertig"?"Diese Aufgabe ist schon abgeschlossen. Üben geht aber immer.":"Diese Aufgabe ist noch nicht freigeschaltet. Üben geht aber schon.", false); return; }
+      const a=task.assign||{};
+      const mine = a.alle || (a.players&&a.players[c.pid]) || (team && a.teams && a.teams[team.id]);
+      if(!mine){ block("Nicht für dich", "Dieses Spiel bringt gerade nur einem anderen Team Punkte. Schau in der Arena nach deinen Aufgaben – üben kannst du hier trotzdem.", true); return; }
+      const best = await once(`live/${pub.round.id}/${c.pid}/${kennung}`);
+      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, best:(best===null||best===undefined)?null:Number(best)};
+      if(onReady) onReady(ctx);
+    }catch(e){ console.warn(e); block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); }
+  }
+
+  async function senden(points){
+    if(!ctx || ctx.practice) return {ok:true, practice:true};
+    const p=Math.max(0, Math.min(ctx.max, Math.round(Number(points)||0)));
+    const k=kennung, pid=ctx.me.pid, r=ctx.round;
+    const ts=firebase.database.ServerValue.TIMESTAMP;
+    const work=(async()=>{
+      try{ await db.ref(`${BASE}/tries/${r}/${pid}/${k}`).push({code:ctx.me.code, points:p, ts}); }catch(e){ console.warn("Versuch", e); }
+      if(ctx.best!==null && p<=ctx.best) return {ok:true, better:false, points:p, best:ctx.best};
+      await db.ref(`${BASE}/proof/${r}/${pid}/${k}`).set({code:ctx.me.code, points:p, ts});
+      await db.ref(`${BASE}/live/${r}/${pid}/${k}`).set(p);
+      ctx.best=p;
+      return {ok:true, better:true, points:p, best:p};
+    })().catch(e=>{ console.warn(e); return {ok:false}; });
+    const res=await Promise.race([work, sleep(9000).then(()=>"slow")]);
+    return res==="slow" ? {ok:false, slow:true, later:work} : res;
+  }
+  function nachricht(res){
+    if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht für die Liga."};
+    if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte für dich und dein Team gespeichert!`};
+    if(res.ok) return {cls:"", text:`Dein bestes Ergebnis bleibt ${res.best} Punkte. Versuch es nochmal!`};
+    if(res.slow) return {cls:"", text:"Du bist gerade offline. Lass die Seite offen – die Punkte werden gesendet, sobald Internet da ist."};
+    return {cls:"bad", text:"Die Punkte konnten nicht gespeichert werden. Zeig diese Seite deiner Lehrkraft."};
+  }
+  function start(key, cb){
+    kennung=key; onReady=cb;
+    $("#code-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const code=$("#code-in").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+      if(code.length<4){ $("#code-err").textContent="Der Code hat mindestens 4 Zeichen."; return; }
+      if(!db){ $("#code-err").textContent="Keine Verbindung."; return; }
+      $("#code-err").textContent="Prüfe …";
+      try{
+        const c=await once(`codes/${code}`);
+        if(!c||!c.pid){ $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+        localStorage.setItem(CODE_KEY, JSON.stringify({code, pid:c.pid, name:c.name||""}));
+        $("#code-err").textContent=""; check();
+      }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
+    });
+    document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", ()=>practice(10)));
+    $("#block-other").addEventListener("click", ()=>{ localStorage.removeItem(CODE_KEY); $("#who").classList.add("hidden"); $("#code-in").value=""; show("scr-code"); });
+    try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database(); } }catch(e){ db=null; }
+    check();
+  }
+  return {start, senden, nachricht, show, get ctx(){ return ctx; }};
+})();
+
+/* ==========================================================
+   ABLAUF
+   ========================================================== */
+function kopf(g){
+  document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
+  $("#head-ic").textContent=g?g.icon:"🎮";
+  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1";
+  $("#head-title").textContent=g?g.title:"A1-Spielhalle";
+  document.title=`${g?g.title:"A1-Spielhalle"} – Plöner Liga`;
+}
+function startScreen(){
+  const c=Liga.ctx;
+  $("#start-rules").innerHTML=SPIEL.rules.map(r=>`<li>${esc(r)}</li>`).join("");
+  $("#start-best").textContent = c.practice ? "Übungsmodus – ohne Punkte."
+    : c.best===null ? `Du kannst bis zu ${c.max} Punkte holen.` : `Dein bestes Ergebnis: ${c.best} von ${c.max}. Nur ein besseres Ergebnis zählt.`;
+  Liga.show("scr-start");
+}
+function spielen(){
+  if(!Liga.ctx) return;
+  runCleanup();
+  const area=document.createElement("div"); $("#area").replaceChildren(area);
+  Liga.show("scr-game");
+  let fertig=false;
+  SPIEL.run(area, async (ratio, zeile)=>{
+    if(fertig) return; fertig=true; runCleanup();
+    const c=Liga.ctx; const punkte=Math.round(Math.max(0,Math.min(1,ratio))*c.max);
+    $("#end-score").textContent=punkte;
+    $("#end-sub").textContent=`von ${c.max} Punkten – ${zeile}`;
+    $("#end-stars").textContent = ratio>=0.9?"⭐⭐⭐":ratio>=0.6?"⭐⭐":ratio>=0.3?"⭐":"💪";
+    const msg=$("#send-msg"); msg.className="send"; msg.textContent=c.practice?"":"Punkte werden gesendet …";
+    Liga.show("scr-end");
+    const res=await Liga.senden(punkte);
+    const n=Liga.nachricht(res); msg.className="send "+n.cls; msg.textContent=n.text;
+    if(res.slow && res.later) res.later.then(r=>{ const m=Liga.nachricht(r); msg.className="send "+m.cls; msg.textContent=m.text; });
+  });
+}
+
+if(!SPIEL){
+  kopf(null);
+  $("#menu").innerHTML=Object.entries(SPIELE).map(([p,g])=>`<a class="tile" href="?spiel=${p}">
+    <div class="tile-top" style="background-color:${g.color}"><span>${g.icon}</span><b>${esc(g.title)}</b></div>
+    <p><b style="color:var(--ink)">${esc(g.thema)}</b><br>${esc(g.text)}</p></a>`).join("");
+  Liga.show("scr-menu");
+} else {
+  kopf(SPIEL);
+  $("#start-btn").addEventListener("click", spielen);
+  $("#again").addEventListener("click", startScreen);
+  Liga.start(SPIEL.key, startScreen);
+}
+</script>
+</body>
+</html>

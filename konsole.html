@@ -910,7 +910,8 @@ function vAufgaben(){
     :`<div class="empty"><b>Noch keine Aufgaben</b>Leg oben die erste Aufgabe an. Sie erscheint dann sofort in der Arena.</div>`}
   </div>`;
   return `<div class="sec-head"><h2>Aufgaben</h2></div>
-  <p class="lead">Aufgaben, die du hier anlegst, erscheinen automatisch in der Arena. Für eine neue Aufgabe lädst du nur noch die Aufgabendatei auf GitHub hoch – die index.html bleibt, wie sie ist.</p>
+  <div class="row" style="margin-bottom:12px"><p class="lead" style="margin:0;flex:1;min-width:260px">Aufgaben, die du hier anlegst, erscheinen automatisch in der Arena. Für eine neue Aufgabe lädst du nur noch die Aufgabendatei auf GitHub hoch – die index.html bleibt, wie sie ist.</p>
+    <button class="btn ghost sm" data-act="task-pack">Aufgaben-Paket laden</button></div>
   <div class="grid2" style="align-items:start">${form}${list}</div>`;
 }
 function saveTaskForm(){
@@ -1500,6 +1501,26 @@ document.addEventListener("click", e=>{
     }
 
     case "task-save": saveTaskForm(); break;
+    case "task-pack": {
+      const inp=document.createElement("input"); inp.type="file"; inp.accept=".json,application/json";
+      inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const rd=new FileReader();
+        rd.onload=()=>{ try{
+          const obj=JSON.parse(rd.result); const list=Array.isArray(obj)?obj:obj.tasks;
+          if(!Array.isArray(list)) throw new Error();
+          let add=0, skip=0;
+          list.forEach(x=>{
+            if(!x||!x.title) return;
+            const key=slugify(x.key||x.title);
+            if(state.tasks.some(t=>t.key===key)){ skip++; return; }
+            const t=makeTask(x.title);
+            Object.assign(t,{key, nr:Number(x.nr)||t.nr, icon:x.icon||t.icon, text:x.text||"", file:x.file||"", art:x.art==="Team"?"Team":"Einzel", max:Math.max(1,Number(x.max)||10), status:"bald"});
+            state.tasks.push(t); add++;
+          });
+          save(); toast(`${add} Aufgaben geladen${skip?`, ${skip} gab es schon`:""}. Status: „Bald“ – schalte sie frei, wenn es losgeht.`);
+        }catch(e){ toast("Diese Datei ist kein Aufgaben-Paket."); } };
+        rd.readAsText(f); };
+      inp.click(); break;
+    }
     case "task-cancel": editTaskId=null; render(); break;
     case "task-edit": editTaskId=el.dataset.id; render(); window.scrollTo({top:0,behavior:"smooth"}); break;
     case "del-task": {
