@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<title>Spielarena – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690;
+  --floor-line:#D5B57A;
+  --paint:rgba(255,255,255,.55);
+  --paper:#FFFBF3;
+  --ink:#1D1A17;
+  --muted:#6E6358;
+  --board:#14223B;
+  --board-2:#1C2E4D;
+  --led:#FFC53D;
+  --line:#E8DCC6;
+  --display:"Big Shoulders Display", "Arial Narrow", Impact, sans-serif;
+  --body:Calibri, Carlito, "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);
+  background-color:var(--floor);
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 71px, var(--floor-line) 71px 73px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 3px, transparent 3px 11px);
+}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+
+/* ---------- Kopf ---------- */
+.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:20}
+.bar .wrap{display:flex;align-items:center;gap:14px;min-height:56px}
+.logo{font-family:var(--display);font-weight:900;font-size:24px;letter-spacing:.01em;text-decoration:none}
+.nav{margin-left:auto;display:flex;gap:4px}
+.nav a{font-family:var(--display);font-weight:800;font-size:18px;text-decoration:none;color:#c9d2e3;padding:8px 10px;border-radius:8px}
+.nav a:hover{color:var(--led)}
+@media (max-width:560px){.nav a.opt{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;padding:34px 0 40px;overflow:hidden}
+.court{position:absolute;inset:0;pointer-events:none}
+.court svg{position:absolute;right:-160px;top:-40px;width:760px;height:760px}
+.hero-grid{position:relative;display:grid;grid-template-columns:1fr 1.1fr;gap:34px;align-items:center}
+@media (max-width:880px){.hero-grid{grid-template-columns:1fr;gap:22px}.court svg{right:-320px;top:-200px}}
+.title{font-family:var(--display);font-weight:900;line-height:.82;margin:0;color:var(--board);font-size:clamp(78px,17vw,168px);letter-spacing:-.01em}
+.title span{display:block;font-size:.36em;line-height:1;color:var(--ink);letter-spacing:.01em;margin-bottom:.12em}
+.intro{font-size:19px;max-width:40ch;margin:18px 0 0}
+.countdown{display:inline-flex;align-items:baseline;gap:10px;margin-top:20px;background:var(--paper);padding:10px 16px 10px 14px;border-radius:14px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.countdown b{font-family:var(--display);font-weight:900;font-size:44px;line-height:.9;color:var(--board);font-variant-numeric:tabular-nums}
+.countdown span{font-size:16px;color:var(--muted)}
+
+/* ---------- Anzeigetafel ---------- */
+.board{
+  background:var(--board);color:#fff;border-radius:22px;padding:20px 20px 16px;
+  background-image:radial-gradient(rgba(255,255,255,.055) 1.2px, transparent 1.3px);background-size:9px 9px;
+  box-shadow:0 0 0 6px var(--board-2), 0 18px 0 -6px rgba(0,0,0,.18);
+}
+.board-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.board-round{font-family:var(--display);font-weight:900;font-size:30px;line-height:1}
+.board-date{font-size:14px;color:#aebad0;margin-top:3px}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:14px;color:#aebad0;white-space:nowrap}
+.live i{width:9px;height:9px;border-radius:50%;background:#7c8698}
+.live.on i{background:#39d98a;animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(57,217,138,.6)}70%{box-shadow:0 0 0 9px rgba(57,217,138,0)}100%{box-shadow:0 0 0 0 rgba(57,217,138,0)}}
+.trow{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:11px 0;border-top:1px solid rgba(255,255,255,.1)}
+.trow:first-of-type{border-top:0}
+.rank{font-family:var(--display);font-weight:900;font-size:30px;color:#6f7f9c;text-align:center}
+.trow.first .rank{color:var(--led)}
+.tname{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;display:flex;align-items:center;gap:10px;min-width:0}
+.tname em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.swatch{width:14px;height:28px;border-radius:4px;flex:none;box-shadow:inset 0 -7px 0 rgba(0,0,0,.2)}
+.meter{height:7px;border-radius:4px;background:rgba(255,255,255,.1);margin-top:8px;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:4px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.pts{font-family:var(--display);font-weight:900;font-size:50px;line-height:.9;color:var(--led);font-variant-numeric:tabular-nums;text-align:right;min-width:80px;text-shadow:0 0 16px rgba(255,197,61,.35)}
+.pts.bump{animation:bump .8s ease}
+@keyframes bump{0%{transform:scale(1)}30%{transform:scale(1.25);color:#fff}100%{transform:scale(1)}}
+.board-msg{color:#c9d2e3;padding:18px 0 10px;font-size:17px}
+.board-msg b{display:block;font-family:var(--display);font-size:28px;color:#fff;margin-bottom:4px}
+.board-foot{font-size:13px;color:#8190ab;margin-top:8px;text-align:right}
+
+/* ---------- Abschnitte ---------- */
+section.block{padding:26px 0 34px}
+.block-head{display:flex;align-items:end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px;padding-bottom:10px;border-bottom:4px solid var(--paint)}
+h2{font-family:var(--display);font-weight:900;font-size:52px;line-height:.9;margin:0;color:var(--board)}
+.filters{display:flex;gap:6px;background:rgba(255,251,243,.7);padding:4px;border-radius:12px}
+.filters button{border:0;background:transparent;font:inherit;font-weight:700;font-size:16px;padding:7px 13px;border-radius:9px;cursor:pointer;color:var(--muted);min-height:40px}
+.filters button[aria-pressed="true"]{background:var(--board);color:#fff}
+
+/* ---------- Aufgaben ---------- */
+.tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.task{display:grid;grid-template-columns:86px 1fr;background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.14);text-decoration:none;color:inherit;min-height:150px}
+a.task:hover .task-no{background:var(--board-2)}
+a.task:hover .go{background:var(--led);color:var(--board)}
+.task-no{background:var(--board);color:var(--led);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 4px;transition:background .2s}
+.task-no b{font-family:var(--display);font-weight:900;font-size:56px;line-height:.85;font-variant-numeric:tabular-nums}
+.task-no span{font-size:26px;line-height:1}
+.task-body{padding:14px 16px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.task-body h3{font-family:var(--display);font-weight:800;font-size:28px;line-height:1;margin:0}
+.task-body p{margin:0;font-size:16px;color:var(--muted)}
+.task-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:auto;padding-top:6px}
+.tag{font-size:13px;font-weight:700;padding:3px 9px;border-radius:999px;background:#efe5d3;color:var(--muted)}
+.tag.neu{background:var(--led);color:var(--board)}
+.tag.offen{background:#d6f2e5;color:#12704a}
+.tag.team{background:#e3ebf8;color:#1a4f94}
+.go{margin-left:auto;font-weight:700;font-size:15px;padding:6px 12px;border-radius:9px;background:var(--board);color:#fff;transition:background .2s,color .2s}
+.task.locked{opacity:.62}
+.task.locked .task-no{background:#6d7587;color:#dfe3ea}
+.task.done .task-no{background:#39465f;color:#c9d2e3}
+.none{grid-column:1/-1;background:rgba(255,251,243,.7);border:3px dashed var(--paint);border-radius:16px;padding:24px;text-align:center;color:var(--muted)}
+
+/* ---------- Teams ---------- */
+.teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.jersey{background:var(--paper);border-radius:16px;overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.jersey-top{color:#fff;padding:14px 16px 12px;position:relative;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
+.jersey-top b{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;display:block}
+.jersey-top small{font-size:15px;opacity:.9}
+.jersey-top .big{position:absolute;right:14px;top:8px;font-family:var(--display);font-weight:900;font-size:46px;line-height:1;opacity:.95}
+.members{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px 14px}
+.members span{background:#fff;border:2px solid var(--line);border-radius:999px;padding:2px 10px;font-size:15px}
+
+/* ---------- Top 5 ---------- */
+.top5{background:var(--paper);border-radius:16px;box-shadow:0 3px 0 rgba(0,0,0,.14);padding:6px 16px;max-width:560px}
+.top5 li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:2px solid var(--line)}
+.top5 li:first-child{border-top:0}
+.top5 .r{font-family:var(--display);font-weight:900;font-size:28px;width:28px;text-align:center;color:var(--muted)}
+.top5 .n{flex:1;font-weight:700}
+.top5 .p{font-family:var(--display);font-weight:900;font-size:30px;font-variant-numeric:tabular-nums}
+.top5 ol{list-style:none;margin:0;padding:0}
+
+/* ---------- Regeln ---------- */
+.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;list-style:none;margin:0;padding:0}
+.rules li{background:rgba(255,251,243,.85);border-left:6px solid var(--board);border-radius:10px;padding:14px 16px;font-size:17px}
+.rules li b{display:block;font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05;color:var(--board);margin-bottom:4px}
+
+footer{background:var(--board);color:#aebad0;padding:22px 0 calc(22px + env(safe-area-inset-bottom));margin-top:24px;font-size:15px}
+footer .wrap{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between}
+footer b{color:#fff;font-family:var(--display);font-size:20px;font-weight:800}
+/* ---------- Mein Bereich ---------- */
+.me{margin-top:20px;background:var(--paper);border-radius:16px;padding:14px 16px;box-shadow:0 3px 0 rgba(0,0,0,.14);max-width:440px}
+.me h3{font-family:var(--display);font-weight:900;font-size:26px;line-height:1;margin:0 0 4px;color:var(--board)}
+.me p{margin:0 0 10px;font-size:15.5px;color:var(--muted)}
+.me form{display:flex;gap:8px}
+.me input{flex:1;min-width:0;min-height:48px;border:2px solid var(--line);border-radius:10px;padding:6px 12px;font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:var(--ink)}
+.me input:focus{outline:none;border-color:var(--board)}
+.me button,.btn{min-height:48px;border:0;border-radius:10px;padding:8px 16px;background:var(--board);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.me .err{color:#c23321;font-weight:700;font-size:15px;min-height:20px;margin-top:6px}
+.me-row{display:flex;align-items:center;gap:12px}
+.me-pts{margin-left:auto;text-align:right;font-family:var(--display);font-weight:900;font-size:46px;line-height:.85;color:var(--board)}
+.me-pts small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}
+.me .out{background:none;color:var(--muted);text-decoration:underline;padding:0;min-height:0;font-size:14px;margin-top:8px}
+.tag.mine{background:var(--board);color:var(--led)}
+.tag.score{background:#d6f2e5;color:#12704a}
+.hidden{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="logo" href="#top" id="logo">Plöner Liga</a>
+    <nav class="nav">
+      <a href="#tabelle" class="opt">Tabelle</a>
+      <a href="#aufgaben">Aufgaben</a>
+      <a href="#teams">Teams</a>
+      <a href="#regeln" class="opt">Regeln</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero" id="top">
+  <div class="court" aria-hidden="true">
+    <svg viewBox="0 0 760 760" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="5">
+      <circle cx="380" cy="380" r="150"/><circle cx="380" cy="380" r="12" fill="rgba(255,255,255,.5)"/>
+      <line x1="0" y1="380" x2="760" y2="380"/><rect x="40" y="40" width="680" height="680" rx="4"/>
+    </svg>
+  </div>
+  <div class="wrap hero-grid">
+    <div>
+      <h1 class="title"><span id="kursname">Jugendintegrationskurs Plön</span>Spielarena</h1>
+      <div class="countdown hidden" id="countdown"><b id="cd-num">0</b><span id="cd-txt">Tage bis zum Rundenende</span></div>
+      <div class="me" id="me"></div>
+    </div>
+    <div class="board" id="tabelle" aria-live="polite">
+      <div class="board-head">
+        <div><div class="board-round" id="b-round">Tabelle</div><div class="board-date" id="b-date"></div></div>
+        <span class="live" id="b-live"><i></i><span>verbinde …</span></span>
+      </div>
+      <div id="b-rows"><div class="board-msg"><b>Tabelle wird geladen</b>Einen Moment.</div></div>
+      <div class="board-foot" id="b-foot"></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="block" id="aufgaben">
+    <div class="wrap">
+      <div class="block-head">
+        <h2>Aufgaben</h2>
+        <div class="filters" role="group" aria-label="Aufgaben filtern" id="filters"></div>
+      </div>
+      <div class="tasks" id="tasks"><div class="none">Aufgaben werden geladen …</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="teams-block">
+    <div class="wrap">
+      <div class="block-head" id="teams"><h2>Die Teams</h2></div>
+      <div class="teams" id="team-cards"></div>
+    </div>
+  </section>
+
+  <section class="block hidden" id="top-block">
+    <div class="wrap">
+      <div class="block-head"><h2>Top 5</h2></div>
+      <div class="top5"><ol id="top5"></ol></div>
+    </div>
+  </section>
+
+  <section class="block" id="regeln">
+    <div class="wrap">
+      <div class="block-head"><h2>So läuft die Liga</h2></div>
+      <ul class="rules" id="rules"></ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><b id="foot-liga">Plöner Liga</b><span>Lern Deutsch mit Arash</span></div>
+</footer>
+
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<!-- GoatCounter -->
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* ==========================================================
+   SPIELARENA – die Aufgaben verwaltest du in der Konsole.
+   Diese Datei musst du nicht mehr ändern.
+   ========================================================== */
+const CONFIG = {
+  ligaName: "Plöner Liga",
+  kursName: "Jugendintegrationskurs Plön",
+  kursCode: "ploen-jik"            // muss in der Konsole gleich sein
+};
+
+/* Regeln – Text frei anpassen */
+const REGELN = [
+  { titel: "Dein Code", text: "Du bekommst einen Code. Damit meldest du dich an. Gib ihn niemandem." },
+  { titel: "Zufällige Teams", text: "Für jede Runde werden neue Teams ausgelost. Du spielst mit anderen Leuten zusammen." },
+  { titel: "Punkte sammeln", text: "Jede Aufgabe bringt Punkte – für dich und für dein Team. Dein bestes Ergebnis zählt." },
+  { titel: "Rundenende", text: "Am Ende der Runde gewinnt das Team mit den meisten Punkten." }
+];
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+  authDomain: "lern-deutsch-arash.firebaseapp.com",
+  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lern-deutsch-arash",
+  storageBucket: "lern-deutsch-arash.firebasestorage.app",
+  messagingSenderId: "845503292114",
+  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+};
+const FB_ROOT = "jugendliga";
+
+/* ---------- Hilfen ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmtDate = iso => { if(!iso) return ""; const [y,m,d]=String(iso).split("-"); return `${d}.${m}.${y}`; };
+const fmtScore = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1).replace(".",",");
+const KURS = String(CONFIG.kursCode||"kurs").trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+const CODE_KEY = `liga_code_${KURS}`;
+function daysLeft(end){ if(!end) return null; return Math.ceil((new Date(end+"T23:59:59") - new Date())/86400000); }
+const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+
+$("#logo").textContent = CONFIG.ligaName;
+$("#foot-liga").textContent = CONFIG.ligaName;
+$("#kursname").textContent = CONFIG.kursName;
+document.title = `Spielarena – ${CONFIG.ligaName}`;
+$("#rules").innerHTML = REGELN.map(r=>`<li><b>${esc(r.titel)}</b>${esc(r.text)}</li>`).join("");
+
+/* ---------- Zustand ---------- */
+let pub = null;          // öffentlicher Stand aus der Konsole
+let live = {};           // automatische Ergebnisse der laufenden Runde
+let me = null;           // {code, pid, name}
+let filter = "offen";
+let db = null, liveRef = null, liveRound = null, loaded = false;
+const lastScores = {};
+
+try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+
+/* ---------- Berechnung ---------- */
+function autoSum(pid){ const p=live[pid]; return p ? Object.values(p).reduce((a,v)=>a+(Number(v)||0),0) : 0; }
+function playerPoints(pid){ return ((pub&&pub.manualPlayer&&pub.manualPlayer[pid])||0) + autoSum(pid); }
+function teamRows(){
+  if(!pub || !pub.round) return [];
+  const roster=pub.roster||{};
+  return arr(pub.teams).map(t=>{
+    let sum=(pub.manualTeam&&pub.manualTeam[t.id])||0;
+    Object.keys(roster).forEach(pid=>{ if(roster[pid]===t.id) sum+=autoSum(pid); });
+    const score = pub.wertung==="schnitt" ? Math.round(sum/(t.size||1)*10)/10 : sum;
+    return Object.assign({}, t, {sum, score});
+  }).sort((a,b)=>b.score-a.score);
+}
+function assignedToMe(t){
+  if(!me || !pub) return false;
+  const a=t.assign||{};
+  if(a.alle) return true;
+  if(a.players && a.players[me.pid]) return true;
+  const team=pub.roster && pub.roster[me.pid];
+  return !!(team && a.teams && a.teams[team]);
+}
+function assignText(t){
+  const a=t.assign||{};
+  if(a.alle) return "Für alle";
+  const names=arr(pub.teams).filter(tm=>a.teams&&a.teams[tm.id]).map(tm=>tm.name);
+  const n=Object.keys(a.players||{}).length;
+  if(names.length && n) return `Für ${names.join(", ")} und Spezialaufträge`;
+  if(names.length) return `Für ${names.join(", ")}`;
+  if(n) return "Spezialauftrag";
+  return "";
+}
+
+/* ---------- Mein Bereich ---------- */
+function renderMe(){
+  const box=$("#me");
+  if(!me){
+    box.innerHTML=`<h3>Mein Bereich</h3><p>Gib deinen Code ein. Dann siehst du deine Aufgaben und deine Punkte.</p>
+      <form id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" inputmode="text" autocapitalize="characters"><button type="submit">Los</button></form>
+      <div class="err" id="code-err" role="alert"></div>`;
+    $("#code-form").addEventListener("submit", e=>{ e.preventDefault(); login($("#code-in").value); });
+    return;
+  }
+  const team=pub&&pub.roster&&pub.teams ? arr(pub.teams).find(t=>t.id===pub.roster[me.pid]) : null;
+  const showPts=pub&&pub.showTable!==false;
+  box.innerHTML=`<div class="me-row">
+      ${team?`<span class="swatch" style="background:${esc(team.color)};height:44px;width:12px"></span>`:""}
+      <div><h3>Hallo${me.name?" "+esc(me.name):""}!</h3><p style="margin:0">${team?esc(team.name):"Noch in keinem Team"}</p></div>
+      ${showPts&&pub&&pub.round?`<div class="me-pts">${playerPoints(me.pid)}<small>deine Punkte</small></div>`:""}
+    </div>
+    <button class="out" id="code-out">Nicht du? Abmelden</button>`;
+  $("#code-out").addEventListener("click", ()=>{ me=null; localStorage.removeItem(CODE_KEY); filter="offen"; renderAll(); });
+}
+function login(raw){
+  const code=String(raw||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  const err=$("#code-err");
+  if(code.length<4){ err.textContent="Der Code hat mindestens 4 Zeichen."; return; }
+  if(!db){ err.textContent="Keine Verbindung. Bitte später nochmal."; return; }
+  err.textContent="Prüfe …";
+  db.ref(`${FB_ROOT}/${KURS}/codes/${code}`).once("value").then(s=>{
+    const v=s.val();
+    if(!v||!v.pid){ err.textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+    me={code, pid:v.pid, name:v.name||""};
+    localStorage.setItem(CODE_KEY, JSON.stringify(me));
+    filter="meine"; renderAll();
+  }).catch(()=>{ err.textContent="Keine Verbindung. Bitte später nochmal."; });
+}
+function recheckCode(){
+  if(!me||!db) return;
+  db.ref(`${FB_ROOT}/${KURS}/codes/${me.code}`).once("value").then(s=>{
+    const v=s.val();
+    if(!v||v.pid!==me.pid){ me=null; localStorage.removeItem(CODE_KEY); renderAll(); }
+    else if((v.name||"")!==me.name){ me.name=v.name||""; localStorage.setItem(CODE_KEY, JSON.stringify(me)); renderMe(); }
+  }).catch(()=>{});
+}
+
+/* ---------- Aufgaben ---------- */
+function renderFilters(){
+  const opts = me ? [["meine","Meine"],["offen","Alle offenen"],["fertig","Erledigt"]] : [["offen","Offen"],["alle","Alle"],["fertig","Erledigt"]];
+  if(!opts.some(o=>o[0]===filter)) filter=opts[0][0];
+  $("#filters").innerHTML=opts.map(([k,l])=>`<button data-f="${k}" aria-pressed="${filter===k}">${l}</button>`).join("");
+}
+$("#filters").addEventListener("click", e=>{ const b=e.target.closest("button[data-f]"); if(!b) return; filter=b.dataset.f; renderFilters(); renderTasks(); });
+function renderTasks(){
+  const box=$("#tasks");
+  if(!pub){ box.innerHTML=`<div class="none">${loaded?"Noch keine Aufgaben.":"Aufgaben werden geladen …"}</div>`; return; }
+  const all=Object.entries(pub.tasks||{}).map(([key,t])=>Object.assign({key},t)).sort((a,b)=>(b.nr||0)-(a.nr||0));
+  const list=all.filter(t=>{
+    const done=t.status==="fertig";
+    if(filter==="fertig") return done;
+    if(filter==="alle") return true;
+    if(filter==="meine") return !done && assignedToMe(t);
+    return !done;
+  });
+  if(!list.length){
+    const msg = filter==="fertig" ? "Noch keine Aufgabe erledigt."
+      : filter==="meine" ? "Gerade hast du keine offene Aufgabe. Schau bald wieder vorbei."
+      : "Gerade ist keine Aufgabe offen. Schau bald wieder vorbei.";
+    box.innerHTML=`<div class="none">${msg}</div>`; return;
+  }
+  box.innerHTML=list.map(t=>{
+    const mine=assignedToMe(t);
+    const locked=t.status==="bald" || (me && !mine && t.status!=="fertig");
+    const done=t.status==="fertig";
+    const best=me && live[me.pid] && live[me.pid][t.key]!==undefined ? live[me.pid][t.key] : null;
+    const tags=[
+      t.status==="neu"?`<span class="tag neu">Neu</span>`:"",
+      t.status==="bald"?`<span class="tag">🔒 Bald</span>`:"",
+      done?`<span class="tag">Erledigt</span>`:"",
+      me&&mine&&!done?`<span class="tag mine">Für dich</span>`:"",
+      !me&&assignText(t)?`<span class="tag">${esc(assignText(t))}</span>`:"",
+      me&&!mine?`<span class="tag">Für andere</span>`:"",
+      t.art?`<span class="tag ${t.art==="Team"?"team":""}">${esc(t.art)}</span>`:"",
+      best!==null?`<span class="tag score">Dein Ergebnis: ${best}/${t.max}</span>`:(t.max?`<span class="tag">bis ${t.max} Punkte</span>`:""),
+      t.due&&!done?`<span class="tag">bis ${fmtDate(t.due)}</span>`:""
+    ].join("");
+    const canOpen=!locked && t.file;
+    const inner=`<div class="task-no"><span>${esc(t.icon||"🎯")}</span><b>${esc(t.nr||"")}</b></div>
+      <div class="task-body"><h3>${esc(t.title)}</h3>${t.text?`<p>${esc(t.text)}</p>`:""}
+      <div class="task-meta">${tags}${canOpen?`<span class="go">${done?"Ansehen":best!==null?"Nochmal spielen":"Aufgabe öffnen"}</span>`:""}</div></div>`;
+    return canOpen ? `<a class="task ${done?"done":""}" href="${esc(t.file)}">${inner}</a>` : `<div class="task ${locked?"locked":""}" aria-disabled="true">${inner}</div>`;
+  }).join("");
+}
+
+/* ---------- Tabelle & Teams ---------- */
+function setLive(on, text){ const el=$("#b-live"); el.className="live"+(on?" on":""); el.querySelector("span").textContent=text; }
+function renderBoard(){
+  const rows=$("#b-rows");
+  if(!pub || !pub.round){
+    $("#b-round").textContent="Tabelle"; $("#b-date").textContent=""; $("#b-foot").textContent="";
+    rows.innerHTML=`<div class="board-msg"><b>${loaded?"Die Liga startet bald":"Tabelle wird geladen"}</b>${loaded?"Sobald die Teams ausgelost sind, siehst du hier den Punktestand.":"Einen Moment."}</div>`;
+    $("#countdown").classList.add("hidden");
+    $("#team-cards").innerHTML=`<div class="none">Die Teams werden bald ausgelost.</div>`;
+    $("#top-block").classList.add("hidden");
+    return;
+  }
+  if(pub.liga){ $("#logo").textContent=pub.liga; $("#foot-liga").textContent=pub.liga; }
+  if(pub.kurs) $("#kursname").textContent=pub.kurs;
+  $("#b-round").textContent=pub.round.name||"Runde";
+  $("#b-date").textContent=pub.round.start&&pub.round.end?`${fmtDate(pub.round.start)} bis ${fmtDate(pub.round.end)}`:"";
+  const teams=teamRows();
+  const show=pub.showTable!==false;
+  const myTeam=me&&pub.roster?pub.roster[me.pid]:null;
+  if(!show){
+    rows.innerHTML=`<div class="board-msg"><b>Der Punktestand ist gerade geheim</b>Bald wird aufgedeckt. Spielt weiter – jede Aufgabe zählt.</div>`;
+  } else {
+    const max=Math.max(1,...teams.map(t=>Math.abs(t.score)));
+    rows.innerHTML = teams.length ? teams.map((t,i)=>`<div class="trow ${i===0&&t.score>0?"first":""}">
+        <div class="rank">${i+1}</div>
+        <div><div class="tname"><span class="swatch" style="background:${esc(t.color)}"></span><em>${esc(t.name)}${t.id===myTeam?" ★":""}</em></div>
+        <div class="meter"><i data-w="${Math.max(0,t.score)/max*100}" style="background:${esc(t.color)}"></i></div></div>
+        <div class="pts" data-team="${esc(t.id)}">${fmtScore(t.score)}</div>
+      </div>`).join("") : `<div class="board-msg"><b>Noch keine Teams</b>Gleich geht es los.</div>`;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>rows.querySelectorAll(".meter i").forEach(i=>i.style.width=i.dataset.w+"%")));
+    teams.forEach(t=>{
+      const prev=lastScores[t.id];
+      if(prev!==undefined && prev!==t.score){ const el=rows.querySelector(`.pts[data-team="${CSS.escape(t.id)}"]`); if(el){ el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); } }
+      lastScores[t.id]=t.score;
+    });
+  }
+  $("#b-foot").textContent = show && pub.wertung==="schnitt" ? "Wertung: Punkte pro Kopf" : "";
+
+  const dl=daysLeft(pub.round.end); const cd=$("#countdown");
+  if(dl===null || dl<0) cd.classList.add("hidden");
+  else { cd.classList.remove("hidden");
+    if(dl===0){ $("#cd-num").textContent="Heute"; $("#cd-txt").textContent="endet die Runde"; }
+    else { $("#cd-num").textContent=dl; $("#cd-txt").textContent=dl===1?"Tag bis zum Rundenende":"Tage bis zum Rundenende"; } }
+
+  $("#team-cards").innerHTML = teams.map(t=>`<article class="jersey">
+      <div class="jersey-top" style="background-color:${esc(t.color)}">
+        <b>${esc(t.name)}${t.id===myTeam?" ★":""}</b><small>${t.size||0} Spieler:innen</small>
+        ${show?`<span class="big">${fmtScore(t.score)}</span>`:""}
+      </div>
+      ${(arr(t.members).length)?`<div class="members">${arr(t.members).map(m=>`<span>${esc(m)}</span>`).join("")}</div>`:""}
+    </article>`).join("") || `<div class="none">Noch keine Teams.</div>`;
+
+  const names=pub.names||{};
+  if(show && pub.showTop && Object.keys(names).length){
+    const colorOf=pid=>{ const t=arr(pub.teams).find(x=>x.id===(pub.roster||{})[pid]); return t?t.color:"#999"; };
+    const top=Object.keys(names).map(pid=>({pid,name:names[pid],points:playerPoints(pid)})).filter(x=>x.points>0).sort((a,b)=>b.points-a.points).slice(0,5);
+    if(top.length){
+      $("#top-block").classList.remove("hidden");
+      $("#top5").innerHTML=top.map((p,i)=>`<li><span class="r">${i+1}</span><span class="swatch" style="background:${esc(colorOf(p.pid))};height:22px;width:9px"></span><span class="n">${esc(p.name)}</span><span class="p">${p.points}</span></li>`).join("");
+    } else $("#top-block").classList.add("hidden");
+  } else $("#top-block").classList.add("hidden");
+}
+function renderAll(){ renderMe(); renderFilters(); renderTasks(); renderBoard(); }
+
+/* ---------- Firebase ---------- */
+renderAll();
+try{
+  if(!window.firebase) throw new Error("Firebase nicht geladen");
+  firebase.initializeApp(firebaseConfig);
+  db=firebase.database();
+  db.ref(".info/connected").on("value", s=>setLive(!!s.val(), s.val()?"live":"offline"));
+  db.ref(`${FB_ROOT}/${KURS}/public`).on("value", s=>{
+    pub=s.val(); loaded=true;
+    const rid=pub&&pub.round?pub.round.id:null;
+    if(rid!==liveRound){
+      if(liveRef) liveRef.off();
+      live={}; liveRound=rid; liveRef=null;
+      if(rid){ liveRef=db.ref(`${FB_ROOT}/${KURS}/live/${rid}`); liveRef.on("value", ls=>{ live=ls.val()||{}; renderAll(); }); }
+    }
+    renderAll();
+  }, err=>{ console.warn(err); loaded=true; $("#b-rows").innerHTML=`<div class="board-msg"><b>Tabelle nicht erreichbar</b>Bitte später noch einmal versuchen.</div>`; });
+  recheckCode();
+  setTimeout(()=>{ if(!loaded) $("#b-rows").innerHTML=`<div class="board-msg"><b>Keine Verbindung</b>Die Tabelle erscheint, sobald dein Handy online ist.</div>`; }, 8000);
+}catch(e){
+  console.warn(e); setLive(false,"offline");
+  $("#b-rows").innerHTML=`<div class="board-msg"><b>Keine Verbindung</b>Die Tabelle erscheint, sobald dein Handy online ist.</div>`;
+  $("#tasks").innerHTML=`<div class="none">Die Aufgaben erscheinen, sobald dein Handy online ist.</div>`;
+}
+</script>
+</body>
+</html>
