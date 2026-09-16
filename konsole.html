@@ -809,6 +809,7 @@ function vSpieler(){
   <div class="panel" style="margin-top:18px">
     ${list.length?`<div class="row" style="margin-bottom:10px">
         <button class="btn led sm" data-act="print-cards">Codekarten drucken</button>
+        <button class="btn ghost sm" data-act="print-guides">Anleitungen drucken (alle)</button>
         ${missing?`<button class="btn ghost sm" data-act="gen-codes">${missing} fehlende Codes erzeugen</button>`:""}
       </div>
       <div class="tbl-wrap"><table class="ptable">
@@ -821,6 +822,7 @@ function vSpieler(){
         <td>${t?`<span class="badge" style="background:${colorHex(t.color)}">${esc(t.name)}</span>`:`<span class="badge plain">kein Team</span>`}</td>
         <td style="text-align:right"><span class="num">${studentTotal(s.id)}</span></td>
         <td class="c-act"><label class="switch" title="aktiv"><input type="checkbox" data-act="s-active" data-sid="${s.id}" ${s.active!==false?"checked":""}><span class="small">aktiv</span></label>
+          <button class="icon-btn" title="Anleitung mit Code (z. B. für Abwesende)" aria-label="Anleitung für ${esc(s.name)}" data-act="guide" data-sid="${s.id}">📨</button>
           <button class="icon-btn" title="Löschen" aria-label="${esc(s.name)} löschen" data-act="del-student" data-sid="${s.id}">✕</button></td>
       </tr>`; }).join("")}</tbody></table></div>
       <p class="small" style="margin:12px 0 0">Codes: 4 bis 8 Zeichen, nur Buchstaben und Zahlen. Inaktive Personen können sich mit ihrem Code nicht mehr anmelden. Niveau A/B/C siehst nur du.</p>`
@@ -849,6 +851,80 @@ function printCards(){
   .k{font-family:"Big Shoulders Display","Arial Narrow",sans-serif;font-weight:900;font-size:40pt;letter-spacing:.12em;line-height:1.1}
   .u{font-size:9pt;color:#444;word-break:break-all}</style></head><body><div class="g">${cards}</div>
   <script>window.onload=function(){setTimeout(function(){window.print()},400)}<\/script></body></html>`);
+  w.document.close();
+}
+
+/* ----- Anleitung für TN (z. B. Abwesende) ----- */
+function guideText(s){
+  const r=activeRound(); const t=teamOf(r,s.id); const S=state.settings;
+  const url=S.arenaUrl||"(Adresse der Arena)";
+  return `Hallo ${s.name.split(/\s+/)[0]}! 👋
+
+Im Deutschkurs spielen wir die ${S.ligaName}. Du spielst Deutsch-Spiele und sammelst Punkte – für dich und für dein Team.${t?`
+
+Dein Team: ${t.name}`:""}
+Dein Code: ${s.code}
+
+So geht es:
+1. Öffne die Spielarena: ${url}
+2. Gib bei „Mein Bereich“ deinen Code ein.
+3. Unter „Aufgaben“ siehst du deine Spiele.
+4. Spiel die Spiele. Deine Punkte kommen sofort in die Tabelle.
+5. Du darfst jedes Spiel oft spielen. Dein bestes Ergebnis zählt.
+
+Wichtig: Gib deinen Code niemandem.
+Hast du eine Frage? Frag mich im Kurs.
+
+Bis bald!`;
+}
+function openGuide(sid){
+  const s=student(sid); if(!s) return;
+  if(!s.code){ toast("Diese Person hat noch keinen Code."); return; }
+  const txt=guideText(s);
+  confirmDlg(`Anleitung für ${esc(s.name)}`,
+    `${state.settings.arenaUrl?"":`<div class="notice">Trag unter „Sicherung &amp; Arena“ noch die Adresse der Arena ein – sonst fehlt der Link.</div>`}
+     <p class="small" style="margin:0 0 6px">Zum Verschicken per WhatsApp, SMS oder E-Mail:</p>
+     <textarea id="guide-txt" style="min-height:260px;font-size:15px">${esc(txt)}</textarea>
+     <div class="row" style="justify-content:flex-start;margin-top:8px"><button class="btn ghost sm" type="button" id="guide-print">Als Brief drucken</button></div>`,
+    "Text kopieren", ()=>copyText($("#guide-txt").value, "Anleitung kopiert – jetzt einfach einfügen und senden."), false, "Schließen");
+  setTimeout(()=>{ const b=$("#guide-print"); if(b) b.onclick=()=>printGuides([s]); },30);
+}
+function printGuides(list){
+  list=list.filter(s=>s.code);
+  if(!list.length){ toast("Keine Personen mit Code."); return; }
+  const w=window.open("","_blank");
+  if(!w){ toast("Pop-up blockiert – bitte für diese Seite erlauben."); return; }
+  const r=activeRound(); const S=state.settings; const url=S.arenaUrl||"";
+  const pages=list.map(s=>{ const t=teamOf(r,s.id); return `<section class="pg">
+    <div class="top" style="border-color:${t?colorHex(t.color):"#14223B"}"><div class="liga">${esc(S.ligaName)}</div><div class="kurs">${esc(S.kursName)}</div></div>
+    <h1>Hallo ${esc(s.name.split(/\s+/)[0])}!</h1>
+    <p class="lead">Im Deutschkurs spielen wir die ${esc(S.ligaName)}. Du spielst Deutsch-Spiele und sammelst Punkte – für dich und für dein Team.</p>
+    <div class="code"><div><small>Dein Code</small><b>${esc(s.code)}</b></div>${t?`<div class="team" style="background:${colorHex(t.color)}"><small>Dein Team</small><b>${esc(t.name)}</b></div>`:""}</div>
+    <ol class="steps">
+      <li><span>📱</span><div><b>Öffne die Spielarena.</b>${url?`<br><u>${esc(url)}</u>`:""}</div></li>
+      <li><span>🔑</span><div><b>Gib deinen Code ein.</b><br>Bei „Mein Bereich“.</div></li>
+      <li><span>🎯</span><div><b>Such deine Spiele.</b><br>Unter „Aufgaben“ → „Meine“.</div></li>
+      <li><span>🏆</span><div><b>Spiel und sammle Punkte.</b><br>Die Punkte kommen sofort in die Tabelle.</div></li>
+      <li><span>🔁</span><div><b>Spiel so oft du willst.</b><br>Dein bestes Ergebnis zählt.</div></li>
+    </ol>
+    <p class="warn">🤫 Gib deinen Code niemandem.</p>
+  </section>`; }).join("");
+  w.document.write(`<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><title>Anleitung – ${esc(S.ligaName)}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&display=swap" rel="stylesheet">
+  <style>@page{size:A4;margin:14mm}body{font-family:Calibri,Carlito,sans-serif;color:#1D1A17;margin:0}
+  .pg{page-break-after:always;max-width:175mm;margin:0 auto}.pg:last-child{page-break-after:auto}
+  .top{border-top:9mm solid #14223B;padding-top:3mm;display:flex;justify-content:space-between;align-items:baseline}
+  .liga{font-family:"Big Shoulders Display","Arial Narrow",sans-serif;font-weight:900;font-size:22pt}.kurs{color:#6E6358;font-size:11pt}
+  h1{font-family:"Big Shoulders Display","Arial Narrow",sans-serif;font-weight:900;font-size:44pt;margin:8mm 0 2mm;color:#14223B}
+  .lead{font-size:15pt;margin:0 0 6mm}
+  .code{display:flex;gap:5mm;margin-bottom:7mm}.code>div{border:2px dashed #999;border-radius:4mm;padding:4mm 6mm;flex:1}
+  .code small{display:block;font-size:11pt;color:#6E6358}.code b{font-family:"Big Shoulders Display","Arial Narrow",sans-serif;font-weight:900;font-size:40pt;letter-spacing:.12em}
+  .code .team{border:0;color:#fff}.code .team small{color:#fff}.code .team b{font-size:26pt;letter-spacing:0}
+  .steps{list-style:none;padding:0;margin:0;display:grid;gap:3.5mm}
+  .steps li{display:flex;gap:5mm;align-items:center;font-size:14pt;border-left:2mm solid #FFC53D;background:#FBF6EC;padding:3mm 5mm;border-radius:2mm}
+  .steps span{font-size:24pt}.steps u{word-break:break-all;font-size:12pt}
+  .warn{font-size:14pt;font-weight:700;margin-top:7mm}</style></head><body>${pages}
+  <script>window.onload=function(){setTimeout(function(){window.print()},500)}<\/script></body></html>`);
   w.document.close();
 }
 
@@ -1434,6 +1510,8 @@ document.addEventListener("click", e=>{
     }
     case "gen-codes": { const n=ensureCodes(); save(); toast(`${n} Codes erzeugt.`); break; }
     case "print-cards": printCards(); break;
+    case "print-guides": printGuides(state.students.filter(s=>s.active!==false).sort((a,b)=>a.name.localeCompare(b.name,"de"))); break;
+    case "guide": openGuide(el.dataset.sid); break;
     case "del-student": {
       const s=student(el.dataset.sid); if(!s) return;
       confirmDlg(`${esc(s.name)} löschen?`, `Die Person wird aus allen Teams und Zuteilungen entfernt, ihr Code gilt nicht mehr. <div class="notice">Tipp: Wer den Kurs verlässt, lieber auf „inaktiv“ stellen – dann bleibt die Statistik vollständig.</div>`, "Löschen", ()=>{

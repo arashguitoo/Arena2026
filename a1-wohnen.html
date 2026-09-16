@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<title>Wohnen-Spielhalle – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
+  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
+  --der:#1F6FD1; --die:#E4412F; --das:#1E9E6A;
+  --accent:#14223B;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* Kopf */
+.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:10}
+.bar-in{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;min-height:54px}
+.bar a{color:#c9d2e3;text-decoration:none;font-weight:700;font-size:15px}
+.bar .who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:15px;min-width:0}
+.bar .who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .who i{width:10px;height:22px;border-radius:3px;flex:none}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+
+/* Titel */
+.head{display:flex;align-items:center;gap:14px;margin:4px 0 16px}
+.head .ic{width:64px;height:64px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px;flex:none;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.head h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,11vw,62px);line-height:.88;margin:0;color:var(--board)}
+.head small{display:block;font-size:15px;color:var(--muted);font-family:var(--body);font-weight:700;letter-spacing:.02em;margin-bottom:2px}
+
+/* Karten & Knöpfe */
+.card{background:var(--paper);border-radius:18px;padding:20px 18px;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.card h2{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;margin:0 0 8px;color:var(--board)}
+.card p{margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 20px;border-radius:12px;border:0;background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn.led{background:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;color:var(--board);box-shadow:inset 0 0 0 2px var(--board)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:grid;gap:10px;margin-top:14px}
+.codein{display:flex;gap:8px;margin-top:12px}
+.codein input{flex:1;min-width:0;min-height:54px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:var(--ink)}
+.codein input:focus{outline:none;border-color:var(--board)}
+.err{color:var(--bad);font-weight:700;min-height:24px;margin-top:8px}
+.rules{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.rules li{background:#fff;border-radius:10px;padding:9px 12px;border-left:5px solid var(--accent);font-size:17px}
+.best{font-weight:700;color:var(--muted);font-size:16px;margin-bottom:12px}
+
+/* Menü */
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.tile{display:grid;grid-template-rows:auto 1fr;background:var(--paper);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.tile-top{padding:14px 14px 10px;color:#fff;display:flex;align-items:center;gap:10px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
+.tile-top span{font-size:30px}
+.tile-top b{font-family:var(--display);font-weight:900;font-size:26px;line-height:1}
+.tile p{margin:0;padding:10px 14px 14px;font-size:15.5px;color:var(--muted)}
+
+/* Spielfeld */
+.hud{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hud .pill{background:var(--board);color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px;white-space:nowrap}
+.hud .pill b{font-family:var(--display);font-size:22px;color:var(--led);margin-left:4px}
+.hud .grow{flex:1}
+.timer{height:12px;background:rgba(20,34,59,.15);border-radius:6px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .12s linear}
+.timer.low i{background:var(--bad)}
+.stage{background:var(--paper);border-radius:18px;padding:18px 16px 20px;box-shadow:0 3px 0 rgba(0,0,0,.14);position:relative;overflow:hidden}
+.prompt{text-align:center;margin:8px 0 18px}
+.prompt .emo{font-size:64px;line-height:1.1;display:block}
+.prompt .big{font-family:var(--display);font-weight:900;font-size:clamp(34px,9vw,48px);line-height:1.02;display:block}
+.prompt .hint{color:var(--muted);font-size:16px;display:block;margin-top:4px}
+.gap{display:inline-block;min-width:2.6em;border-bottom:4px solid var(--accent);color:var(--accent)}
+.opts{display:grid;gap:10px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{min-height:62px;border-radius:14px;border:3px solid var(--line);background:#fff;font-family:var(--display);font-weight:900;font-size:28px;cursor:pointer;color:var(--ink);padding:6px 8px;line-height:1.05;transition:transform .08s}
+.opt:active{transform:scale(.97)}
+.opt.txt{font-family:var(--body);font-weight:700;font-size:18px;text-align:left;padding:12px 14px}
+.opt.right{border-color:var(--ok);background:#d6f2e5}
+.opt.wrong{border-color:var(--bad);background:#fde6e2}
+.opt.der{border-color:var(--der);color:var(--der)} .opt.die{border-color:var(--die);color:var(--die)} .opt.das{border-color:var(--das);color:var(--das)}
+.flash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s}
+.flash.ok{background:rgba(30,158,106,.18);opacity:1}
+.flash.bad{background:rgba(228,65,47,.18);opacity:1}
+.tip{min-height:26px;text-align:center;font-weight:700;margin-top:12px;font-size:17px}
+.tip.bad{color:#a3281a} .tip.ok{color:#12704a}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .2s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake .25s}
+
+/* Einkaufswagen */
+.baskets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.basket{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:6px;text-align:center;min-height:64px}
+.basket b{display:block;font-size:13px;color:var(--muted)}
+.basket div{font-size:22px;line-height:1.2;word-break:break-all}
+
+/* Memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mc{aspect-ratio:3/4;border:0;border-radius:12px;cursor:pointer;position:relative;perspective:600px;background:transparent;padding:0}
+.mc .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.mc.open .in,.mc.done .in{transform:rotateY(180deg)}
+.mc .f,.mc .b{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center}
+.mc .f{background:var(--accent);color:rgba(255,255,255,.85);font-family:var(--display);font-weight:900;font-size:30px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
+.mc .b{background:#fff;border:3px solid var(--line);transform:rotateY(180deg);font-weight:700;font-size:clamp(12px,3.4vw,16px);line-height:1.15}
+.mc .b .e{font-size:clamp(20px,6vw,30px);line-height:1.1}
+.mc .b.p{background:#f4ecff;border-color:#c9b3ef}
+.mc.done .b{border-color:var(--ok);background:#d6f2e5}
+
+/* Satz-Baustelle */
+.line{min-height:64px;background:#fff;border:3px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.line.ok{border-style:solid;border-color:var(--ok);background:#d6f2e5}
+.line.bad{border-style:solid;border-color:var(--bad);background:#fde6e2}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;justify-content:center;min-height:52px}
+.tile-w{min-height:46px;padding:6px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:19px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.line .tile-w{background:var(--board)}
+.tile-w.used{visibility:hidden}
+
+/* Café */
+.chat{display:flex;flex-direction:column;gap:8px;min-height:220px;max-height:46vh;overflow-y:auto;padding:4px 2px 8px}
+.bub{max-width:82%;padding:9px 13px;border-radius:16px;font-size:17px;line-height:1.3}
+.bub.them{background:#fff;border:2px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.bub.me.wrong{background:#a3281a}
+.bub small{display:block;font-size:12px;opacity:.7;font-weight:700}
+.scene{display:flex;align-items:center;gap:10px;background:var(--board);color:#fff;border-radius:12px;padding:8px 12px;margin-bottom:10px}
+.scene span{font-size:28px}
+.scene b{font-family:var(--display);font-weight:800;font-size:22px}
+
+/* Ende */
+.score{font-family:var(--display);font-weight:900;font-size:104px;line-height:.9;color:var(--board);text-align:center;margin:8px 0 2px}
+.score-sub{text-align:center;color:var(--muted);margin-bottom:12px}
+.send{margin:12px 0 4px;padding:12px 14px;border-radius:12px;background:#efe5d3;font-weight:700;text-align:center}
+.send.ok{background:#d6f2e5;color:#12704a}
+.send.bad{background:#fde6e2;color:#a3281a}
+.stars{text-align:center;font-size:34px;letter-spacing:4px}
+/* ---------- Wohnen-Paket ---------- */
+.opts.two{grid-template-columns:1fr 1fr}
+.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.room{min-height:58px;border-radius:12px;border:3px solid var(--line);background:#fff;font-weight:700;font-size:16px;line-height:1.1;cursor:pointer;padding:6px 4px;color:var(--ink)}
+.room small{display:block;font-size:12px;color:var(--muted);font-weight:700}
+.room.right{border-color:var(--ok);background:#d6f2e5}
+.room.wrong{border-color:var(--bad);background:#fde6e2}
+.plan-head{font-family:var(--display);font-weight:800;font-size:22px;color:var(--board);margin-bottom:6px}
+.plan{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;background:var(--board);padding:6px;border-radius:12px;margin-bottom:6px}
+.pr{background:#fff;border-radius:8px;padding:6px 8px}
+.pr.out{background:#e3f4d9}
+.pr b{display:block;font-size:14px;color:var(--board)}
+.pr div{display:flex;flex-wrap:wrap;gap:2px 8px}
+.pr span{font-size:12.5px;color:var(--muted);display:inline-flex;align-items:center;gap:3px}
+.pr span i{font-style:normal;font-size:18px}
+.deck{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.kc{border-radius:12px;padding:10px 6px;text-align:center;color:#fff;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18);animation:deal .35s ease-out both}
+.kc i{display:block;font-style:normal;font-size:30px;line-height:1.2}
+.kc b{font-size:15px;line-height:1.1;display:block}
+.kc.k1{background:#7B4BC9}.kc.k2{background:#1F6FD1;animation-delay:.08s}.kc.k3{background:#E9800E;animation-delay:.16s}
+@keyframes deal{from{transform:translateY(-14px) rotate(-6deg);opacity:0}to{transform:none;opacity:1}}
+.line.people,.pool.people{gap:6px}
+.person{border:0;background:transparent;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:2px}
+.person i{font-style:normal;font-size:30px;line-height:1}
+.person span{background:#fff;border:2px solid var(--board);border-radius:6px;padding:3px 8px;font-weight:700;font-size:17px;margin-top:-2px;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.line .person span{background:var(--led)}
+.person.used{visibility:hidden}
+.punkt{font-size:26px;align-self:flex-end}
+.small-hint{color:var(--muted);font-size:15px;padding:0 6px}
+.sign{display:inline-flex;width:120px;height:120px;border-radius:50%;align-items:center;justify-content:center;position:relative;background:#fff;margin:0 auto 6px}
+.sign.no{border:12px solid #d62828}
+.sign.ok{border:12px solid #1F6FD1}
+.sign i{font-style:normal;font-size:54px}
+.sign.no::after{content:"";position:absolute;width:12px;height:118%;background:#d62828;transform:rotate(45deg);border-radius:6px}
+.teil{font-weight:700;color:var(--muted);font-size:15px;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.hausordnung{background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 14px;margin-bottom:6px;font-size:16px}
+.hausordnung b{font-family:var(--display);font-size:22px;color:var(--board)}
+.hausordnung ul{margin:6px 0 0;padding-left:20px}
+.hausordnung li{margin:3px 0}
+.ads{overflow-x:auto;margin-bottom:6px}
+.ads table{width:100%;border-collapse:collapse;font-size:15px;background:#fff;border-radius:12px;overflow:hidden}
+.ads th{vertical-align:top;padding:8px 5px;background:#f4ecdd;text-align:left;min-width:80px}
+.ads th i{font-style:normal;font-size:22px;display:block}
+.ads th b{display:block;font-size:14px;line-height:1.15}
+.ads th small{color:var(--muted);font-weight:400}
+.adk{display:inline-block;background:var(--board);color:var(--led);font-family:var(--display);font-weight:900;font-size:20px;border-radius:6px;padding:0 7px;float:right}
+.ads td{padding:6px;border-top:1px solid var(--line)}
+.ads td:first-child{color:var(--muted);font-weight:700}
+.ttabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.ttab{flex:1;min-width:76px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;font-size:12.5px;font-weight:700}
+.ttab i{font-style:normal;font-size:22px}
+.ttab.on{border-color:var(--accent);background:var(--accent);color:#fff}
+.tbox{background:#fff;border-radius:12px;padding:10px 14px;margin:6px 0;border-left:6px solid var(--accent)}
+.tbox b{font-size:17px}
+.tbox small{color:var(--muted);font-weight:400}
+.tbox p{margin:4px 0 0;font-size:17px;line-height:1.5}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="bar-in">
+  <a href="index.html">‹ Arena</a>
+  <span class="who hidden" id="who"><i id="who-color"></i><span id="who-name"></span></span>
+</div></header>
+
+<main>
+  <div class="head" id="head">
+    <div class="ic" id="head-ic">🎮</div>
+    <div><small id="head-sub">Plöner Liga</small><h1 id="head-title">Wohnen-Spielhalle</h1></div>
+  </div>
+
+  <section id="scr-menu" class="hidden">
+    <p id="menu-text"></p>
+    <div class="menu" id="menu"></div>
+  </section>
+
+  <section class="card" id="scr-loading"><h2>Einen Moment …</h2><p>Das Spiel wird geladen.</p></section>
+
+  <section class="card hidden" id="scr-code">
+    <h2>Dein Code</h2>
+    <p>Gib deinen Code ein, damit deine Punkte für dich und dein Team zählen.</p>
+    <form class="codein" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn" type="submit">Los</button></form>
+    <div class="err" id="code-err" role="alert"></div>
+    <button class="btn ghost wide" type="button" data-practice style="margin-top:6px">Ohne Code üben (keine Punkte)</button>
+  </section>
+
+  <section class="card hidden" id="scr-block">
+    <h2 id="block-title">Gesperrt</h2>
+    <p id="block-text"></p>
+    <div class="stack">
+      <button class="btn led" type="button" data-practice>Trotzdem üben (keine Punkte)</button>
+      <button class="btn ghost hidden" id="block-other" type="button">Anderen Code eingeben</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+
+  <section class="card hidden" id="scr-start">
+    <h2>So geht’s</h2>
+    <ul class="rules" id="start-rules"></ul>
+    <div class="best" id="start-best"></div>
+    <button class="btn led wide" id="start-btn" type="button">Spiel starten</button>
+  </section>
+
+  <section class="hidden" id="scr-game"><div id="area"></div></section>
+
+  <section class="card hidden" id="scr-end">
+    <div class="stars" id="end-stars"></div>
+    <div class="score" id="end-score">0</div>
+    <div class="score-sub" id="end-sub"></div>
+    <div class="send" id="send-msg"></div>
+    <div class="stack">
+      <button class="btn led" id="again" type="button">Nochmal spielen</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* ==========================================================
+   A1-SPIELHALLE – sechs Spiele, jedes ist eine Liga-Aufgabe
+   Aufruf: a1-spielhalle.html?spiel=artikel  (siehe SPIELE)
+   ========================================================== */
+const KURS_CODE = "ploen-jik";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function rnd(n){ try{ return Math.floor(crypto.getRandomValues(new Uint32Array(1))[0]/4294967296*n); }catch(e){ return Math.floor(Math.random()*n); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+let cleanup = [];
+function onCleanup(fn){ cleanup.push(fn); }
+function runCleanup(){ cleanup.splice(0).forEach(f=>{ try{ f(); }catch(e){} }); }
+
+/* ==========================================================
+   INHALTE – Wohnen (Zimmer, Möbel, es gibt, Gegensätze,
+   unser/euer/ihr, wollen, dürfen, Anzeigen, Lesetexte)
+   ========================================================== */
+const RAUM = {
+  kueche:{art:"die", name:"Küche", in:"in der Küche"},
+  bad:{art:"das", name:"Bad", in:"im Bad"},
+  schlaf:{art:"das", name:"Schlafzimmer", in:"im Schlafzimmer"},
+  wohn:{art:"das", name:"Wohnzimmer", in:"im Wohnzimmer"},
+  flur:{art:"der", name:"Flur", in:"im Flur"},
+  arbeit:{art:"das", name:"Arbeitszimmer", in:"im Arbeitszimmer"},
+  kinder:{art:"das", name:"Kinderzimmer", in:"im Kinderzimmer"},
+  balkon:{art:"der", name:"Balkon", in:"auf dem Balkon"},
+  keller:{art:"der", name:"Keller", in:"im Keller"},
+  garten:{art:"der", name:"Garten", in:"im Garten"}
+};
+const DING = {
+  herd:["der","Herd","🔥"], kuehlschrank:["der","Kühlschrank","🧊"], spuele:["die","Spüle","🚰"], kaffeemaschine:["die","Kaffeemaschine","☕"],
+  dusche:["die","Dusche","🚿"], toilette:["die","Toilette","🚽"], waschbecken:["das","Waschbecken","🧼"], badewanne:["die","Badewanne","🛁"],
+  bett:["das","Bett","🛏️"], kleiderschrank:["der","Kleiderschrank","👔"], lampe:["die","Lampe","💡"],
+  sofa:["das","Sofa","🛋️"], sessel:["der","Sessel","💺"], fernseher:["der","Fernseher","📺"], regal:["das","Regal","📚"],
+  garderobe:["die","Garderobe","🧥"], spiegel:["der","Spiegel","🪞"],
+  schreibtisch:["der","Schreibtisch","🖥️"], schreibtischstuhl:["der","Schreibtischstuhl","🪑"],
+  spielzeug:["das","Spielzeug","🧸"], kommode:["die","Kommode","🗄️"],
+  sonnenschirm:["der","Sonnenschirm","⛱️"], pflanze:["die","Pflanze","🪴"],
+  waschmaschine:["die","Waschmaschine","🧺"], fahrrad:["das","Fahrrad","🚲"], baum:["der","Baum","🌳"]
+};
+// Möbel-Umzug: Ding → passende Zimmer (das erste ist die Musterlösung)
+const UMZUG = [
+  ["herd",["kueche"]],["kuehlschrank",["kueche"]],["spuele",["kueche"]],["kaffeemaschine",["kueche","arbeit"]],
+  ["dusche",["bad"]],["toilette",["bad"]],["waschbecken",["bad"]],["badewanne",["bad"]],
+  ["bett",["schlaf","kinder"]],["kleiderschrank",["schlaf","kinder"]],
+  ["sofa",["wohn"]],["sessel",["wohn","arbeit"]],["fernseher",["wohn"]],
+  ["garderobe",["flur"]],["spiegel",["flur","bad","schlaf"]],
+  ["schreibtisch",["arbeit","kinder"]],["schreibtischstuhl",["arbeit","kinder"]],["regal",["arbeit","wohn","kinder"]],
+  ["spielzeug",["kinder"]],["kommode",["kinder","schlaf"]],
+  ["sonnenschirm",["balkon"]],["pflanze",["balkon","wohn"]],
+  ["waschmaschine",["keller","bad"]],["fahrrad",["keller"]]
+];
+const UMZUG_RAEUME = ["kueche","bad","schlaf","wohn","flur","arbeit","kinder","balkon","keller"];
+
+// Wohnungs-Check: mögliche Dinge je Zimmer
+const PLAN_DINGE = {
+  kueche:["herd","kuehlschrank","spuele","kaffeemaschine"], bad:["dusche","badewanne","waschmaschine","spiegel"],
+  wohn:["sofa","sessel","fernseher","regal"], schlaf:["bett","kleiderschrank","lampe"], kinder:["bett","kommode","regal"],
+  arbeit:["schreibtisch","regal","lampe"], flur:["garderobe","spiegel"], balkon:["sonnenschirm","pflanze"],
+  keller:["fahrrad","waschmaschine"], garten:["baum","sonnenschirm"]
+};
+const AKK = {der:"einen", die:"eine", das:"ein"};
+const KEIN = {der:"keinen", die:"keine", das:"kein"};
+
+const GEGENSATZ = [
+  [["✨","neu"],["🏚️","alt"]], [["🐘","groß"],["🐭","klein"]], [["☀️","hell"],["🌙","dunkel"]],
+  [["📢","laut"],["🤫","ruhig"]], [["💰","teuer"],["🏷️","billig"]], [["📱","modern"],["📻","unmodern"]],
+  [["🛣️","weit"],["📍","nah"]]
+];
+
+const KARTEN_NOMEN = [
+  ["m","Balkon","🌿"],["m","Garten","🌳"],["m","Keller","🪜"],["m","Flur","🚪"],
+  ["n","Bad","🛁"],["n","Wohnzimmer","🛋️"],["n","Haus","🏠"],
+  ["f","Küche","🍳"],["f","Wohnung","🏢"],["f","Waschmaschine","🧺"],["f","Heizung","♨️"],
+  ["p","Nachbarn","👨‍👩‍👧"]
+];
+const KARTEN_ADJ = [["groß","🐘"],["klein","🐭"],["neu","✨"],["alt","🏚️"],["hell","☀️"],["dunkel","🌙"],["laut","📢"],["ruhig","🤫"],["teuer","💰"],["billig","🏷️"],["modern","📱"],["schön","😍"]];
+const KARTEN_PERS = {
+  wir:{emo:"🙋‍♀️🙋", label:"wir", ctx:n=>`Deine Freundin fragt: „Wie ${n[0]==="p"?"sind":"ist"} ${n[0]==="m"||n[0]==="n"?"euer":"eure"} ${n[1]}?“ Du antwortest:`, art:{m:"Unser",n:"Unser",f:"Unsere",p:"Unsere"}, pre:""},
+  ihr:{emo:"👉👥", label:"ihr", ctx:()=>"Du sagst zu Tom und Lea:", art:{m:"Euer",n:"Euer",f:"Eure",p:"Eure"}, pre:""},
+  sie:{emo:"👫", label:"sie (Nina und Ali)", ctx:()=>"Du erzählst über Nina und Ali:", art:{m:"Ihr",n:"Ihr",f:"Ihre",p:"Ihre"}, pre:""},
+  Sie:{emo:"🎩", label:"Sie (formell)", ctx:()=>"Du sagst zu Frau Berger:", art:{m:"Ihr",n:"Ihr",f:"Ihre",p:"Ihre"}, pre:"Frau Berger, "}
+};
+
+const LEBENDE_SAETZE = [
+  {w:["Mina","will","nicht","im","Zentrum","wohnen"], a:["Mina will nicht im Zentrum wohnen"], p:"."},
+  {w:["wir","wollen","einen","Balkon","haben"], a:["wir wollen einen Balkon haben"], p:"."},
+  {w:["willst","du","in","Kiel","wohnen"], a:["willst du in Kiel wohnen"], p:"?"},
+  {w:["die","Familie","will","ein","Sofa","kaufen"], a:["die Familie will ein Sofa kaufen"], p:"."},
+  {w:["hier","darf","man","nicht","rauchen"], a:["hier darf man nicht rauchen","man darf hier nicht rauchen"], p:"."},
+  {w:["die","Kinder","dürfen","im","Garten","spielen"], a:["die Kinder dürfen im Garten spielen","im Garten dürfen die Kinder spielen"], p:"."},
+  {w:["dürfen","wir","auf","dem","Balkon","grillen"], a:["dürfen wir auf dem Balkon grillen"], p:"?"},
+  {w:["am","Wochenende","wollen","wir","die","Wohnung","putzen"], a:["am Wochenende wollen wir die Wohnung putzen","wir wollen am Wochenende die Wohnung putzen"], p:"."},
+  {w:["ihr","wollt","eine","Wohnung","mit","Garten"], a:["ihr wollt eine Wohnung mit Garten"], p:"."},
+  {w:["man","darf","keine","Party","machen"], a:["man darf keine Party machen"], p:"."}
+];
+const GESICHTER = ["🧑🏽","👩🏻","🧔🏾","👱‍♀️","👨🏼","👩🏾‍🦱","🧑🏻‍🦰","👳🏽‍♂️","🧕🏼","👦🏿"];
+
+const SCHILDER = [
+  {emo:"🚬", ok:false, o:["Hier darf man nicht rauchen.","Hier darf man rauchen.","Hier muss man rauchen."]},
+  {emo:"🅿️", ok:true,  o:["Hier darf man parken.","Hier darf man nicht parken.","Hier darf man kein parken."]},
+  {emo:"🍦", ok:false, o:["Hier darf man kein Eis essen.","Hier darf man nicht Eis essen.","Hier darf man Eis essen."]},
+  {emo:"🚲", ok:true,  o:["Hier darf man Fahrrad fahren.","Hier darf man nicht Fahrrad fahren.","Hier dürft man Fahrrad fahren."]},
+  {emo:"📱", ok:false, o:["Hier darf man nicht telefonieren.","Hier darf man telefonieren.","Hier dürfen man nicht telefonieren."]},
+  {emo:"🍖", ok:false, o:["Hier darf man nicht grillen.","Hier darf man grillen.","Hier darf man grillen nicht."]}
+];
+const DUERFEN = [
+  {q:"Wir ___ im Garten spielen.", o:["dürfen","darf","dürft"]},
+  {q:"Du ___ hier nicht parken.", o:["darfst","darf","dürfen"]},
+  {q:"___ ihr am Samstag eine Party machen?", o:["Dürft","Darfst","Dürfen"]}
+];
+const HAUSORDNUNG = {
+  titel:"Hausordnung – Seestraße 12, Plön",
+  regeln:[
+    "Von 22 bis 7 Uhr ist Ruhe. Bitte keine laute Musik.",
+    "Fahrräder dürfen im Keller stehen, aber nicht im Flur.",
+    "Auf dem Balkon darf man nicht grillen.",
+    "Hunde und Katzen sind erlaubt.",
+    "Die Kinder dürfen im Garten spielen.",
+    "Die Waschmaschine im Keller: Montag bis Samstag, 8 bis 20 Uhr."
+  ],
+  fragen:[
+    {q:"Darf man um 23 Uhr laut Musik hören?", a:"Nein"},
+    {q:"Dürfen Fahrräder im Flur stehen?", a:"Nein"},
+    {q:"Darf man eine Katze haben?", a:"Ja"},
+    {q:"Dürfen die Kinder im Garten spielen?", a:"Ja"},
+    {q:"Darf man am Sonntag die Waschmaschine benutzen?", a:"Nein"},
+    {q:"Darf man auf dem Balkon grillen?", a:"Nein"}
+  ]
+};
+
+const ANZEIGEN = {
+  A:{titel:"2-Zimmer-Wohnung am See", ort:"Plön", emo:"🌊", zimmer:"2", miete:"620 €", flaeche:"55 qm", etage:"1", extra:"Balkon"},
+  B:{titel:"Große 4-Zimmer-Wohnung", ort:"Kiel-Wik", emo:"🏡", zimmer:"4", miete:"1.290 €", flaeche:"98 qm", etage:"EG", extra:"Garten, Keller"},
+  C:{titel:"WG-Zimmer im Zentrum", ort:"Kiel", emo:"🏙️", zimmer:"1 (3er-WG)", miete:"410 €", flaeche:"16 qm", etage:"4", extra:"Parkplatz"}
+};
+const ANZEIGEN_FRAGEN = [
+  {q:"Die Wohnung hat einen Garten.", a:"B"},
+  {q:"Hier wohnt man mit anderen Leuten zusammen.", a:"C"},
+  {q:"Die Miete ist sechshundertzwanzig Euro.", a:"A"},
+  {q:"Die Wohnung ist im Erdgeschoss.", a:"B"},
+  {q:"Das Zimmer ist klein: nur sechzehn Quadratmeter.", a:"C"},
+  {q:"Die Wohnung hat einen Balkon.", a:"A"},
+  {q:"Die Miete ist eintausendzweihundertneunzig Euro.", a:"B"},
+  {q:"Das Zimmer ist in Etage 4.", a:"C"},
+  {q:"Die Wohnung hat zwei Zimmer.", a:"A"},
+  {q:"Es gibt einen Parkplatz.", a:"C"}
+];
+
+const TEXTE = {
+  samira:{emo:"👩🏽", name:"Samira", sub:"19, Kiel", text:"Ich wohne mit zwei Freundinnen in einer WG in Kiel. Jede hat ein Zimmer. Die Küche und das Bad benutzen wir zusammen. Die Miete ist nicht so teuer. Aber manchmal ist es laut, und wir streiten: Wer putzt heute?"},
+  rahimi:{emo:"👨‍👩‍👧‍👦", name:"Familie Rahimi", sub:"Plön", text:"Wir wohnen in Plön, in einem Haus mit Garten. Wir sind fünf Personen: meine Frau, ich und drei Kinder. Die Kinder spielen gern im Garten. Zum See ist es nicht weit. Aber der Bus zur Schule fährt nur einmal pro Stunde."},
+  petersen:{emo:"👴🏼", name:"Herr Petersen", sub:"68, Kiel", text:"Ich wohne allein in einer kleinen Wohnung im Zentrum. Sie hat nur zwei Zimmer, aber einen Balkon. Der Supermarkt und der Arzt sind in der Nähe. Ich brauche kein Auto. Meine Nachbarn sind sehr nett."},
+  jonas:{emo:"🧑🏻", name:"Jonas", sub:"24, bei Kiel", text:"Ich suche eine Wohnung in Kiel. Ich arbeite im Zentrum und will nicht so weit fahren. Aber die Wohnungen im Zentrum sind sehr teuer. Jetzt wohne ich noch bei meinen Eltern auf dem Land."}
+};
+const LESEN_FRAGEN = [
+  {t:"samira", q:"Samira wohnt allein.", a:"Falsch"},
+  {t:"samira", q:"In der WG benutzen alle die Küche.", a:"Richtig"},
+  {t:"rahimi", q:"Die Familie Rahimi hat einen Garten.", a:"Richtig"},
+  {t:"rahimi", q:"Der Bus zur Schule fährt sehr oft.", a:"Falsch"},
+  {t:"petersen", q:"Die Wohnung von Herrn Petersen ist groß.", a:"Falsch"},
+  {t:"petersen", q:"Herr Petersen braucht kein Auto.", a:"Richtig"},
+  {t:"jonas", q:"Jonas wohnt schon im Zentrum.", a:"Falsch"},
+  {t:"jonas", q:"Im Zentrum sind die Wohnungen teuer.", a:"Richtig"},
+  {wer:true, q:"„Ich wohne nicht allein, aber auch nicht mit meiner Familie.“", a:"samira"},
+  {wer:true, q:"„Unsere Kinder sind oft draußen.“", a:"rahimi"},
+  {wer:true, q:"„Ich finde meine Nachbarn super.“", a:"petersen"},
+  {wer:true, q:"„Ich wohne noch nicht in der Stadt.“", a:"jonas"}
+];
+
+/* ==========================================================
+   SPIELE
+   ========================================================== */
+const SPIELE = {
+  moebel:   {key:"l8-moebel-umzug",        nr:7,  icon:"🚚", title:"Möbel-Umzug",        thema:"Zimmer & Möbel",        color:"#E4412F", run:spielUmzug,
+    text:"60 Sekunden: Wohin kommt der Kühlschrank? Räum die Wohnung ein!",
+    rules:["Du siehst ein Möbelstück.","Tippe auf das richtige Zimmer.","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
+  check:    {key:"l8-wohnungs-check",      nr:8,  icon:"🔍", title:"Wohnungs-Check",     thema:"es gibt + einen / keinen", color:"#1F6FD1", run:spielCheck,
+    text:"Schau dir den Plan an: Gibt es einen Balkon? Oder keinen?",
+    rules:["Du siehst den Plan einer Wohnung.","Was gibt es – und was gibt es nicht?","Wähle: einen, eine, ein – oder keinen, keine, kein.","Nach 5 Fragen kommt eine neue Wohnung."]},
+  gegensatz:{key:"l8-gegensatz-memory",    nr:9,  icon:"🃏", title:"Gegensätze-Memory",  thema:"neu – alt, hell – dunkel", color:"#7B4BC9", run:spielGegensatz,
+    text:"Finde die Gegensätze: groß und klein, laut und ruhig …",
+    rules:["Decke zwei Karten auf.","Sind es Gegensätze (z. B. hell – dunkel), bleiben sie offen.","Je weniger Züge, desto mehr Punkte."]},
+  karten:   {key:"l8-kartenstapel",        nr:10, icon:"🎴", title:"Kartenstapel",       thema:"unser, euer, ihr",       color:"#E9800E", run:spielKarten,
+    text:"Drei Karten, ein Satz: Unsere Küche ist groß – oder eure?",
+    rules:["Du ziehst drei Karten: Person, Zimmer, Adjektiv.","Lies, wer spricht.","Wähle den richtigen Satz."]},
+  saetze:   {key:"l8-lebende-saetze",      nr:11, icon:"🙋", title:"Lebende Sätze",      thema:"wollen & dürfen",        color:"#1E9E6A", run:spielLebende,
+    text:"Stell die Leute mit ihren Schildern richtig auf!",
+    rules:["Jede Person hält ein Wort.","Tippe die Personen in der richtigen Reihenfolge an.","Denk an die Satzklammer: wollen/dürfen auf Position 2, das zweite Verb ans Ende.","1. Versuch = 1 Punkt, 2. Versuch = ½ Punkt."]},
+  schilder: {key:"l8-schilder-hausordnung",nr:12, icon:"🚫", title:"Schilder & Hausordnung", thema:"dürfen – erlaubt / verboten", color:"#0E9FB0", run:spielSchilder,
+    text:"Was darf man hier? Lies Schilder und eine echte Hausordnung.",
+    rules:["Teil 1: Schau auf das Schild. Welcher Satz passt?","Teil 2: Wähle die richtige Form von dürfen.","Teil 3: Lies die Hausordnung und antworte mit Ja oder Nein."]},
+  anzeigen: {key:"l8-anzeigen-detektiv",   nr:13, icon:"🏷️", title:"Anzeigen-Detektiv",  thema:"Wohnungsanzeigen & Zahlen", color:"#C2410C", run:spielAnzeigen,
+    text:"Drei Anzeigen, zehn Sätze: Welche Wohnung ist gemeint?",
+    rules:["Lies die drei Wohnungsanzeigen.","Lies den Satz.","Tippe auf A, B oder C."]},
+  lesen:    {key:"l8-lesedetektiv",        nr:14, icon:"📖", title:"Lesedetektiv",       thema:"Texte verstehen",        color:"#4D7C0F", run:spielLesen,
+    text:"Vier Menschen erzählen, wie sie wohnen. Richtig oder falsch?",
+    rules:["Lies die Texte von Samira, Familie Rahimi, Herrn Petersen und Jonas.","Du kannst die Texte immer wieder öffnen.","Antworte: Richtig oder Falsch? Und am Ende: Wer sagt das?"]}
+};
+const PARAM = new URLSearchParams(location.search).get("spiel");
+const SPIEL = SPIELE[PARAM] || null;
+const MENU_TEXT = "Acht Spiele zum Thema Wohnen: Zimmer und Möbel, es gibt, Gegensätze, unser/euer/ihr, wollen, dürfen, Anzeigen und Lesetexte. Welche Spiele Punkte bringen, siehst du in der Arena.";
+const HALLE_TITEL = "Wohnen-Spielhalle";
+
+/* ---------- Bausteine ---------- */
+function hud(extra){ return `<div class="hud">${extra}</div>`; }
+function makeTimer(seconds, onTick, onEnd){
+  const t0=Date.now(); let stopped=false;
+  const id=setInterval(()=>{ const left=Math.max(0, seconds*1000-(Date.now()-t0)); onTick(left/1000, left/(seconds*1000)); if(left<=0){ clearInterval(id); if(!stopped){ stopped=true; onEnd(); } } },100);
+  const stop=()=>{ stopped=true; clearInterval(id); }; onCleanup(stop); return stop;
+}
+function flash(stage, ok){ const f=stage&&stage.querySelector(".flash"); if(!f) return; f.className="flash "+(ok?"ok":"bad"); setTimeout(()=>f.className="flash",220); }
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+
+/* Allgemeiner Fragen-Ablauf */
+function quiz(area, cfg, finish){
+  const list=cfg.list; let n=0, richtig=0, locked=false;
+  area.innerHTML = hud(`<span class="pill">${cfg.unit||"Frage"}<b id="q-n">1</b>/${list.length}</span><span class="grow"></span><span class="pill">✓<b id="q-ok">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div id="q-top"></div><div class="prompt" id="q-prompt"></div><div class="opts" id="q-opts"></div><div class="tip" id="q-tip"></div><div id="q-next"></div></div>`;
+  if(cfg.init) cfg.init(area);
+  function show(){
+    const it=list[n];
+    $("#q-n").textContent=n+1;
+    if(cfg.topFor) $("#q-top").innerHTML=cfg.topFor(it,n);
+    $("#q-prompt").innerHTML=cfg.prompt(it,n);
+    const box=$("#q-opts"); box.className="opts "+(cfg.cols?cfg.cols(it):"");
+    box.innerHTML=cfg.options(it).map(o=>`<button class="opt ${o.cls||""}" data-v="${esc(o.v)}">${o.label}</button>`).join("");
+    const t=$("#q-tip"); t.textContent=""; t.className="tip"; $("#q-next").innerHTML="";
+    if(cfg.afterShow) cfg.afterShow(it,n,area);
+    locked=false;
+  }
+  function next(){ n++; if(n<list.length) show(); else finish(richtig/list.length, `${richtig} von ${list.length} richtig`); }
+  $("#q-opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const it=list[n]; const ok=cfg.check(it, b.dataset.v);
+    b.classList.add(ok?"right":"wrong");
+    if(!ok){ const c=[...$("#q-opts").querySelectorAll(".opt")].find(x=>cfg.check(it,x.dataset.v)); if(c) c.classList.add("right"); }
+    if(ok) richtig++; $("#q-ok").textContent=richtig;
+    const t=$("#q-tip"); t.className="tip "+(ok?"ok":"bad"); t.textContent=cfg.feedback?cfg.feedback(it,ok):(ok?"Richtig!":"");
+    flash(area.querySelector(".stage"), ok);
+    if(cfg.weiter && !ok){ $("#q-next").innerHTML=`<button class="btn wide" type="button" style="margin-top:10px">Weiter ›</button>`; $("#q-next button").onclick=next; }
+    else setTimeout(next, ok?(cfg.okDelay||800):(cfg.badDelay||1900));
+  });
+  show();
+}
+
+/* 7 · Möbel-Umzug */
+function spielUmzug(area, finish){
+  const ZIEL=14, ZEIT=60;
+  let richtig=0, falsch=0, locked=false, cur=null, order=shuffle(UMZUG), i=0;
+  area.innerHTML = hud(`<span class="pill">✓<b id="u-ok">0</b></span><span class="pill">✗<b id="u-bad">0</b></span><div class="grow timer" id="u-timer"><i style="width:100%"></i></div><span class="pill"><b id="u-sec">${ZEIT}</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="prompt" id="u-prompt" style="margin-bottom:12px"></div>
+       <div class="rooms" id="u-rooms">${UMZUG_RAEUME.map(r=>`<button class="room" data-r="${r}"><small>${RAUM[r].art}</small>${RAUM[r].name}</button>`).join("")}</div>
+       <div class="tip" id="u-tip"></div></div>`;
+  function neu(){
+    if(i>=order.length){ order=shuffle(UMZUG); i=0; }
+    cur=order[i++]; const d=DING[cur[0]];
+    $("#u-prompt").innerHTML=`<span class="emo pop">${d[2]}</span><span class="big pop">${d[0]} ${esc(d[1])}</span>`;
+    area.querySelectorAll(".room").forEach(b=>b.classList.remove("right","wrong"));
+    locked=false;
+  }
+  $("#u-rooms").addEventListener("click", e=>{
+    const b=e.target.closest(".room"); if(!b||locked) return; locked=true;
+    const d=DING[cur[0]]; const ok=cur[1].includes(b.dataset.r);
+    const raum = ok ? b.dataset.r : cur[1][0];
+    const tip=$("#u-tip");
+    if(ok){ richtig++; b.classList.add("right"); }
+    else { falsch++; b.classList.add("wrong"); area.querySelector(`.room[data-r="${raum}"]`).classList.add("right"); }
+    tip.className="tip "+(ok?"ok":"bad"); tip.textContent=`${cap(d[0])} ${d[1]} ${d[0]==="die"&&false?"":"ist"} ${RAUM[raum].in}.`;
+    flash(area.querySelector(".stage"), ok);
+    $("#u-ok").textContent=richtig; $("#u-bad").textContent=falsch;
+    setTimeout(neu, ok?450:1300);
+  });
+  neu();
+  makeTimer(ZEIT, (sec, frac)=>{ const t=$("#u-timer"); if(!t) return; t.firstElementChild.style.width=(frac*100)+"%"; t.classList.toggle("low", sec<10); $("#u-sec").textContent=Math.ceil(sec); },
+    ()=>{ locked=true; finish(Math.min(1, Math.max(0, richtig-falsch*0.5)/ZIEL), `${richtig} richtig, ${falsch} falsch`); });
+}
+
+/* 8 · Wohnungs-Check */
+function bauePlan(){
+  const optional=shuffle(["flur","wohn","schlaf","kinder","arbeit","balkon","keller","garten"]);
+  const da=["kueche","bad"].concat(optional.slice(0,4));
+  const plan={}; Object.keys(RAUM).forEach(r=>plan[r]=null);
+  da.forEach(r=>{ const pool=shuffle(PLAN_DINGE[r]); const k=Math.max(1, Math.ceil(pool.length/2)); plan[r]=pool.slice(0,k); });
+  return plan;
+}
+function fragenZuPlan(plan){
+  const qs=[];
+  const raeume=shuffle(Object.keys(RAUM).filter(r=>r!=="kueche"&&r!=="bad"));
+  // 2 Fragen zu Zimmern (möglichst eins da, eins nicht da)
+  const daR=raeume.filter(r=>plan[r]), nichtR=raeume.filter(r=>!plan[r]);
+  [daR[0], nichtR[0]].filter(Boolean).forEach(r=>qs.push({typ:"raum", r, da:!!plan[r]}));
+  // 2 Fragen zu Dingen in vorhandenen Zimmern
+  const dingFragen=[];
+  Object.keys(plan).filter(r=>plan[r]).forEach(r=>PLAN_DINGE[r].forEach(d=>dingFragen.push({typ:"ding", r, d, da:plan[r].includes(d)})));
+  const dfDa=shuffle(dingFragen.filter(x=>x.da)), dfNicht=shuffle(dingFragen.filter(x=>!x.da));
+  if(dfDa[0]) qs.push(dfDa[0]); if(dfNicht[0]) qs.push(dfNicht[0]); else if(dfDa[1]) qs.push(dfDa[1]);
+  // 1 Ja/Nein-Frage
+  const jn = rnd(2) ? {typ:"jn", r:(nichtR[1]||daR[1]||raeume[0])} : null;
+  if(jn){ jn.da=!!plan[jn.r]; qs.push(jn); } else { const x=dfNicht[1]||dfDa[1]; if(x) qs.push(Object.assign({},x,{typ:"jnd"})); else qs.push({typ:"jn", r:raeume[1], da:!!plan[raeume[1]]}); }
+  return shuffle(qs).slice(0,5);
+}
+function planHTML(plan){
+  const order=["flur","kueche","bad","wohn","schlaf","kinder","arbeit","balkon","keller","garten"].filter(r=>plan[r]);
+  return `<div class="plan">${order.map(r=>`<div class="pr ${r==="balkon"||r==="garten"?"out":""}"><b>${RAUM[r].name}</b><div>${plan[r].map(d=>`<span><i>${DING[d][2]}</i>${esc(DING[d][1])}</span>`).join("")}</div></div>`).join("")}</div>`;
+}
+function spielCheck(area, finish){
+  const plan1=bauePlan(), plan2=bauePlan();
+  const list=fragenZuPlan(plan1).map(q=>Object.assign(q,{plan:plan1, nr:1})).concat(fragenZuPlan(plan2).map(q=>Object.assign(q,{plan:plan2, nr:2})));
+  const ARTS=["einen","eine","ein","keinen","keine","kein"];
+  quiz(area, {
+    list, unit:"Frage", weiter:false, badDelay:2400,
+    topFor:(it)=>`<div class="plan-head">🏠 Wohnung ${it.nr}</div>${planHTML(it.plan)}`,
+    prompt:(it)=>{
+      if(it.typ==="raum"){ const R=RAUM[it.r]; return `<span class="big" style="font-size:clamp(26px,7vw,36px)">Es gibt <span class="gap">&nbsp;</span> ${esc(R.name)}.</span>`; }
+      if(it.typ==="ding"){ const d=DING[it.d]; return `<span class="big" style="font-size:clamp(24px,6.5vw,34px)">${cap(RAUM[it.r].in)} gibt es <span class="gap">&nbsp;</span> ${esc(d[1])}.</span>`; }
+      if(it.typ==="jn"){ const R=RAUM[it.r]; return `<span class="big" style="font-size:clamp(26px,7vw,36px)">Gibt es ${AKK[R.art]} ${esc(R.name)}?</span>`; }
+      const d=DING[it.d]; return `<span class="big" style="font-size:clamp(24px,6.5vw,34px)">Gibt es ${cap(RAUM[it.r].in).replace(/^./,c=>c.toLowerCase())} ${AKK[d[0]]} ${esc(d[1])}?</span>`;
+    },
+    cols:(it)=> it.typ==="raum"||it.typ==="ding" ? "three" : "",
+    options:(it)=>{
+      if(it.typ==="raum"||it.typ==="ding") return ARTS.map(a=>({v:a,label:a}));
+      const [art,name,wo] = it.typ==="jn" ? [RAUM[it.r].art, RAUM[it.r].name, ""] : [DING[it.d][0], DING[it.d][1], " "+RAUM[it.r].in];
+      const ja=`Ja, es gibt ${AKK[art]} ${name}${wo}.`, nein=`Nein, es gibt ${KEIN[art]} ${name}${wo}.`;
+      const falschArt = art==="der" ? "kein" : art==="das" ? "keinen" : "keinen";
+      const falsch = `Nein, es gibt ${falschArt} ${name}${wo}.`;
+      return shuffle([ja,nein,falsch]).map(s=>({v:s,label:esc(s),cls:"txt"}));
+    },
+    check:(it,v)=>{
+      if(it.typ==="raum"){ const a=RAUM[it.r].art; return v===(it.da?AKK[a]:KEIN[a]); }
+      if(it.typ==="ding"){ const a=DING[it.d][0]; return v===(it.da?AKK[a]:KEIN[a]); }
+      const [art,name,wo] = it.typ==="jn" ? [RAUM[it.r].art, RAUM[it.r].name, ""] : [DING[it.d][0], DING[it.d][1], " "+RAUM[it.r].in];
+      return v===(it.da?`Ja, es gibt ${AKK[art]} ${name}${wo}.`:`Nein, es gibt ${KEIN[art]} ${name}${wo}.`);
+    },
+    feedback:(it,ok)=>{
+      if(it.typ==="raum"){ const R=RAUM[it.r]; return `${it.da?"":"Nicht im Plan → "}Es gibt ${it.da?AKK[R.art]:KEIN[R.art]} ${R.name}. (${R.art} ${R.name})`; }
+      if(it.typ==="ding"){ const d=DING[it.d]; return `${cap(RAUM[it.r].in)} gibt es ${it.da?AKK[d[0]]:KEIN[d[0]]} ${d[1]}. (${d[0]} ${d[1]})`; }
+      return ok?"Richtig!":"Schau nochmal genau auf den Plan.";
+    }
+  }, finish);
+}
+
+/* 9 · Gegensätze-Memory */
+function spielGegensatz(area, finish){
+  const cards=shuffle(GEGENSATZ.flatMap((p,i)=>[{id:i,s:p[0]},{id:i,s:p[1]}]));
+  let open=[], done=0, zuege=0, locked=false; const t0=Date.now();
+  area.innerHTML = hud(`<span class="pill">Züge<b id="g-z">0</b></span><span class="pill">Paare<b id="g-p">0</b>/${GEGENSATZ.length}</span><span class="grow"></span><span class="pill"><b id="g-t">0</b> s</span>`)
+    + `<div class="stage"><div class="mem" id="g-mem">${cards.map((c,i)=>`<button class="mc" data-i="${i}" aria-label="Karte ${i+1}"><span class="in"><span class="f">?</span><span class="b"><span class="e">${c.s[0]}</span>${esc(c.s[1])}</span></span></button>`).join("")}</div><div class="tip" id="g-tip"></div></div>`;
+  const tick=setInterval(()=>{ const el=$("#g-t"); if(el) el.textContent=Math.floor((Date.now()-t0)/1000); },500); onCleanup(()=>clearInterval(tick));
+  $("#g-mem").addEventListener("click", e=>{
+    const b=e.target.closest(".mc"); if(!b||locked||b.classList.contains("open")||b.classList.contains("done")) return;
+    b.classList.add("open"); open.push(b); if(open.length<2) return;
+    zuege++; $("#g-z").textContent=zuege; locked=true;
+    const [x,y]=open.map(o=>cards[Number(o.dataset.i)]); const tip=$("#g-tip");
+    if(x.id===y.id){
+      open.forEach(o=>{ o.classList.remove("open"); o.classList.add("done"); }); done++; $("#g-p").textContent=done;
+      tip.className="tip ok"; tip.textContent=`${x.s[1]} ↔ ${y.s[1]}`; open=[]; locked=false;
+      if(done===GEGENSATZ.length){ clearInterval(tick); const zeit=Math.floor((Date.now()-t0)/1000); setTimeout(()=>finish(Math.max(0.3, Math.min(1, 1-(zuege-11)/14)), `${zuege} Züge in ${zeit} Sekunden`), 900); }
+    } else { tip.className="tip"; tip.textContent="Keine Gegensätze – merk dir die Karten!"; setTimeout(()=>{ open.forEach(o=>o.classList.remove("open")); open=[]; locked=false; }, 950); }
+  });
+}
+
+/* 10 · Kartenstapel */
+function spielKarten(area, finish){
+  const persKeys=["wir","ihr","sie","Sie"];
+  const nomen=shuffle(KARTEN_NOMEN), adj=shuffle(KARTEN_ADJ);
+  const list=Array.from({length:10},(_,i)=>{
+    const p=persKeys[i%4===0?rnd(4):(i%4)]; const n=nomen[i%nomen.length]; const a=adj[i%adj.length];
+    return {p, n, a};
+  });
+  shuffle(list);
+  const satz=(pk,g,n,a)=>{ const P=KARTEN_PERS[pk]; const art=P.art[g]; const verb=n[0]==="p"?"sind":"ist";
+    return P.pre ? `${P.pre}${art} ${n[1]} ${verb} ${a[0]}.` : `${art} ${n[1]} ${verb} ${a[0]}.`; };
+  quiz(area, {
+    list, unit:"Karte", weiter:true, okDelay:1100,
+    topFor:(it)=>{ const P=KARTEN_PERS[it.p]; const artikel={m:"der",n:"das",f:"die",p:"die"}[it.n[0]];
+      return `<div class="deck"><div class="kc k1"><i>${P.emo}</i><b>${esc(P.label)}</b></div><div class="kc k2"><i>${it.n[2]}</i><b>${artikel} ${esc(it.n[1])}</b></div><div class="kc k3"><i>${it.a[1]}</i><b>${esc(it.a[0])}</b></div></div>`; },
+    prompt:(it)=>`<span class="hint" style="font-size:18px;color:var(--ink);font-weight:700">${esc(KARTEN_PERS[it.p].ctx(it.n))}</span>`,
+    options:(it)=>{
+      const g=it.n[0]; const other={m:"f",n:"f",f:"m",p:"m"}[g];
+      const richtig=satz(it.p,g,it.n,it.a);
+      const set=new Set([richtig]);
+      // Fehler 1: falsche Endung
+      let f1=satz(it.p,other,it.n,it.a); if(it.n[0]==="p") f1=f1.replace(" sind "," sind "); set.add(f1);
+      // Fehler 2: falsche Person
+      const falschePers={wir:"ihr", ihr:"wir", sie:"ihr", Sie:"ihr"}[it.p];
+      let f2=satz(falschePers,g,it.n,it.a);
+      if(it.p==="Sie") f2="Frau Berger, "+f2.charAt(0).toLowerCase()+f2.slice(1);
+      set.add(f2);
+      if(set.size<3) set.add(satz("wir",other,it.n,it.a));
+      return shuffle([...set].slice(0,3)).map(s=>({v:s,label:esc(s),cls:"txt"}));
+    },
+    check:(it,v)=>v===satz(it.p,it.n[0],it.n,it.a),
+    feedback:(it,ok)=>{ const P=KARTEN_PERS[it.p]; const art=P.art[it.n[0]]; const artikel={m:"der",n:"das",f:"die",p:"die (Plural)"}[it.n[0]];
+      return ok?`Richtig: ${artikel} ${it.n[1]} → ${art}`:`${P.label} + ${artikel} ${it.n[1]} → ${art}`; }
+  }, finish);
+}
+
+/* 11 · Lebende Sätze */
+function spielLebende(area, finish){
+  const list=shuffle(LEBENDE_SAETZE).slice(0,8);
+  let n=0, punkte=0, versuch=1, chosen=[], tiles=[];
+  const norm=s=>s.toLowerCase().replace(/[.,?!]/g,"").replace(/\s+/g," ").trim();
+  const nice=(words,p)=>{ const s=words.join(" "); return s.charAt(0).toUpperCase()+s.slice(1)+p; };
+  area.innerHTML = hud(`<span class="pill">Satz<b id="l-n">1</b>/${list.length}</span><span class="grow"></span><span class="pill">Punkte<b id="l-p">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="line people" id="l-line"></div><div class="pool people" id="l-pool"></div>
+       <div class="stack" style="grid-template-columns:1fr 2fr;margin-top:0"><button class="btn ghost" id="l-reset" type="button">Neu aufstellen</button><button class="btn led" id="l-check" type="button" disabled>Prüfen</button></div>
+       <div class="tip" id="l-tip"></div></div>`;
+  function show(){
+    const it=list[n]; chosen=[]; versuch=1;
+    const faces=shuffle(GESICHTER);
+    tiles=shuffle(it.w.map((w,i)=>({w,i,f:faces[i%faces.length]})));
+    if(norm(tiles.map(t=>t.w).join(" "))===norm(it.a[0])) tiles.push(tiles.shift());
+    $("#l-n").textContent=n+1; $("#l-tip").textContent=""; $("#l-line").className="line people"; draw();
+  }
+  const person=(t,attr)=>`<button class="person ${attr.used?"used":""}" ${attr.data}><i>${t.f}</i><span>${esc(t.w)}</span></button>`;
+  function draw(){
+    const it=list[n];
+    $("#l-line").innerHTML=chosen.map((t,k)=>person(t,{data:`data-k="${k}"`})).join("")+(chosen.length===it.w.length?`<b class="punkt">${it.p}</b>`:"")||`<span class="small-hint">Tippe die Personen an …</span>`;
+    $("#l-pool").innerHTML=tiles.map((t,k)=>person(t,{data:`data-t="${k}"`, used:chosen.includes(t)})).join("");
+    $("#l-check").disabled=chosen.length!==it.w.length;
+  }
+  area.addEventListener("click", e=>{
+    const t=e.target.closest(".person"); if(!t) return;
+    if($("#l-line").classList.contains("ok")) return;
+    $("#l-line").className="line people";
+    if(t.dataset.t!==undefined){ const tile=tiles[Number(t.dataset.t)]; if(!chosen.includes(tile)) chosen.push(tile); }
+    else if(t.dataset.k!==undefined){ chosen.splice(Number(t.dataset.k),1); }
+    draw();
+  });
+  $("#l-reset").addEventListener("click", ()=>{ if($("#l-line").classList.contains("ok")) return; chosen=[]; $("#l-line").className="line people"; draw(); });
+  $("#l-check").addEventListener("click", ()=>{
+    const it=list[n]; const words=chosen.map(t=>t.w);
+    const ok=it.a.some(a=>norm(a)===norm(words.join(" "))); const tip=$("#l-tip");
+    flash(area.querySelector(".stage"), ok);
+    if(ok){ const p=versuch===1?1:0.5; punkte+=p; $("#l-p").textContent=String(punkte).replace(".",",");
+      $("#l-line").className="line people ok"; tip.className="tip ok"; tip.textContent=`${nice(words,it.p)}  +${String(p).replace(".",",")}`; $("#l-check").disabled=true; setTimeout(next,1200); }
+    else if(versuch===1){ versuch=2; $("#l-line").className="line people bad"; tip.className="tip bad";
+      tip.textContent = it.p==="?" && /^(willst|wollt|wollen|dürfen|darf|darfst|dürft|will)$/i.test(it.w[0]) ? "Noch nicht. Ja/Nein-Frage: Das Verb steht ganz vorne." : "Noch nicht. wollen/dürfen auf Position 2 – das zweite Verb ans Ende."; }
+    else { $("#l-line").className="line people bad"; tip.className="tip bad"; tip.textContent=`Richtig ist: ${nice(it.a[0].split(" "),it.p)}`; $("#l-check").disabled=true; setTimeout(next,2400); }
+  });
+  function next(){ n++; if(n<list.length) show(); else finish(punkte/list.length, `${String(punkte).replace(".",",")} von ${list.length} Punkten`); }
+  show();
+}
+
+/* 12 · Schilder & Hausordnung */
+function spielSchilder(area, finish){
+  const list = shuffle(SCHILDER).map(s=>({teil:1, ...s}))
+    .concat(shuffle(DUERFEN).map(d=>({teil:2, ...d})))
+    .concat(HAUSORDNUNG.fragen.map(f=>({teil:3, ...f})));
+  quiz(area, {
+    list, unit:"Aufgabe", weiter:true, okDelay:900,
+    topFor:(it)=> it.teil===3
+      ? `<div class="teil">Teil 3 · Hausordnung</div><div class="hausordnung"><b>${esc(HAUSORDNUNG.titel)}</b><ul>${HAUSORDNUNG.regeln.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></div>`
+      : `<div class="teil">Teil ${it.teil} · ${it.teil===1?"Schilder":"dürfen"}</div>`,
+    prompt:(it)=>{
+      if(it.teil===1) return `<span class="sign ${it.ok?"ok":"no"} pop"><i>${it.emo}</i></span><span class="hint">${it.ok?"erlaubt":"verboten"}? Welcher Satz passt?</span>`;
+      if(it.teil===2) return `<span class="big" style="font-size:clamp(28px,7.5vw,40px)">${esc(it.q).replace("___",'<span class="gap">&nbsp;</span>')}</span>`;
+      return `<span class="big" style="font-size:clamp(24px,6.5vw,32px)">${esc(it.q)}</span>`;
+    },
+    cols:(it)=> it.teil===2 ? "three" : it.teil===3 ? "two" : "",
+    options:(it)=>{
+      if(it.teil===1) return shuffle(it.o).map(s=>({v:s,label:esc(s),cls:"txt"}));
+      if(it.teil===2) return shuffle(it.o).map(s=>({v:s,label:esc(s)}));
+      return [{v:"Ja",label:"👍 Ja"},{v:"Nein",label:"👎 Nein"}];
+    },
+    check:(it,v)=> it.teil===3 ? v===it.a : v===it.o[0],
+    feedback:(it,ok)=>{
+      if(it.teil===1) return it.o[0];
+      if(it.teil===2) return it.q.replace("___", it.o[0]);
+      return ok ? "Richtig – das steht in der Hausordnung." : "Lies die Hausordnung noch einmal genau.";
+    }
+  }, finish);
+}
+
+/* 13 · Anzeigen-Detektiv */
+function spielAnzeigen(area, finish){
+  const rows=[["Zimmer","zimmer"],["Miete","miete"],["Fläche","flaeche"],["Etage","etage"],["Extra","extra"]];
+  const tabelle=`<div class="ads"><table><thead><tr><th></th>${["A","B","C"].map(k=>`<th><span class="adk">${k}</span><i>${ANZEIGEN[k].emo}</i><b>${esc(ANZEIGEN[k].titel)}</b><small>${esc(ANZEIGEN[k].ort)}</small></th>`).join("")}</tr></thead>
+    <tbody>${rows.map(([l,f])=>`<tr><td>${l}</td>${["A","B","C"].map(k=>`<td>${esc(ANZEIGEN[k][f])}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  quiz(area, {
+    list:shuffle(ANZEIGEN_FRAGEN), unit:"Satz", weiter:true, okDelay:900,
+    init:()=>{ $("#q-top").innerHTML=tabelle; },
+    prompt:(it)=>`<span class="big" style="font-size:clamp(22px,6vw,30px)">${esc(it.q)}</span>`,
+    cols:()=>"three",
+    options:()=>["A","B","C"].map(k=>({v:k,label:`${k}<small style="display:block;font-size:14px;font-family:var(--body);font-weight:700">${ANZEIGEN[k].emo}</small>`})),
+    check:(it,v)=>v===it.a,
+    feedback:(it,ok)=>{ const A=ANZEIGEN[it.a]; return `${it.a}: ${A.titel} – ${A.zimmer} Zimmer, ${A.miete}, ${A.flaeche}, Etage ${A.etage}`; }
+  }, finish);
+}
+
+/* 14 · Lesedetektiv */
+function spielLesen(area, finish){
+  const keys=Object.keys(TEXTE);
+  const rf=shuffle(LESEN_FRAGEN.filter(q=>!q.wer)), wer=shuffle(LESEN_FRAGEN.filter(q=>q.wer));
+  const list=keys.flatMap(k=>rf.filter(q=>q.t===k)).concat(wer);
+  let aktiv=keys[0];
+  const textHTML=()=>`<div class="ttabs">${keys.map(k=>`<button class="ttab ${k===aktiv?"on":""}" data-tab="${k}"><i>${TEXTE[k].emo}</i><span>${esc(TEXTE[k].name)}</span></button>`).join("")}</div>
+    <div class="tbox"><b>${TEXTE[aktiv].emo} ${esc(TEXTE[aktiv].name)} <small>${esc(TEXTE[aktiv].sub)}</small></b><p>${esc(TEXTE[aktiv].text)}</p></div>`;
+  quiz(area, {
+    list, unit:"Frage", weiter:true, okDelay:1000,
+    init:(ar)=>{ ar.addEventListener("click", e=>{ const b=e.target.closest(".ttab"); if(!b) return; aktiv=b.dataset.tab; $("#q-top").innerHTML=textHTML(); }); },
+    topFor:(it)=>{ if(it.t) aktiv=it.t; return (it.wer?`<div class="teil">Wer sagt das? Du kannst alle Texte öffnen.</div>`:"")+textHTML(); },
+    prompt:(it)=>`<span class="big" style="font-size:clamp(22px,6vw,30px)">${esc(it.q)}</span>`,
+    cols:(it)=> it.wer ? "two" : "two",
+    options:(it)=> it.wer
+      ? keys.map(k=>({v:k,label:`${TEXTE[k].emo} ${esc(TEXTE[k].name)}`,cls:"txt"}))
+      : [{v:"Richtig",label:"✓ Richtig"},{v:"Falsch",label:"✗ Falsch"}],
+    check:(it,v)=>v===it.a,
+    feedback:(it,ok)=> it.wer ? `Das sagt ${TEXTE[it.a].name}.` : (ok?"Genau!":`${it.a}. Lies den Text von ${TEXTE[it.t].name} noch einmal.`)
+  }, finish);
+}
+
+/* ==========================================================
+   LIGA-ANSCHLUSS (wie in der Vorlage, erweitert um Übungsmodus)
+   ========================================================== */
+const Liga = (() => {
+  const cfg = {
+    apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+    authDomain: "lern-deutsch-arash.firebaseapp.com",
+    databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "lern-deutsch-arash",
+    storageBucket: "lern-deutsch-arash.firebasestorage.app",
+    messagingSenderId: "845503292114",
+    appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+  };
+  const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+  const BASE = `jugendliga/${KURS}`;
+  const CODE_KEY = `liga_code_${KURS}`;
+  const screens = ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"];
+  let db=null, ctx=null, kennung=null, onReady=null;
+
+  function show(id){ screens.forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+  function block(title, text, allowOther){ $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  function getMe(){ try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); return c&&c.code?c:null; }catch(e){ return null; } }
+  const once = path => db.ref(`${BASE}/${path}`).once("value").then(s=>s.val());
+  const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+
+  function practice(max){ ctx={practice:true, max:max||10, best:null}; if(onReady) onReady(ctx); }
+
+  async function check(){
+    show("scr-loading");
+    if(!db){ block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); return; }
+    const me=getMe();
+    if(!me){ show("scr-code"); return; }
+    try{
+      const [c, pub] = await Promise.all([once(`codes/${me.code}`), once("public")]);
+      if(!c || !c.pid){ localStorage.removeItem(CODE_KEY); $("#code-err").textContent="Dein gespeicherter Code gilt nicht mehr."; show("scr-code"); return; }
+      const me2={code:me.code, pid:c.pid, name:c.name||""};
+      localStorage.setItem(CODE_KEY, JSON.stringify(me2));
+      const team = pub && pub.roster ? arr(pub.teams).find(t=>t.id===pub.roster[c.pid]) || null : null;
+      if(team||me2.name){ $("#who").classList.remove("hidden"); $("#who-name").textContent=[me2.name, team&&team.name].filter(Boolean).join(" – "); $("#who-color").style.background=team?team.color:"transparent"; }
+      const task = pub && pub.tasks ? pub.tasks[kennung] : null;
+      if(!pub || !pub.round){ block("Gerade keine Runde", "Die Liga macht gerade Pause. Du kannst trotzdem üben.", false); return; }
+      if(!task){ block("Noch nicht in der Liga", "Dieses Spiel bringt gerade keine Punkte. Du kannst trotzdem üben.", false); return; }
+      if(!task.open){ block(task.status==="fertig"?"Aufgabe beendet":"Noch gesperrt", task.status==="fertig"?"Diese Aufgabe ist schon abgeschlossen. Üben geht aber immer.":"Diese Aufgabe ist noch nicht freigeschaltet. Üben geht aber schon.", false); return; }
+      const a=task.assign||{};
+      const mine = a.alle || (a.players&&a.players[c.pid]) || (team && a.teams && a.teams[team.id]);
+      if(!mine){ block("Nicht für dich", "Dieses Spiel bringt gerade nur einem anderen Team Punkte. Schau in der Arena nach deinen Aufgaben – üben kannst du hier trotzdem.", true); return; }
+      const best = await once(`live/${pub.round.id}/${c.pid}/${kennung}`);
+      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, best:(best===null||best===undefined)?null:Number(best)};
+      if(onReady) onReady(ctx);
+    }catch(e){ console.warn(e); block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); }
+  }
+
+  async function senden(points){
+    if(!ctx || ctx.practice) return {ok:true, practice:true};
+    const p=Math.max(0, Math.min(ctx.max, Math.round(Number(points)||0)));
+    const k=kennung, pid=ctx.me.pid, r=ctx.round;
+    const ts=firebase.database.ServerValue.TIMESTAMP;
+    const work=(async()=>{
+      try{ await db.ref(`${BASE}/tries/${r}/${pid}/${k}`).push({code:ctx.me.code, points:p, ts}); }catch(e){ console.warn("Versuch", e); }
+      if(ctx.best!==null && p<=ctx.best) return {ok:true, better:false, points:p, best:ctx.best};
+      await db.ref(`${BASE}/proof/${r}/${pid}/${k}`).set({code:ctx.me.code, points:p, ts});
+      await db.ref(`${BASE}/live/${r}/${pid}/${k}`).set(p);
+      ctx.best=p;
+      return {ok:true, better:true, points:p, best:p};
+    })().catch(e=>{ console.warn(e); return {ok:false}; });
+    const res=await Promise.race([work, sleep(9000).then(()=>"slow")]);
+    return res==="slow" ? {ok:false, slow:true, later:work} : res;
+  }
+  function nachricht(res){
+    if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht für die Liga."};
+    if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte für dich und dein Team gespeichert!`};
+    if(res.ok) return {cls:"", text:`Dein bestes Ergebnis bleibt ${res.best} Punkte. Versuch es nochmal!`};
+    if(res.slow) return {cls:"", text:"Du bist gerade offline. Lass die Seite offen – die Punkte werden gesendet, sobald Internet da ist."};
+    return {cls:"bad", text:"Die Punkte konnten nicht gespeichert werden. Zeig diese Seite deiner Lehrkraft."};
+  }
+  function start(key, cb){
+    kennung=key; onReady=cb;
+    $("#code-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const code=$("#code-in").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+      if(code.length<4){ $("#code-err").textContent="Der Code hat mindestens 4 Zeichen."; return; }
+      if(!db){ $("#code-err").textContent="Keine Verbindung."; return; }
+      $("#code-err").textContent="Prüfe …";
+      try{
+        const c=await once(`codes/${code}`);
+        if(!c||!c.pid){ $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+        localStorage.setItem(CODE_KEY, JSON.stringify({code, pid:c.pid, name:c.name||""}));
+        $("#code-err").textContent=""; check();
+      }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
+    });
+    document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", ()=>practice(10)));
+    $("#block-other").addEventListener("click", ()=>{ localStorage.removeItem(CODE_KEY); $("#who").classList.add("hidden"); $("#code-in").value=""; show("scr-code"); });
+    try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database(); } }catch(e){ db=null; }
+    check();
+  }
+  return {start, senden, nachricht, show, get ctx(){ return ctx; }};
+})();
+
+/* ==========================================================
+   ABLAUF
+   ========================================================== */
+function kopf(g){
+  document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
+  $("#head-ic").textContent=g?g.icon:"🎮";
+  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Wohnen";
+  $("#head-title").textContent=g?g.title:HALLE_TITEL;
+  document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
+}
+function startScreen(){
+  const c=Liga.ctx;
+  $("#start-rules").innerHTML=SPIEL.rules.map(r=>`<li>${esc(r)}</li>`).join("");
+  $("#start-best").textContent = c.practice ? "Übungsmodus – ohne Punkte."
+    : c.best===null ? `Du kannst bis zu ${c.max} Punkte holen.` : `Dein bestes Ergebnis: ${c.best} von ${c.max}. Nur ein besseres Ergebnis zählt.`;
+  Liga.show("scr-start");
+}
+function spielen(){
+  if(!Liga.ctx) return;
+  runCleanup();
+  const area=document.createElement("div"); $("#area").replaceChildren(area);
+  Liga.show("scr-game");
+  let fertig=false;
+  SPIEL.run(area, async (ratio, zeile)=>{
+    if(fertig) return; fertig=true; runCleanup();
+    const c=Liga.ctx; const punkte=Math.round(Math.max(0,Math.min(1,ratio))*c.max);
+    $("#end-score").textContent=punkte;
+    $("#end-sub").textContent=`von ${c.max} Punkten – ${zeile}`;
+    $("#end-stars").textContent = ratio>=0.9?"⭐⭐⭐":ratio>=0.6?"⭐⭐":ratio>=0.3?"⭐":"💪";
+    const msg=$("#send-msg"); msg.className="send"; msg.textContent=c.practice?"":"Punkte werden gesendet …";
+    Liga.show("scr-end");
+    const res=await Liga.senden(punkte);
+    const n=Liga.nachricht(res); msg.className="send "+n.cls; msg.textContent=n.text;
+    if(res.slow && res.later) res.later.then(r=>{ const m=Liga.nachricht(r); msg.className="send "+m.cls; msg.textContent=m.text; });
+  });
+}
+
+if(!SPIEL){
+  kopf(null); $("#menu-text").textContent=MENU_TEXT;
+  $("#menu").innerHTML=Object.entries(SPIELE).map(([p,g])=>`<a class="tile" href="?spiel=${p}">
+    <div class="tile-top" style="background-color:${g.color}"><span>${g.icon}</span><b>${esc(g.title)}</b></div>
+    <p><b style="color:var(--ink)">${esc(g.thema)}</b><br>${esc(g.text)}</p></a>`).join("");
+  Liga.show("scr-menu");
+} else {
+  kopf(SPIEL);
+  $("#start-btn").addEventListener("click", spielen);
+  $("#again").addEventListener("click", startScreen);
+  Liga.start(SPIEL.key, startScreen);
+}
+</script>
+</body>
+</html>
