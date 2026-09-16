@@ -144,6 +144,13 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
 .send.ok{background:#d6f2e5;color:#12704a}
 .send.bad{background:#fde6e2;color:#a3281a}
 .stars{text-align:center;font-size:34px;letter-spacing:4px}
+/* ---------- Gegen die Zeit ---------- */
+.tbadge{display:inline-block;background:var(--board);color:var(--led);font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 9px;margin-bottom:4px}
+.zw{overflow-wrap:anywhere;word-break:break-word;hyphens:none}
+.opt.txt .zw{font-size:16.5px}
+.fuse{height:16px;background:rgba(20,34,59,.12);border-radius:8px;overflow:hidden;margin-bottom:6px}
+.fuse i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#FFC53D,#E9800E)}
+.fuse.low i{background:#E4412F}
 /* ---------- Wohnen-Paket ---------- */
 .opts.two{grid-template-columns:1fr 1fr}
 .rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
@@ -443,7 +450,7 @@ const LESEN_FRAGEN = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  moebel:   {key:"l8-moebel-umzug",        nr:7,  icon:"🚚", title:"Möbel-Umzug",        thema:"Zimmer & Möbel",        color:"#E4412F", run:spielUmzug,
+  moebel:   {key:"l8-moebel-umzug",        nr:7,  icon:"🚚", title:"Möbel-Umzug",        thema:"Zimmer & Möbel",        color:"#E4412F", run:spielUmzug, timer:true,
     text:"60 Sekunden: Wohin kommt der Kühlschrank? Räum die Wohnung ein!",
     rules:["Du siehst ein Möbelstück.","Tippe auf das richtige Zimmer.","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
   check:    {key:"l8-wohnungs-check",      nr:8,  icon:"🔍", title:"Wohnungs-Check",     thema:"es gibt + einen / keinen", color:"#1F6FD1", run:spielCheck,
@@ -467,10 +474,23 @@ const SPIELE = {
   lesen:    {key:"l8-lesedetektiv",        nr:14, icon:"📖", title:"Lesedetektiv",       thema:"Texte verstehen",        color:"#4D7C0F", run:spielLesen,
     text:"Vier Menschen erzählen, wie sie wohnen. Richtig oder falsch?",
     rules:["Lies die Texte von Samira, Familie Rahimi, Herrn Petersen und Jonas.","Du kannst die Texte immer wieder öffnen.","Antworte: Richtig oder Falsch? Und am Ende: Wer sagt das?"]}
+  ,
+  gsprint:  {key:"l8-gegensatz-sprint",    nr:15, icon:"⚡", title:"Gegensatz-Sprint",   thema:"Adjektive",              color:"#DB2777", run:spielGegensatzSprint, timer:true,
+    text:"45 Sekunden: Die Wohnung ist nicht hell. Sie ist …?",
+    rules:["Lies den Satz.","Tippe auf das Gegenteil.","Du hast 45 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
+  zahlen:   {key:"l8-zahlen-rennen",       nr:16, icon:"🏁", title:"Zahlen-Rennen",      thema:"Zahlen bis 9.999",       color:"#0369A1", run:spielZahlen, timer:true,
+    text:"60 Sekunden: 1.540 € – wie sagt man das? Achtung: 45 oder 54?",
+    rules:["Du siehst eine Zahl oder ein Zahlwort.","Tippe auf die passende Lösung.","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","12 richtige Antworten = volle Punktzahl."]},
+  rakete:   {key:"l8-verb-rakete",         nr:17, icon:"🚀", title:"Verb-Rakete",        thema:"wollen & dürfen",        color:"#7C3AED", run:spielRakete, timer:true,
+    text:"45 Sekunden: will, willst, wollt? darf oder dürft? Schnell!",
+    rules:["Lies den Satz.","Tippe auf die richtige Form von wollen oder dürfen.","Du hast 45 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
+  countdown:{key:"l8-artikel-countdown",   nr:18, icon:"💣", title:"Artikel-Countdown",  thema:"der, die, das – Wohnen", color:"#B91C1C", run:spielCountdown, timer:true,
+    text:"Jedes Wort hat einen eigenen Countdown – und er wird immer schneller. 3 Leben!",
+    rules:["der, die oder das? Antworte, bevor die Zeit abläuft.","Mit jeder richtigen Antwort wird die Zeit kürzer.","Falsch oder zu langsam = ein Leben weg. Du hast 3 Leben.","20 richtige Antworten = volle Punktzahl."]}
 };
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
-const MENU_TEXT = "Acht Spiele zum Thema Wohnen: Zimmer und Möbel, es gibt, Gegensätze, unser/euer/ihr, wollen, dürfen, Anzeigen und Lesetexte. Welche Spiele Punkte bringen, siehst du in der Arena.";
+const MENU_TEXT = "Zwölf Spiele zum Thema Wohnen: Zimmer und Möbel, es gibt, Gegensätze, unser/euer/ihr, wollen, dürfen, Zahlen, Anzeigen und Lesetexte – fünf davon gegen die Zeit. Welche Spiele Punkte bringen, siehst du in der Arena.";
 const HALLE_TITEL = "Wohnen-Spielhalle";
 
 /* ---------- Bausteine ---------- */
@@ -782,6 +802,168 @@ function spielLesen(area, finish){
   }, finish);
 }
 
+
+/* ==========================================================
+   SPIELE GEGEN DIE ZEIT
+   ========================================================== */
+function sprint(area, cfg, finish){
+  const ZEIT=cfg.seconds, ZIEL=cfg.target, STRAFE=cfg.penalty ?? 0.5;
+  let richtig=0, falsch=0, serie=0, best=0, locked=false, cur=null;
+  area.innerHTML = hud(`<span class="pill">✓<b id="sp-ok">0</b></span><span class="pill">🔥<b id="sp-serie">0</b></span><div class="grow timer" id="sp-timer"><i style="width:100%"></i></div><span class="pill"><b id="sp-sec">${ZEIT}</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="prompt" id="sp-prompt"></div><div class="opts" id="sp-opts"></div><div class="tip" id="sp-tip"></div></div>`;
+  function neu(){
+    cur=cfg.next();
+    $("#sp-prompt").innerHTML=cur.prompt;
+    const box=$("#sp-opts"); box.className="opts "+(cur.cols||cfg.cols||"");
+    box.innerHTML=cur.options.map(o=>`<button class="opt ${o.cls||""}" data-v="${esc(o.v)}">${o.label}</button>`).join("");
+    locked=false;
+  }
+  $("#sp-opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const ok=b.dataset.v===cur.ok; const tip=$("#sp-tip");
+    if(ok){ richtig++; serie++; best=Math.max(best,serie); b.classList.add("right"); }
+    else { falsch++; serie=0; b.classList.add("wrong"); const c=[...$("#sp-opts").querySelectorAll(".opt")].find(x=>x.dataset.v===cur.ok); if(c) c.classList.add("right");
+      const st=area.querySelector(".stage"); st.classList.add("shake"); setTimeout(()=>st.classList.remove("shake"),260); }
+    tip.className="tip "+(ok?"ok":"bad"); tip.textContent = ok && serie>=5 ? `${serie}er-Serie! 🔥` : (cur.tip||"");
+    flash(area.querySelector(".stage"), ok);
+    $("#sp-ok").textContent=richtig; $("#sp-serie").textContent=serie;
+    setTimeout(neu, ok?(cfg.okDelay||320):(cfg.badDelay||1100));
+  });
+  neu();
+  makeTimer(ZEIT, (sec, frac)=>{ const t=$("#sp-timer"); if(!t) return; t.firstElementChild.style.width=(frac*100)+"%"; t.classList.toggle("low", sec<10); $("#sp-sec").textContent=Math.ceil(sec); },
+    ()=>{ locked=true; finish(Math.min(1, Math.max(0, richtig-falsch*STRAFE)/ZIEL), `${richtig} richtig, ${falsch} falsch, beste Serie: ${best}`); });
+}
+function ohneWiederholung(fn){ let last=null; return ()=>{ let x, k=0; do{ x=fn(); k++; }while(x.key===last && k<10); last=x.key; return x; }; }
+
+/* 15 · Gegensatz-Sprint */
+const SPRINT_NOMEN = [["Die Wohnung","Sie"],["Das Zimmer","Es"],["Der Balkon","Er"],["Die Küche","Sie"],["Das Haus","Es"],["Der Flur","Er"],["Das Bad","Es"],["Der Keller","Er"]];
+function spielGegensatzSprint(area, finish){
+  const paare=GEGENSATZ.flatMap(p=>[[p[0][1],p[1][1]],[p[1][1],p[0][1]]]).filter(p=>p[0]!=="nah"&&p[1]!=="nah"||true);
+  const alle=[...new Set(GEGENSATZ.flatMap(p=>[p[0][1],p[1][1]]))];
+  sprint(area, {seconds:45, target:14, cols:"two",
+    next:ohneWiederholung(()=>{
+      const [wort,gegen]=paare[rnd(paare.length)];
+      let [nomen,pron]=SPRINT_NOMEN[rnd(SPRINT_NOMEN.length)];
+      if(wort==="weit"||wort==="nah"||gegen==="weit"||gegen==="nah"){ nomen="Der Supermarkt"; pron="Er"; }
+      const falsch=shuffle(alle.filter(a=>a!==gegen&&a!==wort)).slice(0,3);
+      return {key:wort+nomen,
+        prompt:`<span class="big pop" style="font-size:clamp(26px,7vw,38px)">${nomen} ist nicht <u>${esc(wort)}</u>.<br>${pron} ist <span class="gap">&nbsp;</span>.</span>`,
+        options:shuffle([gegen,...falsch]).map(a=>({v:a,label:esc(a)})), ok:gegen, tip:`${wort} ↔ ${gegen}`};
+    })
+  }, finish);
+}
+
+/* 16 · Zahlen-Rennen */
+const EINER=["null","eins","zwei","drei","vier","fünf","sechs","sieben","acht","neun"];
+const ZEHNER={2:"zwanzig",3:"dreißig",4:"vierzig",5:"fünfzig",6:"sechzig",7:"siebzig",8:"achtzig",9:"neunzig"};
+const TEENS=["zehn","elf","zwölf","dreizehn","vierzehn","fünfzehn","sechzehn","siebzehn","achtzehn","neunzehn"];
+function unter100(n){ if(n<10) return EINER[n]; if(n<20) return TEENS[n-10]; const t=Math.floor(n/10), o=n%10; return o ? (o===1?"ein":EINER[o])+"und"+ZEHNER[t] : ZEHNER[t]; }
+function unter1000(n){ const h=Math.floor(n/100), r=n%100; return (h?(h===1?"ein":EINER[h])+"hundert":"")+(r?unter100(r):""); }
+function zahlwort(n){ if(n===0) return "null"; const th=Math.floor(n/1000), r=n%1000; return (th?(th===1?"ein":EINER[th])+"tausend":"")+(r?unter1000(r):""); }
+const zahlFormat = n => n>=1000 ? `${Math.floor(n/1000)}.${String(n%1000).padStart(3,"0")}` : String(n);
+function zahlFehler(n){
+  const set=new Set();
+  const e=n%10, z=Math.floor(n/10)%10;
+  if(e && z && e!==z) set.add(n - z*10 - e + e*10 + z);                  // 45 ↔ 54
+  const h=Math.floor(n/100)%10; if(n>=100) set.add(n + (h<9?100:-100));   // Hunderter
+  set.add(n + (z<9?10:-10));                                              // Zehner
+  if(n>=1000){ const nn=n-1000+ (Math.floor(n/1000)<9?2000:0); if(nn>0) set.add(nn); }
+  set.delete(n);
+  return shuffle([...set].filter(x=>x>0)).slice(0,2);
+}
+function neueZahl(){
+  const typ=rnd(3);
+  if(typ===0){ let n; do{ n=21+rnd(119); }while(n%10===0||Math.floor(n/10)%10===n%10); return {n, einheit:"qm", wort:"Quadratmeter"}; }
+  if(typ===1){ return {n:(35+rnd(160))*10 + (rnd(2)?5:0), einheit:"€", wort:"Euro Miete"}; }
+  let n; do{ n=101+rnd(898); }while(n%10===0); return {n, einheit:"", wort:"Hausnummer"};
+}
+function spielZahlen(area, finish){
+  sprint(area, {seconds:60, target:12, badDelay:1500,
+    next:ohneWiederholung(()=>{
+      const z=neueZahl(); const f=zahlFehler(z.n); while(f.length<2){ const x=z.n+(f.length+2)*11; if(!f.includes(x)) f.push(x); }
+      const richtung=rnd(2);
+      if(richtung===0){
+        return {key:String(z.n), cols:"", ok:zahlwort(z.n), tip:`${zahlFormat(z.n)} = ${zahlwort(z.n)}`,
+          prompt:`<span class="hint">${esc(z.wort)}</span><span class="big pop" style="font-size:clamp(44px,12vw,64px)">${zahlFormat(z.n)}${z.einheit?" "+z.einheit:""}</span>`,
+          options:shuffle([z.n,...f]).map(n=>({v:zahlwort(n), label:`<span class="zw">${esc(zahlwort(n))}</span>`, cls:"txt"}))};
+      }
+      return {key:String(z.n), cols:"three", ok:String(z.n), tip:`${zahlwort(z.n)} = ${zahlFormat(z.n)}`,
+        prompt:`<span class="hint">${esc(z.wort)}</span><span class="big pop zw" style="font-size:clamp(22px,6vw,32px)">${esc(zahlwort(z.n))}</span>`,
+        options:shuffle([z.n,...f]).map(n=>({v:String(n), label:esc(zahlFormat(n))}))};
+    })
+  }, finish);
+}
+
+/* 17 · Verb-Rakete */
+const MODAL = {
+  wollen:{f:["will","willst","will","wollen","wollt","wollen"], rest:["einen Balkon haben","im Zentrum wohnen","ein Sofa kaufen","in Kiel wohnen","die Wohnung putzen","eine WG suchen"]},
+  dürfen:{f:["darf","darfst","darf","dürfen","dürft","dürfen"], rest:["hier parken","im Garten spielen","auf dem Balkon nicht grillen","keine Party machen","eine Katze haben","hier nicht rauchen"]}
+};
+const RAKETE_SUBJ=[[0,"ich"],[1,"du"],[2,"Ali"],[2,"Sara"],[2,"man"],[3,"wir"],[4,"ihr"],[5,"die Kinder"],[5,"Sie"]];
+function spielRakete(area, finish){
+  sprint(area, {seconds:45, target:14, cols:"two",
+    next:ohneWiederholung(()=>{
+      const verb=rnd(2)?"wollen":"dürfen"; const M=MODAL[verb];
+      let s=RAKETE_SUBJ[rnd(RAKETE_SUBJ.length)]; if(s[1]==="man"&&verb==="wollen") s=[2,"Ali"];
+      const form=M.f[s[0]]; const rest=M.rest[rnd(M.rest.length)];
+      const frage = (s[0]===1||s[0]===4) && rnd(2);
+      const satz = frage ? `<span class="gap">&nbsp;</span> ${esc(s[1])} ${esc(rest)}?` : `${esc(cap(s[1]))} <span class="gap">&nbsp;</span> ${esc(rest)}.`;
+      const opts=[...new Set(M.f)].map(x=> frage ? cap(x) : x);
+      const ok = frage ? cap(form) : form;
+      return {key:verb+s[1]+rest, ok, tip: frage ? `${cap(form)} ${s[1]} ${rest}?` : `${cap(s[1])} ${form} ${rest}.`,
+        prompt:`<span class="hint">(${verb})</span><span class="big pop" style="font-size:clamp(24px,6.5vw,34px)">${satz}</span>`,
+        options:shuffle(opts).map(x=>({v:x,label:esc(x)}))};
+    })
+  }, finish);
+}
+
+/* 18 · Artikel-Countdown */
+function spielCountdown(area, finish){
+  const ZIEL=20, START=6, MIN=2.2, SCHRITT=0.2, MAX_WOERTER=40;
+  const pool=Object.values(DING).map(d=>[d[0],d[1],d[2]]).concat(Object.values(RAUM).map(r=>[r.art,r.name,"🏠"]));
+  let order=shuffle(pool), i=0, leben=3, richtig=0, serie=0, best=0, zeit=START, locked=true, cur=null, t0=0, iv=null, gespielt=0;
+  area.innerHTML = hud(`<span class="pill" id="cd-leben">❤️❤️❤️</span><span class="pill">✓<b id="cd-ok">0</b></span><span class="grow"></span><span class="pill">⏱️<b id="cd-zeit">${START.toFixed(1)}</b> s</span>`)
+    + `<div class="stage"><div class="flash"></div><div class="fuse"><i id="cd-fuse"></i></div><div class="prompt" id="cd-prompt"></div>
+       <div class="opts three"><button class="opt der" data-o="der">der</button><button class="opt die" data-o="die">die</button><button class="opt das" data-o="das">das</button></div><div class="tip" id="cd-tip"></div></div>`;
+  const stop=()=>{ if(iv){ clearInterval(iv); iv=null; } };
+  onCleanup(stop);
+  function ende(){ stop(); locked=true; setTimeout(()=>finish(Math.min(1, richtig/ZIEL), `${richtig} richtig, beste Serie: ${best}`), 700); }
+  function neu(){
+    if(leben<=0 || gespielt>=MAX_WOERTER){ ende(); return; }
+    if(i>=order.length){ order=shuffle(pool); i=0; }
+    cur=order[i++]; gespielt++;
+    $("#cd-prompt").innerHTML=`<span class="emo pop">${cur[2]}</span><span class="big pop">${esc(cur[1])}</span>`;
+    area.querySelectorAll(".opt").forEach(b=>b.classList.remove("right","wrong"));
+    $("#cd-zeit").textContent=zeit.toFixed(1);
+    t0=Date.now(); locked=false;
+    stop(); iv=setInterval(()=>{
+      const left=Math.max(0, zeit*1000-(Date.now()-t0));
+      const f=$("#cd-fuse"); if(f){ f.style.width=(left/(zeit*1000)*100)+"%"; f.parentElement.classList.toggle("low", left<1000); }
+      if(left<=0 && !locked){ locked=true; stop(); verloren(null); }
+    },40);
+  }
+  function verloren(btn){
+    leben--; serie=0; $("#cd-leben").textContent="❤️".repeat(Math.max(0,leben))+"🖤".repeat(3-Math.max(0,leben));
+    if(btn) btn.classList.add("wrong");
+    area.querySelector(`.opt[data-o="${cur[0]}"]`).classList.add("right");
+    const tip=$("#cd-tip"); tip.className="tip bad"; tip.textContent=`${btn?"":"Zu langsam! "}${cur[0]} ${cur[1]}`;
+    const st=area.querySelector(".stage"); flash(st,false); st.classList.add("shake"); setTimeout(()=>st.classList.remove("shake"),260);
+    setTimeout(neu, 1200);
+  }
+  area.querySelector(".opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true; stop();
+    if(b.dataset.o===cur[0]){
+      richtig++; serie++; best=Math.max(best,serie); zeit=Math.max(MIN, zeit-SCHRITT);
+      b.classList.add("right"); flash(area.querySelector(".stage"),true);
+      const tip=$("#cd-tip"); tip.className="tip ok"; tip.textContent = serie>=5 ? `${serie}er-Serie! 🔥 Jetzt nur noch ${zeit.toFixed(1)} s` : `${cur[0]} ${cur[1]}`;
+      $("#cd-ok").textContent=richtig;
+      setTimeout(neu, 380);
+    } else verloren(b);
+  });
+  $("#cd-prompt").innerHTML=`<span class="big pop">Bereit?</span><span class="hint">Es geht gleich los …</span>`;
+  const startT=setTimeout(neu, 900); onCleanup(()=>clearTimeout(startT));
+}
+
 /* ==========================================================
    LIGA-ANSCHLUSS (wie in der Vorlage, erweitert um Übungsmodus)
    ========================================================== */
@@ -921,7 +1103,7 @@ if(!SPIEL){
   kopf(null); $("#menu-text").textContent=MENU_TEXT;
   $("#menu").innerHTML=Object.entries(SPIELE).map(([p,g])=>`<a class="tile" href="?spiel=${p}">
     <div class="tile-top" style="background-color:${g.color}"><span>${g.icon}</span><b>${esc(g.title)}</b></div>
-    <p><b style="color:var(--ink)">${esc(g.thema)}</b><br>${esc(g.text)}</p></a>`).join("");
+    <p>${g.timer?'<span class="tbadge">⏱️ gegen die Zeit</span>':""}<b style="color:var(--ink)">${esc(g.thema)}</b><br>${esc(g.text)}</p></a>`).join("");
   Liga.show("scr-menu");
 } else {
   kopf(SPIEL);

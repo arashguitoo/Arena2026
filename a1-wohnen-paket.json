@@ -1,0 +1,126 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Wohnen-Spielhalle (Lektion 8)",
+  "tasks": [
+    {
+      "nr": 7,
+      "key": "l8-moebel-umzug",
+      "title": "Möbel-Umzug",
+      "icon": "🚚",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=moebel",
+      "text": "60 Sekunden: Wohin kommt der Kühlschrank? Räum die Wohnung ein!"
+    },
+    {
+      "nr": 8,
+      "key": "l8-wohnungs-check",
+      "title": "Wohnungs-Check",
+      "icon": "🔍",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=check",
+      "text": "Schau dir den Plan an: Gibt es einen Balkon? Oder keinen?"
+    },
+    {
+      "nr": 9,
+      "key": "l8-gegensatz-memory",
+      "title": "Gegensätze-Memory",
+      "icon": "🃏",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=gegensatz",
+      "text": "Finde die Gegensätze: groß und klein, laut und ruhig …"
+    },
+    {
+      "nr": 10,
+      "key": "l8-kartenstapel",
+      "title": "Kartenstapel",
+      "icon": "🎴",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=karten",
+      "text": "Drei Karten, ein Satz: Unsere Küche ist groß – oder eure?"
+    },
+    {
+      "nr": 11,
+      "key": "l8-lebende-saetze",
+      "title": "Lebende Sätze",
+      "icon": "🙋",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=saetze",
+      "text": "Stell die Leute mit ihren Schildern richtig auf!"
+    },
+    {
+      "nr": 12,
+      "key": "l8-schilder-hausordnung",
+      "title": "Schilder & Hausordnung",
+      "icon": "🚫",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=schilder",
+      "text": "Was darf man hier? Lies Schilder und eine echte Hausordnung."
+    },
+    {
+      "nr": 13,
+      "key": "l8-anzeigen-detektiv",
+      "title": "Anzeigen-Detektiv",
+      "icon": "🏷️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=anzeigen",
+      "text": "Drei Anzeigen, zehn Sätze: Welche Wohnung ist gemeint?"
+    },
+    {
+      "nr": 14,
+      "key": "l8-lesedetektiv",
+      "title": "Lesedetektiv",
+      "icon": "📖",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=lesen",
+      "text": "Vier Menschen erzählen, wie sie wohnen. Richtig oder falsch?"
+    },
+    {
+      "nr": 15,
+      "key": "l8-gegensatz-sprint",
+      "title": "Gegensatz-Sprint",
+      "icon": "⚡",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=gsprint",
+      "text": "45 Sekunden: Die Wohnung ist nicht hell. Sie ist …?"
+    },
+    {
+      "nr": 16,
+      "key": "l8-zahlen-rennen",
+      "title": "Zahlen-Rennen",
+      "icon": "🏁",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=zahlen",
+      "text": "60 Sekunden: 1.540 € – wie sagt man das? Achtung: 45 oder 54?"
+    },
+    {
+      "nr": 17,
+      "key": "l8-verb-rakete",
+      "title": "Verb-Rakete",
+      "icon": "🚀",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=rakete",
+      "text": "45 Sekunden: will, willst, wollt? darf oder dürft? Schnell!"
+    },
+    {
+      "nr": 18,
+      "key": "l8-artikel-countdown",
+      "title": "Artikel-Countdown",
+      "icon": "💣",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=countdown",
+      "text": "Jedes Wort hat einen eigenen Countdown – und er wird immer schneller. 3 Leben!"
+    }
+  ]
+}
