@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<title>Umfragen mit Hindernissen – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<style>
+:root{--floor:#E3C690;--floor-line:#D5B57A;--paper:#FFFBF3;--ink:#1D1A17;--muted:#6E6358;--board:#14223B;--led:#FFC53D;--line:#E8DCC6;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;--body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+.bar{background:var(--board);box-shadow:0 3px 0 var(--led)}
+.bar-in{max-width:900px;margin:0 auto;padding:8px 16px;min-height:54px;display:flex;align-items:center}
+.bar a{color:#c9d2e3;text-decoration:none;font-weight:700;font-size:15px}
+.hero{background:var(--board);color:#fff;padding:26px 16px 30px}
+.hero-in{max-width:900px;margin:0 auto}
+.hero h1{font-family:var(--display);font-weight:900;font-size:clamp(46px,12vw,86px);line-height:.86;margin:0 0 12px}
+.hero h1 span{display:block;color:var(--led)}
+.hero p{max-width:56ch;margin:0;color:#dfe5f0}
+.lane{display:flex;gap:6px;align-items:flex-end;margin:18px 0 0;height:34px;max-width:520px}
+.lane i{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.2);position:relative;font-style:normal}
+.lane i.h::before{content:"🚧";position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:15px}
+.lane i.run::before{content:"🏃";position:absolute;bottom:7px;left:50%;transform:translateX(-50%);font-size:22px;animation:hop .6s ease-in-out infinite alternate}
+.lane i.run{background:var(--led)}
+@keyframes hop{to{margin-bottom:3px}}
+main{max-width:900px;margin:0 auto;padding:22px 16px 60px}
+h2{font-family:var(--display);font-weight:900;font-size:34px;line-height:1;margin:26px 0 12px;color:var(--board)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{display:grid;grid-template-rows:auto 1fr;background:var(--paper);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 3px 0 rgba(0,0,0,.14);transition:transform .1s}
+.card:hover{transform:translateY(-2px)}
+.top{padding:14px 14px 12px;color:#fff;display:flex;align-items:center;gap:12px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
+.top .ic{font-size:36px;line-height:1}
+.top small{display:block;font-weight:700;font-size:14px;opacity:.9}
+.top b{font-family:var(--display);font-weight:900;font-size:30px;line-height:.95}
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px}
+.body p{margin:0;font-size:16px;color:var(--muted)}
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.facts span{font-size:13.5px;font-weight:700;border-radius:999px;padding:2px 10px;background:#efe5d3}
+.facts span.pts{background:var(--board);color:var(--led)}
+.facts span.new{background:#fff3dc;color:#8a5a06}
+.empty{color:var(--muted)}
+.help{margin-top:36px;background:var(--paper);border-radius:14px;font-size:15.5px;color:var(--muted)}
+.help summary{cursor:pointer;padding:12px 16px;font-weight:700;color:var(--board)}
+.help div{padding:0 16px 14px}
+.help code{background:#efe5d3;padding:0 5px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in"><a href="index.html">‹ Zur Arena</a></div></header>
+<section class="hero"><div class="hero-in">
+  <h1>Umfragen<span>mit Hindernissen</span></h1>
+  <p>Erzähl uns von dir – und spring über die Hindernisse. Jede Übung bringt Punkte für dich und dein Team. Am Ende siehst du, was der ganze Kurs denkt.</p>
+  <div class="lane" aria-hidden="true"><i class="run"></i><i></i><i class="h"></i><i></i><i></i><i class="h"></i><i></i><i class="h"></i><i></i></div>
+</div></section>
+<main>
+  <div id="list"><p class="empty">Umfragen werden geladen …</p></div>
+  <details class="help">
+    <summary>Für die Lehrkraft: neue Umfrage hinzufügen</summary>
+    <div>
+      <p>Lade die neue Datei in diesen Ordner hoch. Der Name beginnt mit <code>umfrage-</code> und endet mit <code>.html</code>, zum Beispiel <code>umfrage-a2-arbeit.html</code>. Die Seite findet sie automatisch. Es kann ein paar Minuten dauern, bis GitHub die neue Datei zeigt.</p>
+      <p>Damit die Umfrage Punkte bringt, lädst du ihr Aufgaben-Paket in der Konsole und schaltest sie dort frei.</p>
+    </div>
+  </details>
+</main>
+<script>
+"use strict";
+const BUILTIN = [{"file": "umfrage-a1-familie.html", "titel": "Familie & ich", "lektion": 7, "niveau": "A1", "beschreibung": "Geschwister, Lieblingsfarbe, Lieblingsessen – und Hindernisse zu sein/ihr, können/müssen und war/hatte.", "icon": "👨‍👩‍👧", "farbe": "#D9480F", "fragen": 13, "hindernisse": 8, "punkte": 20}, {"file": "umfrage-a1-wohnen.html", "titel": "Meine Traumwohnung", "lektion": 8, "niveau": "A1", "beschreibung": "Stadt oder Land, WG oder allein – und Hindernisse zu Zimmern, es gibt, wollen, dürfen und großen Zahlen.", "icon": "🏠", "farbe": "#1F6FD1", "fragen": 12, "hindernisse": 9, "punkte": 20}, {"file": "umfrage-a1-freizeit.html", "titel": "Endlich Freizeit!", "lektion": 9, "niveau": "A1", "beschreibung": "Chillen oder Action, Handyzeit, Wochenende – und Hindernisse zu Perfekt, mich/dich/ihn und ins Kino.", "icon": "🎮", "farbe": "#1E9E6A", "fragen": 12, "hindernisse": 9, "punkte": 20}];
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let items = BUILTIN.map(x=>Object.assign({},x));
+const ORDER = ["A1","A2","B1","B2"];
+function render(){
+  const g={}; items.forEach(x=>{ const k=x.niveau||"Weitere"; (g[k]=g[k]||[]).push(x); });
+  const keys=Object.keys(g).sort((a,b)=>(ORDER.indexOf(a)+1||99)-(ORDER.indexOf(b)+1||99));
+  document.getElementById("list").innerHTML = keys.map(k=>`<h2>Niveau ${esc(k)}</h2><div class="grid">`+g[k].sort((a,b)=>(+a.lektion||99)-(+b.lektion||99)).map(x=>`
+    <a class="card" href="${esc(x.file)}"><div class="top" style="background-color:${esc(x.farbe||"#14223B")}"><span class="ic">${esc(x.icon||"🚧")}</span><div><small>${x.lektion?"Lektion "+esc(x.lektion):"Umfrage"}</small><b>${esc(x.titel)}</b></div></div>
+    <div class="body"><p>${esc(x.beschreibung||"")}</p><div class="facts">${x.fragen?`<span>${esc(x.fragen)} Fragen</span>`:""}${x.hindernisse?`<span>${esc(x.hindernisse)} Hindernisse</span>`:""}${x.punkte?`<span class="pts">bis ${esc(x.punkte)} Punkte</span>`:""}${x.neu?`<span class="new">neu</span>`:""}</div></div></a>`).join("")+`</div>`).join("") || `<p class="empty">Noch keine Umfragen.</p>`;
+}
+render();
+async function listFiles(){
+  const host=location.hostname; if(!/\.github\.io$/i.test(host)) return [];
+  const key="ua1_dir_"+location.pathname;
+  try{ const c=JSON.parse(localStorage.getItem(key)||"null"); if(c&&Date.now()-c.t<15*60*1000) return c.files; }catch(e){}
+  const owner=host.split(".")[0], parts=location.pathname.split("/").filter(Boolean);
+  if(parts.length&&/\.html?$/i.test(parts[parts.length-1])) parts.pop();
+  const tries=[{repo:host,dir:parts.join("/")}]; if(parts.length) tries.push({repo:parts[0],dir:parts.slice(1).join("/")});
+  for(const t of tries){ try{
+    const r=await fetch(`https://api.github.com/repos/${owner}/${t.repo}/contents/${t.dir}`); if(!r.ok) continue;
+    const j=await r.json(); if(!Array.isArray(j)) continue;
+    const files=j.map(f=>f.name).filter(n=>/^umfrage-.+\.html?$/i.test(n));
+    try{ localStorage.setItem(key,JSON.stringify({t:Date.now(),files})); }catch(e){}
+    return files; }catch(e){} }
+  return [];
+}
+async function readMeta(file){
+  const r=await fetch(file,{cache:"no-cache"}); if(!r.ok) return null;
+  const d=new DOMParser().parseFromString(await r.text(),"text/html");
+  const m=n=>{ const el=d.querySelector(`meta[name="umfrage:${n}"]`); return el?el.getAttribute("content"):""; };
+  if(!m("titel")) return null;
+  return {file,titel:m("titel"),lektion:m("lektion"),niveau:m("niveau"),beschreibung:m("beschreibung"),icon:m("icon"),farbe:m("farbe"),fragen:m("fragen"),hindernisse:m("hindernisse"),punkte:m("punkte"),neu:true};
+}
+(async()=>{ try{
+  const files=await listFiles(), known=new Set(items.map(x=>x.file.toLowerCase()));
+  const found=(await Promise.all(files.filter(f=>!known.has(f.toLowerCase())).map(f=>readMeta(f).catch(()=>null)))).filter(Boolean);
+  if(found.length){ items=items.concat(found); render(); }
+}catch(e){ console.warn(e); } })();
+</script>
+</body>
+</html>
