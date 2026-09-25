@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<title>Lese-Arena – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
+  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
+  --der:#1F6FD1; --die:#E4412F; --das:#1E9E6A;
+  --accent:#14223B;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* Kopf */
+.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:10}
+.bar-in{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;min-height:54px}
+.bar a{color:#c9d2e3;text-decoration:none;font-weight:700;font-size:15px}
+.bar .who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:15px;min-width:0}
+.bar .who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .who i{width:10px;height:22px;border-radius:3px;flex:none}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+
+/* Titel */
+.head{display:flex;align-items:center;gap:14px;margin:4px 0 16px}
+.head .ic{width:64px;height:64px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px;flex:none;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.head h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,11vw,62px);line-height:.88;margin:0;color:var(--board)}
+.head small{display:block;font-size:15px;color:var(--muted);font-family:var(--body);font-weight:700;letter-spacing:.02em;margin-bottom:2px}
+
+/* Karten & Knöpfe */
+.card{background:var(--paper);border-radius:18px;padding:20px 18px;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.card h2{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;margin:0 0 8px;color:var(--board)}
+.card p{margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 20px;border-radius:12px;border:0;background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn.led{background:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;color:var(--board);box-shadow:inset 0 0 0 2px var(--board)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:grid;gap:10px;margin-top:14px}
+.codein{display:flex;gap:8px;margin-top:12px}
+.codein input{flex:1;min-width:0;min-height:54px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:var(--ink)}
+.codein input:focus{outline:none;border-color:var(--board)}
+.err{color:var(--bad);font-weight:700;min-height:24px;margin-top:8px}
+.rules{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.rules li{background:#fff;border-radius:10px;padding:9px 12px;border-left:5px solid var(--accent);font-size:17px}
+.best{font-weight:700;color:var(--muted);font-size:16px;margin-bottom:12px}
+
+/* Menü */
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.tile{display:grid;grid-template-rows:auto 1fr;background:var(--paper);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.tile-top{padding:14px 14px 10px;color:#fff;display:flex;align-items:center;gap:10px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
+.tile-top span{font-size:30px}
+.tile-top b{font-family:var(--display);font-weight:900;font-size:26px;line-height:1}
+.tile p{margin:0;padding:10px 14px 14px;font-size:15.5px;color:var(--muted)}
+
+/* Spielfeld */
+.hud{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hud .pill{background:var(--board);color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px;white-space:nowrap}
+.hud .pill b{font-family:var(--display);font-size:22px;color:var(--led);margin-left:4px}
+.hud .grow{flex:1}
+.timer{height:12px;background:rgba(20,34,59,.15);border-radius:6px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .12s linear}
+.timer.low i{background:var(--bad)}
+.stage{background:var(--paper);border-radius:18px;padding:18px 16px 20px;box-shadow:0 3px 0 rgba(0,0,0,.14);position:relative;overflow:hidden}
+.prompt{text-align:center;margin:8px 0 18px}
+.prompt .emo{font-size:64px;line-height:1.1;display:block}
+.prompt .big{font-family:var(--display);font-weight:900;font-size:clamp(34px,9vw,48px);line-height:1.02;display:block}
+.prompt .hint{color:var(--muted);font-size:16px;display:block;margin-top:4px}
+.gap{display:inline-block;min-width:2.6em;border-bottom:4px solid var(--accent);color:var(--accent)}
+.opts{display:grid;gap:10px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{min-height:62px;border-radius:14px;border:3px solid var(--line);background:#fff;font-family:var(--display);font-weight:900;font-size:28px;cursor:pointer;color:var(--ink);padding:6px 8px;line-height:1.05;transition:transform .08s}
+.opt:active{transform:scale(.97)}
+.opt.txt{font-family:var(--body);font-weight:700;font-size:18px;text-align:left;padding:12px 14px}
+.opt.right{border-color:var(--ok);background:#d6f2e5}
+.opt.wrong{border-color:var(--bad);background:#fde6e2}
+.opt.der{border-color:var(--der);color:var(--der)} .opt.die{border-color:var(--die);color:var(--die)} .opt.das{border-color:var(--das);color:var(--das)}
+.flash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s}
+.flash.ok{background:rgba(30,158,106,.18);opacity:1}
+.flash.bad{background:rgba(228,65,47,.18);opacity:1}
+.tip{min-height:26px;text-align:center;font-weight:700;margin-top:12px;font-size:17px}
+.tip.bad{color:#a3281a} .tip.ok{color:#12704a}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .2s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake .25s}
+
+/* Einkaufswagen */
+.baskets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.basket{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:6px;text-align:center;min-height:64px}
+.basket b{display:block;font-size:13px;color:var(--muted)}
+.basket div{font-size:22px;line-height:1.2;word-break:break-all}
+
+/* Memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mc{aspect-ratio:3/4;border:0;border-radius:12px;cursor:pointer;position:relative;perspective:600px;background:transparent;padding:0}
+.mc .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.mc.open .in,.mc.done .in{transform:rotateY(180deg)}
+.mc .f,.mc .b{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center}
+.mc .f{background:var(--accent);color:rgba(255,255,255,.85);font-family:var(--display);font-weight:900;font-size:30px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
+.mc .b{background:#fff;border:3px solid var(--line);transform:rotateY(180deg);font-weight:700;font-size:clamp(12px,3.4vw,16px);line-height:1.15}
+.mc .b .e{font-size:clamp(20px,6vw,30px);line-height:1.1}
+.mc .b.p{background:#f4ecff;border-color:#c9b3ef}
+.mc.done .b{border-color:var(--ok);background:#d6f2e5}
+
+/* Satz-Baustelle */
+.line{min-height:64px;background:#fff;border:3px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.line.ok{border-style:solid;border-color:var(--ok);background:#d6f2e5}
+.line.bad{border-style:solid;border-color:var(--bad);background:#fde6e2}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;justify-content:center;min-height:52px}
+.tile-w{min-height:46px;padding:6px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:19px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.line .tile-w{background:var(--board)}
+.tile-w.used{visibility:hidden}
+
+/* Café */
+.chat{display:flex;flex-direction:column;gap:8px;min-height:220px;max-height:46vh;overflow-y:auto;padding:4px 2px 8px}
+.bub{max-width:82%;padding:9px 13px;border-radius:16px;font-size:17px;line-height:1.3}
+.bub.them{background:#fff;border:2px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.bub.me.wrong{background:#a3281a}
+.bub small{display:block;font-size:12px;opacity:.7;font-weight:700}
+.scene{display:flex;align-items:center;gap:10px;background:var(--board);color:#fff;border-radius:12px;padding:8px 12px;margin-bottom:10px}
+.scene span{font-size:28px}
+.scene b{font-family:var(--display);font-weight:800;font-size:22px}
+
+/* Ende */
+.score{font-family:var(--display);font-weight:900;font-size:104px;line-height:.9;color:var(--board);text-align:center;margin:8px 0 2px}
+.score-sub{text-align:center;color:var(--muted);margin-bottom:12px}
+.send{margin:12px 0 4px;padding:12px 14px;border-radius:12px;background:#efe5d3;font-weight:700;text-align:center}
+.send.ok{background:#d6f2e5;color:#12704a}
+.send.bad{background:#fde6e2;color:#a3281a}
+.stars{text-align:center;font-size:34px;letter-spacing:4px}
+/* ---------- Lese-Arena ---------- */
+.tbadge{display:inline-block;background:var(--board);color:var(--led);font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 9px;margin-bottom:4px}
+.teil{font-weight:700;color:var(--muted);font-size:15.5px;margin-bottom:8px}
+.order{display:grid;gap:6px;margin-bottom:10px}
+.slot{display:flex;align-items:center;gap:8px;background:#fff;border:3px dashed var(--line);border-radius:12px;padding:5px 8px;min-height:50px}
+.slot.full{border-style:solid}
+.slot.ok{border-color:var(--ok);background:#d6f2e5}
+.slot.bad{border-color:var(--bad);background:#fde6e2}
+.slot>b{font-family:var(--display);font-weight:900;font-size:22px;color:var(--muted);width:22px;text-align:center;flex:none}
+.slot .leer{color:#cfc4b2}
+.kartex{border:0;background:var(--accent);color:#fff;border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;font-size:16px;text-align:left;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2);flex:1;line-height:1.3;display:flex;gap:8px;align-items:center}
+.kartex i{font-style:normal;font-size:22px;flex:none}
+.kartex.still{cursor:default;box-shadow:none;background:transparent;color:var(--ink);padding:4px 2px}
+.kartex.used{visibility:hidden}
+.pool.cards{display:grid;gap:8px;margin:0 0 10px}
+.loesung{display:block;margin-top:6px;font-weight:400;color:var(--ink);text-align:left;font-size:15.5px}
+.tbox{background:#fff;border-radius:12px;padding:10px 14px;margin:0 0 10px;border-left:6px solid var(--accent)}
+.tbox b{font-size:17px}
+.tbox small{color:var(--muted);font-weight:400}
+.tbox p{margin:4px 0 0;font-size:16.5px;line-height:1.55}
+.adlist{display:grid;gap:6px;margin-bottom:10px}
+.ad{display:flex;gap:8px;align-items:center;background:#fff;border-radius:10px;padding:6px 10px;font-size:15px;line-height:1.3}
+.ad i{font-style:normal;font-size:22px}
+.ad b{display:block;font-size:15px}
+.adk{background:var(--board);color:var(--led);font-family:var(--display);font-weight:900;font-size:19px;border-radius:6px;padding:0 8px;flex:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="bar-in">
+  <a href="index.html">‹ Arena</a>
+  <span class="who hidden" id="who"><i id="who-color"></i><span id="who-name"></span></span>
+</div></header>
+
+<main>
+  <div class="head" id="head">
+    <div class="ic" id="head-ic">🎮</div>
+    <div><small id="head-sub">Plöner Liga</small><h1 id="head-title">Lese-Arena</h1></div>
+  </div>
+
+  <section id="scr-menu" class="hidden">
+    <p id="menu-text"></p>
+    <div class="menu" id="menu"></div>
+  </section>
+
+  <section class="card" id="scr-loading"><h2>Einen Moment …</h2><p>Das Spiel wird geladen.</p></section>
+
+  <section class="card hidden" id="scr-code">
+    <h2>Dein Code</h2>
+    <p>Gib deinen Code ein, damit deine Punkte für dich und dein Team zählen.</p>
+    <form class="codein" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn" type="submit">Los</button></form>
+    <div class="err" id="code-err" role="alert"></div>
+    <button class="btn ghost wide" type="button" data-practice style="margin-top:6px">Ohne Code üben (keine Punkte)</button>
+  </section>
+
+  <section class="card hidden" id="scr-block">
+    <h2 id="block-title">Gesperrt</h2>
+    <p id="block-text"></p>
+    <div class="stack">
+      <button class="btn led" type="button" data-practice>Trotzdem üben (keine Punkte)</button>
+      <button class="btn ghost hidden" id="block-other" type="button">Anderen Code eingeben</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+
+  <section class="card hidden" id="scr-start">
+    <h2>So geht’s</h2>
+    <ul class="rules" id="start-rules"></ul>
+    <div class="best" id="start-best"></div>
+    <button class="btn led wide" id="start-btn" type="button">Spiel starten</button>
+  </section>
+
+  <section class="hidden" id="scr-game"><div id="area"></div></section>
+
+  <section class="card hidden" id="scr-end">
+    <div class="stars" id="end-stars"></div>
+    <div class="score" id="end-score">0</div>
+    <div class="score-sub" id="end-sub"></div>
+    <div class="send" id="send-msg"></div>
+    <div class="stack">
+      <button class="btn led" id="again" type="button">Nochmal spielen</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* ==========================================================
+   A1-SPIELHALLE – sechs Spiele, jedes ist eine Liga-Aufgabe
+   Aufruf: a1-spielhalle.html?spiel=artikel  (siehe SPIELE)
+   ========================================================== */
+const KURS_CODE = "ploen-jik";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function rnd(n){ try{ return Math.floor(crypto.getRandomValues(new Uint32Array(1))[0]/4294967296*n); }catch(e){ return Math.floor(Math.random()*n); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+let cleanup = [];
+function onCleanup(fn){ cleanup.push(fn); }
+function runCleanup(){ cleanup.splice(0).forEach(f=>{ try{ f(); }catch(e){} }); }
+
+/* ==========================================================
+   INHALTE – Leseverstehen A1 (Gespräche, Texte, Anzeigen)
+   ========================================================== */
+const DIALOGE = [
+  {titel:"Beim Bäcker", emo:"🥐", items:[
+    {emo:"👩‍🍳", t:"Guten Morgen! Was möchten Sie?"},
+    {emo:"🧑", t:"Guten Morgen. Ich nehme zwei Brötchen, bitte."},
+    {emo:"👩‍🍳", t:"Gern. Möchten Sie noch etwas?"},
+    {emo:"🧑", t:"Ja, einen Kaffee zum Mitnehmen."},
+    {emo:"👩‍🍳", t:"Das macht 3,20 Euro."},
+    {emo:"🧑", t:"Hier, bitte. Auf Wiedersehen!"}
+  ]},
+  {titel:"Die Wohnung anschauen", emo:"🔑", items:[
+    {emo:"👩‍💼", t:"Guten Tag! Sie möchten die Wohnung sehen?"},
+    {emo:"🧔", t:"Ja, genau. Wie viele Zimmer hat die Wohnung?"},
+    {emo:"👩‍💼", t:"Die Wohnung hat drei Zimmer und einen Balkon."},
+    {emo:"🧔", t:"Sehr schön. Und wie hoch ist die Miete?"},
+    {emo:"👩‍💼", t:"740 Euro plus Nebenkosten."},
+    {emo:"🧔", t:"Gut. Darf ich noch das Bad sehen?"}
+  ]},
+  {titel:"Im Kursbüro", emo:"📝", items:[
+    {emo:"👩", t:"Hallo, wie kann ich Ihnen helfen?"},
+    {emo:"👨🏽", t:"Ich möchte einen Deutschkurs machen."},
+    {emo:"👩", t:"Haben Sie schon Deutsch gelernt?"},
+    {emo:"👨🏽", t:"Ja, ich habe einen A1-Kurs gemacht."},
+    {emo:"👩", t:"Sehr gut. Der A2-Kurs beginnt am Montag um neun Uhr."},
+    {emo:"👨🏽", t:"Super, dann bis Montag!"}
+  ]},
+  {titel:"Am Telefon", emo:"📱", items:[
+    {emo:"👩🏻", t:"Hallo Ali, hast du am Samstag Zeit?"},
+    {emo:"🧑🏽", t:"Hallo Lea! Ja, am Samstag habe ich frei."},
+    {emo:"👩🏻", t:"Super. Wollen wir ins Kino gehen?"},
+    {emo:"🧑🏽", t:"Gute Idee. Wann beginnt der Film?"},
+    {emo:"👩🏻", t:"Um acht. Wir treffen uns um halb acht vor dem Kino."},
+    {emo:"🧑🏽", t:"Okay, bis Samstag!"}
+  ]}
+];
+
+const TEXTPUZZLE = [
+  {titel:"E-Mail an eine Freundin", emo:"📧", items:[
+    {t:"Hallo Mina,"},
+    {t:"wie geht es dir? Ich habe eine neue Wohnung!"},
+    {t:"Die Wohnung hat zwei Zimmer und einen Balkon."},
+    {t:"Am Samstag haben meine Freunde geholfen."},
+    {t:"Besuch mich bald! Meine Adresse ist Seestraße 12."},
+    {t:"Liebe Grüße, Sara"}
+  ]},
+  {titel:"Nachricht an die Lehrkraft", emo:"✉️", items:[
+    {t:"Guten Morgen, Herr Guitoo,"},
+    {t:"ich kann heute nicht in den Kurs kommen."},
+    {t:"Ich bin krank und muss zum Arzt."},
+    {t:"Können Sie mir bitte die Hausaufgaben schicken?"},
+    {t:"Vielen Dank und viele Grüße, Amir"}
+  ]},
+  {titel:"Unser Kursfest", emo:"🎉", items:[
+    {t:"Letzte Woche hat unser Kurs ein Fest gemacht."},
+    {t:"Zuerst haben wir den Raum sauber gemacht."},
+    {t:"Dann hat jeder etwas zu essen gekocht."},
+    {t:"Wir haben Musik gehört und getanzt."},
+    {t:"Danach haben wir viele Fotos gemacht."},
+    {t:"Am Ende haben wir noch lange gesprochen."}
+  ]}
+];
+
+const LESETEXTE = [
+  {id:"nazari", emo:"🏠", titel:"Familie Nazari sucht", sub:"Forum Wohnen",
+   text:"Hallo zusammen! Wir sind vier Personen und wohnen in einer kleinen 2-Zimmer-Wohnung in Kiel. Die Wohnung ist zu klein und sehr teuer: Wir bezahlen 890 Euro. Jetzt suchen wir eine Wohnung mit drei oder vier Zimmern in Plön. Ein Garten ist wichtig, denn unsere Kinder spielen gern draußen. Wer hat einen Tipp?",
+   fragen:[
+     {q:"Wie viele Personen sind Familie Nazari?", o:["Vier Personen.","Zwei Personen.","Sechs Personen."]},
+     {q:"Warum suchen sie eine neue Wohnung?", o:["Die Wohnung ist zu klein und zu teuer.","Die Nachbarn sind sehr laut.","Die Wohnung hat keine Küche."]},
+     {q:"Was ist der Familie wichtig?", o:["Ein Garten für die Kinder.","Eine Garage für das Auto.","Ein Zimmer im Zentrum."]}
+   ]},
+  {id:"aushang", emo:"📌", titel:"Aushang im Haus", sub:"Hoffest",
+   text:"Liebe Nachbarn, am Samstag, 12. Oktober, machen wir ein Hoffest. Es beginnt um 15 Uhr im Garten. Bitte bringen Sie einen Salat oder einen Kuchen mit. Die Getränke sind umsonst. Bei Regen feiern wir im Keller. Ihre Hausgemeinschaft",
+   fragen:[
+     {q:"Wann beginnt das Fest?", o:["Am Samstag um 15 Uhr.","Am Samstag um 12 Uhr.","Am Sonntag um 15 Uhr."]},
+     {q:"Was sollen die Nachbarn mitbringen?", o:["Einen Salat oder einen Kuchen.","Getränke für alle.","Stühle und Tische."]},
+     {q:"Und wenn es regnet?", o:["Dann feiern alle im Keller.","Dann gibt es kein Fest.","Dann feiern alle am Sonntag."]}
+   ]},
+  {id:"samira", emo:"📅", titel:"Samiras Woche", sub:"Ein Bericht",
+   text:"Letzte Woche hatte ich viel zu tun. Am Montag habe ich bis 18 Uhr gearbeitet. Am Dienstag habe ich mit meiner Freundin Deutsch gelernt. Am Mittwoch habe ich eine Wohnung gesucht. Am Donnerstag habe ich einen langen Brief geschrieben. Am Freitag habe ich lange geschlafen und einen Film gesehen. Am Wochenende habe ich Freunde getroffen. Es war eine gute Woche.",
+   fragen:[
+     {q:"Was hat Samira am Dienstag gemacht?", o:["Sie hat Deutsch gelernt.","Sie hat gearbeitet.","Sie hat einen Film gesehen."]},
+     {q:"An welchem Tag hat sie lange geschlafen?", o:["Am Freitag.","Am Montag.","Am Mittwoch."]},
+     {q:"Wen hat sie am Wochenende getroffen?", o:["Ihre Freunde.","Ihre Lehrerin.","Ihre Mutter."]}
+   ]}
+];
+
+const ANZEIGEN_L = {
+  A:{emo:"🚲", titel:"Fahrrad", text:"Fahrrad zu verkaufen, fast neu, nur 60 Euro."},
+  B:{emo:"🛋️", titel:"Sofa", text:"Sofa kostenlos abzugeben! Nur abholen, Kiel-Gaarden."},
+  C:{emo:"🐕", titel:"Hund", text:"Wer geht mit meinem Hund spazieren? 2-mal pro Woche, 10 Euro."},
+  D:{emo:"📚", titel:"Nachhilfe", text:"Deutsch-Nachhilfe A1 und A2, 15 Euro pro Stunde."},
+  E:{emo:"🧹", titel:"Arbeit", text:"Wir suchen eine Reinigungskraft für unser Büro, morgens, 2 Tage pro Woche."},
+  F:{emo:"🎸", titel:"Gitarre", text:"Gitarrenunterricht für Anfänger, jeden Mittwoch um 18 Uhr."}
+};
+const SUCHENDE = [
+  {emo:"🧑🏽", name:"Ali", t:"Ali hat kein Auto. Er möchte jeden Tag zur Arbeit fahren – und wenig Geld ausgeben.", a:"A"},
+  {emo:"👩🏻", name:"Mina", t:"Mina hat eine neue Wohnung. Das Wohnzimmer ist noch leer, aber sie hat wenig Geld.", a:"B"},
+  {emo:"👦🏾", name:"Tom", t:"Tom liebt Tiere. Am Nachmittag hat er Zeit und möchte etwas Geld verdienen.", a:"C"},
+  {emo:"👩🏽", name:"Sara", t:"Sara macht im Juni die A2-Prüfung. Die Grammatik ist schwer für sie.", a:"D"},
+  {emo:"🧔🏼", name:"Herr Berger", t:"Herr Berger sucht eine Arbeit. Er kann nur am Morgen und nur zwei Tage pro Woche.", a:"E"}
+];
+
+/* ==========================================================
+   SPIELE
+   ========================================================== */
+const SPIELE = {
+  dialog:  {key:"lesen-gespraech-ordnen", nr:21, icon:"💬", title:"Gespräch ordnen",  thema:"Dialoge verstehen",   color:"#0E7490", run:spielDialog,
+    text:"Vier Gespräche sind durcheinander. Bring sie in die richtige Reihenfolge.",
+    rules:["Du siehst die Sätze eines Gesprächs – aber falsch sortiert.","Tippe die Sätze in der richtigen Reihenfolge an.","Eine Karte in der Zeile antippen = zurücklegen.","Jede richtige Position gibt Punkte."]},
+  puzzle:  {key:"lesen-text-puzzle",      nr:22, icon:"🧩", title:"Text-Puzzle",      thema:"E-Mails & Geschichten", color:"#7C3AED", run:spielPuzzle,
+    text:"Eine E-Mail, eine Nachricht, eine Geschichte: Was kommt zuerst?",
+    rules:["Achte auf Anrede und Gruß.","Achte auf die Wörter zuerst, dann, danach, am Ende.","Tippe die Teile in der richtigen Reihenfolge an.","Jede richtige Position gibt Punkte."]},
+  fragen:  {key:"lesen-fragen-zum-text",  nr:23, icon:"📖", title:"Fragen zum Text",  thema:"Drei Texte, neun Fragen", color:"#15803D", run:spielFragen,
+    text:"Lies die Texte und beantworte die Fragen. Der Text bleibt immer sichtbar.",
+    rules:["Lies den Text oben in Ruhe.","Wähle die richtige Antwort.","Nach einer falschen Antwort kannst du noch einmal nachlesen.","Neun Fragen zu drei Texten."]},
+  match:   {key:"lesen-wer-passt",        nr:24, icon:"🔎", title:"Wer passt zusammen?", thema:"Anzeigen lesen",    color:"#B45309", run:spielMatch,
+    text:"Fünf Personen suchen etwas. Welche Anzeige passt? Achtung: Eine passt zu niemandem.",
+    rules:["Oben stehen sechs Anzeigen: A bis F.","Lies, was die Person sucht.","Tippe auf die passende Anzeige.","Eine Anzeige passt zu keiner Person."]}
+};
+const PARAM = new URLSearchParams(location.search).get("spiel");
+const SPIEL = SPIELE[PARAM] || null;
+const MENU_TEXT = "Vier Spiele zum Lesen: Gespräche ordnen, Texte zusammensetzen, Fragen zum Text beantworten und Anzeigen zuordnen. Welche Spiele Punkte bringen, siehst du in der Arena.";
+const HALLE_TITEL = "Lese-Arena";
+
+/* ---------- Bausteine ---------- */
+function hud(extra){ return `<div class="hud">${extra}</div>`; }
+function flash(stage, ok){ const f=stage&&stage.querySelector(".flash"); if(!f) return; f.className="flash "+(ok?"ok":"bad"); setTimeout(()=>f.className="flash",220); }
+
+/* Fragen-Ablauf */
+function quiz(area, cfg, finish){
+  const list=cfg.list; let n=0, richtig=0, locked=false;
+  area.innerHTML = hud(`<span class="pill">${cfg.unit||"Frage"}<b id="q-n">1</b>/${list.length}</span><span class="grow"></span><span class="pill">✓<b id="q-ok">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div id="q-top"></div><div class="prompt" id="q-prompt"></div><div class="opts" id="q-opts"></div><div class="tip" id="q-tip"></div><div id="q-next"></div></div>`;
+  if(cfg.init) cfg.init(area);
+  function show(){
+    const it=list[n];
+    $("#q-n").textContent=n+1;
+    if(cfg.topFor) $("#q-top").innerHTML=cfg.topFor(it,n);
+    $("#q-prompt").innerHTML=cfg.prompt(it,n);
+    const box=$("#q-opts"); box.className="opts "+(cfg.cols?cfg.cols(it):"");
+    box.innerHTML=cfg.options(it).map(o=>`<button class="opt ${o.cls||""}" data-v="${esc(o.v)}">${o.label}</button>`).join("");
+    const t=$("#q-tip"); t.textContent=""; t.className="tip"; $("#q-next").innerHTML="";
+    locked=false;
+  }
+  function next(){ n++; if(n<list.length) show(); else finish(richtig/list.length, `${richtig} von ${list.length} richtig`); }
+  $("#q-opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const it=list[n]; const ok=cfg.check(it, b.dataset.v);
+    b.classList.add(ok?"right":"wrong");
+    if(!ok){ const c=[...$("#q-opts").querySelectorAll(".opt")].find(x=>cfg.check(it,x.dataset.v)); if(c) c.classList.add("right"); }
+    if(ok) richtig++; $("#q-ok").textContent=richtig;
+    const t=$("#q-tip"); t.className="tip "+(ok?"ok":"bad"); t.textContent=cfg.feedback?cfg.feedback(it,ok):(ok?"Richtig!":"");
+    flash(area.querySelector(".stage"), ok);
+    if(!ok){ $("#q-next").innerHTML=`<button class="btn wide" type="button" style="margin-top:10px">Weiter ›</button>`; $("#q-next button").onclick=next; }
+    else setTimeout(next, cfg.okDelay||1000);
+  });
+  show();
+}
+
+/* Sortier-Ablauf */
+function ordnen(area, runden, finish){
+  let n=0, treffer=0, gesamt=0, chosen=[], karten=[], fertig=false;
+  area.innerHTML = hud(`<span class="pill">Runde<b id="o-n">1</b>/${runden.length}</span><span class="grow"></span><span class="pill">✓<b id="o-ok">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="teil" id="o-teil"></div>
+       <div class="order" id="o-line"></div><div class="pool cards" id="o-pool"></div>
+       <div class="stack" style="grid-template-columns:1fr 2fr;margin-top:6px"><button class="btn ghost" id="o-reset" type="button">Neu legen</button><button class="btn led" id="o-check" type="button" disabled>Prüfen</button></div>
+       <div class="tip" id="o-tip"></div></div>`;
+  const karte = (it) => `${it.emo?`<i>${it.emo}</i>`:""}${esc(it.t)}`;
+  function show(){
+    const r=runden[n]; chosen=[]; fertig=false;
+    karten=shuffle(r.items.map((it,idx)=>({...it, idx})));
+    if(karten.every((k,idx)=>k.idx===idx)) karten.push(karten.shift());
+    $("#o-n").textContent=n+1;
+    $("#o-teil").textContent=`${r.emo} ${r.titel}${r.hinweis?" – "+r.hinweis:""}`;
+    $("#o-tip").textContent=""; $("#o-tip").className="tip";
+    area.querySelectorAll(".weiter-btn").forEach(b=>b.remove());
+    draw();
+  }
+  function draw(){
+    const r=runden[n];
+    $("#o-line").innerHTML=r.items.map((_,k)=>{
+      const c=chosen[k];
+      return `<div class="slot ${c?"full":""}"><b>${k+1}</b>${c?`<button class="kartex" data-k="${k}">${karte(c)}</button>`:`<span class="leer">…</span>`}</div>`;
+    }).join("");
+    $("#o-pool").innerHTML=karten.map((c,k)=>`<button class="kartex ${chosen.includes(c)?"used":""}" data-c="${k}">${karte(c)}</button>`).join("");
+    $("#o-check").disabled = chosen.length!==r.items.length || fertig;
+  }
+  area.addEventListener("click", e=>{
+    const b=e.target.closest(".kartex"); if(!b||fertig) return;
+    if(b.dataset.c!==undefined){ const c=karten[Number(b.dataset.c)]; if(!chosen.includes(c)) chosen.push(c); }
+    else if(b.dataset.k!==undefined){ chosen.splice(Number(b.dataset.k),1); }
+    draw();
+  });
+  $("#o-reset").addEventListener("click", ()=>{ if(fertig) return; chosen=[]; draw(); });
+  $("#o-check").addEventListener("click", ()=>{
+    const r=runden[n]; fertig=true;
+    let ok=0; chosen.forEach((c,k)=>{ if(c.idx===k) ok++; });
+    treffer+=ok; gesamt+=r.items.length; $("#o-ok").textContent=treffer;
+    $("#o-line").innerHTML=chosen.map((c,k)=>`<div class="slot full ${c.idx===k?"ok":"bad"}"><b>${k+1}</b><span class="kartex still">${karte(c)}</span></div>`).join("");
+    $("#o-pool").innerHTML="";
+    const alles=ok===r.items.length;
+    flash(area.querySelector(".stage"), alles);
+    const tip=$("#o-tip"); tip.className="tip "+(alles?"ok":"bad");
+    tip.innerHTML = alles ? `Alles richtig! +${ok}` : `${ok} von ${r.items.length} richtig. So ist es richtig:<br><span class="loesung">${r.items.map((it,k)=>`${k+1}. ${it.emo?it.emo+" ":""}${esc(it.t)}`).join("<br>")}</span>`;
+    $("#o-check").disabled=true;
+    const w=document.createElement("button"); w.className="btn wide weiter-btn"; w.type="button"; w.style.marginTop="10px"; w.textContent="Weiter ›";
+    w.onclick=()=>{ n++; if(n<runden.length) show(); else finish(treffer/gesamt, `${treffer} von ${gesamt} Karten an der richtigen Stelle`); };
+    $("#o-tip").after(w);
+    if(alles) setTimeout(()=>{ if(document.body.contains(w)) w.click(); }, 1800);
+  });
+  show();
+}
+
+/* 21 · Gespräch ordnen */
+function spielDialog(area, finish){
+  ordnen(area, shuffle(DIALOGE.slice()).map(d=>({...d, hinweis:"Wer sagt was zuerst?"})), finish);
+}
+
+/* 22 · Text-Puzzle */
+function spielPuzzle(area, finish){
+  ordnen(area, shuffle(TEXTPUZZLE.slice()).map(t=>({...t, hinweis:"Bring den Text in die richtige Reihenfolge"})), finish);
+}
+
+/* 23 · Fragen zum Text */
+function spielFragen(area, finish){
+  const list=shuffle(LESETEXTE.slice()).flatMap(t=>shuffle(t.fragen.slice()).map(f=>({...f, t})));
+  quiz(area, {
+    list, unit:"Frage", okDelay:1100,
+    topFor:(it)=>`<div class="tbox"><b>${it.t.emo} ${esc(it.t.titel)} <small>${esc(it.t.sub)}</small></b><p>${esc(it.t.text)}</p></div>`,
+    prompt:(it)=>`<span class="big" style="font-size:clamp(21px,5.6vw,28px)">${esc(it.q)}</span>`,
+    cols:()=>"",
+    options:(it)=>shuffle(it.o.slice()).map(o=>({v:o,label:esc(o),cls:"txt"})),
+    check:(it,v)=>v===it.o[0],
+    feedback:(it,ok)=> ok ? "Richtig!" : `Richtig ist: ${it.o[0]} – lies den Text noch einmal.`
+  }, finish);
+}
+
+/* 24 · Wer passt zusammen? */
+function spielMatch(area, finish){
+  const keys=Object.keys(ANZEIGEN_L);
+  const tafel=`<div class="teil">Sechs Anzeigen</div><div class="adlist">${keys.map(k=>`<div class="ad"><span class="adk">${k}</span><i>${ANZEIGEN_L[k].emo}</i><div><b>${esc(ANZEIGEN_L[k].titel)}</b>${esc(ANZEIGEN_L[k].text)}</div></div>`).join("")}</div>`;
+  quiz(area, {
+    list:shuffle(SUCHENDE.slice()), unit:"Person", okDelay:1100,
+    init:()=>{ $("#q-top").innerHTML=tafel; },
+    prompt:(it)=>`<span class="emo pop">${it.emo}</span><span class="big" style="font-size:clamp(20px,5.4vw,26px)">${esc(it.t)}</span><span class="hint">Welche Anzeige passt?</span>`,
+    cols:()=>"three",
+    options:()=>keys.map(k=>({v:k,label:`${k}<small style="display:block;font-size:18px">${ANZEIGEN_L[k].emo}</small>`})),
+    check:(it,v)=>v===it.a,
+    feedback:(it,ok)=>`${it.a}: ${ANZEIGEN_L[it.a].text}`
+  }, finish);
+}
+/* ==========================================================
+   LIGA-ANSCHLUSS (wie in der Vorlage, erweitert um Übungsmodus)
+   ========================================================== */
+const Liga = (() => {
+  const cfg = {
+    apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+    authDomain: "lern-deutsch-arash.firebaseapp.com",
+    databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "lern-deutsch-arash",
+    storageBucket: "lern-deutsch-arash.firebasestorage.app",
+    messagingSenderId: "845503292114",
+    appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+  };
+  const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+  const BASE = `jugendliga/${KURS}`;
+  const CODE_KEY = `liga_code_${KURS}`;
+  const screens = ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"];
+  let db=null, ctx=null, kennung=null, onReady=null;
+
+  function show(id){ screens.forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+  function block(title, text, allowOther){ $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  function getMe(){ try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); return c&&c.code?c:null; }catch(e){ return null; } }
+  const once = path => db.ref(`${BASE}/${path}`).once("value").then(s=>s.val());
+  const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+
+  function practice(max){ ctx={practice:true, max:max||10, best:null}; if(onReady) onReady(ctx); }
+
+  async function check(){
+    show("scr-loading");
+    if(!db){ block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); return; }
+    const me=getMe();
+    if(!me){ show("scr-code"); return; }
+    try{
+      const [c, pub] = await Promise.all([once(`codes/${me.code}`), once("public")]);
+      if(!c || !c.pid){ localStorage.removeItem(CODE_KEY); $("#code-err").textContent="Dein gespeicherter Code gilt nicht mehr."; show("scr-code"); return; }
+      const me2={code:me.code, pid:c.pid, name:c.name||""};
+      localStorage.setItem(CODE_KEY, JSON.stringify(me2));
+      const team = pub && pub.roster ? arr(pub.teams).find(t=>t.id===pub.roster[c.pid]) || null : null;
+      if(team||me2.name){ $("#who").classList.remove("hidden"); $("#who-name").textContent=[me2.name, team&&team.name].filter(Boolean).join(" – "); $("#who-color").style.background=team?team.color:"transparent"; }
+      const task = pub && pub.tasks ? pub.tasks[kennung] : null;
+      if(!pub || !pub.round){ block("Gerade keine Runde", "Die Liga macht gerade Pause. Du kannst trotzdem üben.", false); return; }
+      if(!task){ block("Noch nicht in der Liga", "Dieses Spiel bringt gerade keine Punkte. Du kannst trotzdem üben.", false); return; }
+      if(!task.open){ block(task.status==="fertig"?"Aufgabe beendet":"Noch gesperrt", task.status==="fertig"?"Diese Aufgabe ist schon abgeschlossen. Üben geht aber immer.":"Diese Aufgabe ist noch nicht freigeschaltet. Üben geht aber schon.", false); return; }
+      const a=task.assign||{};
+      const mine = a.alle || (a.players&&a.players[c.pid]) || (team && a.teams && a.teams[team.id]);
+      if(!mine){ block("Nicht für dich", "Dieses Spiel bringt gerade nur einem anderen Team Punkte. Schau in der Arena nach deinen Aufgaben – üben kannst du hier trotzdem.", true); return; }
+      const best = await once(`live/${pub.round.id}/${c.pid}/${kennung}`);
+      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, best:(best===null||best===undefined)?null:Number(best)};
+      if(onReady) onReady(ctx);
+    }catch(e){ console.warn(e); block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); }
+  }
+
+  async function senden(points){
+    if(!ctx || ctx.practice) return {ok:true, practice:true};
+    const p=Math.max(0, Math.min(ctx.max, Math.round(Number(points)||0)));
+    const k=kennung, pid=ctx.me.pid, r=ctx.round;
+    const ts=firebase.database.ServerValue.TIMESTAMP;
+    const work=(async()=>{
+      try{ await db.ref(`${BASE}/tries/${r}/${pid}/${k}`).push({code:ctx.me.code, points:p, ts}); }catch(e){ console.warn("Versuch", e); }
+      if(ctx.best!==null && p<=ctx.best) return {ok:true, better:false, points:p, best:ctx.best};
+      await db.ref(`${BASE}/proof/${r}/${pid}/${k}`).set({code:ctx.me.code, points:p, ts});
+      await db.ref(`${BASE}/live/${r}/${pid}/${k}`).set(p);
+      ctx.best=p;
+      return {ok:true, better:true, points:p, best:p};
+    })().catch(e=>{ console.warn(e); return {ok:false}; });
+    const res=await Promise.race([work, sleep(9000).then(()=>"slow")]);
+    return res==="slow" ? {ok:false, slow:true, later:work} : res;
+  }
+  function nachricht(res){
+    if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht für die Liga."};
+    if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte für dich und dein Team gespeichert!`};
+    if(res.ok) return {cls:"", text:`Dein bestes Ergebnis bleibt ${res.best} Punkte. Versuch es nochmal!`};
+    if(res.slow) return {cls:"", text:"Du bist gerade offline. Lass die Seite offen – die Punkte werden gesendet, sobald Internet da ist."};
+    return {cls:"bad", text:"Die Punkte konnten nicht gespeichert werden. Zeig diese Seite deiner Lehrkraft."};
+  }
+  function start(key, cb){
+    kennung=key; onReady=cb;
+    $("#code-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const code=$("#code-in").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+      if(code.length<4){ $("#code-err").textContent="Der Code hat mindestens 4 Zeichen."; return; }
+      if(!db){ $("#code-err").textContent="Keine Verbindung."; return; }
+      $("#code-err").textContent="Prüfe …";
+      try{
+        const c=await once(`codes/${code}`);
+        if(!c||!c.pid){ $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+        localStorage.setItem(CODE_KEY, JSON.stringify({code, pid:c.pid, name:c.name||""}));
+        $("#code-err").textContent=""; check();
+      }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
+    });
+    document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", ()=>practice(10)));
+    $("#block-other").addEventListener("click", ()=>{ localStorage.removeItem(CODE_KEY); $("#who").classList.add("hidden"); $("#code-in").value=""; show("scr-code"); });
+    try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database(); } }catch(e){ db=null; }
+    check();
+  }
+  return {start, senden, nachricht, show, get ctx(){ return ctx; }};
+})();
+
+/* ==========================================================
+   ABLAUF
+   ========================================================== */
+function kopf(g){
+  document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
+  $("#head-ic").textContent=g?g.icon:"🎮";
+  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Lesen";
+  $("#head-title").textContent=g?g.title:HALLE_TITEL;
+  document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
+}
+function startScreen(){
+  const c=Liga.ctx;
+  $("#start-rules").innerHTML=SPIEL.rules.map(r=>`<li>${esc(r)}</li>`).join("");
+  $("#start-best").textContent = c.practice ? "Übungsmodus – ohne Punkte."
+    : c.best===null ? `Du kannst bis zu ${c.max} Punkte holen.` : `Dein bestes Ergebnis: ${c.best} von ${c.max}. Nur ein besseres Ergebnis zählt.`;
+  Liga.show("scr-start");
+}
+function spielen(){
+  if(!Liga.ctx) return;
+  runCleanup();
+  const area=document.createElement("div"); $("#area").replaceChildren(area);
+  Liga.show("scr-game");
+  let fertig=false;
+  SPIEL.run(area, async (ratio, zeile)=>{
+    if(fertig) return; fertig=true; runCleanup();
+    const c=Liga.ctx; const punkte=Math.round(Math.max(0,Math.min(1,ratio))*c.max);
+    $("#end-score").textContent=punkte;
+    $("#end-sub").textContent=`von ${c.max} Punkten – ${zeile}`;
+    $("#end-stars").textContent = ratio>=0.9?"⭐⭐⭐":ratio>=0.6?"⭐⭐":ratio>=0.3?"⭐":"💪";
+    const msg=$("#send-msg"); msg.className="send"; msg.textContent=c.practice?"":"Punkte werden gesendet …";
+    Liga.show("scr-end");
+    const res=await Liga.senden(punkte);
+    const n=Liga.nachricht(res); msg.className="send "+n.cls; msg.textContent=n.text;
+    if(res.slow && res.later) res.later.then(r=>{ const m=Liga.nachricht(r); msg.className="send "+m.cls; msg.textContent=m.text; });
+  });
+}
+
+if(!SPIEL){
+  kopf(null); $("#menu-text").textContent=MENU_TEXT;
+  $("#menu").innerHTML=Object.entries(SPIELE).map(([p,g])=>`<a class="tile" href="?spiel=${p}">
+    <div class="tile-top" style="background-color:${g.color}"><span>${g.icon}</span><b>${esc(g.title)}</b></div>
+    <p>${g.timer?'<span class="tbadge">⏱️ gegen die Zeit</span>':""}<b style="color:var(--ink)">${esc(g.thema)}</b><br>${esc(g.text)}</p></a>`).join("");
+  Liga.show("scr-menu");
+} else {
+  kopf(SPIEL);
+  $("#start-btn").addEventListener("click", spielen);
+  $("#again").addEventListener("click", startScreen);
+  Liga.start(SPIEL.key, startScreen);
+}
+</script>
+</body>
+</html>
