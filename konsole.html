@@ -394,6 +394,7 @@ let pending = {};
 let scoreTask = {taskId:"", newTitle:"", date:todayISO(), note:""};
 let logFilter = "";
 let editTaskId = null;
+let fileCheck = {};
 let statRoundId = null;
 
 function genCode(taken){
@@ -969,7 +970,7 @@ function vAufgaben(){
     <div class="row" style="margin-top:16px"><button class="btn led" data-act="task-save">${t?"Änderungen speichern":"Aufgabe anlegen"}</button>${t?`<button class="btn ghost" data-act="task-cancel">Abbrechen</button>`:""}</div>
   </div>`;
   const list=`<div class="panel">
-    ${sorted.length?`<ul class="list">${sorted.map(x=>{
+    ${sorted.length?`<div class="row" style="margin-bottom:10px"><button class="btn ghost sm" data-act="check-files">Dateien auf dem Server prüfen</button>${state.settings.arenaUrl?"":`<span class="small">Dafür muss oben die Adresse der Arena eingetragen sein.</span>`}</div><ul class="list">${sorted.map(x=>{
       const pids=assignedPids(x,r);
       const done=r?pids.filter(p=>autoVal(r.id,p,x.key)!==null).length:0;
       const stLabel=(STATUS.find(s=>s[0]===x.status)||STATUS[1])[1].replace(/ \(.*\)/,"");
@@ -977,7 +978,7 @@ function vAufgaben(){
         <div class="task-ic"><span>${esc(x.icon)}</span><b>${esc(x.nr)}</b></div>
         <div style="min-width:0"><div class="name" style="font-weight:700">${esc(x.title)} <span class="badge st-${x.status}">${stLabel}</span></div>
           <div class="small">${esc(assignLabel(x,r))} – max. ${x.max} Punkte${x.due?` – bis ${fmtDate(x.due)}`:""}${r&&pids.length?` – ${done}/${pids.length} erledigt`:""}</div>
-          <div class="small">Kennung: <b>${esc(x.key)}</b>${x.file?` – Datei: ${esc(x.file)}`:" – keine Datei"}</div></div>
+          <div class="small">Kennung: <b>${esc(x.key)}</b>${x.file?` – Datei: ${esc(x.file)}`:" – keine Datei"}${fileCheck[x.id]?` <span class="badge" style="background:${fileCheck[x.id]==="ok"?"var(--ok)":"var(--warn)"}">${fileCheck[x.id]==="ok"?"Datei gefunden":fileCheck[x.id]==="404"?"Datei fehlt auf dem Server":"nicht prüfbar"}</span>`:""}</div></div>
         <div class="acts">
           <select data-act="task-status" data-id="${x.id}" aria-label="Status" style="width:auto;min-height:36px;padding:4px 8px">${STATUS.map(([k,l])=>`<option value="${k}" ${x.status===k?"selected":""}>${l.replace(/ \(.*\)/,"")}</option>`).join("")}</select>
           <button class="btn ghost sm" data-act="task-edit" data-id="${x.id}">Bearbeiten</button>
@@ -1146,6 +1147,10 @@ function vSicherung(){
         <div style="margin-top:14px"><label class="switch"><input type="checkbox" data-act="set-top" ${S.showTop?"checked":""}><span>Top 5 der Einzelwertung zeigen</span></label></div>
         <label class="f" style="margin-top:14px">Adresse der Arena (für die Codekarten)<input type="text" data-act="set-url" value="${esc(S.arenaUrl)}" placeholder="https://arashguitoo.github.io/…"></label>
         <div class="row" style="margin-top:12px"><span class="small">Kurs-Code: <b>${esc(codePath())}</b></span><span class="spacer"></span><button class="btn ghost sm" data-act="publish-now">Arena jetzt aktualisieren</button></div>
+        <hr class="court">
+        <h3>Live-Spiel im Unterricht</h3>
+        <p class="lead">Öffne die Leinwand-Ansicht auf dem Beamer-Rechner und melde dich dort mit diesem Konto an. Die TN spielen am Handy über die Aufgabe in der Arena mit.</p>
+        <div class="row"><button class="btn led sm" data-act="beamer" ${S.arenaUrl?"":"disabled"}>Leinwand öffnen</button>${S.arenaUrl?"":`<span class="small">Trag zuerst oben die Adresse der Arena ein.</span>`}</div>
       </div>
       <div class="panel">
         <h3>Einstellungen</h3>
@@ -1386,7 +1391,11 @@ function rulesJSON(){
       }}}},
       tries:{ "$round":{ "$pid":{ "$task":{ "$try":{
         ".write":`!data.exists() && ${ptsOk} && ${codeOk} && ${roundOk}`
-      }}}}}
+      }}}}},
+      battle:{ ".read":true,
+        players:{ "$pid":{ ".write":`!newData.exists() || (newData.hasChildren(['code', 'name']) && ${codeOk})` }},
+        answers:{ "$q":{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'a', 't']) && newData.child('a').isNumber() && ${codeOk}` }}}
+      }
     }},
     "$other":{ ".read":true, ".write":true }
   }};
@@ -1486,6 +1495,12 @@ document.addEventListener("click", e=>{
     case "cloud-list": cloudList(); break;
     case "cloud-restore": cloudRestore(el.dataset.ts); break;
     case "publish-now": publish().then(ok=>{ if(ok) toast("Arena aktualisiert."); }); break;
+    case "beamer": {
+      const basis=(state.settings.arenaUrl||"").trim().replace(/[^\/]*$/,"");
+      if(!basis){ toast("Trag zuerst die Adresse der Arena ein."); break; }
+      window.open(basis+"a1-live-duell.html?rolle=beamer","_blank");
+      break;
+    }
     case "set-namemode": state.settings.nameMode=el.dataset.v; save(); break;
     case "set-wertung": state.settings.wertung=el.dataset.v; save(); break;
     case "reset":
@@ -1579,6 +1594,24 @@ document.addEventListener("click", e=>{
     }
 
     case "task-save": saveTaskForm(); break;
+    case "check-files": {
+      const basis=(state.settings.arenaUrl||"").trim().replace(/[^\/]*$/,"");
+      if(!basis){ toast("Trag zuerst oben die Adresse der Arena ein."); break; }
+      const offen=state.tasks.filter(t=>t.file);
+      if(!offen.length){ toast("Keine Aufgabe hat eine Datei."); break; }
+      toast(`Prüfe ${offen.length} Datei(en) …`);
+      Promise.all(offen.map(t=>{
+        const url=basis+String(t.file).split("?")[0];
+        return fetch(url,{method:"GET",cache:"no-store"})
+          .then(r=>{ fileCheck[t.id]= r.ok ? "ok" : (r.status===404 ? "404" : "fehler"); })
+          .catch(()=>{ fileCheck[t.id]="fehler"; });
+      })).then(()=>{
+        const fehlt=offen.filter(t=>fileCheck[t.id]==="404").length;
+        render();
+        toast(fehlt ? `${fehlt} Datei(en) fehlen auf dem Server – bitte hochladen.` : "Alle Dateien sind da.");
+      });
+      break;
+    }
     case "task-pack": {
       const inp=document.createElement("input"); inp.type="file"; inp.accept=".json,application/json";
       inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const rd=new FileReader();

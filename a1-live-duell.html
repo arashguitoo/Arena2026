@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<meta name="robots" content="noindex, nofollow">
+<title>Live-Duell – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
+  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
+  --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+.hidden{display:none!important}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 22px;border-radius:12px;border:0;background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.led{background:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;color:var(--board);box-shadow:inset 0 0 0 2px var(--board)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.card{background:var(--paper);border-radius:18px;padding:20px 18px;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.card h2{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;margin:0 0 8px;color:var(--board)}
+.err{color:var(--bad);font-weight:700;min-height:24px;margin-top:8px}
+.codein{display:flex;gap:8px;margin-top:12px}
+.codein input{flex:1;min-width:0;min-height:54px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:var(--ink)}
+
+/* ================= SPIELER ================= */
+#spieler main{max-width:620px;margin:0 auto;padding:16px 14px 40px}
+.me-bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led)}
+.me-bar-in{max-width:620px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;gap:10px;min-height:54px}
+.me-bar i{font-style:normal;width:10px;height:24px;border-radius:3px;flex:none}
+.me-bar b{font-family:var(--display);font-weight:800;font-size:22px}
+.me-bar .pts{margin-left:auto;font-family:var(--display);font-weight:900;font-size:26px;color:var(--led)}
+.status{text-align:center;padding:30px 10px}
+.status .big{font-family:var(--display);font-weight:900;font-size:clamp(34px,10vw,52px);line-height:1;color:var(--board);display:block}
+.status .emo{font-size:60px;display:block;margin-bottom:8px}
+.qtext{font-family:var(--display);font-weight:800;font-size:clamp(24px,6.5vw,34px);line-height:1.1;text-align:center;margin:6px 0 14px;color:var(--board)}
+.qnum{text-align:center;color:var(--muted);font-weight:700}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ans{min-height:92px;border:0;border-radius:16px;color:#fff;font-weight:700;font-size:19px;line-height:1.2;padding:10px 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.22);transition:transform .08s}
+.ans:active{transform:scale(.97)}
+.ans span.l{font-family:var(--display);font-weight:900;font-size:26px;opacity:.85}
+.ans.a{background:var(--a)} .ans.b{background:var(--b)} .ans.c{background:var(--c)} .ans.d{background:var(--d)}
+.ans.dim{opacity:.35}
+.ans.picked{outline:5px solid var(--board);outline-offset:-5px}
+.timer-bar{height:14px;background:rgba(20,34,59,.14);border-radius:7px;overflow:hidden;margin-bottom:12px}
+.timer-bar i{display:block;height:100%;background:var(--board);border-radius:7px;transition:width .15s linear}
+.timer-bar.low i{background:var(--bad)}
+.result{text-align:center;padding:16px 8px}
+.result .big{font-family:var(--display);font-weight:900;font-size:clamp(40px,12vw,62px);line-height:1;display:block}
+.result.ok .big{color:var(--ok)} .result.bad .big{color:var(--bad)}
+.result .plus{font-family:var(--display);font-weight:900;font-size:44px;color:var(--board)}
+.loesung{background:#fff;border-radius:12px;padding:10px 14px;margin-top:10px;font-weight:700}
+
+/* ================= BEAMER ================= */
+#beamer{min-height:100vh;display:flex;flex-direction:column;background:var(--board);color:#fff;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1.4px, transparent 1.5px);background-size:10px 10px}
+.bm-top{display:flex;align-items:center;gap:18px;padding:14px 26px;border-bottom:4px solid var(--led)}
+.bm-top .t{font-family:var(--display);font-weight:900;font-size:34px;line-height:1}
+.bm-top .t small{display:block;font-family:var(--body);font-weight:400;font-size:15px;color:#aebad0}
+.bm-top .mid{margin-left:auto;display:flex;gap:10px;align-items:center}
+.pill{background:var(--board-2);border-radius:999px;padding:6px 14px;font-weight:700;font-size:17px}
+.pill b{font-family:var(--display);font-size:24px;color:var(--led);margin-left:6px}
+.bm-body{flex:1;display:flex;flex-direction:column;justify-content:center;padding:18px 26px 8px}
+.bm-foot{padding:10px 26px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.bm-foot .hint{color:#8190ab;font-size:15px;margin-left:auto}
+.bm-frage{font-family:var(--display);font-weight:900;font-size:clamp(34px,5.4vw,72px);line-height:1.02;text-align:center;margin:0 0 22px}
+.bm-answers{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bm-ans{border-radius:18px;padding:18px 20px;display:flex;align-items:center;gap:16px;font-weight:700;font-size:clamp(20px,2.6vw,34px);line-height:1.15;color:#fff;box-shadow:inset 0 -8px 0 rgba(0,0,0,.22);position:relative;transition:opacity .3s,transform .3s}
+.bm-ans .l{font-family:var(--display);font-weight:900;font-size:clamp(28px,3.4vw,46px);opacity:.9;flex:none}
+.bm-ans.a{background:var(--a)} .bm-ans.b{background:var(--b)} .bm-ans.c{background:var(--c)} .bm-ans.d{background:var(--d)}
+.bm-ans .cnt{margin-left:auto;font-family:var(--display);font-weight:900;font-size:clamp(24px,3vw,40px);background:rgba(0,0,0,.22);border-radius:12px;padding:2px 14px}
+.bm-ans.off{opacity:.25;transform:scale(.97)}
+.bm-ans.win{outline:6px solid #fff;outline-offset:4px}
+.bm-ans.win::after{content:"✓";position:absolute;right:-14px;top:-18px;font-size:44px}
+.ring{width:clamp(90px,10vw,140px);height:clamp(90px,10vw,140px);position:relative;flex:none}
+.ring svg{transform:rotate(-90deg);width:100%;height:100%}
+.ring circle{fill:none;stroke-width:12;stroke-linecap:round}
+.ring .bg{stroke:rgba(255,255,255,.15)}
+.ring .fg{stroke:var(--led);transition:stroke-dashoffset .15s linear}
+.ring.low .fg{stroke:var(--bad)}
+.ring b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:clamp(34px,4vw,56px)}
+.lobby{display:grid;grid-template-columns:1fr 1.1fr;gap:26px;align-items:center}
+@media (max-width:900px){.lobby{grid-template-columns:1fr}}
+.lobby h1{font-family:var(--display);font-weight:900;font-size:clamp(46px,7vw,92px);line-height:.9;margin:0 0 10px;color:var(--led)}
+.steps{list-style:none;padding:0;margin:0;display:grid;gap:10px;font-size:clamp(17px,1.7vw,24px)}
+.steps li{background:var(--board-2);border-radius:12px;padding:10px 16px;display:flex;gap:14px;align-items:center}
+.steps li b{font-family:var(--display);font-weight:900;font-size:30px;color:var(--led)}
+.joined{background:var(--board-2);border-radius:18px;padding:16px 18px;min-height:220px}
+.joined .n{font-family:var(--display);font-weight:900;font-size:clamp(34px,4vw,56px);color:var(--led);line-height:1}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:#fff;color:var(--ink);border-radius:999px;padding:4px 12px;font-weight:700;font-size:17px;display:flex;align-items:center;gap:7px;animation:pop .3s}
+.chip i{font-style:normal;width:9px;height:18px;border-radius:3px}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+.teams{display:grid;gap:10px;margin-top:6px}
+.trow{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.trow .nm{font-family:var(--display);font-weight:800;font-size:clamp(22px,2.6vw,34px);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.trow .nm i{font-style:normal;width:14px;height:28px;border-radius:4px;display:inline-block}
+.trow .bar{height:26px;border-radius:13px;background:rgba(255,255,255,.12);overflow:hidden}
+.trow .bar span{display:block;height:100%;border-radius:13px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.trow .p{font-family:var(--display);font-weight:900;font-size:clamp(26px,3vw,44px);color:var(--led);min-width:2.5em;text-align:right}
+.rank{display:grid;gap:8px;margin-top:14px}
+.rank div{display:flex;gap:14px;align-items:center;font-size:clamp(18px,2vw,26px);background:var(--board-2);border-radius:12px;padding:6px 16px}
+.rank b{font-family:var(--display);font-weight:900;font-size:30px;color:var(--led);width:40px}
+.rank .p{margin-left:auto;font-family:var(--display);font-weight:900;font-size:30px}
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:end;max-width:900px;margin:0 auto 20px}
+.pod{background:var(--board-2);border-radius:18px 18px 0 0;padding:16px 12px;text-align:center}
+.pod .nm{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.4vw,32px);line-height:1.05}
+.pod .p{font-size:clamp(18px,2vw,24px);color:var(--led);font-weight:700}
+.pod .medal{font-size:46px}
+.pod.p1{background:linear-gradient(180deg,#FFC53D,#E9800E);color:var(--board);height:230px}
+.pod.p2{height:180px}.pod.p3{height:150px}
+.bm-login{max-width:420px;margin:60px auto;background:var(--paper);color:var(--ink);border-radius:20px;padding:24px}
+.bm-login h2{font-family:var(--display);font-weight:900;font-size:34px;margin:0 0 10px;color:var(--board)}
+.bm-login label{display:block;font-size:15px;color:var(--muted);margin-bottom:10px}
+.bm-login input{width:100%;min-height:48px;border:2px solid var(--line);border-radius:10px;padding:8px 12px;background:#fff;color:var(--ink)}
+.dist{color:#aebad0;font-size:16px;margin-top:10px;text-align:center}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= SPIELER ================= -->
+<div id="spieler">
+  <header class="me-bar"><div class="me-bar-in">
+    <i id="me-color"></i><b id="me-name">Live-Duell</b>
+    <span class="pts" id="me-pts"></span>
+  </div></header>
+  <main>
+    <section class="card" id="p-code">
+      <h2>Live-Duell</h2>
+      <p>Gib deinen Code ein. Dann bist du dabei!</p>
+      <form class="codein" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn" type="submit">Los</button></form>
+      <div class="err" id="code-err" role="alert"></div>
+    </section>
+
+    <section class="hidden" id="p-wait"><div class="status">
+      <span class="emo" id="w-emo">⏳</span><span class="big" id="w-big">Warte …</span>
+      <p id="w-sub"></p>
+    </div></section>
+
+    <section class="hidden" id="p-frage">
+      <div class="qnum" id="p-qnum"></div>
+      <div class="qtext" id="p-qtext"></div>
+      <div class="timer-bar" id="p-timer"><i style="width:100%"></i></div>
+      <div class="answers" id="p-answers"></div>
+    </section>
+
+    <section class="hidden" id="p-result"><div class="result" id="p-res-box">
+      <span class="big" id="p-res-big"></span>
+      <div class="plus" id="p-res-plus"></div>
+      <div class="loesung" id="p-res-loesung"></div>
+      <p id="p-res-stand"></p>
+    </div></section>
+
+    <section class="hidden card" id="p-ende">
+      <h2>Fertig!</h2>
+      <div class="result"><span class="big" id="p-end-platz"></span><div class="plus" id="p-end-pts"></div></div>
+      <p id="p-end-team"></p>
+      <div class="loesung" id="p-end-liga">Punkte werden an die Liga geschickt …</div>
+      <div style="display:grid;gap:10px;margin-top:14px"><a class="btn" href="index.html">Zur Arena</a></div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= BEAMER ================= -->
+<div id="beamer" class="hidden">
+  <div class="bm-login" id="b-login">
+    <h2>Live-Duell – Leinwand</h2>
+    <p style="color:var(--muted);margin:0 0 14px">Melde dich mit deinem Konsolen-Konto an.</p>
+    <form id="b-form" autocomplete="on">
+      <label>E-Mail<input type="email" id="b-mail" autocomplete="username" required></label>
+      <label>Passwort<input type="password" id="b-pass" autocomplete="current-password" required></label>
+      <button class="btn led wide" type="submit">Anmelden</button>
+      <div class="err" id="b-err" role="alert"></div>
+    </form>
+  </div>
+
+  <div id="b-app" class="hidden" style="display:flex;flex-direction:column;flex:1">
+    <div class="bm-top">
+      <div class="t" id="b-titel">Live-Duell<small id="b-sub">Plöner Liga</small></div>
+      <div class="mid">
+        <span class="pill hidden" id="b-frage-nr">Frage <b id="b-nr">1</b></span>
+        <span class="pill" id="b-dabei">Dabei <b id="b-anz">0</b></span>
+        <span class="pill hidden" id="b-geantwortet">Geantwortet <b id="b-ga">0</b></span>
+      </div>
+    </div>
+
+    <div class="bm-body" id="b-body"></div>
+
+    <div class="bm-foot">
+      <button class="btn led" id="b-main">Spiel starten</button>
+      <button class="btn ghost" id="b-neu" style="color:#fff;box-shadow:inset 0 0 0 2px #fff">Neues Spiel</button>
+      <span class="hint">Leertaste = weiter</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* ==========================================================
+   LIVE-DUELL – Quiz für die Leinwand
+   Leinwand:  a1-live-duell.html?rolle=beamer   (Lehrer-Login)
+   Handy:     a1-live-duell.html                (Code der TN)
+   ========================================================== */
+const KURS_CODE = "ploen-jik";
+const LIGA_KEY  = "live-duell";   // Kennung der Liga-Aufgabe für die Punkte
+const DAUER     = 20;             // Sekunden pro Frage
+const MAX_PUNKTE= 1000;           // pro Frage
+
+/* ---------- Fragen: r = Index der richtigen Antwort ---------- */
+const FRAGEN = [
+  {f:"Ali ___ gestern Fußball gespielt.", o:["hat","hast","habe","haben"], r:0, tipp:"er / sie / es → hat"},
+  {f:"Wir ___ die Wohnung geputzt.", o:["haben","habt","hat","habe"], r:0, tipp:"wir → haben"},
+  {f:"___ du gestern Deutsch gelernt?", o:["Hast","Hat","Habt","Haben"], r:0, tipp:"du → hast"},
+  {f:"Ihr ___ viel gearbeitet.", o:["habt","hast","haben","hat"], r:0, tipp:"ihr → habt"},
+  {f:"trinken → Partizip II?", o:["getrunken","getrinkt","getrunkt","trinkt"], r:0, tipp:"unregelmäßig: ge…en"},
+  {f:"schlafen → Partizip II?", o:["geschlafen","geschlaft","schlaft","geschlafet"], r:0, tipp:"unregelmäßig: ge…en"},
+  {f:"kaufen → Partizip II?", o:["gekauft","gekaufen","kauft","gekaufet"], r:0, tipp:"regelmäßig: ge…t"},
+  {f:"arbeiten → Partizip II?", o:["gearbeitet","gearbeitt","gearbeiten","arbeitet"], r:0, tipp:"nach t/d: ge…et"},
+  {f:"lesen → Partizip II?", o:["gelesen","gelest","geliest","liest"], r:0, tipp:"unregelmäßig: ge…en"},
+  {f:"Welcher Satz ist richtig? (Aussage)", o:["Gestern hat Lucia die Wohnung geputzt.","Gestern Lucia hat die Wohnung geputzt.","Gestern hat geputzt Lucia die Wohnung.","Lucia die Wohnung gestern geputzt hat."], r:0, tipp:"hat auf Position 2, Partizip am Ende"},
+  {f:"Welcher Satz ist richtig? (Frage)", o:["Hast du einen Film gesehen?","Hast du gesehen einen Film?","Du hast einen Film sehen?","Hast du einen Film sehen?"], r:0, tipp:"Frage: Verb ganz vorne, Partizip am Ende"},
+  {f:"Ich habe einen Hund. Das ist ___ Hund.", o:["mein","meine","meinen","meiner"], r:0, tipp:"der Hund → mein Hund"},
+  {f:"Sara hat eine Schwester. Das ist ___ Schwester.", o:["ihre","ihr","seine","euer"], r:0, tipp:"Sara = sie → ihre Schwester (die)"},
+  {f:"Ali hat ein Fahrrad. Das ist ___ Fahrrad.", o:["sein","seine","ihr","seinen"], r:0, tipp:"Ali = er, das Fahrrad → sein Fahrrad"},
+  {f:"Wir haben eine Küche. ___ Küche ist klein.", o:["Unsere","Unser","Euer","Ihre"], r:0, tipp:"wir + die Küche → unsere Küche"},
+  {f:"Tom und Lea, wie ist ___ Wohnung?", o:["eure","euer","unsere","ihre"], r:0, tipp:"ihr + die Wohnung → eure Wohnung"},
+  {f:"Frau Berger, ist das ___ Handy?", o:["Ihr","ihr","euer","dein"], r:0, tipp:"Sie (formell) → Ihr Handy, immer groß"},
+  {f:"Meine Eltern ___ gestern ___.", o:["haben … gekocht","hat … gekocht","haben … kochen","haben … gekochen"], r:0, tipp:"sie (Plural) → haben + gekocht"}
+];
+
+/* ---------- Firebase ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+  authDomain: "lern-deutsch-arash.firebaseapp.com",
+  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lern-deutsch-arash",
+  storageBucket: "lern-deutsch-arash.firebasestorage.app",
+  messagingSenderId: "845503292114",
+  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+};
+const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+const BASE = `jugendliga/${KURS}`;
+const BATTLE = `${BASE}/battle`;
+const CODE_KEY = `liga_code_${KURS}`;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ let r; try{ r=crypto.getRandomValues(new Uint32Array(1))[0]/4294967296; }catch(e){ r=Math.random(); } const j=Math.floor(r*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const LETTER=["A","B","C","D"], CLS=["a","b","c","d"];
+
+let db=null, auth=null, offset=0;
+try{
+  if(window.firebase){ firebase.initializeApp(firebaseConfig); db=firebase.database(); auth=firebase.auth();
+    db.ref(".info/serverTimeOffset").on("value", s=>{ offset=Number(s.val())||0; });
+  }
+}catch(e){ console.warn(e); }
+const serverNow = () => Date.now() + offset;
+const ROLLE = new URLSearchParams(location.search).get("rolle")==="beamer" ? "beamer" : "spieler";
+
+/* ==========================================================
+   LEINWAND
+   ========================================================== */
+function startBeamer(){
+  $("#spieler").classList.add("hidden");
+  $("#beamer").classList.remove("hidden");
+  document.title="Live-Duell – Leinwand";
+  if(!auth||!db){ $("#b-err").textContent="Keine Verbindung zu Firebase."; return; }
+
+  let runde=[], idx=-1, phase="lobby", state=null, players={}, ranking={}, antworten={}, teams=[], roster={}, tick=null, sid=null;
+
+  auth.onAuthStateChanged(u=>{
+    if(!u) return;
+    $("#b-login").classList.add("hidden"); $("#b-app").classList.remove("hidden");
+    init();
+  });
+  $("#b-form").addEventListener("submit", e=>{
+    e.preventDefault(); $("#b-err").textContent="Moment …";
+    auth.signInWithEmailAndPassword($("#b-mail").value.trim(), $("#b-pass").value)
+      .catch(err=>{ $("#b-err").textContent = /invalid|wrong|not-found/.test(err.code||"") ? "E-Mail oder Passwort stimmt nicht." : "Anmeldung fehlgeschlagen."; });
+  });
+
+  async function init(){
+    const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+    teams=arr(pub.teams); roster=pub.roster||{};
+    $("#b-sub").textContent = (pub.liga||"Plöner Liga") + (pub.round?" · "+pub.round.name:"");
+    db.ref(`${BATTLE}/players`).on("value", s=>{ players=s.val()||{}; malen(); });
+    db.ref(`${BATTLE}/answers`).on("value", s=>{ antworten=s.val()||{}; if(phase==="frage") zaehler(); });
+    neu(false);
+  }
+  async function neu(frisch=true){
+    sid = Date.now().toString(36);
+    runde = shuffle(FRAGEN).map(q=>{ const opts=shuffle(q.o.map((t,i)=>({t, ok:i===q.r}))); return {f:q.f, tipp:q.tipp, o:opts.map(o=>o.t), r:opts.findIndex(o=>o.ok)}; });
+    idx=-1; phase="lobby"; ranking={};
+    await db.ref(BATTLE).set({ state:{phase:"lobby", sid, gesamt:runde.length, dauer:DAUER, titel:"Live-Duell"} });
+    malen();
+  }
+
+  function malen(){
+    const body=$("#b-body");
+    $("#b-anz").textContent=Object.keys(players).length;
+    $("#b-dabei").classList.toggle("hidden", phase!=="lobby");
+    $("#b-frage-nr").classList.toggle("hidden", phase!=="frage" && phase!=="aufloesung");
+    $("#b-geantwortet").classList.toggle("hidden", phase!=="frage");
+    $("#b-nr").textContent=idx+1;
+    if(phase==="lobby") return lobby(body);
+    if(phase==="frage") return frage(body);
+    if(phase==="aufloesung") return aufloesung(body);
+    if(phase==="stand") return stand(body, false);
+    if(phase==="ende") return ende(body);
+  }
+  function lobby(body){
+    const url=location.href.replace(/\?.*$/,"");
+    body.innerHTML=`<div class="lobby">
+      <div><h1>Live-Duell</h1>
+        <p style="font-size:clamp(18px,2vw,26px);color:#c9d2e3;margin:0 0 16px">Perfekt mit <i>haben</i> &amp; Possessivpronomen · ${runde.length} Fragen</p>
+        <ul class="steps">
+          <li><b>1</b><span>Handy nehmen und die Arena öffnen</span></li>
+          <li><b>2</b><span>Aufgabe <b style="font-size:inherit;color:#fff">Live-Duell</b> antippen</span></li>
+          <li><b>3</b><span>Deinen Code eingeben – fertig!</span></li>
+        </ul></div>
+      <div class="joined"><div class="n">${Object.keys(players).length} dabei</div>
+        <div class="chips">${Object.values(players).map(p=>`<span class="chip"><i style="background:${esc(farbe(p.team))}"></i>${esc(p.name||"?")}</span>`).join("")||`<span style="color:#aebad0">Noch niemand …</span>`}</div>
+      </div></div>`;
+    $("#b-main").textContent="Spiel starten"; $("#b-main").disabled=Object.keys(players).length===0;
+  }
+  const farbe = tid => (teams.find(t=>t.id===tid)||{}).color || "#8190ab";
+  const teamName = tid => (teams.find(t=>t.id===tid)||{}).name || "ohne Team";
+
+  async function frageStarten(){
+    idx++;
+    if(idx>=runde.length) return endeStarten();
+    phase="frage";
+    const q=runde[idx];
+    await db.ref(`${BATTLE}/state`).set({phase:"frage", sid, q:idx, gesamt:runde.length, dauer:DAUER,
+      frage:q.f, o:q.o, start:firebase.database.ServerValue.TIMESTAMP, titel:"Live-Duell"});
+    const s=(await db.ref(`${BATTLE}/state`).once("value")).val(); state=s;
+    malen(); laufen();
+  }
+  function laufen(){
+    clearInterval(tick);
+    tick=setInterval(()=>{
+      const rest=Math.max(0, state.dauer*1000 - (serverNow()-state.start));
+      const ring=$("#b-ring"), num=$("#b-sek");
+      if(ring){ const c=ring.querySelector(".fg"); const len=Number(c.dataset.len);
+        c.style.strokeDashoffset = len*(1-rest/(state.dauer*1000));
+        ring.classList.toggle("low", rest<6000); }
+      if(num) num.textContent=Math.ceil(rest/1000);
+      if(rest<=0){ clearInterval(tick); aufloesen(); }
+    },100);
+  }
+  function zaehler(){
+    const a=antworten["q"+idx]||{};
+    const n=Object.keys(a).length, ges=Object.keys(players).length;
+    $("#b-ga").textContent=`${n}/${ges}`;
+    if(ges && n>=ges && phase==="frage"){ clearInterval(tick); setTimeout(aufloesen, 600); }
+  }
+  function frage(body){
+    const q=runde[idx];
+    const R=54, LEN=2*Math.PI*R;
+    body.innerHTML=`<div style="display:flex;gap:26px;align-items:center;justify-content:center;margin-bottom:10px">
+        <div class="ring" id="b-ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="${R}"></circle><circle class="fg" cx="60" cy="60" r="${R}" data-len="${LEN.toFixed(1)}" style="stroke-dasharray:${LEN.toFixed(1)};stroke-dashoffset:0"></circle></svg><b id="b-sek">${DAUER}</b></div>
+        <h1 class="bm-frage" style="margin:0;flex:1">${esc(q.f)}</h1></div>
+      <div class="bm-answers">${q.o.map((t,i)=>`<div class="bm-ans ${CLS[i]}"><span class="l">${LETTER[i]}</span><span>${esc(t)}</span></div>`).join("")}</div>`;
+    $("#b-main").textContent="Auflösen"; $("#b-main").disabled=false;
+  }
+  async function aufloesen(){
+    if(phase!=="frage") return;
+    clearInterval(tick); phase="aufloesung";
+    const q=runde[idx], a=antworten["q"+idx]||{};
+    const verteilung=[0,0,0,0];
+    Object.entries(a).forEach(([pid,ans])=>{
+      const i=Number(ans.a); if(i>=0&&i<4) verteilung[i]++;
+      const richtig=i===q.r;
+      const t=Math.max(0, Math.min(state.dauer*1000, Number(ans.t)||0));
+      const p=richtig ? Math.round(MAX_PUNKTE*0.5 + MAX_PUNKTE*0.5*(1 - t/(state.dauer*1000))) : 0;
+      const e=ranking[pid] || (ranking[pid]={n:(players[pid]||{}).name||"?", t:(players[pid]||{}).team||"", p:0, r:0});
+      e.p+=p; if(richtig) e.r++; e.last=p; e.letzte=richtig?1:0;
+    });
+    Object.keys(players).forEach(pid=>{ if(!ranking[pid]) ranking[pid]={n:players[pid].name||"?", t:players[pid].team||"", p:0, r:0, last:0, letzte:-1}; else if(!(pid in a)){ ranking[pid].last=0; ranking[pid].letzte=-1; } });
+    await db.ref(`${BATTLE}/ranking`).set(ranking);
+    await db.ref(`${BATTLE}/state`).update({phase:"aufloesung", loesung:q.r, tipp:q.tipp, verteilung});
+    malen();
+  }
+  function aufloesung(body){
+    const q=runde[idx], a=antworten["q"+idx]||{}, verteilung=[0,0,0,0];
+    Object.values(a).forEach(x=>{ const i=Number(x.a); if(i>=0&&i<4) verteilung[i]++; });
+    body.innerHTML=`<h1 class="bm-frage">${esc(q.f)}</h1>
+      <div class="bm-answers">${q.o.map((t,i)=>`<div class="bm-ans ${CLS[i]} ${i===q.r?"win":"off"}"><span class="l">${LETTER[i]}</span><span>${esc(t)}</span><span class="cnt">${verteilung[i]}</span></div>`).join("")}</div>
+      <div class="dist">💡 ${esc(q.tipp)}</div>`;
+    $("#b-main").textContent = idx+1>=runde.length ? "Ergebnis zeigen" : "Zwischenstand";
+    $("#b-main").disabled=false;
+  }
+  function teamStand(){
+    const summe={}, anzahl={};
+    Object.entries(ranking).forEach(([pid,e])=>{ const t=e.t||"–"; summe[t]=(summe[t]||0)+e.p; anzahl[t]=(anzahl[t]||0)+1; });
+    return Object.keys(summe).map(t=>({id:t, name:teamName(t), color:farbe(t), n:anzahl[t], schnitt:Math.round(summe[t]/anzahl[t]), summe:summe[t]}))
+      .sort((x,y)=>y.schnitt-x.schnitt);
+  }
+  function stand(body, final){
+    const ts=teamStand(); const max=Math.max(1,...ts.map(t=>t.schnitt));
+    const top=Object.values(ranking).sort((a,b)=>b.p-a.p).slice(0,5);
+    body.innerHTML=`<div style="max-width:1100px;margin:0 auto;width:100%">
+      <h1 style="font-family:var(--display);font-size:clamp(34px,4.5vw,60px);margin:0 0 14px">${final?"Endstand":"Zwischenstand nach Frage "+(idx+1)}</h1>
+      <div class="teams">${ts.map(t=>`<div class="trow"><span class="nm"><i style="background:${esc(t.color)}"></i>${esc(t.name)}</span>
+        <span class="bar"><span style="width:${t.schnitt/max*100}%;background:${esc(t.color)}"></span></span>
+        <span class="p">${t.schnitt}</span></div>`).join("")}</div>
+      <div class="dist">Punkte pro Kopf – so sind unterschiedlich große Teams fair</div>
+      <div class="rank">${top.map((p,i)=>`<div><b>${i+1}</b><i style="width:10px;height:22px;border-radius:3px;background:${esc(farbe(p.t))};display:inline-block"></i><span>${esc(p.n)}</span><span class="p">${p.p}</span></div>`).join("")}</div>
+    </div>`;
+    $("#b-main").textContent = final ? "Neues Spiel" : "Nächste Frage";
+    $("#b-main").disabled=false;
+  }
+  async function endeStarten(){
+    phase="ende";
+    await db.ref(`${BATTLE}/ranking`).set(ranking);
+    await db.ref(`${BATTLE}/state`).update({phase:"ende", gesamt:runde.length});
+    malen();
+  }
+  function ende(body){
+    const top=Object.values(ranking).sort((a,b)=>b.p-a.p);
+    const ts=teamStand(); const sieger=ts[0];
+    const pod=[top[1],top[0],top[2]], cls=["p2","p1","p3"], med=["🥈","🥇","🥉"];
+    body.innerHTML=`<div style="width:100%">
+      <h1 style="font-family:var(--display);font-size:clamp(38px,5vw,72px);text-align:center;margin:0 0 6px;color:var(--led)">${sieger?esc(sieger.name)+" gewinnt!":"Fertig!"}</h1>
+      <p style="text-align:center;color:#c9d2e3;margin:0 0 18px">${sieger?`${sieger.schnitt} Punkte pro Kopf`:""}</p>
+      <div class="podium">${pod.map((p,i)=>p?`<div class="pod ${cls[i]}"><div class="medal">${med[i]}</div><div class="nm">${esc(p.n)}</div><div class="p">${p.p}</div></div>`:`<div class="pod ${cls[i]}"></div>`).join("")}</div>
+      <div class="teams" style="max-width:900px;margin:0 auto">${ts.map(t=>`<div class="trow"><span class="nm"><i style="background:${esc(t.color)}"></i>${esc(t.name)}</span>
+        <span class="bar"><span style="width:${t.schnitt/Math.max(1,ts[0].schnitt)*100}%;background:${esc(t.color)}"></span></span><span class="p">${t.schnitt}</span></div>`).join("")}</div>
+      <p class="dist">Die Punkte gehen automatisch an die Liga – die Handys müssen kurz offen bleiben.</p></div>`;
+    $("#b-main").textContent="Neues Spiel"; $("#b-main").disabled=false;
+  }
+
+  $("#b-main").addEventListener("click", async ()=>{
+    $("#b-main").disabled=true;
+    if(phase==="lobby") return frageStarten();
+    if(phase==="frage") return aufloesen();
+    if(phase==="aufloesung"){
+      if(idx+1>=runde.length) return endeStarten();
+      phase="stand"; await db.ref(`${BATTLE}/state`).update({phase:"stand"}); return malen();
+    }
+    if(phase==="stand") return frageStarten();
+    if(phase==="ende") return neu();
+  });
+  $("#b-neu").addEventListener("click", ()=>{ if(confirm("Neues Spiel starten? Der aktuelle Punktestand wird gelöscht.")) neu(); });
+  document.addEventListener("keydown", e=>{
+    if(e.code==="Space"||e.code==="Enter"){ e.preventDefault(); if(!$("#b-main").disabled) $("#b-main").click(); }
+  });
+}
+
+/* ==========================================================
+   SPIELER
+   ========================================================== */
+function startSpieler(){
+  document.title="Live-Duell – mitspielen";
+  let me=null, state=null, meinRanking=null, geantwortet={}, tick=null, gesendet=false, letzteSid=null;
+  try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+
+  function zeige(id){
+    ["p-code","p-wait","p-frage","p-result","p-ende"].forEach(s=>{ const el=$("#"+s); if(el) el.classList.toggle("hidden", s!==id); });
+  }
+  function warten(emo, big, sub){ $("#w-emo").textContent=emo; $("#w-big").textContent=big; $("#w-sub").textContent=sub||""; zeige("p-wait"); }
+
+  if(!db){ warten("📵","Keine Verbindung","Prüfe dein Internet und lade die Seite neu."); return; }
+
+  $("#code-form").addEventListener("submit", async e=>{
+    e.preventDefault();
+    const code=$("#code-in").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+    if(code.length<4){ $("#code-err").textContent="Der Code hat mindestens 4 Zeichen."; return; }
+    $("#code-err").textContent="Prüfe …";
+    try{
+      const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val();
+      if(!c||!c.pid){ $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+      me={code, pid:c.pid, name:c.name||""};
+      localStorage.setItem(CODE_KEY, JSON.stringify(me));
+      $("#code-err").textContent=""; los();
+    }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
+  });
+
+  async function los(){
+    const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+    const team=pub.roster ? arr(pub.teams).find(t=>t.id===pub.roster[me.pid]) : null;
+    me.team=team?team.id:""; me.teamName=team?team.name:""; me.color=team?team.color:"#8190ab";
+    if(!me.name) me.name=(pub.names&&pub.names[me.pid])||"Spieler";
+    $("#me-name").textContent=me.name+(me.teamName?" · "+me.teamName:"");
+    $("#me-color").style.background=me.color;
+    eintragen();
+    db.ref(`${BATTLE}/ranking/${me.pid}`).on("value", s=>{ meinRanking=s.val(); punkteAnzeigen(); });
+    db.ref(`${BATTLE}/state`).on("value", s=>{ const alt=state; state=s.val(); neuerStand(alt); });
+  }
+  async function eintragen(){
+    if(!me) return;
+    try{ await db.ref(`${BATTLE}/players/${me.pid}`).set({code:me.code, name:me.name, team:me.team}); }
+    catch(e){ console.warn(e); }
+  }
+  function punkteAnzeigen(){ $("#me-pts").textContent = meinRanking ? meinRanking.p+" P" : ""; }
+
+  function neuerStand(alt){
+    clearInterval(tick);
+    if(!state){ warten("⏳","Gleich geht es los","Warte auf deine Lehrkraft."); return; }
+    if(state.sid && letzteSid!==state.sid){ letzteSid=state.sid; geantwortet={}; gesendet=false; eintragen(); }
+    if(state.phase==="lobby"){ warten("✅","Du bist dabei!","Schau auf die Leinwand. Gleich beginnt Frage 1."); return; }
+    if(state.phase==="stand"){ warten("📊","Zwischenstand","Schau auf die Leinwand!"); return; }
+    if(state.phase==="frage") return frage();
+    if(state.phase==="aufloesung") return ergebnis();
+    if(state.phase==="ende") return ende();
+  }
+  function frage(){
+    const gewaehlt=geantwortet["q"+state.q];
+    $("#p-qnum").textContent=`Frage ${state.q+1} von ${state.gesamt}`;
+    $("#p-qtext").textContent=state.frage;
+    $("#p-answers").innerHTML=arr(state.o).map((t,i)=>`<button class="ans ${CLS[i]} ${gewaehlt!==undefined&&gewaehlt!==i?"dim":""} ${gewaehlt===i?"picked":""}" data-i="${i}"><span class="l">${LETTER[i]}</span><span>${esc(t)}</span></button>`).join("");
+    zeige("p-frage");
+    tick=setInterval(()=>{
+      const rest=Math.max(0, state.dauer*1000-(serverNow()-state.start));
+      const bar=$("#p-timer"); if(bar){ bar.firstElementChild.style.width=(rest/(state.dauer*1000)*100)+"%"; bar.classList.toggle("low", rest<6000); }
+      if(rest<=0) clearInterval(tick);
+    },120);
+  }
+  $("#p-answers").addEventListener("click", async e=>{
+    const b=e.target.closest(".ans"); if(!b||!state||state.phase!=="frage") return;
+    const q="q"+state.q; if(geantwortet[q]!==undefined) return;
+    const i=Number(b.dataset.i);
+    geantwortet[q]=i;
+    document.querySelectorAll(".ans").forEach((el,k)=>{ el.classList.toggle("dim", k!==i); el.classList.toggle("picked", k===i); });
+    const t=Math.max(0, serverNow()-state.start);
+    try{ await db.ref(`${BATTLE}/answers/${q}/${me.pid}`).set({code:me.code, a:i, t}); }
+    catch(err){ console.warn(err); }
+    setTimeout(()=>{ if(state && state.phase==="frage") warten("📨","Antwort gesendet","Warte auf die anderen …"); }, 500);
+  });
+  function ergebnis(){
+    const gewaehlt=geantwortet["q"+state.q];
+    const richtig = gewaehlt!==undefined && gewaehlt===state.loesung;
+    const box=$("#p-res-box"); box.className="result "+(richtig?"ok":"bad");
+    $("#p-res-big").textContent = richtig ? "Richtig! 🎉" : (gewaehlt===undefined ? "Zu langsam ⏱️" : "Leider falsch");
+    $("#p-res-plus").textContent = meinRanking && meinRanking.last ? "+"+meinRanking.last : "";
+    $("#p-res-loesung").innerHTML = `Richtig ist <b>${LETTER[state.loesung]}: ${esc(arr(state.o)[state.loesung]||"")}</b>${state.tipp?`<br><span style="font-weight:400">💡 ${esc(state.tipp)}</span>`:""}`;
+    $("#p-res-stand").textContent = meinRanking ? `Deine Punkte: ${meinRanking.p}` : "";
+    zeige("p-result");
+  }
+  async function ende(){
+    const r=meinRanking||{p:0,r:0};
+    $("#p-end-platz").textContent="Gut gespielt!";
+    $("#p-end-pts").textContent=`${r.p} Punkte`;
+    $("#p-end-team").textContent=me.teamName?`für ${me.teamName}`:"";
+    zeige("p-ende");
+    if(gesendet) return; gesendet=true;
+    const ziel=$("#p-end-liga");
+    try{
+      const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+      const task=pub.tasks?pub.tasks[LIGA_KEY]:null;
+      if(!pub.round || !task || !task.open){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }
+      const a=task.assign||{};
+      const mine = a.alle || (a.players&&a.players[me.pid]) || (me.team && a.teams && a.teams[me.team]);
+      if(!mine){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }
+      const max=Number(task.max)||10, gesamt=Number(state.gesamt)||FRAGEN.length;
+      const punkte=Math.max(0, Math.min(max, Math.round(r.p/(MAX_PUNKTE*gesamt)*max)));
+      const best=(await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${LIGA_KEY}`).once("value")).val();
+      const ts=firebase.database.ServerValue.TIMESTAMP;
+      try{ await db.ref(`${BASE}/tries/${pub.round.id}/${me.pid}/${LIGA_KEY}`).push({code:me.code, points:punkte, ts}); }catch(e){}
+      if(best!==null && best!==undefined && punkte<=Number(best)){ ziel.textContent=`Dein bestes Ergebnis bleibt ${best} von ${max} Liga-Punkten.`; return; }
+      await db.ref(`${BASE}/proof/${pub.round.id}/${me.pid}/${LIGA_KEY}`).set({code:me.code, points:punkte, ts});
+      await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${LIGA_KEY}`).set(punkte);
+      ziel.textContent=`✓ ${punkte} von ${max} Liga-Punkten für dich und dein Team gespeichert!`;
+    }catch(e){ console.warn(e); ziel.textContent="Die Liga-Punkte konnten nicht gespeichert werden. Zeig das deiner Lehrkraft."; }
+  }
+
+  if(me) los(); else { zeige("p-code"); setTimeout(()=>$("#code-in")&&$("#code-in").focus(),60); }
+}
+
+ROLLE==="beamer" ? startBeamer() : startSpieler();
+</script>
+</body>
+</html>
