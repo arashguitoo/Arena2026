@@ -200,6 +200,8 @@ dialog::backdrop{background:rgba(20,34,59,.55)}
 .task-ic span{font-size:18px}
 .task-li .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 @media (max-width:700px){.task-li{grid-template-columns:52px 1fr}.task-li .acts{grid-column:1/-1;justify-content:flex-start}}
+.drop{border:3px dashed var(--line);border-radius:12px;padding:14px;text-align:center;color:var(--muted);font-size:15.5px;margin-bottom:12px;transition:.15s}
+.drop.over{border-color:var(--board);background:#fff;color:var(--ink)}
 .zs-offen{background:var(--ok)}.zs-wartet{background:#1F6FD1}.zs-vorbei{background:#8a8f9c}.zs-zu{background:#8a8f9c}
 .st-bald{background:#8a8f9c}.st-offen{background:var(--ok)}.st-neu{background:#d99a00}.st-fertig{background:#39465f}
 .checks{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0}
@@ -283,6 +285,7 @@ details.box summary{cursor:pointer;font-weight:700}
 <div class="toast" id="toast"></div>
 <dialog id="dlg"><div class="dlg" id="dlg-body"></div></dialog>
 <input type="file" id="file-import" accept=".json,application/json" hidden>
+<input type="file" id="file-pack" accept=".json,application/json,text/plain" multiple hidden>
 
 <!-- Firebase (compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -1021,8 +1024,52 @@ function vAufgaben(){
   </div>`;
   return `<div class="sec-head"><h2>Aufgaben</h2></div>
   <div class="row" style="margin-bottom:12px"><p class="lead" style="margin:0;flex:1;min-width:260px">Aufgaben, die du hier anlegst, erscheinen automatisch in der Arena. Für eine neue Aufgabe lädst du nur noch die Aufgabendatei auf GitHub hoch – die index.html bleibt, wie sie ist.</p>
-    <button class="btn ghost sm" data-act="task-pack">Aufgaben-Paket laden</button></div>
+    <button class="btn ghost sm" data-act="task-pack">Aufgaben-Paket laden</button>
+    <button class="btn ghost sm" data-act="task-paste">Als Text einfügen</button></div>
+  <div class="drop" id="drop">Paket-Datei hierher ziehen – oder oben auf „Aufgaben-Paket laden“ tippen</div>
   <div class="grid2" style="align-items:start">${form}${list}</div>`;
+}
+function paketAusText(text, quelle){
+  let obj;
+  try{ obj=JSON.parse(String(text||"").trim()); }
+  catch(e){ paketErgebnis(quelle, null, "Das ist kein gültiges JSON. Bitte den ganzen Dateiinhalt einfügen – von { bis }."); return; }
+  const list=Array.isArray(obj)?obj:(obj&&Array.isArray(obj.tasks)?obj.tasks:null);
+  if(!list){ paketErgebnis(quelle, null, "In der Datei steht keine Aufgaben-Liste. Erwartet wird { \"tasks\": [ … ] }."); return; }
+  const neu=[], schon=[];
+  list.forEach(x=>{
+    if(!x||!x.title) return;
+    const key=slugify(x.key||x.title);
+    if(state.tasks.some(t=>t.key===key)){ schon.push(x.title); return; }
+    const t=makeTask(x.title);
+    Object.assign(t,{key, nr:Number(x.nr)||t.nr, icon:x.icon||t.icon, text:x.text||"", file:x.file||"",
+      art:x.art==="Team"?"Team":"Einzel", max:Math.max(1,Number(x.max)||10), status:"bald"});
+    state.tasks.push(t); neu.push(`${t.nr}. ${t.title}`);
+  });
+  if(neu.length) save(); else render();
+  paketErgebnis(obj&&obj.name?obj.name:quelle, {neu, schon}, null);
+}
+function paketErgebnis(quelle, erg, fehler){
+  const body = fehler
+    ? `<div class="notice red"><b>Das hat nicht geklappt.</b><br>${esc(fehler)}</div>`
+    : `<p><b>${erg.neu.length}</b> ${erg.neu.length===1?"Aufgabe":"Aufgaben"} geladen${erg.schon.length?`, ${erg.schon.length} gab es schon`:""}.</p>
+       ${erg.neu.length?`<div class="code" style="max-height:180px;white-space:pre-wrap">${esc(erg.neu.join("\n"))}</div>
+       <div class="notice">Alle stehen auf <b>Bald</b>. Schalte sie frei, wenn es losgehen soll – oder plane sie im Reiter <b>Ferienliga</b> ein.</div>`
+       :`<div class="notice">Es kam nichts Neues dazu – diese Aufgaben sind schon in der Liste.</div>`}`;
+  confirmDlg(esc(quelle||"Aufgaben-Paket"), body, "Alles klar", ()=>{}, false, "Schließen");
+}
+function paketDateien(files){
+  const liste=[...files].filter(f=>f);
+  if(!liste.length) return;
+  let i=0;
+  const naechste=()=>{
+    if(i>=liste.length) return;
+    const f=liste[i++];
+    const rd=new FileReader();
+    rd.onload=()=>{ paketAusText(rd.result, f.name); setTimeout(naechste, 400); };
+    rd.onerror=()=>{ paketErgebnis(f.name, null, "Die Datei konnte nicht gelesen werden."); setTimeout(naechste, 400); };
+    rd.readAsText(f);
+  };
+  naechste();
 }
 function saveTaskForm(){
   const title=$("#ta-title").value.trim();
@@ -1746,25 +1793,13 @@ document.addEventListener("click", e=>{
       });
       break;
     }
-    case "task-pack": {
-      const inp=document.createElement("input"); inp.type="file"; inp.accept=".json,application/json";
-      inp.onchange=()=>{ const f=inp.files[0]; if(!f) return; const rd=new FileReader();
-        rd.onload=()=>{ try{
-          const obj=JSON.parse(rd.result); const list=Array.isArray(obj)?obj:obj.tasks;
-          if(!Array.isArray(list)) throw new Error();
-          let add=0, skip=0;
-          list.forEach(x=>{
-            if(!x||!x.title) return;
-            const key=slugify(x.key||x.title);
-            if(state.tasks.some(t=>t.key===key)){ skip++; return; }
-            const t=makeTask(x.title);
-            Object.assign(t,{key, nr:Number(x.nr)||t.nr, icon:x.icon||t.icon, text:x.text||"", file:x.file||"", art:x.art==="Team"?"Team":"Einzel", max:Math.max(1,Number(x.max)||10), status:"bald"});
-            state.tasks.push(t); add++;
-          });
-          save(); toast(`${add} Aufgaben geladen${skip?`, ${skip} gab es schon`:""}. Status: „Bald“ – schalte sie frei, wenn es losgeht.`);
-        }catch(e){ toast("Diese Datei ist kein Aufgaben-Paket."); } };
-        rd.readAsText(f); };
-      inp.click(); break;
+    case "task-pack": $("#file-pack").click(); break;
+    case "task-paste": {
+      confirmDlg("Paket als Text einfügen",
+        `<p class="small" style="margin:0 0 8px">Öffne die JSON-Datei in einem Texteditor, kopiere alles und füge es hier ein. Das klappt in jedem Browser.</p>
+         <textarea id="dlg-paste" style="min-height:200px;font-family:Consolas,monospace;font-size:13px" placeholder='{ "tasks": [ … ] }'></textarea>`,
+        "Laden", ()=>{ const t=$("#dlg-paste"); paketAusText(t?t.value:"", "Eingefügter Text"); }, false);
+      setTimeout(()=>{ const t=$("#dlg-paste"); if(t) t.focus(); },40); break;
     }
     case "task-cancel": editTaskId=null; render(); break;
     case "task-edit": editTaskId=el.dataset.id; render(); window.scrollTo({top:0,behavior:"smooth"}); break;
@@ -1843,6 +1878,15 @@ document.addEventListener("keydown", e=>{
 });
 document.addEventListener("focusout", ()=>{ if(pendingRemoteRender){ pendingRemoteRender=false; setTimeout(render,0); } });
 $("#file-import").addEventListener("change", e=>{ const f=e.target.files[0]; if(f) importBackup(f); e.target.value=""; });
+$("#file-pack").addEventListener("change", e=>{ paketDateien(e.target.files); e.target.value=""; });
+["dragenter","dragover"].forEach(ev=>document.addEventListener(ev, e=>{
+  const d=$("#drop"); if(!d) return; e.preventDefault(); d.classList.add("over"); }));
+["dragleave","drop"].forEach(ev=>document.addEventListener(ev, e=>{
+  const d=$("#drop"); if(!d) return;
+  if(ev==="dragleave" && e.relatedTarget) return;
+  e.preventDefault(); d.classList.remove("over");
+  if(ev==="drop" && e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) paketDateien(e.dataTransfer.files);
+}));
 window.addEventListener("beforeunload", e=>{
   if(Object.keys(pending).length || syncState==="saving" || syncState==="error"){ e.preventDefault(); e.returnValue=""; }
 });
