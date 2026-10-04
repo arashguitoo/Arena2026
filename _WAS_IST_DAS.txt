@@ -1,0 +1,20 @@
+ORDNER 1 — AUF GITHUB HOCHLADEN
+================================
+
+Alle Dateien aus diesem Ordner kommen auf GitHub,
+in denselben Ordner wie deine bisherige Arena.
+Vorhandene Dateien werden überschrieben — das ist richtig so.
+
+  index.html .............. Die Spielarena (das sehen die TN)
+  konsole.html ............ Deine Konsole (mit Anmeldung geschützt)
+
+  a1-spielhalle.html ...... Aufgaben 1–6
+  a1-wohnen.html .......... Aufgaben 7–18
+  a1-perfekt.html ......... Aufgaben 19–20
+  a1-lesen.html ........... Aufgaben 21–24
+  a1-live-duell.html ...... Aufgabe 25 (Live-Quiz für die Leinwand)
+  a1-neu-hier.html ........ Aufgaben 26–32 (Lektion 10)
+  a1-feste.html ........... Aufgaben 33–39 (Lektion 11)
+
+Danach: Datenbank-Regeln erneuern.
+Wie das geht, steht in 00_ANLEITUNG.html, Schritt 2.2.

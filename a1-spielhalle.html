@@ -144,6 +144,9 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
 .send.ok{background:#d6f2e5;color:#12704a}
 .send.bad{background:#fde6e2;color:#a3281a}
 .stars{text-align:center;font-size:34px;letter-spacing:4px}
+/* Countdown im Sperr-Bildschirm */
+.cdbig{display:block;font-family:var(--display);font-weight:900;font-size:clamp(30px,8vw,44px);line-height:1.05;color:var(--board);margin:8px 0 2px}
+.cdsub{color:var(--muted);font-size:15.5px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -602,10 +605,36 @@ const Liga = (() => {
   const BASE = `jugendliga/${KURS}`;
   const CODE_KEY = `liga_code_${KURS}`;
   const screens = ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"];
-  let db=null, ctx=null, kennung=null, onReady=null;
+  let db=null, ctx=null, kennung=null, onReady=null, tOffset=0, cdTimer=null;
 
   function show(id){ screens.forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
-  function block(title, text, allowOther){ $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  function block(title, text, allowOther){ clearInterval(cdTimer); $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  const jetzt = () => Date.now() + tOffset;
+  const FERN = 4102444800000;
+  function restText(ms){
+    if(ms<=0) return "gleich";
+    const s=Math.floor(ms/1000), t=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), k=s%60;
+    if(t>0) return `${t} ${t===1?"Tag":"Tagen"} und ${h} ${h===1?"Stunde":"Stunden"}`;
+    if(h>0) return `${h} ${h===1?"Stunde":"Stunden"} und ${m} ${m===1?"Minute":"Minuten"}`;
+    if(m>0) return `${m} ${m===1?"Minute":"Minuten"} und ${k} Sekunden`;
+    return `${k} Sekunden`;
+  }
+  function zeitText(ms){
+    const d=new Date(ms), wd=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][d.getDay()];
+    const p2=n=>String(n).padStart(2,"0");
+    return `${wd}, ${p2(d.getDate())}.${p2(d.getMonth()+1)}. um ${p2(d.getHours())}:${p2(d.getMinutes())} Uhr`;
+  }
+  function blockCountdown(title, basis, ziel, danach){
+    clearInterval(cdTimer);
+    $("#block-title").textContent=title;
+    $("#block-other").classList.add("hidden");
+    const el=$("#block-text");
+    const male=()=>{ const rest=ziel-jetzt();
+      if(rest<=0){ clearInterval(cdTimer); el.textContent=danach; return; }
+      el.innerHTML=`${esc(basis)}<br><b class="cdbig">${esc(restText(rest))}</b><br><span class="cdsub">${esc(zeitText(ziel))}</span>`; };
+    male(); cdTimer=setInterval(male, 1000);
+    show("scr-block");
+  }
   function getMe(){ try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); return c&&c.code?c:null; }catch(e){ return null; } }
   const once = path => db.ref(`${BASE}/${path}`).once("value").then(s=>s.val());
   const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
@@ -628,17 +657,21 @@ const Liga = (() => {
       if(!pub || !pub.round){ block("Gerade keine Runde", "Die Liga macht gerade Pause. Du kannst trotzdem üben.", false); return; }
       if(!task){ block("Noch nicht in der Liga", "Dieses Spiel bringt gerade keine Punkte. Du kannst trotzdem üben.", false); return; }
       if(!task.open){ block(task.status==="fertig"?"Aufgabe beendet":"Noch gesperrt", task.status==="fertig"?"Diese Aufgabe ist schon abgeschlossen. Üben geht aber immer.":"Diese Aufgabe ist noch nicht freigeschaltet. Üben geht aber schon.", false); return; }
+      const von=Number(task.von)||0, bis=Number(task.bis)||FERN;
+      if(jetzt()<von){ blockCountdown("Noch geschlossen 🔒", "Diese Aufgabe öffnet in", von, "Jetzt geht es los – lade die Seite neu!"); return; }
+      if(jetzt()>bis){ block("Zeit abgelaufen ⏱️", `Diese Aufgabe war bis ${zeitText(bis)} offen. Üben kannst du trotzdem noch – aber ohne Punkte.`, false); return; }
       const a=task.assign||{};
       const mine = a.alle || (a.players&&a.players[c.pid]) || (team && a.teams && a.teams[team.id]);
       if(!mine){ block("Nicht für dich", "Dieses Spiel bringt gerade nur einem anderen Team Punkte. Schau in der Arena nach deinen Aufgaben – üben kannst du hier trotzdem.", true); return; }
       const best = await once(`live/${pub.round.id}/${c.pid}/${kennung}`);
-      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, best:(best===null||best===undefined)?null:Number(best)};
+      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, bis:bis<FERN?bis:0, best:(best===null||best===undefined)?null:Number(best)};
       if(onReady) onReady(ctx);
     }catch(e){ console.warn(e); block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); }
   }
 
   async function senden(points){
     if(!ctx || ctx.practice) return {ok:true, practice:true};
+    if(ctx.bis && jetzt()>ctx.bis) return {ok:true, spaet:true};
     const p=Math.max(0, Math.min(ctx.max, Math.round(Number(points)||0)));
     const k=kennung, pid=ctx.me.pid, r=ctx.round;
     const ts=firebase.database.ServerValue.TIMESTAMP;
@@ -655,6 +688,7 @@ const Liga = (() => {
   }
   function nachricht(res){
     if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht für die Liga."};
+    if(res.spaet) return {cls:"bad", text:"Die Zeit für diese Aufgabe ist abgelaufen – diese Punkte zählen leider nicht mehr."};
     if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte für dich und dein Team gespeichert!`};
     if(res.ok) return {cls:"", text:`Dein bestes Ergebnis bleibt ${res.best} Punkte. Versuch es nochmal!`};
     if(res.slow) return {cls:"", text:"Du bist gerade offline. Lass die Seite offen – die Punkte werden gesendet, sobald Internet da ist."};
@@ -677,7 +711,8 @@ const Liga = (() => {
     });
     document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", ()=>practice(10)));
     $("#block-other").addEventListener("click", ()=>{ localStorage.removeItem(CODE_KEY); $("#who").classList.add("hidden"); $("#code-in").value=""; show("scr-code"); });
-    try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database(); } }catch(e){ db=null; }
+    try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database();
+      db.ref(".info/serverTimeOffset").on("value", s=>{ tOffset=Number(s.val())||0; }); } }catch(e){ db=null; }
     check();
   }
   return {start, senden, nachricht, show, get ctx(){ return ctx; }};

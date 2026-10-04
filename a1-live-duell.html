@@ -568,7 +568,9 @@ function startSpieler(){
     try{
       const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
       const task=pub.tasks?pub.tasks[LIGA_KEY]:null;
-      if(!pub.round || !task || !task.open){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }
+      const nun=serverNow(), FERN2=4102444800000;
+      const zeitOk = task && nun>=(Number(task.von)||0) && nun<=(Number(task.bis)||FERN2);
+      if(!pub.round || !task || !task.open || !zeitOk){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }
       const a=task.assign||{};
       const mine = a.alle || (a.players&&a.players[me.pid]) || (me.team && a.teams && a.teams[me.team]);
       if(!mine){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }

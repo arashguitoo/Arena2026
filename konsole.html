@@ -200,6 +200,7 @@ dialog::backdrop{background:rgba(20,34,59,.55)}
 .task-ic span{font-size:18px}
 .task-li .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 @media (max-width:700px){.task-li{grid-template-columns:52px 1fr}.task-li .acts{grid-column:1/-1;justify-content:flex-start}}
+.zs-offen{background:var(--ok)}.zs-wartet{background:#1F6FD1}.zs-vorbei{background:#8a8f9c}.zs-zu{background:#8a8f9c}
 .st-bald{background:#8a8f9c}.st-offen{background:var(--ok)}.st-neu{background:#d99a00}.st-fertig{background:#39465f}
 .checks{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0}
 .checks label{display:inline-flex;align-items:center;gap:6px;font-size:15.5px;cursor:pointer}
@@ -270,6 +271,7 @@ details.box summary{cursor:pointer;font-weight:700}
       <button class="tab" role="tab" data-act="goto" data-tab="teams">Teams &amp; Runden</button>
       <button class="tab" role="tab" data-act="goto" data-tab="spieler">Spieler:innen</button>
       <button class="tab" role="tab" data-act="goto" data-tab="aufgaben">Aufgaben</button>
+      <button class="tab" role="tab" data-act="goto" data-tab="ferien">Ferienliga</button>
       <button class="tab" role="tab" data-act="goto" data-tab="statistik">Statistik</button>
       <button class="tab" role="tab" data-act="goto" data-tab="sicherung">Sicherung &amp; Arena</button>
     </nav>
@@ -355,7 +357,8 @@ function fresh(){
   return {
     version:2, updated:Date.now(),
     settings:{ ligaName:"Plöner Liga", kursName:"Jugendintegrationskurs Plön", arenaUrl:"",
-      showTable:true, nameMode:"vorname", showTop:false, wertung:"summe" },
+      showTable:true, nameMode:"vorname", showTop:false, wertung:"summe",
+      ferien:{aktiv:false, name:"Ferienliga", start:"", tage:14, uhr:"08:00", offenBis:"ende", dauer:2} },
     students:[], tasks:[], rounds:[], activeRoundId:null, entries:[]
   };
 }
@@ -363,6 +366,7 @@ function migrate(d){
   const f=fresh();
   if(d.settings && d.settings.live===false && d.settings.showTable===undefined) d.settings.showTable=false;
   d.settings = Object.assign(f.settings, d.settings||{});
+  d.settings.ferien = Object.assign({aktiv:false, name:"Ferienliga", start:"", tage:14, uhr:"08:00", offenBis:"ende", dauer:2}, d.settings.ferien||{});
   delete d.settings.live; delete d.settings.kursCode;
   ["students","tasks","rounds","entries"].forEach(k=>{ if(!Array.isArray(d[k])) d[k]=[]; });
   d.rounds.forEach(r=>{ if(!Array.isArray(r.teams)) r.teams=[]; r.teams.forEach(t=>{ if(!Array.isArray(t.members)) t.members=[]; }); });
@@ -379,6 +383,7 @@ function migrate(d){
     if(t.nr===undefined) t.nr=i+1;
     if(t.file===undefined) t.file=t.link||"";
     if(t.text===undefined) t.text="";
+    t.von=Number(t.von)||0; t.bis=Number(t.bis)||0;
   });
   if(d.activeRoundId===undefined) d.activeRoundId=null;
   return d;
@@ -446,6 +451,28 @@ const teamOf = (round, sid) => round ? round.teams.find(t=>t.members.includes(si
 const taskByKey = k => state.tasks.find(t=>t.key===k);
 const taskTitle = k => { const t=taskByKey(k); return t ? t.title : k; };
 const isOpen = t => t.status==="offen" || t.status==="neu";
+const FERN = 4102444800000;
+const p2 = n => String(n).padStart(2,"0");
+const dtLocal = ms => { if(!ms) return ""; const d=new Date(Number(ms)); return `${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}T${p2(d.getHours())}:${p2(d.getMinutes())}`; };
+const dtParse = v => { if(!v) return 0; const t=new Date(v).getTime(); return isNaN(t)?0:t; };
+const fmtDT = ms => { if(!ms) return "–"; const d=new Date(Number(ms));
+  const wd=["So","Mo","Di","Mi","Do","Fr","Sa"][d.getDay()];
+  return `${wd} ${p2(d.getDate())}.${p2(d.getMonth()+1)}. ${p2(d.getHours())}:${p2(d.getMinutes())}`; };
+function restKurz(ms){
+  if(ms<=0) return "0 Min";
+  const s=Math.floor(ms/1000), t=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60);
+  if(t>0) return `${t} ${t===1?"Tag":"Tage"} ${h} Std`;
+  if(h>0) return `${h} Std ${m} Min`;
+  return `${m} Min`;
+}
+function zeitStatus(t){
+  if(!isOpen(t)) return {k:"zu", txt:t.status==="fertig"?"erledigt":"gesperrt"};
+  const now=Date.now(), von=Number(t.von)||0, bis=Number(t.bis)||0;
+  if(von && now<von) return {k:"wartet", txt:`öffnet in ${restKurz(von-now)}`};
+  if(bis && now>bis) return {k:"vorbei", txt:"Zeit abgelaufen"};
+  if(bis) return {k:"offen", txt:`noch ${restKurz(bis-now)}`};
+  return {k:"offen", txt:"offen"};
+}
 
 function autoVal(roundId, sid, key){ const r=auto.live[roundId]; const p=r&&r[sid]; return p && p[key]!==undefined && p[key]!==null ? Number(p[key]) : null; }
 function autoOf(roundId, sid){ const r=auto.live[roundId]; const p=r&&r[sid]; if(!p) return 0; return Object.values(p).reduce((a,v)=>a+(Number(v)||0),0); }
@@ -489,7 +516,7 @@ function render(){
   if(!currentUser){ $("#view").innerHTML=""; $("#savebar-slot").innerHTML=""; renderHeader(); return; }
   renderHeader();
   $$(".tab").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===tab));
-  const views={tabelle:vTabelle, punkte:vPunkte, teams:vTeams, spieler:vSpieler, aufgaben:vAufgaben, statistik:vStatistik, sicherung:vSicherung};
+  const views={tabelle:vTabelle, punkte:vPunkte, teams:vTeams, spieler:vSpieler, aufgaben:vAufgaben, ferien:vFerien, statistik:vStatistik, sicherung:vSicherung};
   $("#view").innerHTML=(views[tab]||vTabelle)();
   renderSavebar();
 }
@@ -656,7 +683,7 @@ function updatePendingUI(key){
 function makeTask(title){
   const keys=new Set(state.tasks.map(t=>t.key));
   let k=slugify(title), base=k, n=2; while(keys.has(k)) k=`${base}-${n++}`;
-  return {id:uid(), key:k, nr:(Math.max(0,...state.tasks.map(t=>Number(t.nr)||0))+1), title, text:"", file:"", icon:"🎯", art:"Einzel", max:10, due:"", status:"offen", assign:{alle:true,teams:{},players:{}}, created:Date.now()};
+  return {id:uid(), key:k, nr:(Math.max(0,...state.tasks.map(t=>Number(t.nr)||0))+1), title, text:"", file:"", icon:"🎯", art:"Einzel", max:10, due:"", von:0, bis:0, status:"offen", assign:{alle:true,teams:{},players:{}}, created:Date.now()};
 }
 function savePending(){
   const r=activeRound(); if(!r) return;
@@ -953,8 +980,13 @@ function vAufgaben(){
       <label class="f" style="max-width:140px">Max. Punkte<input type="number" id="ta-max" min="1" value="${t?t.max:10}"></label>
       <label class="f" style="max-width:150px">Art<select id="ta-art">${["Einzel","Team"].map(x=>`<option ${t&&t.art===x?"selected":""}>${x}</option>`).join("")}</select></label>
       <label class="f" style="max-width:190px">Status<select id="ta-status">${STATUS.map(([k,l])=>`<option value="${k}" ${(t?t.status:"bald")===k?"selected":""}>${l}</option>`).join("")}</select></label>
-      <label class="f" style="max-width:190px">Abgabe bis<input type="date" id="ta-due" value="${t?t.due||"":""}"></label>
+      <label class="f" style="max-width:190px">Abgabe bis (nur Hinweis)<input type="date" id="ta-due" value="${t?t.due||"":""}"></label>
     </div>
+    <div class="row" style="align-items:flex-end;margin-top:10px">
+      <label class="f">Öffnet automatisch am<input type="datetime-local" id="ta-von" value="${t?dtLocal(t.von):""}"></label>
+      <label class="f">Schließt automatisch am<input type="datetime-local" id="ta-bis" value="${t?dtLocal(t.bis):""}"></label>
+    </div>
+    <p class="small" style="margin:4px 0 0">Beide Felder sind freiwillig. Leer heißt: ohne Zeitgrenze. Die TN sehen einen Countdown, und die Datenbank nimmt außerhalb der Zeit keine Punkte an.</p>
     <label class="f" style="margin-top:10px">Kurze Beschreibung für die TN<textarea id="ta-text" style="min-height:70px">${esc(t?t.text:"")}</textarea></label>
     <hr class="court">
     <h3 style="font-size:20px">Wer bekommt die Aufgabe?</h3>
@@ -977,7 +1009,8 @@ function vAufgaben(){
       return `<li class="task-li">
         <div class="task-ic"><span>${esc(x.icon)}</span><b>${esc(x.nr)}</b></div>
         <div style="min-width:0"><div class="name" style="font-weight:700">${esc(x.title)} <span class="badge st-${x.status}">${stLabel}</span></div>
-          <div class="small">${esc(assignLabel(x,r))} – max. ${x.max} Punkte${x.due?` – bis ${fmtDate(x.due)}`:""}${r&&pids.length?` – ${done}/${pids.length} erledigt`:""}</div>
+          <div class="small">${esc(assignLabel(x,r))} – max. ${x.max} Punkte${r&&pids.length?` – ${done}/${pids.length} erledigt`:""}</div>
+          ${(x.von||x.bis)?`<div class="small">🕒 ${x.von?fmtDT(x.von):"sofort"} → ${x.bis?fmtDT(x.bis):"offen"} <span class="badge zs-${zeitStatus(x).k}">${esc(zeitStatus(x).txt)}</span></div>`:""}
           <div class="small">Kennung: <b>${esc(x.key)}</b>${x.file?` – Datei: ${esc(x.file)}`:" – keine Datei"}${fileCheck[x.id]?` <span class="badge" style="background:${fileCheck[x.id]==="ok"?"var(--ok)":"var(--warn)"}">${fileCheck[x.id]==="ok"?"Datei gefunden":fileCheck[x.id]==="404"?"Datei fehlt auf dem Server":"nicht prüfbar"}</span>`:""}</div></div>
         <div class="acts">
           <select data-act="task-status" data-id="${x.id}" aria-label="Status" style="width:auto;min-height:36px;padding:4px 8px">${STATUS.map(([k,l])=>`<option value="${k}" ${x.status===k?"selected":""}>${l.replace(/ \(.*\)/,"")}</option>`).join("")}</select>
@@ -1002,11 +1035,98 @@ function saveTaskForm(){
   $$(".ta-team").forEach(c=>{ if(c.checked) assign.teams[c.dataset.tid]=true; });
   $$(".ta-player").forEach(c=>{ if(c.checked) assign.players[c.dataset.sid]=true; });
   const data={nr:parseInt($("#ta-nr").value,10)||0, icon:$("#ta-icon").value.trim()||"🎯", title, key, file:$("#ta-file").value.trim(),
-    max, art:$("#ta-art").value, status:$("#ta-status").value, due:$("#ta-due").value, text:$("#ta-text").value.trim(), assign};
+    max, art:$("#ta-art").value, status:$("#ta-status").value, due:$("#ta-due").value, text:$("#ta-text").value.trim(), assign,
+    von:dtParse($("#ta-von").value), bis:dtParse($("#ta-bis").value)};
+  if(data.von && data.bis && data.bis<=data.von){ toast("Das Ende muss nach dem Start liegen."); return; }
   if(t) Object.assign(t,data); else state.tasks.push(Object.assign(makeTask(title),data));
   if(!assign.alle && !Object.keys(assign.teams).length && !Object.keys(assign.players).length) toast("Gespeichert – aber noch niemandem zugeteilt.");
   else toast(t?"Aufgabe gespeichert.":"Aufgabe angelegt.");
   editTaskId=null; save();
+}
+
+/* ----- Ferienliga ----- */
+function ferienZeiten(){
+  const F=state.settings.ferien||{};
+  if(!F.start) return null;
+  const [h,m]=String(F.uhr||"08:00").split(":").map(Number);
+  const start=new Date(F.start+"T00:00:00"); start.setHours(h||8, m||0, 0, 0);
+  const ende=new Date(F.start+"T00:00:00");
+  ende.setDate(ende.getDate()+Math.max(1,Number(F.tage)||14)-1); ende.setHours(23,59,0,0);
+  return {start:start.getTime(), ende:ende.getTime()};
+}
+function tagZeiten(tag){
+  const z=ferienZeiten(); if(!z) return null;
+  const F=state.settings.ferien;
+  const von=new Date(z.start); von.setDate(von.getDate()+(Number(tag)-1));
+  let bis;
+  if(F.offenBis==="tage"){ bis=new Date(von); bis.setDate(bis.getDate()+Math.max(1,Number(F.dauer)||2)); bis.setHours(23,59,0,0); }
+  else bis=new Date(z.ende);
+  return {von:von.getTime(), bis:bis.getTime()};
+}
+function planUebernehmen(){
+  const z=ferienZeiten();
+  if(!z){ toast("Trag zuerst den ersten Ferientag ein."); return; }
+  const mit=state.tasks.filter(t=>Number(t.ferienTag)>0);
+  if(!mit.length){ toast("Ordne zuerst mindestens einer Aufgabe einen Tag zu."); return; }
+  snapshot("Vor dem Ferienplan");
+  mit.forEach(t=>{ const zz=tagZeiten(t.ferienTag); t.von=zz.von; t.bis=zz.bis; if(!isOpen(t)) t.status="offen"; });
+  state.settings.ferien.aktiv=true;
+  save(); toast(`${mit.length} Aufgaben eingeplant – die Ferienliga läuft.`);
+}
+function planAuto(){
+  const F=state.settings.ferien;
+  const tage=Math.max(1,Number(F.tage)||14);
+  const offen=state.tasks.filter(t=>t.file).sort((a,b)=>(Number(a.nr)||0)-(Number(b.nr)||0));
+  if(!offen.length){ toast("Es gibt noch keine Aufgaben mit Datei."); return; }
+  offen.forEach((t,i)=> t.ferienTag = i<tage ? i+1 : 0);
+  save(); toast(`${Math.min(offen.length,tage)} Aufgaben auf ${tage} Tage verteilt. Jetzt noch „Plan übernehmen“.`);
+}
+function vFerien(){
+  const F=state.settings.ferien, z=ferienZeiten();
+  const tage=Math.max(1,Number(F.tage)||14);
+  const sorted=state.tasks.slice().sort((a,b)=>(Number(a.ferienTag)||99)-(Number(b.ferienTag)||99) || (Number(a.nr)||0)-(Number(b.nr)||0));
+  const geplant=state.tasks.filter(t=>Number(t.ferienTag)>0).length;
+  const now=Date.now();
+  const lauf = z ? (now<z.start ? `startet in ${restKurz(z.start-now)}` : now>z.ende ? "vorbei" : `noch ${restKurz(z.ende-now)}`) : "";
+  return `<div class="sec-head"><h2>Ferienliga</h2>${z?`<span class="small">${fmtDT(z.start)} bis ${fmtDT(z.ende)} – ${esc(lauf)}</span>`:""}</div>
+  <div class="grid2" style="align-items:start">
+    <div class="panel">
+      <h3>Ferien einrichten</h3>
+      <p class="lead">Jeden Tag öffnet eine neue Aufgabe von selbst. Die TN sehen einen Countdown und können nichts vorziehen – die Datenbank lässt es nicht zu.</p>
+      <div class="row" style="align-items:flex-end">
+        <label class="f">Name<input type="text" data-act="f-name" value="${esc(F.name||"Ferienliga")}"></label>
+        <label class="f" style="max-width:190px">Erster Ferientag<input type="date" data-act="f-start" value="${esc(F.start||"")}"></label>
+      </div>
+      <div class="row" style="align-items:flex-end;margin-top:10px">
+        <label class="f" style="max-width:130px">Wie viele Tage<input type="number" min="1" max="40" data-act="f-tage" value="${tage}"></label>
+        <label class="f" style="max-width:150px">Öffnet jeden Tag um<input type="time" data-act="f-uhr" value="${esc(F.uhr||"08:00")}"></label>
+      </div>
+      <label class="f" style="margin-top:12px">Wie lange bleibt jede Aufgabe offen?</label>
+      <div class="seg" role="group" style="margin-top:4px">
+        <button data-act="f-offenbis" data-v="ende" aria-pressed="${F.offenBis!=="tage"}">Bis zum Ferienende</button>
+        <button data-act="f-offenbis" data-v="tage" aria-pressed="${F.offenBis==="tage"}">Nur ein paar Tage</button>
+      </div>
+      ${F.offenBis==="tage"?`<label class="f" style="margin-top:10px;max-width:200px">Tage pro Aufgabe<input type="number" min="1" max="14" data-act="f-dauer" value="${Math.max(1,Number(F.dauer)||2)}"></label>`:""}
+      <div style="margin-top:14px"><label class="switch"><input type="checkbox" data-act="f-aktiv" ${F.aktiv?"checked":""}><b>Ferienliga in der Arena anzeigen</b></label></div>
+      <hr class="court">
+      <div class="row">
+        <button class="btn ghost sm" data-act="f-auto">Aufgaben automatisch verteilen</button>
+        <button class="btn led sm" data-act="f-plan" ${geplant?"":"disabled"}>Plan übernehmen (${geplant})</button>
+      </div>
+      <p class="small" style="margin-top:8px">„Plan übernehmen“ trägt bei jeder eingeplanten Aufgabe die Zeiten ein und schaltet sie frei. Du kannst danach einzelne Aufgaben weiter von Hand ändern.</p>
+    </div>
+    <div class="panel">
+      <h3>Tagesplan</h3>
+      ${state.tasks.length?`<div class="tbl-wrap"><table class="stable"><thead><tr><th>Tag</th><th>Aufgabe</th><th>Öffnet</th><th>Status</th></tr></thead><tbody>
+        ${sorted.map(t=>{ const tg=Number(t.ferienTag)||0; const zz=tg?tagZeiten(tg):null; const st=zeitStatus(t);
+          return `<tr><td><select data-act="f-tag" data-id="${t.id}" style="width:auto;min-height:34px;padding:2px 6px">
+              <option value="0">–</option>${Array.from({length:tage},(_,i)=>`<option value="${i+1}" ${tg===i+1?"selected":""}>Tag ${i+1}</option>`).join("")}</select></td>
+            <td><b>${esc(t.icon)} ${esc(t.title)}</b><div class="small">${esc(t.key)}</div></td>
+            <td class="small">${zz?fmtDT(zz.von):"–"}</td>
+            <td>${(t.von||t.bis)?`<span class="badge zs-${st.k}">${esc(st.txt)}</span>`:`<span class="badge plain">ohne Zeit</span>`}</td></tr>`; }).join("")}
+      </tbody></table></div>`:`<div class="empty"><b>Noch keine Aufgaben</b>Leg erst Aufgaben an oder lade ein Aufgaben-Paket.</div>`}
+    </div>
+  </div>`;
 }
 
 /* ----- Statistik ----- */
@@ -1309,14 +1429,17 @@ function displayName(s){
 }
 function publicSnapshot(){
   const r=activeRound(); const S=state.settings;
+  const fz=ferienZeiten();
   const snap={liga:S.ligaName, kurs:S.kursName, updated:Date.now(), wertung:S.wertung, showTable:!!S.showTable,
+    ferien:(S.ferien.aktiv&&fz)?{name:S.ferien.name||"Ferienliga", start:fz.start, ende:fz.ende}:null,
     showTop:!!(S.showTop && S.nameMode!=="keine"), round:null, teams:[], roster:{}, names:{}, manualTeam:{}, manualPlayer:{}, tasks:{}};
   state.tasks.forEach(t=>{
     const a=t.assign||{}; const teams={}, players={};
     Object.keys(a.teams||{}).forEach(k=>{ if(a.teams[k]) teams[k]=true; });
     Object.keys(a.players||{}).forEach(k=>{ if(a.players[k]) players[k]=true; });
     snap.tasks[t.key]={nr:Number(t.nr)||0, title:t.title, text:t.text||"", file:t.file||"", icon:t.icon||"🎯", art:t.art||"Einzel",
-      max:Number(t.max)||10, due:t.due||"", status:t.status, open:isOpen(t), assign:{alle:!!a.alle, teams, players}};
+      max:Number(t.max)||10, due:t.due||"", status:t.status, open:isOpen(t),
+      von:Number(t.von)||0, bis:Number(t.bis)||FERN, assign:{alle:!!a.alle, teams, players}};
   });
   if(r){
     snap.round={id:r.id, name:r.name, start:r.start||"", end:r.end||""};
@@ -1377,6 +1500,7 @@ function rulesJSON(){
   const codeOk=`root.child(${K} + '/codes/' + newData.child('code').val() + '/pid').val() === $pid`;
   const ptsOk=`newData.child('points').isNumber() && newData.child('points').val() >= 0 && newData.child('points').val() <= ${task} + '/max').val()`;
   const roundOk=`root.child(${K} + '/public/round/id').val() === $round`;
+  const zeitOk=`${task} + '/von').val() <= now && ${task} + '/bis').val() >= now`;
   const assigned=`(${task} + '/assign/alle').val() === true || ${task} + '/assign/players/' + $pid).val() === true || ${task} + '/assign/teams/' + root.child(${K} + '/public/roster/' + $pid).val()).val() === true)`;
   const rules={ rules:{
     jugendliga:{ "$kurs":{
@@ -1387,7 +1511,7 @@ function rulesJSON(){
         ".write":`newData.isNumber() && root.child(${K} + '/proof/' + $round + '/' + $pid + '/' + $task + '/points').val() === newData.val() && (!data.exists() || newData.val() > data.val())`
       }}}},
       proof:{ "$round":{ "$pid":{ "$task":{
-        ".write":`newData.hasChildren(['code', 'points']) && ${ptsOk} && ${codeOk} && ${roundOk} && ${task} + '/open').val() === true && ${assigned} && (!data.exists() || newData.child('points').val() > data.child('points').val())`
+        ".write":`newData.hasChildren(['code', 'points']) && ${ptsOk} && ${codeOk} && ${roundOk} && ${task} + '/open').val() === true && ${zeitOk} && ${assigned} && (!data.exists() || newData.child('points').val() > data.child('points').val())`
       }}}},
       tries:{ "$round":{ "$pid":{ "$task":{ "$try":{
         ".write":`!data.exists() && ${ptsOk} && ${codeOk} && ${roundOk}`
@@ -1503,6 +1627,16 @@ document.addEventListener("click", e=>{
     }
     case "set-namemode": state.settings.nameMode=el.dataset.v; save(); break;
     case "set-wertung": state.settings.wertung=el.dataset.v; save(); break;
+    case "f-offenbis": state.settings.ferien.offenBis=el.dataset.v; save(); break;
+    case "f-auto": planAuto(); break;
+    case "f-plan": planUebernehmen(); break;
+    case "f-reset": {
+      const mit=state.tasks.filter(t=>t.von||t.bis);
+      confirmDlg("Alle Zeiten löschen?", `Bei ${mit.length} Aufgaben werden Öffnungs- und Schließzeit entfernt. Die Aufgaben bleiben, wie sie sind.`, "Zeiten löschen", ()=>{
+        snapshot("Vor dem Löschen der Ferienzeiten");
+        state.tasks.forEach(t=>{ t.von=0; t.bis=0; }); save(); toast("Zeiten entfernt.");
+      }); break;
+    }
     case "reset":
       confirmDlg("Alle Daten löschen?", `Spieler:innen, Runden, Aufgaben, Punkte und alle Aufgaben-Ergebnisse werden gelöscht – auf allen Geräten.<label class="f" style="margin-top:12px">Zum Bestätigen LÖSCHEN eintippen<input type="text" id="dlg-confirm" autocomplete="off"></label>`, "Endgültig löschen", ()=>{
         snapshot("Vor dem Löschen aller Daten"); cloudSave(true);
@@ -1680,6 +1814,13 @@ document.addEventListener("change", e=>{
     case "task-status": { const t=state.tasks.find(x=>x.id===el.dataset.id); if(t){ t.status=el.value; save(); toast("Status geändert."); } break; }
     case "set-show": state.settings.showTable=el.checked; save(); break;
     case "set-top": state.settings.showTop=el.checked; save(); break;
+    case "f-name": state.settings.ferien.name=el.value.trim()||"Ferienliga"; save({render:false}); break;
+    case "f-start": state.settings.ferien.start=el.value; save(); break;
+    case "f-tage": state.settings.ferien.tage=Math.max(1,Math.min(40,parseInt(el.value,10)||14)); save(); break;
+    case "f-uhr": state.settings.ferien.uhr=el.value||"08:00"; save(); break;
+    case "f-dauer": state.settings.ferien.dauer=Math.max(1,Math.min(14,parseInt(el.value,10)||2)); save(); break;
+    case "f-aktiv": state.settings.ferien.aktiv=el.checked; save(); break;
+    case "f-tag": { const t=state.tasks.find(x=>x.id===el.dataset.id); if(t){ t.ferienTag=parseInt(el.value,10)||0; save(); } break; }
     case "set-url": state.settings.arenaUrl=el.value.trim(); save({render:false}); break;
     case "set-liga": state.settings.ligaName=el.value.trim()||"Liga"; save(); break;
     case "set-kurs": state.settings.kursName=el.value.trim(); save(); break;
@@ -1707,6 +1848,10 @@ window.addEventListener("beforeunload", e=>{
 });
 
 render();
+setInterval(()=>{ if(currentUser && (tab==="ferien"||tab==="aufgaben") && !document.querySelector("dialog[open]")){
+  const ae=document.activeElement;
+  if(!(ae && $("#view").contains(ae) && ae.matches("input,textarea,select"))) render();
+} }, 30000);
 </script>
 </body>
 </html>

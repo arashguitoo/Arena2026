@@ -158,6 +158,12 @@ footer b{color:#fff;font-family:var(--display);font-size:20px;font-weight:800}
 .me-pts small{display:block;font-family:var(--body);font-weight:400;font-size:13px;color:var(--muted)}
 .me .out{background:none;color:var(--muted);text-decoration:underline;padding:0;min-height:0;font-size:14px;margin-top:8px}
 .tag.mine{background:var(--board);color:var(--led)}
+.tag.wartet{background:#dce8fb;color:#1a4f94}
+.tag.laeuft{background:#fff3d1;color:#8a6200}
+.tag.vorbei{background:#eee8dc;color:var(--muted)}
+.ferien{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-top:18px;background:var(--board);color:#fff;padding:10px 18px;border-radius:14px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.ferien b{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;color:var(--led)}
+.ferien span{font-size:16px;color:#c9d2e3}
 .tag.score{background:#d6f2e5;color:#12704a}
 .hidden{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
@@ -187,6 +193,7 @@ footer b{color:#fff;font-family:var(--display);font-size:20px;font-weight:800}
   <div class="wrap hero-grid">
     <div>
       <h1 class="title"><span id="kursname">Jugendintegrationskurs Plön</span>Spielarena</h1>
+      <div class="ferien hidden" id="ferien"><b id="f-name">Ferienliga</b><span id="f-txt"></span></div>
       <div class="countdown hidden" id="countdown"><b id="cd-num">0</b><span id="cd-txt">Tage bis zum Rundenende</span></div>
       <div class="me" id="me"></div>
     </div>
@@ -282,6 +289,24 @@ const fmtScore = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1).rep
 const KURS = String(CONFIG.kursCode||"kurs").trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
 const CODE_KEY = `liga_code_${KURS}`;
 function daysLeft(end){ if(!end) return null; return Math.ceil((new Date(end+"T23:59:59") - new Date())/86400000); }
+let tOffset=0;
+const jetzt = () => Date.now() + tOffset;
+const FERN = 4102444800000;
+const p2 = n => String(n).padStart(2,"0");
+function restLang(ms, dativ){
+  if(ms<=0) return "gleich";
+  const s=Math.floor(ms/1000), t=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60);
+  if(t>0) return `${t} ${t===1?"Tag":(dativ?"Tagen":"Tage")} ${h} Std`;
+  if(h>0) return `${h} Std ${m} Min`;
+  return `${m} Min`;
+}
+function zeitTag(t){
+  const von=Number(t.von)||0, bis=Number(t.bis)||FERN, n=jetzt();
+  if(von && n<von) return {frei:false, tag:`<span class="tag wartet">🔒 öffnet in ${restLang(von-n, true)}</span>`};
+  if(bis<FERN && n>bis) return {frei:false, tag:`<span class="tag vorbei">⏱️ Zeit vorbei</span>`};
+  if(bis<FERN) return {frei:true, tag:`<span class="tag laeuft">⏳ noch ${restLang(bis-n)}</span>`};
+  return {frei:true, tag:""};
+}
 const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
 
 $("#logo").textContent = CONFIG.ligaName;
@@ -385,13 +410,20 @@ $("#filters").addEventListener("click", e=>{ const b=e.target.closest("button[da
 function renderTasks(){
   const box=$("#tasks");
   if(!pub){ box.innerHTML=`<div class="none">${loaded?"Noch keine Aufgaben.":"Aufgaben werden geladen …"}</div>`; return; }
-  const all=Object.entries(pub.tasks||{}).map(([key,t])=>Object.assign({key},t)).sort((a,b)=>(b.nr||0)-(a.nr||0));
+  const all=Object.entries(pub.tasks||{}).map(([key,t])=>Object.assign({key},t)).sort((a,b)=>{
+    const fa=zeitTag(a).frei, fb=zeitTag(b).frei;
+    if(fa!==fb) return fa?-1:1;
+    if(!fa) return (Number(a.von)||0)-(Number(b.von)||0);
+    return (b.nr||0)-(a.nr||0);
+  });
   const list=all.filter(t=>{
     const done=t.status==="fertig";
     if(filter==="fertig") return done;
     if(filter==="alle") return true;
-    if(filter==="meine") return !done && assignedToMe(t);
-    return !done;
+    const zt=zeitTag(t);
+    const vorbei = !zt.frei && (Number(t.bis)||FERN)<FERN && jetzt()>Number(t.bis);
+    if(filter==="meine") return !done && !vorbei && assignedToMe(t);
+    return !done && !vorbei;
   });
   if(!list.length){
     const msg = filter==="fertig" ? "Noch keine Aufgabe erledigt."
@@ -401,12 +433,14 @@ function renderTasks(){
   }
   box.innerHTML=list.map(t=>{
     const mine=assignedToMe(t);
-    const locked=t.status==="bald" || (me && !mine && t.status!=="fertig");
+    const zt=zeitTag(t);
+    const locked=t.status==="bald" || !zt.frei || (me && !mine && t.status!=="fertig");
     const done=t.status==="fertig";
     const best=me && live[me.pid] && live[me.pid][t.key]!==undefined ? live[me.pid][t.key] : null;
     const tags=[
       t.status==="neu"?`<span class="tag neu">Neu</span>`:"",
       t.status==="bald"?`<span class="tag">🔒 Bald</span>`:"",
+      zt.tag,
       done?`<span class="tag">Erledigt</span>`:"",
       me&&mine&&!done?`<span class="tag mine">Für dich</span>`:"",
       !me&&assignText(t)?`<span class="tag">${esc(assignText(t))}</span>`:"",
@@ -485,7 +519,17 @@ function renderBoard(){
     } else $("#top-block").classList.add("hidden");
   } else $("#top-block").classList.add("hidden");
 }
-function renderAll(){ renderMe(); renderFilters(); renderTasks(); renderBoard(); }
+function renderFerien(){
+  const el=$("#ferien"), F=pub&&pub.ferien;
+  if(!F){ el.classList.add("hidden"); return; }
+  el.classList.remove("hidden");
+  $("#f-name").textContent=F.name||"Ferienliga";
+  const n=jetzt();
+  $("#f-txt").textContent = n<F.start ? `startet in ${restLang(F.start-n, true)}`
+    : n>F.ende ? "ist vorbei – danke fürs Mitspielen!"
+    : `läuft noch ${restLang(F.ende-n)} · jeden Tag ein neues Spiel`;
+}
+function renderAll(){ renderMe(); renderFilters(); renderTasks(); renderBoard(); renderFerien(); }
 
 /* ---------- Firebase ---------- */
 renderAll();
@@ -504,6 +548,8 @@ try{
     }
     renderAll();
   }, err=>{ console.warn(err); loaded=true; $("#b-rows").innerHTML=`<div class="board-msg"><b>Tabelle nicht erreichbar</b>Bitte später noch einmal versuchen.</div>`; });
+  db.ref(".info/serverTimeOffset").on("value", s=>{ tOffset=Number(s.val())||0; });
+  setInterval(()=>{ if(pub){ renderTasks(); renderFerien(); } }, 30000);
   recheckCode();
   setTimeout(()=>{ if(!loaded) $("#b-rows").innerHTML=`<div class="board-msg"><b>Keine Verbindung</b>Die Tabelle erscheint, sobald dein Handy online ist.</div>`; }, 8000);
 }catch(e){
