@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<title>Perfekt-Spiele – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
+  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
+  --der:#1F6FD1; --die:#E4412F; --das:#1E9E6A;
+  --accent:#14223B;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* Kopf */
+.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:10}
+.bar-in{max-width:720px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;min-height:54px}
+.bar a{color:#c9d2e3;text-decoration:none;font-weight:700;font-size:15px}
+.bar .who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:15px;min-width:0}
+.bar .who span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar .who i{width:10px;height:22px;border-radius:3px;flex:none}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+
+/* Titel */
+.head{display:flex;align-items:center;gap:14px;margin:4px 0 16px}
+.head .ic{width:64px;height:64px;border-radius:16px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:34px;flex:none;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.head h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,11vw,62px);line-height:.88;margin:0;color:var(--board)}
+.head small{display:block;font-size:15px;color:var(--muted);font-family:var(--body);font-weight:700;letter-spacing:.02em;margin-bottom:2px}
+
+/* Karten & Knöpfe */
+.card{background:var(--paper);border-radius:18px;padding:20px 18px;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.card h2{font-family:var(--display);font-weight:900;font-size:32px;line-height:1;margin:0 0 8px;color:var(--board)}
+.card p{margin:0 0 12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 20px;border-radius:12px;border:0;background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn.led{background:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;color:var(--board);box-shadow:inset 0 0 0 2px var(--board)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stack{display:grid;gap:10px;margin-top:14px}
+.codein{display:flex;gap:8px;margin-top:12px}
+.codein input{flex:1;min-width:0;min-height:54px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.14em;text-transform:uppercase;background:#fff;color:var(--ink)}
+.codein input:focus{outline:none;border-color:var(--board)}
+.err{color:var(--bad);font-weight:700;min-height:24px;margin-top:8px}
+.rules{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.rules li{background:#fff;border-radius:10px;padding:9px 12px;border-left:5px solid var(--accent);font-size:17px}
+.best{font-weight:700;color:var(--muted);font-size:16px;margin-bottom:12px}
+
+/* Menü */
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.tile{display:grid;grid-template-rows:auto 1fr;background:var(--paper);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;box-shadow:0 3px 0 rgba(0,0,0,.14)}
+.tile-top{padding:14px 14px 10px;color:#fff;display:flex;align-items:center;gap:10px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
+.tile-top span{font-size:30px}
+.tile-top b{font-family:var(--display);font-weight:900;font-size:26px;line-height:1}
+.tile p{margin:0;padding:10px 14px 14px;font-size:15.5px;color:var(--muted)}
+
+/* Spielfeld */
+.hud{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hud .pill{background:var(--board);color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px;white-space:nowrap}
+.hud .pill b{font-family:var(--display);font-size:22px;color:var(--led);margin-left:4px}
+.hud .grow{flex:1}
+.timer{height:12px;background:rgba(20,34,59,.15);border-radius:6px;overflow:hidden}
+.timer i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .12s linear}
+.timer.low i{background:var(--bad)}
+.stage{background:var(--paper);border-radius:18px;padding:18px 16px 20px;box-shadow:0 3px 0 rgba(0,0,0,.14);position:relative;overflow:hidden}
+.prompt{text-align:center;margin:8px 0 18px}
+.prompt .emo{font-size:64px;line-height:1.1;display:block}
+.prompt .big{font-family:var(--display);font-weight:900;font-size:clamp(34px,9vw,48px);line-height:1.02;display:block}
+.prompt .hint{color:var(--muted);font-size:16px;display:block;margin-top:4px}
+.gap{display:inline-block;min-width:2.6em;border-bottom:4px solid var(--accent);color:var(--accent)}
+.opts{display:grid;gap:10px}
+.opts.three{grid-template-columns:repeat(3,1fr)}
+.opt{min-height:62px;border-radius:14px;border:3px solid var(--line);background:#fff;font-family:var(--display);font-weight:900;font-size:28px;cursor:pointer;color:var(--ink);padding:6px 8px;line-height:1.05;transition:transform .08s}
+.opt:active{transform:scale(.97)}
+.opt.txt{font-family:var(--body);font-weight:700;font-size:18px;text-align:left;padding:12px 14px}
+.opt.right{border-color:var(--ok);background:#d6f2e5}
+.opt.wrong{border-color:var(--bad);background:#fde6e2}
+.opt.der{border-color:var(--der);color:var(--der)} .opt.die{border-color:var(--die);color:var(--die)} .opt.das{border-color:var(--das);color:var(--das)}
+.flash{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .25s}
+.flash.ok{background:rgba(30,158,106,.18);opacity:1}
+.flash.bad{background:rgba(228,65,47,.18);opacity:1}
+.tip{min-height:26px;text-align:center;font-weight:700;margin-top:12px;font-size:17px}
+.tip.bad{color:#a3281a} .tip.ok{color:#12704a}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .2s ease-out}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.shake{animation:shake .25s}
+
+/* Einkaufswagen */
+.baskets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.basket{background:#fff;border:2px dashed var(--line);border-radius:12px;padding:6px;text-align:center;min-height:64px}
+.basket b{display:block;font-size:13px;color:var(--muted)}
+.basket div{font-size:22px;line-height:1.2;word-break:break-all}
+
+/* Memory */
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mc{aspect-ratio:3/4;border:0;border-radius:12px;cursor:pointer;position:relative;perspective:600px;background:transparent;padding:0}
+.mc .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.mc.open .in,.mc.done .in{transform:rotateY(180deg)}
+.mc .f,.mc .b{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;text-align:center}
+.mc .f{background:var(--accent);color:rgba(255,255,255,.85);font-family:var(--display);font-weight:900;font-size:30px;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 8px,transparent 8px 16px)}
+.mc .b{background:#fff;border:3px solid var(--line);transform:rotateY(180deg);font-weight:700;font-size:clamp(12px,3.4vw,16px);line-height:1.15}
+.mc .b .e{font-size:clamp(20px,6vw,30px);line-height:1.1}
+.mc .b.p{background:#f4ecff;border-color:#c9b3ef}
+.mc.done .b{border-color:var(--ok);background:#d6f2e5}
+
+/* Satz-Baustelle */
+.line{min-height:64px;background:#fff;border:3px dashed var(--line);border-radius:14px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.line.ok{border-style:solid;border-color:var(--ok);background:#d6f2e5}
+.line.bad{border-style:solid;border-color:var(--bad);background:#fde6e2}
+.pool{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;justify-content:center;min-height:52px}
+.tile-w{min-height:46px;padding:6px 14px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:19px;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.line .tile-w{background:var(--board)}
+.tile-w.used{visibility:hidden}
+
+/* Café */
+.chat{display:flex;flex-direction:column;gap:8px;min-height:220px;max-height:46vh;overflow-y:auto;padding:4px 2px 8px}
+.bub{max-width:82%;padding:9px 13px;border-radius:16px;font-size:17px;line-height:1.3}
+.bub.them{background:#fff;border:2px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bub.me{background:var(--accent);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.bub.me.wrong{background:#a3281a}
+.bub small{display:block;font-size:12px;opacity:.7;font-weight:700}
+.scene{display:flex;align-items:center;gap:10px;background:var(--board);color:#fff;border-radius:12px;padding:8px 12px;margin-bottom:10px}
+.scene span{font-size:28px}
+.scene b{font-family:var(--display);font-weight:800;font-size:22px}
+
+/* Ende */
+.score{font-family:var(--display);font-weight:900;font-size:104px;line-height:.9;color:var(--board);text-align:center;margin:8px 0 2px}
+.score-sub{text-align:center;color:var(--muted);margin-bottom:12px}
+.send{margin:12px 0 4px;padding:12px 14px;border-radius:12px;background:#efe5d3;font-weight:700;text-align:center}
+.send.ok{background:#d6f2e5;color:#12704a}
+.send.bad{background:#fde6e2;color:#a3281a}
+.stars{text-align:center;font-size:34px;letter-spacing:4px}
+/* ---------- Perfekt-Spiele ---------- */
+.tbadge{display:inline-block;background:var(--board);color:var(--led);font-size:12.5px;font-weight:700;border-radius:999px;padding:2px 9px;margin-bottom:4px}
+.teil{font-weight:700;color:var(--muted);font-size:15.5px;margin-bottom:8px}
+.order{display:grid;gap:6px;margin-bottom:10px}
+.slot{display:flex;align-items:center;gap:8px;background:#fff;border:3px dashed var(--line);border-radius:12px;padding:5px 8px;min-height:50px}
+.slot.full{border-style:solid}
+.slot.ok{border-color:var(--ok);background:#d6f2e5}
+.slot.bad{border-color:var(--bad);background:#fde6e2}
+.slot>b{font-family:var(--display);font-weight:900;font-size:22px;color:var(--muted);width:22px;text-align:center;flex:none}
+.slot .leer{color:#cfc4b2}
+.order.small{grid-template-columns:1fr 1fr}
+.kartex{border:0;background:var(--accent);color:#fff;border-radius:10px;padding:8px 12px;font:inherit;font-weight:700;font-size:16.5px;text-align:left;cursor:pointer;box-shadow:inset 0 -4px 0 rgba(0,0,0,.2);flex:1;line-height:1.25}
+.kartex.still{cursor:default;box-shadow:none;background:transparent;color:var(--ink);padding:4px 2px}
+.kartex.used{visibility:hidden}
+.pool.cards{display:grid;gap:8px;margin:0 0 10px}
+.loesung{display:block;margin-top:6px;font-weight:400;color:var(--ink);text-align:left;font-size:15.5px}
+/* Countdown im Sperr-Bildschirm */
+.cdbig{display:block;font-family:var(--display);font-weight:900;font-size:clamp(30px,8vw,44px);line-height:1.05;color:var(--board);margin:8px 0 2px}
+.cdsub{color:var(--muted);font-size:15.5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar"><div class="bar-in">
+  <a href="index.html">‹ Arena</a>
+  <span class="who hidden" id="who"><i id="who-color"></i><span id="who-name"></span></span>
+</div></header>
+
+<main>
+  <div class="head" id="head">
+    <div class="ic" id="head-ic">🎮</div>
+    <div><small id="head-sub">Plöner Liga</small><h1 id="head-title">Perfekt-Spiele</h1></div>
+  </div>
+
+  <section id="scr-menu" class="hidden">
+    <p id="menu-text"></p>
+    <div class="menu" id="menu"></div>
+  </section>
+
+  <section class="card" id="scr-loading"><h2>Einen Moment …</h2><p>Das Spiel wird geladen.</p></section>
+
+  <section class="card hidden" id="scr-code">
+    <h2>Dein Code</h2>
+    <p>Gib deinen Code ein, damit deine Punkte für dich und dein Team zählen.</p>
+    <form class="codein" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn" type="submit">Los</button></form>
+    <div class="err" id="code-err" role="alert"></div>
+    <button class="btn ghost wide" type="button" data-practice style="margin-top:6px">Ohne Code üben (keine Punkte)</button>
+  </section>
+
+  <section class="card hidden" id="scr-block">
+    <h2 id="block-title">Gesperrt</h2>
+    <p id="block-text"></p>
+    <div class="stack">
+      <button class="btn led" type="button" data-practice>Trotzdem üben (keine Punkte)</button>
+      <button class="btn ghost hidden" id="block-other" type="button">Anderen Code eingeben</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+
+  <section class="card hidden" id="scr-start">
+    <h2>So geht’s</h2>
+    <ul class="rules" id="start-rules"></ul>
+    <div class="best" id="start-best"></div>
+    <button class="btn led wide" id="start-btn" type="button">Spiel starten</button>
+  </section>
+
+  <section class="hidden" id="scr-game"><div id="area"></div></section>
+
+  <section class="card hidden" id="scr-end">
+    <div class="stars" id="end-stars"></div>
+    <div class="score" id="end-score">0</div>
+    <div class="score-sub" id="end-sub"></div>
+    <div class="send" id="send-msg"></div>
+    <div class="stack">
+      <button class="btn led" id="again" type="button">Nochmal spielen</button>
+      <a class="btn" href="index.html">Zur Arena</a>
+    </div>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+
+<script>
+/* ==========================================================
+   A1-SPIELHALLE – sechs Spiele, jedes ist eine Liga-Aufgabe
+   Aufruf: a1-spielhalle.html?spiel=artikel  (siehe SPIELE)
+   ========================================================== */
+const KURS_CODE = "ploen-jik";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function rnd(n){ try{ return Math.floor(crypto.getRandomValues(new Uint32Array(1))[0]/4294967296*n); }catch(e){ return Math.floor(Math.random()*n); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+let cleanup = [];
+function onCleanup(fn){ cleanup.push(fn); }
+function runCleanup(){ cleanup.splice(0).forEach(f=>{ try{ f(); }catch(e){} }); }
+
+/* ==========================================================
+   INHALTE – Perfekt mit haben (Partizip II, Zeitangaben)
+   ========================================================== */
+// [Infinitiv, Partizip II, falsch 1, falsch 2, Beispielsatz]
+const PARTIZIP = [
+  ["machen","gemacht","gemachen","macht","Ich habe die Übung gemacht."],
+  ["arbeiten","gearbeitet","gearbeitt","gearbeiten","Er hat gestern lange gearbeitet."],
+  ["frühstücken","gefrühstückt","gefrühstücken","frühstückt","Wir haben zusammen gefrühstückt."],
+  ["hören","gehört","gehören","hört","Sie haben Musik gehört."],
+  ["putzen","geputzt","geputzen","putzt","Lucia hat die Wohnung geputzt."],
+  ["kaufen","gekauft","gekaufen","kauft","Kai hat ein Skateboard gekauft."],
+  ["kochen","gekocht","gekochen","gekochet","Wir haben Spaghetti gekocht."],
+  ["spielen","gespielt","gespielen","spielt","Mein Kind hat gestern Ball gespielt."],
+  ["tanzen","getanzt","getanzen","getanzet","Sie haben gestern getanzt."],
+  ["lernen","gelernt","gelernen","lernt","Ich habe letztes Jahr Deutsch gelernt."],
+  ["suchen","gesucht","gesuchen","sucht","Nina hat eine Wohnung gesucht."],
+  ["wohnen","gewohnt","gewohnen","wohnt","Wir haben in Kiel gewohnt."],
+  ["trinken","getrunken","getrinkt","getrunkt","Er hat ein Glas Milch getrunken."],
+  ["schlafen","geschlafen","geschlaft","geschlafet","Mats hat nicht gut geschlafen."],
+  ["essen","gegessen","geesst","gegesst","Ich habe alles gegessen."],
+  ["lesen","gelesen","gelest","geliest","Lucia hat den Zettel gelesen."],
+  ["finden","gefunden","gefindet","gefundet","Er hat ein Glas Marmelade gefunden."],
+  ["schreiben","geschrieben","geschreibt","geschriebt","Danach hat er einen Zettel geschrieben."],
+  ["sehen","gesehen","gesieht","geseht","Wir haben einen Film gesehen."],
+  ["treffen","getroffen","getrefft","getrofft","Ich habe Freunde getroffen."],
+  ["waschen","gewaschen","gewascht","gewaschet","Hast du das Auto gewaschen?"],
+  ["sprechen","gesprochen","gesprecht","gesprochet","Wir haben lange gesprochen."],
+  ["nehmen","genommen","genehmt","genommt","Sie hat den Bus genommen."],
+  ["helfen","geholfen","gehelft","geholft","Meine Freunde haben geholfen."],
+  ["tragen","getragen","getragt","getraget","Wir haben die Möbel getragen."],
+  ["singen","gesungen","gesingt","gesungt","Die Kinder haben gesungen."]
+];
+
+const ZEIT_RUNDEN = [
+  {titel:"Von früher zu heute", items:["letztes Jahr","letzten Monat","letzte Woche","vorgestern","gestern","heute Morgen"]},
+  {titel:"Noch einmal: von früher zu heute", items:["letztes Jahr","letzten Sommer","letzten Monat","letzte Woche","gestern Abend","heute Morgen"]}
+];
+const GESCHICHTEN = [
+  {titel:"Ein Tag von Amir", emo:"📚", items:[
+    "Zuerst hat Amir die Hausaufgaben gemacht.",
+    "Dann hat er einen Kaffee getrunken.",
+    "Danach hat er mit Lea Deutsch gelernt.",
+    "Später haben sie Karten gespielt.",
+    "Am Abend haben sie eine Pizza gegessen.",
+    "Um elf Uhr hat Amir noch einen Film gesehen."
+  ]},
+  {titel:"Ninas Umzug", emo:"📦", items:[
+    "Letzten Monat hat Nina eine neue Wohnung gefunden.",
+    "Zuerst hat sie die Fenster geputzt.",
+    "Dann haben ihre Freunde die Möbel getragen.",
+    "Danach haben alle zusammen Pizza gegessen.",
+    "Später hat Nina Musik gehört und getanzt.",
+    "Am Ende hat sie ein Foto gemacht."
+  ]}
+];
+
+/* ==========================================================
+   SPIELE
+   ========================================================== */
+const SPIELE = {
+  werkstatt:{key:"l9-partizip-werkstatt", nr:19, icon:"⚒️", title:"Partizip-Werkstatt", thema:"Partizip II", color:"#B45309", run:spielWerkstatt, timer:true,
+    text:"60 Sekunden: machen → gemacht, trinken → getrunken. Welche Form ist richtig?",
+    rules:["Du siehst einen Infinitiv.","Tippe auf das richtige Partizip II.","ge…t oder ge…en? Pass auf!","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","15 richtige Antworten = volle Punktzahl."]},
+  zeitmaschine:{key:"l9-zeitmaschine", nr:20, icon:"🕰️", title:"Zeitmaschine", thema:"Zeitangaben & Geschichten", color:"#0F766E", run:spielZeitmaschine,
+    text:"Bring alles in die richtige Reihenfolge: erst die Zeit, dann die Geschichte.",
+    rules:["Teil 1: Sortiere die Zeitangaben – von früher zu heute.","Teil 2: Bring die Sätze einer Geschichte in die richtige Reihenfolge.","Tippe die Karten in der richtigen Reihenfolge an.","Eine Karte in der Zeile antippen = zurücklegen.","Jede richtige Position gibt Punkte."]}
+};
+const PARAM = new URLSearchParams(location.search).get("spiel");
+const SPIEL = SPIELE[PARAM] || null;
+const MENU_TEXT = "Zwei Spiele zum Perfekt: Partizip II im Zeitspiel und die Zeitmaschine mit Zeitangaben und Geschichten. Welche Spiele Punkte bringen, siehst du in der Arena.";
+const HALLE_TITEL = "Perfekt-Spiele";
+
+/* ---------- Bausteine ---------- */
+function hud(extra){ return `<div class="hud">${extra}</div>`; }
+function makeTimer(seconds, onTick, onEnd){
+  const t0=Date.now(); let stopped=false;
+  const id=setInterval(()=>{ const left=Math.max(0, seconds*1000-(Date.now()-t0)); onTick(left/1000, left/(seconds*1000)); if(left<=0){ clearInterval(id); if(!stopped){ stopped=true; onEnd(); } } },100);
+  const stop=()=>{ stopped=true; clearInterval(id); }; onCleanup(stop); return stop;
+}
+function flash(stage, ok){ const f=stage&&stage.querySelector(".flash"); if(!f) return; f.className="flash "+(ok?"ok":"bad"); setTimeout(()=>f.className="flash",220); }
+const cap = s => s.charAt(0).toUpperCase()+s.slice(1);
+
+function sprint(area, cfg, finish){
+  const ZEIT=cfg.seconds, ZIEL=cfg.target, STRAFE=cfg.penalty ?? 0.5;
+  let richtig=0, falsch=0, serie=0, best=0, locked=false, cur=null;
+  area.innerHTML = hud(`<span class="pill">✓<b id="sp-ok">0</b></span><span class="pill">🔥<b id="sp-serie">0</b></span><div class="grow timer" id="sp-timer"><i style="width:100%"></i></div><span class="pill"><b id="sp-sec">${ZEIT}</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="prompt" id="sp-prompt"></div><div class="opts" id="sp-opts"></div><div class="tip" id="sp-tip"></div></div>`;
+  function neu(){
+    cur=cfg.next();
+    $("#sp-prompt").innerHTML=cur.prompt;
+    const box=$("#sp-opts"); box.className="opts "+(cur.cols||cfg.cols||"");
+    box.innerHTML=cur.options.map(o=>`<button class="opt ${o.cls||""}" data-v="${esc(o.v)}">${o.label}</button>`).join("");
+    locked=false;
+  }
+  $("#sp-opts").addEventListener("click", e=>{
+    const b=e.target.closest(".opt"); if(!b||locked) return; locked=true;
+    const ok=b.dataset.v===cur.ok; const tip=$("#sp-tip");
+    if(ok){ richtig++; serie++; best=Math.max(best,serie); b.classList.add("right"); }
+    else { falsch++; serie=0; b.classList.add("wrong"); const c=[...$("#sp-opts").querySelectorAll(".opt")].find(x=>x.dataset.v===cur.ok); if(c) c.classList.add("right");
+      const st=area.querySelector(".stage"); st.classList.add("shake"); setTimeout(()=>st.classList.remove("shake"),260); }
+    tip.className="tip "+(ok?"ok":"bad"); tip.textContent = ok && serie>=5 ? `${serie}er-Serie! 🔥` : (cur.tip||"");
+    flash(area.querySelector(".stage"), ok);
+    $("#sp-ok").textContent=richtig; $("#sp-serie").textContent=serie;
+    setTimeout(neu, ok?(cfg.okDelay||400):(cfg.badDelay||1500));
+  });
+  neu();
+  makeTimer(ZEIT, (sec, frac)=>{ const t=$("#sp-timer"); if(!t) return; t.firstElementChild.style.width=(frac*100)+"%"; t.classList.toggle("low", sec<10); $("#sp-sec").textContent=Math.ceil(sec); },
+    ()=>{ locked=true; finish(Math.min(1, Math.max(0, richtig-falsch*STRAFE)/ZIEL), `${richtig} richtig, ${falsch} falsch, beste Serie: ${best}`); });
+}
+
+/* 19 · Partizip-Werkstatt */
+function spielWerkstatt(area, finish){
+  let pool=shuffle(PARTIZIP), i=0;
+  sprint(area, {seconds:60, target:15, cols:"", okDelay:380, badDelay:1900,
+    next:()=>{
+      if(i>=pool.length){ pool=shuffle(PARTIZIP); i=0; }
+      const v=pool[i++];
+      const regel = v[1].endsWith("en") ? "unregelmäßig: ge…en" : "regelmäßig: ge…t";
+      return {key:v[0], ok:v[1], tip:`${v[0]} → ${v[1]} (${regel})`,
+        prompt:`<span class="hint">Infinitiv</span><span class="big pop" style="font-size:clamp(38px,10vw,56px)">${esc(v[0])}</span><span class="hint">Wie heißt das Partizip II?</span>`,
+        options:shuffle([v[1],v[2],v[3]]).map(x=>({v:x,label:esc(x),cls:"txt", }))};
+    }
+  }, finish);
+}
+
+/* 20 · Zeitmaschine */
+function spielZeitmaschine(area, finish){
+  const runden = shuffle(ZEIT_RUNDEN.slice()).map(r=>({typ:"zeit", ...r}))
+    .concat(shuffle(GESCHICHTEN.slice()).map(g=>({typ:"story", ...g})));
+  let n=0, treffer=0, gesamt=0, chosen=[], karten=[], fertig=false;
+  area.innerHTML = hud(`<span class="pill">Runde<b id="z-n">1</b>/${runden.length}</span><span class="grow"></span><span class="pill">✓<b id="z-ok">0</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div class="teil" id="z-teil"></div>
+       <div class="order" id="z-line"></div><div class="pool cards" id="z-pool"></div>
+       <div class="stack" style="grid-template-columns:1fr 2fr;margin-top:6px"><button class="btn ghost" id="z-reset" type="button">Neu legen</button><button class="btn led" id="z-check" type="button" disabled>Prüfen</button></div>
+       <div class="tip" id="z-tip"></div></div>`;
+  function show(){
+    const r=runden[n]; chosen=[]; fertig=false;
+    karten=shuffle(r.items.map((t,idx)=>({t,idx})));
+    if(karten.every((k,idx)=>k.idx===idx)) karten.push(karten.shift());
+    $("#z-n").textContent=n+1;
+    $("#z-teil").textContent = r.typ==="zeit" ? `Zeitangaben sortieren: von früher ➜ zu heute` : `${r.emo} ${r.titel}: Was ist zuerst passiert?`;
+    $("#z-tip").textContent=""; $("#z-tip").className="tip";
+    area.querySelectorAll(".weiter-btn").forEach(b=>b.remove());
+    draw();
+  }
+  function draw(){
+    const r=runden[n];
+    $("#z-line").className="order"+(r.typ==="zeit"?" small":"");
+    $("#z-line").innerHTML = r.items.map((_,k)=>{
+      const c=chosen[k];
+      return `<div class="slot ${c?"full":""}"><b>${k+1}</b>${c?`<button class="kartex" data-k="${k}">${esc(c.t)}</button>`:`<span class="leer">…</span>`}</div>`;
+    }).join("");
+    $("#z-pool").innerHTML=karten.map((c,k)=>`<button class="kartex ${chosen.includes(c)?"used":""}" data-c="${k}">${esc(c.t)}</button>`).join("");
+    $("#z-check").disabled = chosen.length!==r.items.length || fertig;
+  }
+  area.addEventListener("click", e=>{
+    const b=e.target.closest(".kartex"); if(!b||fertig) return;
+    if(b.dataset.c!==undefined){ const c=karten[Number(b.dataset.c)]; if(!chosen.includes(c)) chosen.push(c); }
+    else if(b.dataset.k!==undefined){ chosen.splice(Number(b.dataset.k),1); }
+    draw();
+  });
+  $("#z-reset").addEventListener("click", ()=>{ if(fertig) return; chosen=[]; draw(); });
+  $("#z-check").addEventListener("click", ()=>{
+    const r=runden[n]; fertig=true;
+    let ok=0; chosen.forEach((c,k)=>{ if(c.idx===k) ok++; });
+    treffer+=ok; gesamt+=r.items.length; $("#z-ok").textContent=treffer;
+    $("#z-line").innerHTML = chosen.map((c,k)=>`<div class="slot full ${c.idx===k?"ok":"bad"}"><b>${k+1}</b><span class="kartex still">${esc(c.t)}</span></div>`).join("");
+    $("#z-pool").innerHTML="";
+    const alles = ok===r.items.length;
+    flash(area.querySelector(".stage"), alles);
+    const tip=$("#z-tip"); tip.className="tip "+(alles?"ok":"bad");
+    tip.innerHTML = alles ? `Alles richtig! +${ok}` : `${ok} von ${r.items.length} richtig. So ist die Reihenfolge:<br><span class="loesung">${r.items.map((t,k)=>`${k+1}. ${esc(t)}`).join("<br>")}</span>`;
+    $("#z-check").disabled=true;
+    const w=document.createElement("button"); w.className="btn wide weiter-btn"; w.type="button"; w.style.marginTop="10px"; w.textContent="Weiter ›";
+    w.onclick=()=>{ n++; if(n<runden.length) show(); else finish(treffer/gesamt, `${treffer} von ${gesamt} Karten an der richtigen Stelle`); };
+    $("#z-tip").after(w);
+    if(alles) setTimeout(()=>{ if(document.body.contains(w)) w.click(); }, 1800);
+  });
+  show();
+}
+/* ==========================================================
+   LIGA-ANSCHLUSS (wie in der Vorlage, erweitert um Übungsmodus)
+   ========================================================== */
+const Liga = (() => {
+  const cfg = {
+    apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+    authDomain: "lern-deutsch-arash.firebaseapp.com",
+    databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "lern-deutsch-arash",
+    storageBucket: "lern-deutsch-arash.firebasestorage.app",
+    messagingSenderId: "845503292114",
+    appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+  };
+  const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+  const BASE = `jugendliga/${KURS}`;
+  const CODE_KEY = `liga_code_${KURS}`;
+  const screens = ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"];
+  let db=null, ctx=null, kennung=null, onReady=null, tOffset=0, cdTimer=null;
+
+  function show(id){ screens.forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
+  function block(title, text, allowOther){ clearInterval(cdTimer); $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  const jetzt = () => Date.now() + tOffset;
+  const FERN = 4102444800000;
+  function restText(ms){
+    if(ms<=0) return "gleich";
+    const s=Math.floor(ms/1000), t=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), k=s%60;
+    if(t>0) return `${t} ${t===1?"Tag":"Tagen"} und ${h} ${h===1?"Stunde":"Stunden"}`;
+    if(h>0) return `${h} ${h===1?"Stunde":"Stunden"} und ${m} ${m===1?"Minute":"Minuten"}`;
+    if(m>0) return `${m} ${m===1?"Minute":"Minuten"} und ${k} Sekunden`;
+    return `${k} Sekunden`;
+  }
+  function zeitText(ms){
+    const d=new Date(ms), wd=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][d.getDay()];
+    const p2=n=>String(n).padStart(2,"0");
+    return `${wd}, ${p2(d.getDate())}.${p2(d.getMonth()+1)}. um ${p2(d.getHours())}:${p2(d.getMinutes())} Uhr`;
+  }
+  function blockCountdown(title, basis, ziel, danach){
+    clearInterval(cdTimer);
+    $("#block-title").textContent=title;
+    $("#block-other").classList.add("hidden");
+    const el=$("#block-text");
+    const male=()=>{ const rest=ziel-jetzt();
+      if(rest<=0){ clearInterval(cdTimer); el.textContent=danach; return; }
+      el.innerHTML=`${esc(basis)}<br><b class="cdbig">${esc(restText(rest))}</b><br><span class="cdsub">${esc(zeitText(ziel))}</span>`; };
+    male(); cdTimer=setInterval(male, 1000);
+    show("scr-block");
+  }
+  function getMe(){ try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); return c&&c.code?c:null; }catch(e){ return null; } }
+  const once = path => db.ref(`${BASE}/${path}`).once("value").then(s=>s.val());
+  const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+
+  function practice(max){ ctx={practice:true, max:max||10, best:null}; if(onReady) onReady(ctx); }
+
+  async function check(){
+    show("scr-loading");
+    if(!db){ block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); return; }
+    const me=getMe();
+    if(!me){ show("scr-code"); return; }
+    try{
+      const [c, pub] = await Promise.all([once(`codes/${me.code}`), once("public")]);
+      if(!c || !c.pid){ localStorage.removeItem(CODE_KEY); $("#code-err").textContent="Dein gespeicherter Code gilt nicht mehr."; show("scr-code"); return; }
+      const me2={code:me.code, pid:c.pid, name:c.name||""};
+      localStorage.setItem(CODE_KEY, JSON.stringify(me2));
+      const team = pub && pub.roster ? arr(pub.teams).find(t=>t.id===pub.roster[c.pid]) || null : null;
+      if(team||me2.name){ $("#who").classList.remove("hidden"); $("#who-name").textContent=[me2.name, team&&team.name].filter(Boolean).join(" – "); $("#who-color").style.background=team?team.color:"transparent"; }
+      const task = pub && pub.tasks ? pub.tasks[kennung] : null;
+      if(!pub || !pub.round){ block("Gerade keine Runde", "Die Liga macht gerade Pause. Du kannst trotzdem üben.", false); return; }
+      if(!task){ block("Noch nicht in der Liga", "Dieses Spiel bringt gerade keine Punkte. Du kannst trotzdem üben.", false); return; }
+      if(!task.open){ block(task.status==="fertig"?"Aufgabe beendet":"Noch gesperrt", task.status==="fertig"?"Diese Aufgabe ist schon abgeschlossen. Üben geht aber immer.":"Diese Aufgabe ist noch nicht freigeschaltet. Üben geht aber schon.", false); return; }
+      const von=Number(task.von)||0, bis=Number(task.bis)||FERN;
+      if(jetzt()<von){ blockCountdown("Noch geschlossen 🔒", "Diese Aufgabe öffnet in", von, "Jetzt geht es los – lade die Seite neu!"); return; }
+      if(jetzt()>bis){ block("Zeit abgelaufen ⏱️", `Diese Aufgabe war bis ${zeitText(bis)} offen. Üben kannst du trotzdem noch – aber ohne Punkte.`, false); return; }
+      const a=task.assign||{};
+      const mine = a.alle || (a.players&&a.players[c.pid]) || (team && a.teams && a.teams[team.id]);
+      if(!mine){ block("Nicht für dich", "Dieses Spiel bringt gerade nur einem anderen Team Punkte. Schau in der Arena nach deinen Aufgaben – üben kannst du hier trotzdem.", true); return; }
+      const best = await once(`live/${pub.round.id}/${c.pid}/${kennung}`);
+      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, bis:bis<FERN?bis:0, best:(best===null||best===undefined)?null:Number(best)};
+      if(onReady) onReady(ctx);
+    }catch(e){ console.warn(e); block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); }
+  }
+
+  async function senden(points){
+    if(!ctx || ctx.practice) return {ok:true, practice:true};
+    if(ctx.bis && jetzt()>ctx.bis) return {ok:true, spaet:true};
+    const p=Math.max(0, Math.min(ctx.max, Math.round(Number(points)||0)));
+    const k=kennung, pid=ctx.me.pid, r=ctx.round;
+    const ts=firebase.database.ServerValue.TIMESTAMP;
+    const work=(async()=>{
+      try{ await db.ref(`${BASE}/tries/${r}/${pid}/${k}`).push({code:ctx.me.code, points:p, ts}); }catch(e){ console.warn("Versuch", e); }
+      if(ctx.best!==null && p<=ctx.best) return {ok:true, better:false, points:p, best:ctx.best};
+      await db.ref(`${BASE}/proof/${r}/${pid}/${k}`).set({code:ctx.me.code, points:p, ts});
+      await db.ref(`${BASE}/live/${r}/${pid}/${k}`).set(p);
+      ctx.best=p;
+      return {ok:true, better:true, points:p, best:p};
+    })().catch(e=>{ console.warn(e); return {ok:false}; });
+    const res=await Promise.race([work, sleep(9000).then(()=>"slow")]);
+    return res==="slow" ? {ok:false, slow:true, later:work} : res;
+  }
+  function nachricht(res){
+    if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht für die Liga."};
+    if(res.spaet) return {cls:"bad", text:"Die Zeit für diese Aufgabe ist abgelaufen – diese Punkte zählen leider nicht mehr."};
+    if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte für dich und dein Team gespeichert!`};
+    if(res.ok) return {cls:"", text:`Dein bestes Ergebnis bleibt ${res.best} Punkte. Versuch es nochmal!`};
+    if(res.slow) return {cls:"", text:"Du bist gerade offline. Lass die Seite offen – die Punkte werden gesendet, sobald Internet da ist."};
+    return {cls:"bad", text:"Die Punkte konnten nicht gespeichert werden. Zeig diese Seite deiner Lehrkraft."};
+  }
+  function start(key, cb){
+    kennung=key; onReady=cb;
+    $("#code-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const code=$("#code-in").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+      if(code.length<4){ $("#code-err").textContent="Der Code hat mindestens 4 Zeichen."; return; }
+      if(!db){ $("#code-err").textContent="Keine Verbindung."; return; }
+      $("#code-err").textContent="Prüfe …";
+      try{
+        const c=await once(`codes/${code}`);
+        if(!c||!c.pid){ $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+        localStorage.setItem(CODE_KEY, JSON.stringify({code, pid:c.pid, name:c.name||""}));
+        $("#code-err").textContent=""; check();
+      }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
+    });
+    document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", ()=>practice(10)));
+    $("#block-other").addEventListener("click", ()=>{ localStorage.removeItem(CODE_KEY); $("#who").classList.add("hidden"); $("#code-in").value=""; show("scr-code"); });
+    try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database();
+      db.ref(".info/serverTimeOffset").on("value", s=>{ tOffset=Number(s.val())||0; }); } }catch(e){ db=null; }
+    check();
+  }
+  return {start, senden, nachricht, show, get ctx(){ return ctx; }};
+})();
+
+/* ==========================================================
+   ABLAUF
+   ========================================================== */
+function kopf(g){
+  document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
+  $("#head-ic").textContent=g?g.icon:"🎮";
+  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Perfekt";
+  $("#head-title").textContent=g?g.title:HALLE_TITEL;
+  document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
+}
+function startScreen(){
+  const c=Liga.ctx;
+  $("#start-rules").innerHTML=SPIEL.rules.map(r=>`<li>${esc(r)}</li>`).join("");
+  $("#start-best").textContent = c.practice ? "Übungsmodus – ohne Punkte."
+    : c.best===null ? `Du kannst bis zu ${c.max} Punkte holen.` : `Dein bestes Ergebnis: ${c.best} von ${c.max}. Nur ein besseres Ergebnis zählt.`;
+  Liga.show("scr-start");
+}
+function spielen(){
+  if(!Liga.ctx) return;
+  runCleanup();
+  const area=document.createElement("div"); $("#area").replaceChildren(area);
+  Liga.show("scr-game");
+  let fertig=false;
+  SPIEL.run(area, async (ratio, zeile)=>{
+    if(fertig) return; fertig=true; runCleanup();
+    const c=Liga.ctx; const punkte=Math.round(Math.max(0,Math.min(1,ratio))*c.max);
+    $("#end-score").textContent=punkte;
+    $("#end-sub").textContent=`von ${c.max} Punkten – ${zeile}`;
+    $("#end-stars").textContent = ratio>=0.9?"⭐⭐⭐":ratio>=0.6?"⭐⭐":ratio>=0.3?"⭐":"💪";
+    const msg=$("#send-msg"); msg.className="send"; msg.textContent=c.practice?"":"Punkte werden gesendet …";
+    Liga.show("scr-end");
+    const res=await Liga.senden(punkte);
+    const n=Liga.nachricht(res); msg.className="send "+n.cls; msg.textContent=n.text;
+    if(res.slow && res.later) res.later.then(r=>{ const m=Liga.nachricht(r); msg.className="send "+m.cls; msg.textContent=m.text; });
+  });
+}
+
+if(!SPIEL){
+  kopf(null); $("#menu-text").textContent=MENU_TEXT;
+  $("#menu").innerHTML=Object.entries(SPIELE).map(([p,g])=>`<a class="tile" href="?spiel=${p}">
+    <div class="tile-top" style="background-color:${g.color}"><span>${g.icon}</span><b>${esc(g.title)}</b></div>
+    <p>${g.timer?'<span class="tbadge">⏱️ gegen die Zeit</span>':""}<b style="color:var(--ink)">${esc(g.thema)}</b><br>${esc(g.text)}</p></a>`).join("");
+  Liga.show("scr-menu");
+} else {
+  kopf(SPIEL);
+  $("#start-btn").addEventListener("click", spielen);
+  $("#again").addEventListener("click", startScreen);
+  Liga.start(SPIEL.key, startScreen);
+}
+</script>
+</body>
+</html>
