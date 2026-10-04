@@ -369,7 +369,7 @@ function fresh(){
   return {
     version:2, updated:Date.now(),
     settings:{ ligaName:"Plöner Liga", kursName:"Jugendintegrationskurs Plön", arenaUrl:"",
-      showTable:true, nameMode:"vorname", showTop:false, wertung:"summe",
+      showTable:true, nameMode:"vorname", wertung:"summe",
       ferien:{aktiv:false, name:"Ferienliga", start:"", tage:14, uhr:"08:00", offenBis:"ende", dauer:2} },
     students:[], tasks:[], rounds:[], activeRoundId:null, entries:[]
   };
@@ -1337,7 +1337,7 @@ function vSicherung(){
         <div class="seg" role="group" aria-label="Namen in der Arena">
           ${[["vorname","Vorname"],["spielername","Spielername"],["keine","Keine Namen"]].map(([k,l])=>`<button data-act="set-namemode" data-v="${k}" aria-pressed="${S.nameMode===k}">${l}</button>`).join("")}
         </div>
-        <div style="margin-top:14px"><label class="switch"><input type="checkbox" data-act="set-top" ${S.showTop?"checked":""}><span>Top 5 der Einzelwertung zeigen</span></label></div>
+        <p class="small" style="margin:8px 0 0">Das Einzel-Ranking ist in der Arena <b>immer</b> zu sehen: oben die ersten drei, darunter der eigene Platz, dahinter die vollständige Liste. Bei „Keine Namen“ bleibt die Reihenfolge sichtbar, die Namen nicht.</p>
         <label class="f" style="margin-top:14px">Adresse der Arena (für die Codekarten)<input type="text" data-act="set-url" value="${esc(S.arenaUrl)}" placeholder="https://arashguitoo.github.io/…"></label>
         <div class="row" style="margin-top:12px"><span class="small">Kurs-Code: <b>${esc(codePath())}</b></span><span class="spacer"></span><button class="btn ghost sm" data-act="publish-now">Arena jetzt aktualisieren</button></div>
         <hr class="court">
@@ -1505,7 +1505,7 @@ function publicSnapshot(){
   const fz=ferienZeiten();
   const snap={liga:S.ligaName, kurs:S.kursName, updated:Date.now(), wertung:S.wertung, showTable:!!S.showTable,
     ferien:(S.ferien.aktiv&&fz)?{name:S.ferien.name||"Ferienliga", start:fz.start, ende:fz.ende}:null,
-    showTop:!!(S.showTop && S.nameMode!=="keine"), round:null, teams:[], roster:{}, names:{}, manualTeam:{}, manualPlayer:{}, tasks:{}};
+    showTop:true, round:null, teams:[], roster:{}, names:{}, manualTeam:{}, manualPlayer:{}, tasks:{}};
   state.tasks.forEach(t=>{
     const a=t.assign||{}; const teams={}, players={};
     Object.keys(a.teams||{}).forEach(k=>{ if(a.teams[k]) teams[k]=true; });
@@ -1874,7 +1874,6 @@ document.addEventListener("change", e=>{
     case "stat-round": statRoundId=el.value; render(); break;
     case "task-status": { const t=state.tasks.find(x=>x.id===el.dataset.id); if(t){ t.status=el.value; save(); toast("Status geändert."); } break; }
     case "set-show": state.settings.showTable=el.checked; save(); break;
-    case "set-top": state.settings.showTop=el.checked; save(); break;
     case "f-name": state.settings.ferien.name=el.value.trim()||"Ferienliga"; save({render:false}); break;
     case "f-start": state.settings.ferien.start=el.value; save(); break;
     case "f-tage": state.settings.ferien.tage=Math.max(1,Math.min(40,parseInt(el.value,10)||14)); save(); break;

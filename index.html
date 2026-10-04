@@ -85,6 +85,30 @@ section{margin-bottom:16px}
   font-family:var(--display);font-weight:900;font-size:24px;cursor:pointer;box-shadow:inset 0 -6px 0 rgba(0,0,0,.16)}
 .err{color:var(--bad);font-weight:700;font-size:15px;min-height:22px;margin:0 18px 14px}
 
+/* ---------- Ranking ---------- */
+.rangkarte{background:var(--board);color:#fff;border-radius:16px;padding:12px 14px 13px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.rang-kopf{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.rang-kopf b{font-family:var(--display);font-weight:900;font-size:23px;color:var(--led);line-height:1;letter-spacing:.02em}
+.rang-kopf em{font-style:normal;font-size:13.5px;color:#aebad0}
+.rang-kopf button{margin-left:auto;border:0;background:var(--board-2);color:#fff;border-radius:999px;padding:7px 14px;
+  font-weight:700;font-size:13.5px;cursor:pointer;flex:none}
+.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pod{background:var(--board-2);border-radius:12px;padding:9px 7px 10px;text-align:center;min-width:0}
+.pod i{font-style:normal;font-size:21px;line-height:1;display:block}
+.pod .pn{display:block;font-size:14px;line-height:1.15;margin:5px 0 4px;padding-bottom:4px;border-bottom:3px solid;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod b{font-family:var(--display);font-weight:900;font-size:25px;color:var(--led);line-height:1}
+.pod.ich{box-shadow:inset 0 0 0 2px var(--led)}
+.rang-ich{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:2px solid rgba(255,255,255,.15)}
+.rang-ich .r{font-family:var(--display);font-weight:900;font-size:25px;color:var(--led);line-height:1}
+.rang-ich .n{font-weight:800;font-size:16.5px}
+.rang-ich .p{font-family:var(--display);font-weight:900;font-size:25px;margin-left:auto;line-height:1}
+.rang-ich .p u{text-decoration:none;font-family:var(--body);font-weight:700;font-size:12.5px;color:#aebad0;margin-left:4px}
+.rang-ich small{flex-basis:100%;font-size:13.5px;color:#aebad0}
+.geheim-txt{margin:0;font-size:15px;color:#c9d2e3}
+.mehr{display:block;width:100%;margin-top:18px;border:0;border-radius:12px;background:var(--board);color:#fff;
+  padding:14px;font-family:var(--display);font-weight:800;font-size:20px;cursor:pointer;text-align:center}
+
 /* ---------- Schnellknöpfe ---------- */
 .quick{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:9px}
 .quick button{background:var(--paper);border:0;border-radius:14px;padding:11px 10px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.12);
@@ -192,6 +216,7 @@ footer{color:var(--board);opacity:.55;font-size:13.5px;text-align:center;padding
   <section id="hallo"></section>
   <section id="ferien" class="hidden"></section>
   <section id="hero"></section>
+  <section id="rang" class="hidden"></section>
   <nav class="quick" id="quick"></nav>
   <section>
     <div class="reiter" id="reiter"></div>
@@ -300,6 +325,22 @@ function teamRows(){
   }).sort((a,b)=>b.score-a.score);
 }
 const meinTeam = () => (me && pub && pub.roster) ? arr(pub.teams).find(t=>t.id===pub.roster[me.pid]) || null : null;
+/* Einzel-Rangliste: alle Spieler:innen der Runde, Gleichstand bekommt denselben Platz */
+function spielerRows(){
+  if(!pub || !pub.round) return [];
+  const namen=pub.names||{}, teams=arr(pub.teams), ids=new Set();
+  [pub.roster, namen, live, pub.manualPlayer].forEach(o=>{ if(o) Object.keys(o).forEach(p=>ids.add(p)); });
+  const rows=[...ids].map(pid=>{
+    const tm=teams.find(x=>x.id===(pub.roster||{})[pid]);
+    return {pid, name:namen[pid]||"", punkte:playerPoints(pid), color:tm?tm.color:"#b9ae9c",
+            team:tm?tm.name:"", ich:!!(me&&me.pid===pid)};
+  }).sort((a,b)=> b.punkte-a.punkte || String(a.name).localeCompare(String(b.name),"de"));
+  let platz=0, vorher=null;
+  rows.forEach((r,i)=>{ if(r.punkte!==vorher){ platz=i+1; vorher=r.punkte; } r.rang=platz; });
+  return rows;
+}
+const zeigtPunkte = () => !!(pub && pub.round && pub.showTable!==false);
+const spielerName = r => r.name || (r.ich ? "Du" : "Spieler:in");
 function assignedToMe(t){
   if(!me || !pub) return false;
   const a=t.assign||{};
@@ -469,6 +510,45 @@ function renderHero(){
     ${t.file?`<a class="hero-cta" href="${esc(t.file)}">${esc(cta)} ›</a>`:""}</div>`;
 }
 
+/* ---------- Ranking ---------- */
+const MEDAILLE=["🥇","🥈","🥉"];
+function renderRang(){
+  const el=$("#rang");
+  if(!pub || !pub.round){ el.classList.add("hidden"); return; }
+  el.classList.remove("hidden");
+  if(pub.showTable===false){
+    el.innerHTML=`<div class="rangkarte"><div class="rang-kopf"><b>Ranking</b></div>
+      <p class="geheim-txt">🤫 Noch geheim – der Stand wird später aufgedeckt. Jedes Spiel zählt trotzdem!</p></div>`;
+    return;
+  }
+  const rows=spielerRows();
+  if(!rows.length){
+    el.innerHTML=`<div class="rangkarte"><div class="rang-kopf"><b>Ranking</b></div>
+      <p class="geheim-txt">Noch keine Punkte – das erste Spiel entscheidet. 🚀</p></div>`;
+    return;
+  }
+  const top=rows.slice(0,3), ich=rows.find(r=>r.ich);
+  let unten="";
+  if(ich){
+    const vorn=rows.filter(r=>r.rang<ich.rang);
+    const ziel=vorn.length ? vorn[vorn.length-1] : null;
+    const diff=ziel ? ziel.punkte-ich.punkte : 0;
+    const gleich=rows.filter(r=>r.rang===ich.rang && !r.ich).length;
+    const hinweis = ich.rang===1 ? (gleich?`ganz oben, aber punktgleich – zieh weg! 👑`:"ganz oben – halte die Führung! 👑")
+      : diff>0 ? `${fmtScore(diff)} ${diff===1?"Punkt":"Punkte"} bis Platz ${ziel.rang}`
+      : ziel ? `gleichauf mit Platz ${ziel.rang} – das nächste Spiel entscheidet` : "";
+    unten=`<div class="rang-ich"><span class="r">${ich.rang}.</span><span class="n">Dein Platz</span>
+      <span class="p">${fmtScore(ich.punkte)}<u>Punkte</u></span><small>${esc(hinweis)}</small></div>`;
+  }
+  el.innerHTML=`<div class="rangkarte">
+    <div class="rang-kopf"><b>Ranking</b><em>${rows.length} Spieler:innen</em>
+      <button type="button" data-sheet="ranking">alle ansehen ›</button></div>
+    <div class="podium">${top.map(r=>`<div class="pod${r.ich?" ich":""}"><i>${MEDAILLE[Math.min(2,r.rang-1)]}</i>
+        <span class="pn" style="border-color:${esc(r.color)}">${esc(r.name||(r.ich?"Du":"Platz "+r.rang))}</span>
+        <b>${fmtScore(r.punkte)}</b></div>`).join("")}</div>
+    ${unten}</div>`;
+}
+
 /* ---------- Schnellknöpfe ---------- */
 function renderQuick(){
   const st=teamRows(), team=meinTeam();
@@ -549,20 +629,32 @@ function sheetAuf(welches){
     else if(pub.showTable===false){ inhalt.innerHTML=`<div class="leer"><b>Noch geheim 🤫</b>Der Punktestand wird später aufgedeckt. Spielt weiter – jedes Spiel zählt!</div>`; }
     else {
       const max=Math.max(1,...st.map(x=>Math.abs(x.score)));
-      const namen=pub.names||{};
-      const top=Object.keys(namen).map(pid=>({pid,name:namen[pid],punkte:playerPoints(pid)}))
-        .filter(x=>x.punkte>0).sort((a,b)=>b.punkte-a.punkte).slice(0,5);
-      const farbeVonPid=pid=>{ const t=arr(pub.teams).find(x=>x.id===(pub.roster||{})[pid]); return t?t.color:"#999"; };
       inhalt.innerHTML=`<p class="hinweis" style="margin:0 0 10px">${esc(pub.round.name||"")}${pub.wertung==="schnitt"?" · Punkte pro Kopf":""}</p>
         ${st.map((x,i)=>`<div class="trow ${team&&x.id===team.id?"meins":""}">
           <div class="rang">${i+1}</div>
           <div><div class="tname"><span class="swatch" style="background:${esc(x.color)}"></span><em>${esc(x.name)}</em></div>
             <div class="meter"><i style="width:${Math.max(0,x.score)/max*100}%;background:${esc(x.color)}"></i></div></div>
           <div class="tpts">${fmtScore(x.score)}</div></div>`).join("")}
-        ${(pub.showTop&&top.length)?`<h3 style="font-family:var(--display);font-size:25px;margin:22px 0 0;color:var(--board)">Top 5</h3>
-          <ol class="top5">${top.map((p,i)=>`<li><span class="r">${i+1}</span>
-            <span class="swatch" style="background:${esc(farbeVonPid(p.pid))}"></span>
-            <span class="n">${esc(p.name)}</span><span class="p">${p.punkte}</span></li>`).join("")}</ol>`:""}`;
+        <button class="mehr" type="button" data-sheet="ranking">Einzel-Ranking ansehen ›</button>`;
+    }
+  }
+  if(welches==="ranking"){
+    titel.textContent="Ranking";
+    const rows=spielerRows();
+    if(!pub||!pub.round){ inhalt.innerHTML=`<p class="hinweis">Die Liga startet bald. Sobald die Teams ausgelost sind, siehst du hier das Ranking.</p>`; }
+    else if(pub.showTable===false){ inhalt.innerHTML=`<div class="leer"><b>Noch geheim 🤫</b>Der Punktestand wird später aufgedeckt. Spielt weiter – jedes Spiel zählt!</div>`; }
+    else if(!rows.length){ inhalt.innerHTML=`<div class="leer"><b>Noch leer</b>Das erste Spiel entscheidet, wer vorn steht.</div>`; }
+    else {
+      const max=Math.max(1,...rows.map(r=>r.punkte));
+      const ohneNamen=!Object.keys(pub.names||{}).length;
+      inhalt.innerHTML=`<p class="hinweis" style="margin:0 0 10px">Alle Punkte dieser Runde.${ohneNamen?" Die Namen sind ausgeblendet – dein eigener Platz ist markiert.":""}</p>
+        ${rows.map(r=>`<div class="trow ${r.ich?"meins":""}">
+          <div class="rang">${r.rang}</div>
+          <div><div class="tname"><span class="swatch" style="background:${esc(r.color)}"></span>
+              <em>${esc(spielerName(r))}${(r.ich&&r.name)?" (du)":""}</em></div>
+            <div class="meter"><i style="width:${Math.max(0,r.punkte)/max*100}%;background:${esc(r.color)}"></i></div></div>
+          <div class="tpts">${fmtScore(r.punkte)}</div></div>`).join("")}
+        ${st.length?`<button class="mehr" type="button" data-sheet="tabelle">Zur Teamtabelle ›</button>`:""}`;
     }
   }
   if(welches==="teams"){
@@ -593,7 +685,7 @@ document.addEventListener("click", e=>{
 document.addEventListener("keydown", e=>{ if(e.key==="Escape") sheetZu(); });
 
 /* ---------- Alles zeichnen ---------- */
-function renderAll(){ renderHallo(); renderFerien(); renderHero(); renderQuick(); renderReiter(); renderKarten(); }
+function renderAll(){ renderHallo(); renderFerien(); renderHero(); renderRang(); renderQuick(); renderReiter(); renderKarten(); }
 
 /* ---------- Firebase ---------- */
 renderAll();
