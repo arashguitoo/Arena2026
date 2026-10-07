@@ -604,7 +604,7 @@ function vTabelle(){
   const players=r.teams.flatMap(t=>t.members.map(sid=>({sid,t,p:studentRoundPoints(r,sid)}))).sort((a,b)=>b.p-a.p);
   const feed=recentFeed(r,14);
   return `<div class="sec-head"><h2>Tabelle</h2>
-    <div class="row"><button class="btn ghost sm" data-act="csv">Tabelle als CSV</button><button class="btn led sm" data-act="goto" data-tab="punkte">Punkte eintragen</button></div></div>
+    <div class="row"><button class="btn ghost sm" data-act="csv">Tabelle als CSV</button><button class="btn ghost sm" data-act="reset-pts">Punkte auf null</button><button class="btn led sm" data-act="goto" data-tab="punkte">Punkte eintragen</button></div></div>
   <div class="grid2">
     <div>${boardHTML(r)}</div>
     <div class="panel"><h3>Einzelwertung dieser Runde</h3>
@@ -612,7 +612,8 @@ function vTabelle(){
         <span class="small" style="width:22px;text-align:right">${i+1}</span>
         <span class="swatch" style="background:${colorHex(x.t.color)};height:18px;width:8px"></span>
         <span class="grow name">${esc(studentName(x.sid))}</span>
-        <span class="num ${x.p<0?"neg":""}">${x.p}</span></li>`).join("")}</ol>`:`<p class="small">Noch niemand in den Teams.</p>`}
+        <span class="num ${x.p<0?"neg":""}">${x.p}</span>
+        <button class="icon-btn" title="Punkte auf null" aria-label="Punkte von ${esc(studentName(x.sid))} auf null" data-act="reset-pts" data-v="person:${x.sid}">0</button></li>`).join("")}</ol>`:`<p class="small">Noch niemand in den Teams.</p>`}
     </div>
   </div>
   <div class="panel" style="margin-top:18px"><div class="row"><h3 style="margin:0">Zuletzt</h3><span class="spacer"></span><button class="btn ghost sm" data-act="goto" data-tab="statistik">Statistik</button></div>
@@ -1302,6 +1303,44 @@ function editAuto(sid, key, roundId){
   setTimeout(()=>{ const i=$("#dlg-num"); if(i) i.focus(); },50);
 }
 
+/* ----- Punkte auf null setzen ----- */
+function resetPunkteDlg(vorwahl){
+  const r=activeRound(); if(!r) return toast("Keine aktive Runde.");
+  const opts=[`<option value="alle">Alle – alle Teams und alle Spieler:innen</option>`]
+    .concat(r.teams.map(t=>`<option value="team:${t.id}">Team ${esc(t.name)} (${t.members.length} Personen)</option>`))
+    .concat(r.teams.flatMap(t=>t.members.map(m=>({m,t}))).sort((a,b)=>studentName(a.m).localeCompare(studentName(b.m),"de"))
+      .map(x=>`<option value="person:${x.m}">${esc(studentName(x.m))} (${esc(x.t.name)}) – ${studentRoundPoints(r,x.m)} Punkte</option>`));
+  confirmDlg("Punkte auf null setzen",
+    `<p class="small" style="margin-top:0">Runde: <b>${esc(r.name)}</b>. Die Teams bleiben, wie sie sind.</p>
+     <label class="f">Wessen Punkte?<select id="dlg-reset">${opts.join("")}</select></label>
+     <div class="notice">Gelöscht werden die Punkte von Hand <b>und</b> die Spielergebnisse. Danach können alle wieder neu spielen und punkten.
+       Vorher legt die Konsole automatisch eine Cloud-Sicherung an – unter <b>Sicherung &amp; Arena → Cloud-Sicherungen</b> kannst du alles zurückholen.</div>
+     <label class="f" style="margin-top:10px">Zur Bestätigung <b>LÖSCHEN</b> eintippen<input type="text" id="dlg-confirm" autocomplete="off" autocapitalize="characters"></label>`,
+    "Auf null setzen", ()=>{ const v=$("#dlg-reset")?$("#dlg-reset").value:"alle"; resetPunkte(r, v); }, true);
+  if(vorwahl){ const sel=$("#dlg-reset"); if(sel) sel.value=vorwahl; }
+}
+function resetPunkte(r, wahl){
+  let pids=[], teamIds=[], label="alle";
+  if(wahl==="alle"){ pids=r.teams.flatMap(t=>t.members); teamIds=r.teams.map(t=>t.id); }
+  else if(wahl.startsWith("team:")){ const t=r.teams.find(x=>x.id===wahl.slice(5)); if(!t) return; pids=t.members.slice(); teamIds=[t.id]; label=t.name; }
+  else if(wahl.startsWith("person:")){ pids=[wahl.slice(7)]; label=studentName(pids[0]); }
+  cloudSave(true);
+  snapshot("Vor dem Zurücksetzen: "+label);
+  const vorher=state.entries.length;
+  state.entries=state.entries.filter(e=>!(e.roundId===r.id && (
+    (e.studentId && pids.includes(e.studentId)) || (!e.studentId && e.teamId && teamIds.includes(e.teamId)) )));
+  const weg=vorher-state.entries.length;
+  save();
+  if(fb && currentUser){
+    const upd={};
+    if(wahl==="alle"){ upd[`live/${r.id}`]=null; upd[`proof/${r.id}`]=null; }
+    else pids.forEach(pid=>{ upd[`live/${r.id}/${pid}`]=null; upd[`proof/${r.id}/${pid}`]=null; });
+    fb.ref(`${FB_ROOT}/${codePath()}`).update(upd)
+      .then(()=>toast(`${label}: Punkte auf null gesetzt (${weg} Einträge von Hand, alle Spielergebnisse).`))
+      .catch(()=>toast("Die Spielergebnisse konnten nicht gelöscht werden. Bist du online?"));
+  } else toast(`${label}: Punkte von Hand gelöscht. Spielergebnisse nur online löschbar.`);
+}
+
 /* ----- Sicherung & Arena ----- */
 function vSicherung(){
   const lb=lastBackup(); const snaps=getSnaps(); const S=state.settings;
@@ -1678,6 +1717,7 @@ document.addEventListener("click", e=>{
     case "goto": tab=el.dataset.tab; render(); window.scrollTo({top:0}); break;
     case "logout": doLogout(); break;
     case "csv": exportCSV(); break;
+    case "reset-pts": resetPunkteDlg(el.dataset.v); break;
     case "export": exportBackup(); break;
     case "import": $("#file-import").click(); break;
     case "copy-uid": copyText(currentUser?currentUser.uid:"", "Benutzer-ID kopiert."); break;
