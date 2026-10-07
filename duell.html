@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14223B">
+<meta name="robots" content="noindex, nofollow">
+<title>Duell-Arena – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
+  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F; --info:#1F6FD1;
+  --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
+  background-color:var(--floor);
+  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+.hidden{display:none!important}
+.wrap{max-width:660px;margin:0 auto;padding:0 16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:10px 22px;border-radius:12px;border:0;background:var(--board);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;font-size:18px}
+.btn.led{background:var(--led);color:var(--board);box-shadow:inset 0 -5px 0 rgba(0,0,0,.15)}
+.btn.ghost{background:transparent;color:var(--board);box-shadow:inset 0 0 0 2px var(--board)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* Kopf */
+.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:30}
+.bar-in{max-width:660px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:10px;min-height:54px}
+.bar a{color:#c9d2e3;text-decoration:none;font-size:15px;font-weight:700}
+.bar .logo{font-family:var(--display);font-weight:900;font-size:25px;line-height:1}
+.bar .me{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:15px;color:#c9d2e3}
+.bar .me i{width:9px;height:20px;border-radius:3px;display:inline-block}
+main{padding:16px 0 50px}
+section{margin-bottom:16px}
+h2.t{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;color:var(--board);margin:0 0 10px}
+.karte{background:var(--paper);border-radius:16px;padding:16px;box-shadow:0 3px 0 rgba(0,0,0,.13)}
+.small{font-size:14.5px;color:var(--muted)}
+.err{color:var(--bad);font-weight:700;font-size:15px;min-height:22px;margin-top:8px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stats div{background:var(--board);color:#fff;border-radius:12px;padding:9px 6px;text-align:center;line-height:1.1}
+.stats b{display:block;font-family:var(--display);font-weight:900;font-size:28px;color:var(--led)}
+.stats span{font-size:12.5px;color:#c9d2e3}
+.limit{margin-top:8px;font-size:14px;color:var(--board);background:rgba(255,251,243,.75);border-radius:10px;padding:6px 12px}
+
+/* Hero-Knopf */
+.los{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.los .btn{min-height:76px;flex-direction:column;gap:2px;font-family:var(--display);font-weight:900;font-size:clamp(20px,5.6vw,24px);letter-spacing:.02em;padding:10px 8px;white-space:nowrap}
+.los .btn small{font-family:var(--body);font-weight:700;font-size:13px;opacity:.8;letter-spacing:0}
+
+/* Listen */
+.liste{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.duell{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;background:var(--paper);border-radius:14px;padding:11px 13px;box-shadow:0 2px 0 rgba(0,0,0,.12);cursor:pointer;border:0;text-align:left;width:100%}
+.duell .ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:23px;background:var(--board)}
+.duell.dran{box-shadow:0 0 0 3px var(--led),0 2px 0 rgba(0,0,0,.12)}
+.duell.dran .ic{background:var(--led)}
+.duell b{font-family:var(--display);font-weight:800;font-size:21px;line-height:1.05;color:var(--board);display:block}
+.duell .sub{font-size:14px;color:var(--muted)}
+.duell .rechts{text-align:right;font-weight:700;font-size:14px}
+.duell .rechts .gross{font-family:var(--display);font-weight:900;font-size:24px;display:block;line-height:1}
+.win{color:var(--ok)} .lose{color:var(--bad)} .wait{color:var(--info)}
+.leer{background:rgba(255,251,243,.72);border:3px dashed rgba(255,255,255,.7);border-radius:14px;padding:18px;text-align:center;color:var(--muted);font-size:16px}
+.sec-t{display:flex;align-items:baseline;gap:8px;margin:0 0 8px}
+.sec-t h3{font-family:var(--display);font-weight:900;font-size:24px;color:var(--board);margin:0}
+.sec-t span{font-size:14px;color:var(--board);opacity:.75}
+
+/* Online */
+.online{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border-radius:999px;padding:5px 12px 5px 8px;font-weight:700;font-size:15px;box-shadow:0 2px 0 rgba(0,0,0,.1);border:0;cursor:pointer}
+.chip i{width:9px;height:9px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 3px rgba(57,217,138,.25)}
+.chip.sel{background:var(--board);color:#fff}
+
+/* Bestenliste */
+.best li{display:flex;align-items:center;gap:10px;padding:7px 2px;border-top:2px solid var(--line)}
+.best li:first-child{border-top:0}
+.best .r{font-family:var(--display);font-weight:900;font-size:21px;width:24px;text-align:center;color:var(--muted)}
+.best .n{flex:1;font-weight:700}
+.best .p{font-family:var(--display);font-weight:900;font-size:22px}
+.best .sw{width:8px;height:20px;border-radius:3px}
+.best li.ich{background:#fff;border-radius:10px;box-shadow:inset 0 0 0 2px var(--led);padding:7px 8px}
+
+/* Neues Duell */
+.wahl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wahl button{border:2px solid var(--line);background:#fff;border-radius:12px;padding:12px 10px;cursor:pointer;text-align:left;display:flex;gap:10px;align-items:center}
+.wahl button i{font-style:normal;font-size:24px}
+.wahl button b{display:block;font-family:var(--display);font-weight:800;font-size:19px;line-height:1.05;color:var(--board)}
+.wahl button small{font-size:13px;color:var(--muted)}
+.wahl button[aria-pressed="true"]{border-color:var(--board);box-shadow:inset 0 0 0 2px var(--board);background:#FFF3D1}
+.gegner{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;max-height:300px;overflow:auto;padding:2px}
+.gegner button{border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:7px;font-weight:700;font-size:15px}
+.gegner button .sw{width:7px;height:18px;border-radius:3px;flex:none}
+.gegner button .on{width:8px;height:8px;border-radius:50%;background:#39d98a;margin-left:auto;flex:none}
+.gegner button[aria-pressed="true"]{border-color:var(--board);background:var(--board);color:#fff}
+.gegner button:disabled{opacity:.35}
+
+/* Spiel */
+.hud{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.pill{background:var(--board);color:#fff;border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px;white-space:nowrap}
+.pill b{color:var(--led);font-family:var(--display);font-size:19px;margin-left:4px}
+.timer{flex:1;height:12px;border-radius:6px;background:rgba(20,34,59,.18);overflow:hidden}
+.timer i{display:block;height:100%;background:var(--led);border-radius:6px;transition:width .1s linear}
+.timer.low i{background:var(--bad)}
+.frage{background:var(--paper);border-radius:18px;padding:22px 18px;box-shadow:0 4px 0 rgba(0,0,0,.14);text-align:center;margin-bottom:12px}
+.frage .q{font-family:var(--display);font-weight:800;font-size:clamp(26px,7vw,36px);line-height:1.1;color:var(--board)}
+.antw{display:grid;gap:9px}
+.antw button{display:flex;align-items:center;gap:12px;border:0;border-radius:14px;padding:13px 14px;min-height:62px;color:#fff;font-weight:700;font-size:19px;cursor:pointer;text-align:left;box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.antw button .l{font-family:var(--display);font-weight:900;font-size:24px;width:28px;flex:none;text-align:center}
+.antw .a{background:var(--a)}.antw .b{background:var(--b)}.antw .c{background:var(--c)}.antw .d{background:var(--d)}
+.antw button.dim{opacity:.35}
+.antw button.right{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--ok)}
+.antw button.wrong{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--bad)}
+.feed{min-height:54px;margin-top:10px;text-align:center;font-weight:700;font-size:16px}
+.feed .geist{display:inline-block;background:var(--board);color:#fff;border-radius:10px;padding:5px 12px;margin-top:6px;font-weight:700;font-size:14.5px}
+
+/* Ergebnis */
+.vs{display:grid;gap:8px}
+.vs .zeile{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;background:#fff;border-radius:12px;padding:10px 12px}
+.vs .zeile.ich{box-shadow:inset 0 0 0 3px var(--led)}
+.vs .platz{font-family:var(--display);font-weight:900;font-size:26px;text-align:center}
+.vs .name{font-weight:800;font-size:18px;line-height:1.1}
+.vs .name small{display:block;font-weight:400;font-size:13.5px;color:var(--muted)}
+.vs .wert{font-family:var(--display);font-weight:900;font-size:30px;color:var(--board);text-align:right;line-height:1}
+.vs .wert small{display:block;font-family:var(--body);font-weight:700;font-size:12.5px;color:var(--muted)}
+.balken{height:8px;border-radius:4px;background:#efe5d3;overflow:hidden;margin-top:5px}
+.balken i{display:block;height:100%;background:var(--led)}
+.big-res{text-align:center;padding:6px 0 14px}
+.big-res .e{font-size:58px;line-height:1}
+.big-res b{display:block;font-family:var(--display);font-weight:900;font-size:40px;color:var(--board);line-height:1.05}
+.big-res span{color:var(--muted);font-size:16px}
+.big-res .punkte,.punkte{display:inline-block;margin-top:8px;background:var(--board);color:var(--led);border-radius:999px;padding:5px 15px;font-family:var(--display);font-weight:900;font-size:22px}
+.vergleich{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+.vergleich th,.vergleich td{padding:6px 4px;border-top:2px solid var(--line);text-align:center}
+.vergleich td:first-child,.vergleich th:first-child{text-align:left}
+.vergleich .ok{color:var(--ok);font-weight:900}.vergleich .no{color:var(--bad);font-weight:900}
+
+/* Hinweis-Banner */
+.ping{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:80;background:var(--board);color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,.35);display:flex;align-items:center;gap:12px;max-width:calc(100% - 24px);width:440px}
+.ping b{font-family:var(--display);font-size:21px;color:var(--led);display:block;line-height:1.05}
+.ping .btn{min-height:44px;padding:6px 14px;margin-left:auto;flex:none}
+.code-form{display:flex;gap:8px}
+.code-form input{flex:1;min-width:0;min-height:58px;border:3px solid var(--line);border-radius:14px;padding:6px 14px;background:#fff;font-family:var(--display);font-weight:900;font-size:30px;letter-spacing:.16em;text-transform:uppercase}
+@keyframes pop{0%{transform:scale(.9);opacity:0}100%{transform:none;opacity:1}}
+.pop{animation:pop .25s ease-out}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <a href="index.html" aria-label="Zur Arena">‹ Arena</a>
+  <span class="logo">⚔️ Duell-Arena</span>
+  <span class="me hidden" id="me"><i id="me-farbe"></i><span id="me-name"></span></span>
+</div></header>
+
+<main class="wrap">
+  <!-- Anmeldung -->
+  <section id="s-code" class="hidden"><div class="karte">
+    <h2 class="t">Wer bist du?</h2>
+    <p>Gib deinen Liga-Code ein.</p>
+    <form class="code-form" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn led" type="submit">Los</button></form>
+    <div class="err" id="code-err" role="alert"></div>
+  </div></section>
+
+  <!-- Gesperrt -->
+  <section id="s-block" class="hidden"><div class="karte" style="text-align:center">
+    <div style="font-size:54px" id="block-emo">🔒</div>
+    <h2 class="t" id="block-title">Gerade geschlossen</h2>
+    <p id="block-text"></p>
+    <a class="btn" href="index.html">Zur Arena</a>
+  </div></section>
+
+  <!-- Lobby -->
+  <section id="s-lobby" class="hidden">
+    <div class="stats" id="stats"></div>
+    <div class="limit" id="limit"></div>
+    <section style="margin-top:14px"><div class="los">
+      <button class="btn led" data-go="neu" data-modus="1"><span>⚔️ 1 gegen 1</span><small>Fordere jemanden heraus</small></button>
+      <button class="btn" data-go="neu" data-modus="n"><span>👥 Gruppe</span><small>bis zu 4 Leute</small></button>
+    </div></section>
+    <section id="sec-online"></section>
+    <section><div class="sec-t"><h3>Deine Duelle</h3><span id="anz-duelle"></span></div><ul class="liste" id="liste"></ul></section>
+    <section><div class="sec-t"><h3>🏆 Duell-Könige</h3><span>meiste Siege in dieser Runde</span></div><div class="karte"><ol class="liste best" id="best"></ol></div></section>
+    <section><div class="karte small" id="regeln"></div></section>
+  </section>
+
+  <!-- Neues Duell -->
+  <section id="s-neu" class="hidden"><div class="karte">
+    <h2 class="t" id="neu-titel">Neues Duell</h2>
+    <p class="small" style="margin:0 0 6px"><b>1. Thema</b></p>
+    <div class="wahl" id="themen"></div>
+    <p class="small" style="margin:14px 0 6px"><b id="gegner-titel">2. Gegner</b></p>
+    <div class="gegner" id="gegner"></div>
+    <div class="row" style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" id="zufall" style="min-height:44px;flex:1">🎲 Zufall</button></div>
+    <div class="err" id="neu-err"></div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-top:6px">
+      <button class="btn ghost" data-go="lobby">Zurück</button>
+      <button class="btn led" id="neu-start" disabled>Duell starten ›</button>
+    </div>
+    <p class="small" style="margin:10px 0 0">Du spielst zuerst. Deine Gegner bekommen die gleichen Fragen und haben 48 Stunden Zeit.</p>
+  </div></section>
+
+  <!-- Spiel -->
+  <section id="s-spiel" class="hidden">
+    <div class="hud"><span class="pill">Frage<b id="sp-n">1</b>/<span id="sp-ges">7</span></span><div class="timer" id="sp-timer"><i></i></div><span class="pill">✓<b id="sp-ok">0</b></span></div>
+    <div class="frage"><div class="q" id="sp-q"></div></div>
+    <div class="antw" id="sp-antw"></div>
+    <div class="feed" id="sp-feed"></div>
+  </section>
+
+  <!-- Ergebnis -->
+  <section id="s-erg" class="hidden"><div class="karte">
+    <div class="big-res" id="erg-kopf"></div>
+    <div class="vs" id="erg-vs"></div>
+    <div id="erg-tab"></div>
+    <div id="erg-liga" class="small" style="text-align:center;margin-top:12px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+      <button class="btn ghost" data-go="lobby">Zur Übersicht</button>
+      <button class="btn led" id="erg-revanche">⚔️ Revanche</button>
+    </div>
+  </div></section>
+</main>
+<div class="ping hidden" id="ping" role="status"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script>
+/* ==========================================================
+   DUELL-ARENA – 1 gegen 1 oder in der Gruppe (bis 4), von zuhause
+   Ablauf wie QuizDuell: Wer herausfordert, spielt zuerst. Die anderen
+   bekommen die gleichen Fragen und haben 48 Stunden Zeit.
+   Punkte für die Liga: Sieg → 3, Platz 2 in der Gruppe (ab 3 Spielenden) → 2, sonst 1.
+   Wer allein gespielt hat, weil die anderen die 48 Stunden verpasst haben, bekommt 2.
+   ========================================================== */
+const KURS_CODE  = "ploen-jik";
+const LIGA_KEY   = "duell-arena";
+const FRAGEN_PRO_DUELL = 7;
+const SEK_PRO_FRAGE   = 20;
+const STUNDEN_ZEIT    = 48;
+const TAGES_MAX       = 5;   // so viele Duelle zählen pro Tag
+const GEGNER_MAX      = 2;   // so oft pro Tag gegen dieselbe Person (1:1)
+const OFFEN_MAX       = 3;   // so viele eigene Duelle dürfen gleichzeitig warten
+const PUNKTE = {1:3, 2:2, sonst:1, allein:2};
+
+/* ---------- Fragen: o[0] ist richtig ---------- */
+const THEMEN = {
+  perfekt:{icon:"⏪", name:"Perfekt", sub:"haben, sein, Partizip"},
+  wohnen: {icon:"🏠", name:"Wohnen", sub:"Lektion 8"},
+  alltag: {icon:"🎉", name:"Alltag & Feste", sub:"Lektion 10 und 11"},
+  mix:    {icon:"🌀", name:"Alles gemischt", sub:"von allem etwas"}
+};
+const POOL = [
+  {id:"p01",t:"perfekt",f:"Ich ___ gestern Pizza gegessen.",o:["habe","hat","hast","haben"],tipp:"ich → habe"},
+  {id:"p02",t:"perfekt",f:"Lina ___ Musik gehört.",o:["hat","habe","hast","habt"],tipp:"er / sie / es → hat"},
+  {id:"p03",t:"perfekt",f:"___ ihr schon die Hausaufgaben gemacht?",o:["Habt","Hast","Hat","Haben"],tipp:"ihr → habt"},
+  {id:"p04",t:"perfekt",f:"Wir ___ am Wochenende Fußball gespielt.",o:["haben","habt","hat","hast"],tipp:"wir → haben"},
+  {id:"p05",t:"perfekt",f:"Frau Koch ___ eine E-Mail geschrieben.",o:["hat","ist","habe","haben"],tipp:"schreiben → haben; sie → hat"},
+  {id:"p06",t:"perfekt",f:"machen → Partizip II?",o:["gemacht","gemachen","macht","gemachet"],tipp:"regelmäßig: ge…t"},
+  {id:"p07",t:"perfekt",f:"spielen → Partizip II?",o:["gespielt","gespielen","spielt","gespielet"],tipp:"regelmäßig: ge…t"},
+  {id:"p08",t:"perfekt",f:"warten → Partizip II?",o:["gewartet","gewartt","gewarten","wartet"],tipp:"nach t / d: ge…et"},
+  {id:"p09",t:"perfekt",f:"essen → Partizip II?",o:["gegessen","geesst","gegesst","geessen"],tipp:"unregelmäßig: ge-g-essen"},
+  {id:"p10",t:"perfekt",f:"schreiben → Partizip II?",o:["geschrieben","geschreibt","geschriebt","schreibt"],tipp:"unregelmäßig: ge…en"},
+  {id:"p11",t:"perfekt",f:"sehen → Partizip II?",o:["gesehen","gesieht","gesaht","gesehet"],tipp:"unregelmäßig: ge…en"},
+  {id:"p12",t:"perfekt",f:"Die Kinder ___ lange geschlafen.",o:["haben","hat","habt","sind"],tipp:"schlafen = keine Bewegung → haben"},
+  {id:"p13",t:"perfekt",f:"Hast du den Film ___?",o:["gesehen","sehen","gesieht","siehst"],tipp:"Partizip II steht am Ende"},
+  {id:"p14",t:"perfekt",f:"Welcher Satz ist richtig? (haben)",o:["Ich habe gestern Tee getrunken.","Ich habe getrunken gestern Tee.","Ich gestern habe Tee getrunken.","Ich habe gestern Tee trinken."],tipp:"habe auf Platz 2, Partizip am Ende"},
+  {id:"p15",t:"perfekt",f:"Was hat Omar gemacht? Er hat …",o:["… Deutsch gelernt.","… Deutsch lernt.","… Deutsch gelernen.","… gelernt Deutsch."],tipp:"lernen → gelernt, ganz am Ende"},
+  {id:"p16",t:"perfekt",f:"Ich ___ nach Kiel gefahren.",o:["bin","habe","ist","bist"],tipp:"fahren = Bewegung → sein; ich → bin"},
+  {id:"p17",t:"perfekt",f:"Amir ___ nach Hause gegangen.",o:["ist","hat","bist","sind"],tipp:"er → ist"},
+  {id:"p18",t:"perfekt",f:"___ du schon mal geflogen?",o:["Bist","Hast","Ist","Seid"],tipp:"du → bist"},
+  {id:"p19",t:"perfekt",f:"Wir ___ mit dem Bus gekommen.",o:["sind","haben","seid","ist"],tipp:"wir → sind"},
+  {id:"p20",t:"perfekt",f:"Ihr ___ zu spät gekommen!",o:["seid","sind","habt","bist"],tipp:"ihr → seid"},
+  {id:"p21",t:"perfekt",f:"Meine Eltern ___ nach Berlin gefahren.",o:["sind","haben","seid","ist"],tipp:"sie (Plural) → sind"},
+  {id:"p22",t:"perfekt",f:"gehen → Partizip II?",o:["gegangen","gegeht","gegehen","gegingt"],tipp:"unregelmäßig: gegangen"},
+  {id:"p23",t:"perfekt",f:"fahren → Partizip II?",o:["gefahren","gefahrt","gefuhren","fahrt"],tipp:"unregelmäßig: ge…en"},
+  {id:"p24",t:"perfekt",f:"kommen → Partizip II?",o:["gekommen","gekommt","gekamen","kommt"],tipp:"unregelmäßig: ge…en"},
+  {id:"p25",t:"perfekt",f:"fliegen → Partizip II?",o:["geflogen","gefliegt","gefliegen","geflagen"],tipp:"ie → o: geflogen"},
+  {id:"p26",t:"perfekt",f:"laufen → Partizip II?",o:["gelaufen","geläuft","gelauft","gelofen"],tipp:"unregelmäßig: ge…en"},
+  {id:"p27",t:"perfekt",f:"bleiben → Partizip II?",o:["geblieben","gebleibt","gebleiben","geblibt"],tipp:"ei → ie: geblieben"},
+  {id:"p28",t:"perfekt",f:"Ich ___ zu Hause geblieben.",o:["bin","habe","ist","hat"],tipp:"bleiben → immer mit sein!"},
+  {id:"p29",t:"perfekt",f:"Welche Verben haben Perfekt mit sein?",o:["gehen, fahren, kommen","essen, trinken, lesen","spielen, machen, lernen","schlafen, sehen, kaufen"],tipp:"Bewegung von A nach B → sein"},
+  {id:"p30",t:"perfekt",f:"Welcher Satz ist richtig? (sein)",o:["Sara ist gestern ins Kino gegangen.","Sara hat gestern ins Kino gegangen.","Sara ist gestern ins Kino gegeht.","Sara gestern ist ins Kino gegangen."],tipp:"gehen → ist … gegangen"},
+  {id:"p31",t:"perfekt",f:"aufstehen → Partizip II?",o:["aufgestanden","geaufstanden","aufgestehen","aufgesteht"],tipp:"auf + ge + standen"},
+  {id:"p32",t:"perfekt",f:"einkaufen → Partizip II?",o:["eingekauft","geeinkauft","eingekaufen","einkauft"],tipp:"ein + ge + kauft"},
+  {id:"p33",t:"perfekt",f:"anrufen → Partizip II?",o:["angerufen","geanrufen","angeruft","anrufte"],tipp:"an + ge + rufen"},
+  {id:"p34",t:"perfekt",f:"aufräumen → Partizip II?",o:["aufgeräumt","geaufräumt","aufräumt","aufgeräumen"],tipp:"auf + ge + räumt"},
+  {id:"p35",t:"perfekt",f:"fernsehen → Partizip II?",o:["ferngesehen","gefernsehen","ferngesieht","ferngeseht"],tipp:"fern + ge + sehen"},
+  {id:"p36",t:"perfekt",f:"Wo steht das ge- bei trennbaren Verben?",o:["in der Mitte: ein-ge-kauft","ganz vorne: ge-einkauft","ganz hinten: einkauft-ge","es gibt kein ge-"],tipp:"Vorsilbe + ge + Verb"},
+  {id:"p37",t:"perfekt",f:"Ich ___ heute um 6 Uhr aufgestanden.",o:["bin","habe","hat","ist"],tipp:"aufstehen → sein; ich → bin"},
+  {id:"p38",t:"perfekt",f:"Wir ___ im Supermarkt eingekauft.",o:["haben","sind","habt","seid"],tipp:"einkaufen → haben"},
+  {id:"p39",t:"perfekt",f:"Hast du deine Mutter ___?",o:["angerufen","anrufen","angeruft","geanrufen"],tipp:"anrufen → angerufen"},
+  {id:"p40",t:"perfekt",f:"Lea ___ gestern Abend ferngesehen.",o:["hat","ist","habe","sind"],tipp:"fernsehen → haben"},
+  {id:"p41",t:"perfekt",f:"Paul ___ seine Schwester vom Bahnhof abgeholt.",o:["hat","ist","sind","habt"],tipp:"abholen → haben"},
+  {id:"p42",t:"perfekt",f:"Der Film hat um 8 Uhr ___.",o:["angefangen","anfangen","angefängt","fängt an"],tipp:"an + ge + fangen"},
+  {id:"p43",t:"perfekt",f:"Wann bist du ___?",o:["eingeschlafen","einschlafen","geeinschlafen","eingeschlaft"],tipp:"einschlafen → sein; ein + ge + schlafen"},
+  {id:"p44",t:"perfekt",f:"Welcher Satz ist richtig? (trennbar)",o:["Ich habe mein Zimmer aufgeräumt.","Ich habe mein Zimmer räumt auf.","Ich habe aufgeräumt mein Zimmer.","Ich habe mein Zimmer geaufräumt."],tipp:"Partizip am Ende, ge in der Mitte"},
+  {id:"p45",t:"perfekt",f:"haben oder sein? Ich ___ einen Apfel gegessen.",o:["habe","bin","hat","ist"],tipp:"essen → haben"},
+  {id:"p46",t:"perfekt",f:"haben oder sein? Tom ___ nach Hamburg gefahren.",o:["ist","hat","bin","habe"],tipp:"fahren → sein"},
+  {id:"p47",t:"perfekt",f:"haben oder sein? Wir ___ lange geschlafen.",o:["haben","sind","habt","seid"],tipp:"schlafen → haben"},
+  {id:"p48",t:"perfekt",f:"haben oder sein? ___ ihr gut nach Hause gekommen?",o:["Seid","Habt","Sind","Bist"],tipp:"kommen → sein; ihr → seid"},
+  {id:"p49",t:"perfekt",f:"haben oder sein? Mira ___ um 7 Uhr aufgestanden.",o:["ist","hat","bin","habt"],tipp:"aufstehen → sein"},
+  {id:"p50",t:"perfekt",f:"haben oder sein? Ich ___ am Samstag eingekauft.",o:["habe","bin","ist","hat"],tipp:"einkaufen → haben"},
+  {id:"p51",t:"perfekt",f:"Er ist nach Hause ___.",o:["gegangen","gegeht","gegehen","gehen"],tipp:"gehen → gegangen"},
+  {id:"p52",t:"perfekt",f:"Er hat ein Buch ___.",o:["gelesen","gelest","geliest","lesen"],tipp:"lesen → gelesen"},
+  {id:"p53",t:"perfekt",f:"Wir haben die Küche ___.",o:["aufgeräumt","geaufräumt","aufräumen","räumt auf"],tipp:"auf + ge + räumt"},
+  {id:"p54",t:"perfekt",f:"Welches Partizip passt NICHT zu sein?",o:["gegessen","gegangen","gefahren","gekommen"],tipp:"essen → haben"},
+  {id:"p55",t:"perfekt",f:"Welches Partizip passt NICHT zu haben?",o:["gekommen","gekauft","gespielt","gemacht"],tipp:"kommen → sein"},
+  {id:"p56",t:"perfekt",f:"Gestern ___ Lisa ihre Freundin ___.",o:["hat … angerufen","ist … angerufen","hat … anrufen","hat … geanrufen"],tipp:"anrufen → hat … angerufen"},
+  {id:"p57",t:"perfekt",f:"Meine Freunde ___ gestern zu mir ___.",o:["sind … gekommen","haben … gekommen","sind … kommen","sind … gekommt"],tipp:"kommen → sind … gekommen"},
+  {id:"p58",t:"perfekt",f:"Welcher Satz ist richtig? (Mix)",o:["Am Montag bin ich zum Arzt gegangen.","Am Montag ich bin zum Arzt gegangen.","Am Montag habe ich zum Arzt gegangen.","Am Montag bin ich zum Arzt gegeht."],tipp:"bin auf Platz 2, gegangen am Ende"},
+  {id:"p59",t:"perfekt",f:"Welche Frage ist richtig?",o:["Bist du gestern geschwommen?","Hast du gestern geschwommen?","Bist du gestern geschwimmt?","Bist geschwommen du gestern?"],tipp:"schwimmen → sein; Partizip am Ende"},
+  {id:"w01",t:"wohnen",f:"In der ___ kocht man.",o:["Küche","Bad","Flur","Keller"],tipp:"die Küche = hier kocht man"},
+  {id:"w02",t:"wohnen",f:"Im ___ schläft man.",o:["Schlafzimmer","Wohnzimmer","Bad","Flur"],tipp:"schlafen → das Schlafzimmer"},
+  {id:"w03",t:"wohnen",f:"Das Sofa steht im ___.",o:["Wohnzimmer","Bad","Keller","Flur"],tipp:"das Wohnzimmer"},
+  {id:"w04",t:"wohnen",f:"der, die oder das? ___ Tisch",o:["der","die","das","den"],tipp:"der Tisch"},
+  {id:"w05",t:"wohnen",f:"der, die oder das? ___ Lampe",o:["die","der","das","den"],tipp:"die Lampe"},
+  {id:"w06",t:"wohnen",f:"der, die oder das? ___ Bett",o:["das","der","die","den"],tipp:"das Bett"},
+  {id:"w07",t:"wohnen",f:"der, die oder das? ___ Regal",o:["das","der","die","den"],tipp:"das Regal"},
+  {id:"w08",t:"wohnen",f:"Ich suche ___ Wohnung.",o:["eine","einen","ein","einer"],tipp:"die Wohnung → eine Wohnung"},
+  {id:"w09",t:"wohnen",f:"Wir brauchen ___ Kühlschrank.",o:["einen","ein","eine","einer"],tipp:"der Kühlschrank → Akkusativ: einen"},
+  {id:"w10",t:"wohnen",f:"Die Wohnung kostet nicht viel. Sie ist ___.",o:["günstig","groß","hell","laut"],tipp:"nicht teuer = günstig"},
+  {id:"w11",t:"wohnen",f:"Die Wohnung hat viele Fenster. Sie ist ___.",o:["hell","dunkel","laut","alt"],tipp:"viel Licht = hell"},
+  {id:"w12",t:"wohnen",f:"Was bedeutet „2 ZKB“?",o:["2 Zimmer, Küche, Bad","2 Küchen, 2 Bäder","2 Zimmer mit Balkon","2 Kinder, Bad"],tipp:"Z = Zimmer, K = Küche, B = Bad"},
+  {id:"w13",t:"wohnen",f:"Was ist die Warmmiete?",o:["Miete mit Heizung und Nebenkosten","Miete nur im Winter","Miete ohne Strom","die Kaution"],tipp:"warm = mit Heizung und Nebenkosten"},
+  {id:"w14",t:"wohnen",f:"Das Auto steht in der ___.",o:["Garage","Küche","Flur","Bad"],tipp:"die Garage"},
+  {id:"w15",t:"wohnen",f:"Das Gegenteil von „groß“?",o:["klein","alt","teuer","hell"],tipp:"groß ↔ klein"},
+  {id:"w16",t:"wohnen",f:"Das Gegenteil von „laut“?",o:["ruhig","hell","schön","neu"],tipp:"laut ↔ ruhig"},
+  {id:"w17",t:"wohnen",f:"Ich wohne ___ 3. Stock.",o:["im","in","am","auf"],tipp:"im ersten, zweiten, dritten Stock"},
+  {id:"w18",t:"wohnen",f:"Die Wohnung hat ___ Balkon.",o:["einen","ein","eine","einer"],tipp:"der Balkon → einen Balkon"},
+  {id:"w19",t:"wohnen",f:"Die Möbel sind schön. ___ gefallen mir.",o:["Sie","Er","Es","Ihr"],tipp:"die Möbel (Plural) → sie"},
+  {id:"w20",t:"wohnen",f:"Wie viele Zimmer hat die Wohnung? Sie hat …",o:["drei Zimmer.","drei Zimmern.","dritte Zimmer.","drei Zimmers."],tipp:"das Zimmer → die Zimmer"},
+  {id:"a01",t:"alltag",f:"Ich gratuliere dir zum ___!",o:["Geburtstag","Geburtstags","Geburtstage","Geburt"],tipp:"zum Geburtstag"},
+  {id:"a02",t:"alltag",f:"Der erste Monat im Jahr ist der ___.",o:["Januar","Juni","Juli","März"],tipp:"Januar, Februar, März …"},
+  {id:"a03",t:"alltag",f:"Im Winter ist es oft ___.",o:["kalt","heiß","warm","sonnig"],tipp:"Winter = kalt"},
+  {id:"a04",t:"alltag",f:"Welcher Monat ist im Sommer?",o:["Juli","Januar","November","März"],tipp:"Sommer: Juni, Juli, August"},
+  {id:"a05",t:"alltag",f:"Heute ist der ___ Mai.",o:["erste","eins","ersten","einer"],tipp:"Heute ist der erste Mai."},
+  {id:"a06",t:"alltag",f:"Ich habe am ___ Juni Geburtstag.",o:["dritten","dritte","drei","dritter"],tipp:"am dritten Juni"},
+  {id:"a07",t:"alltag",f:"Ich schenke ___ Mutter Blumen.",o:["meiner","meine","meinen","mein"],tipp:"Wem? → Dativ: meiner Mutter"},
+  {id:"a08",t:"alltag",f:"Was schenkst du ___ Bruder?",o:["deinem","deinen","dein","deine"],tipp:"Wem? → Dativ: deinem Bruder"},
+  {id:"a09",t:"alltag",f:"Kannst du ___ helfen?",o:["mir","mich","ich","mein"],tipp:"helfen + Dativ: mir"},
+  {id:"a10",t:"alltag",f:"Das Geschenk ist für ___.",o:["dich","dir","du","dein"],tipp:"für + Akkusativ: dich"},
+  {id:"a11",t:"alltag",f:"„Herzlichen Glückwunsch!“ – Was antwortest du?",o:["Danke schön!","Gute Besserung!","Guten Appetit!","Gute Reise!"],tipp:"Danke schön!"},
+  {id:"a12",t:"alltag",f:"Silvester ist am …",o:["31. Dezember.","1. Januar.","24. Dezember.","6. Januar."],tipp:"Silvester: 31.12."},
+  {id:"a13",t:"alltag",f:"Wo meldet man die Wohnung an?",o:["im Bürgeramt","im Supermarkt","beim Arzt","in der Schule"],tipp:"Anmeldung → Bürgeramt"},
+  {id:"a14",t:"alltag",f:"Ruf mich bitte ___!",o:["an","auf","ab","aus"],tipp:"anrufen → Ruf mich an!"},
+  {id:"a15",t:"alltag",f:"Steh bitte früh ___!",o:["auf","an","ab","mit"],tipp:"aufstehen → Steh auf!"},
+  {id:"a16",t:"alltag",f:"Wir gehen ins Kino. Komm doch ___!",o:["mit","an","auf","aus"],tipp:"mitkommen → Komm mit!"},
+  {id:"a17",t:"alltag",f:"Ich lade dich zu meiner Party ___.",o:["ein","an","mit","auf"],tipp:"einladen → Ich lade dich ein."},
+  {id:"a18",t:"alltag",f:"Wann ist die Party? – ___ Samstag.",o:["Am","Im","Um","In"],tipp:"am Samstag"},
+  {id:"a19",t:"alltag",f:"Du bist krank? Gute ___!",o:["Besserung","Reise","Nacht","Fahrt"],tipp:"krank → Gute Besserung!"},
+  {id:"a20",t:"alltag",f:"Im Herbst fallen die ___.",o:["Blätter","Blumen","Ferien","Sonnen"],tipp:"Herbst: die Blätter fallen"}
+];
+
+/* ---------- Firebase ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+  authDomain: "lern-deutsch-arash.firebaseapp.com",
+  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lern-deutsch-arash",
+  storageBucket: "lern-deutsch-arash.firebasestorage.app",
+  messagingSenderId: "845503292114",
+  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+};
+const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+const BASE = `jugendliga/${KURS}`;
+const CODE_KEY = `liga_code_${KURS}`;
+const FERN = 4102444800000;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+function zufall(){ try{ return crypto.getRandomValues(new Uint32Array(1))[0]/4294967296; }catch(e){ return Math.random(); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(zufall()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const BUCH=["A","B","C","D"], KL=["a","b","c","d"];
+
+let db=null, offset=0;
+try{ if(window.firebase){ firebase.initializeApp(firebaseConfig); db=firebase.database();
+  db.ref(".info/serverTimeOffset").on("value", s=>{ offset=Number(s.val())||0; }); } }catch(e){ console.warn(e); }
+const jetzt = () => Date.now()+offset;
+const TS = () => firebase.database.ServerValue.TIMESTAMP;
+
+let me=null, pub=null, task=null, duelle={}, lobby={}, screen="", aktiv=null;
+try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+
+function zeige(id){ ["s-code","s-block","s-lobby","s-neu","s-spiel","s-erg"].forEach(s=>$("#"+s).classList.toggle("hidden", s!==id)); screen=id; window.scrollTo&&window.scrollTo(0,0); }
+function block(emo, titel, text){ $("#block-emo").textContent=emo; $("#block-title").textContent=titel; $("#block-text").textContent=text; zeige("s-block"); }
+
+/* ---------- Namen & Teams ---------- */
+const teamVon = pid => pub ? arr(pub.teams).find(t=>t.id===(pub.roster||{})[pid]) : null;
+const farbe = pid => (teamVon(pid)||{}).color || "#8190ab";
+const ohneNamen = () => !pub || !Object.keys(pub.names||{}).length;
+function nameVon(pid){
+  if(me && pid===me.pid) return "Du";
+  const n=pub&&pub.names&&pub.names[pid]; if(n) return n;
+  const t=teamVon(pid); return t ? `jemand aus ${t.name}` : "Spieler:in";
+}
+const spieler = () => pub ? Object.keys(pub.roster||{}).filter(p=>!me||p!==me.pid) : [];
+const istOnline = pid => { const l=lobby[pid]; return !!(l && jetzt()-(Number(l.ts)||0) < 3*60*1000); };
+
+/* ---------- Duell-Logik ---------- */
+const teilnehmer = d => Object.keys((d.info&&d.info.teil)||{});
+const gespielt = d => Object.keys(d.teil||{});
+const istFertig = d => { const t=teilnehmer(d); return t.every(p=>d.teil&&d.teil[p]) || jetzt() > (Number(d.info.ende)||0); };
+const binDabei = d => !!(me && d.info && d.info.teil && d.info.teil[me.pid]);
+const binDran  = d => binDabei(d) && !(d.teil&&d.teil[me.pid]) && !istFertig(d);
+function rangliste(d){
+  const g=gespielt(d).map(p=>({pid:p, r:Number(d.teil[p].richtig)||0, z:Number(d.teil[p].zeit)||0}));
+  g.sort((a,b)=> b.r-a.r || a.z-b.z);
+  g.forEach((x,i)=>{ x.platz = (i>0 && g[i-1].r===x.r && g[i-1].z===x.z) ? g[i-1].platz : i+1; });
+  return g;
+}
+function punkteFuer(d, pid){
+  const rl=rangliste(d), x=rl.find(y=>y.pid===pid); if(!x) return 0;
+  if(rl.length===1) return PUNKTE.allein;
+  return x.platz===1 ? PUNKTE[1] : (x.platz===2 && rl.length>=3) ? PUNKTE[2] : PUNKTE.sonst;
+}
+const tagVon = ms => { const d=new Date(ms); return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`; };
+function meineWertungen(){
+  return Object.entries(duelle).map(([id,d])=>({id,d,w:d.wertung&&me?d.wertung[me.pid]:null})).filter(x=>x.w);
+}
+function heuteGezaehlt(){ const h=tagVon(jetzt()); return meineWertungen().filter(x=>x.w.p>0 && tagVon(Number(x.w.ts)||0)===h); }
+function rundenSumme(){ const rid=pub&&pub.round&&pub.round.id; return meineWertungen().filter(x=>x.w.round===rid).reduce((a,x)=>a+(Number(x.w.p)||0),0); }
+
+/* Liga-Zugang: Aufgabe offen, Zeitfenster, Zuteilung */
+function ligaStatus(){
+  if(!pub||!pub.round) return {ok:false, txt:"Die Liga startet bald. Sobald die Teams ausgelost sind, zählen Duelle."};
+  const t=pub.tasks&&pub.tasks[LIGA_KEY];
+  if(!t) return {ok:false, txt:"Die Duell-Arena ist noch nicht freigeschaltet."};
+  const n=jetzt();
+  if(!t.open || t.status==="bald") return {ok:false, txt:"Die Duell-Arena ist gerade geschlossen."};
+  if(n<(Number(t.von)||0)) return {ok:false, txt:"Die Duell-Arena öffnet bald."};
+  if(n>(Number(t.bis)||FERN)) return {ok:false, txt:"Die Zeit für Duelle ist vorbei."};
+  const a=t.assign||{}, team=(pub.roster||{})[me.pid];
+  if(!(a.alle || (a.players&&a.players[me.pid]) || (team&&a.teams&&a.teams[team]))) return {ok:false, txt:"Die Duell-Arena ist gerade nicht für dich freigeschaltet."};
+  return {ok:true, task:t};
+}
+
+/* Punkte gutschreiben – erst Liga-Summe, dann Wertung im Duell (doppelt sicher) */
+let bucheLaeuft=false;
+async function buchen(){
+  if(bucheLaeuft||!me||!pub) return; bucheLaeuft=true;
+  try{
+    const st=ligaStatus();
+    const offen=Object.entries(duelle).filter(([id,d])=>binDabei(d) && istFertig(d) && d.teil&&d.teil[me.pid] && !(d.wertung&&d.wertung[me.pid]))
+      .sort((a,b)=>(Number(a[1].info.start)||0)-(Number(b[1].info.start)||0));
+    for(const [id,d] of offen){
+      if(!st.ok) break;
+      let p=punkteFuer(d, me.pid), grund="";
+      const heute=heuteGezaehlt();
+      const gegner=teilnehmer(d).filter(x=>x!==me.pid);
+      if(heute.length>=TAGES_MAX){ p=0; grund="tageslimit"; }
+      else if(gegner.length===1 && heute.filter(x=>teilnehmer(x.d).length===2 && teilnehmer(x.d).includes(gegner[0])).length>=GEGNER_MAX){ p=0; grund="gegnerlimit"; }
+      const summe=Math.min(Number(st.task.max)||50, rundenSumme()+p);
+      const best=(await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${LIGA_KEY}`).once("value")).val();
+      if(p>0 && (best===null || summe>Number(best))){
+        await db.ref(`${BASE}/proof/${pub.round.id}/${me.pid}/${LIGA_KEY}`).set({code:me.code, points:summe, ts:TS()});
+        await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${LIGA_KEY}`).set(summe);
+      }
+      const w={code:me.code, p, ts:TS(), round:pub.round.id}; if(grund) w.grund=grund;
+      await db.ref(`${BASE}/duelle/${id}/wertung/${me.pid}`).set(w);
+      if(!d.wertung) d.wertung={}; d.wertung[me.pid]={...w, ts:jetzt()};
+    }
+  }catch(e){ console.warn("buchen", e); }
+  bucheLaeuft=false;
+}
+
+/* ---------- Lobby ---------- */
+function renderLobby(){
+  if(screen!=="s-lobby") return;
+  const meine=Object.entries(duelle).filter(([,d])=>binDabei(d)).map(([id,d])=>({id,d}));
+  const fertige=meine.filter(x=>istFertig(x.d)&&x.d.teil&&x.d.teil[me.pid]);
+  const siege=fertige.filter(x=>{ const r=rangliste(x.d).find(y=>y.pid===me.pid); return r&&r.platz===1&&rangliste(x.d).length>1; }).length;
+  const st=ligaStatus();
+  $("#stats").innerHTML=[[meine.length,"Duelle"],[siege,"Siege"],[rundenSumme(),"Liga-Punkte"],[`${heuteGezaehlt().length}/${TAGES_MAX}`,"heute"]]
+    .map(([z,l])=>`<div><b>${z}</b><span>${l}</span></div>`).join("");
+  $("#limit").innerHTML = st.ok ? `Sieg <b>+${PUNKTE[1]}</b> · Platz 2 in der Gruppe <b>+${PUNKTE[2]}</b> · Mitspielen <b>+${PUNKTE.sonst}</b> – heute zählen noch <b>${Math.max(0,TAGES_MAX-heuteGezaehlt().length)}</b> Duelle.`
+    : `⚠️ ${esc(st.txt)} Du kannst trotzdem üben.`;
+  // Online
+  const on=spieler().filter(istOnline);
+  $("#sec-online").innerHTML = on.length ? `<div class="sec-t"><h3>🟢 Jetzt online</h3><span>tipp an und fordere heraus</span></div>
+    <div class="online">${on.map(p=>`<button class="chip" data-fordern="${esc(p)}"><i></i>${esc(nameVon(p))}</button>`).join("")}</div>` : "";
+  // Liste
+  const sortiert=meine.sort((a,b)=>{
+    const pa=binDran(a.d)?0:!istFertig(a.d)?1:2, pb=binDran(b.d)?0:!istFertig(b.d)?1:2;
+    return pa-pb || (Number(b.d.info.start)||0)-(Number(a.d.info.start)||0); }).slice(0,20);
+  $("#anz-duelle").textContent = meine.filter(x=>binDran(x.d)).length ? `${meine.filter(x=>binDran(x.d)).length} warten auf dich` : "";
+  $("#liste").innerHTML = sortiert.length ? sortiert.map(({id,d})=>duellZeile(id,d)).join("")
+    : `<li class="leer">Noch keine Duelle. Fordere jemanden heraus – oben auf <b>1 gegen 1</b>!</li>`;
+  // Bestenliste
+  const rid=pub&&pub.round&&pub.round.id, wins={};
+  Object.values(duelle).forEach(d=>{ if(!istFertig(d) || (d.info.round&&d.info.round!==rid)) return; const rl=rangliste(d); if(rl.length<2) return;
+    rl.filter(x=>x.platz===1).forEach(x=>wins[x.pid]=(wins[x.pid]||0)+1); });
+  const top=Object.entries(wins).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $("#best").innerHTML = top.length ? top.map(([p,w],i)=>`<li class="${me&&p===me.pid?"ich":""}"><span class="r">${i+1}</span><span class="sw" style="background:${esc(farbe(p))}"></span><span class="n">${esc(nameVon(p))}</span><span class="p">${w} ${w===1?"Sieg":"Siege"}</span></li>`).join("")
+    : `<li class="small">Noch keine Siege – sei die erste Person!</li>`;
+  $("#regeln").innerHTML=`<b>So geht's:</b> Du forderst heraus und spielst sofort ${FRAGEN_PRO_DUELL} Fragen. Deine Gegner bekommen die gleichen Fragen und haben ${STUNDEN_ZEIT} Stunden Zeit.
+    Es gewinnt, wer mehr richtig hat – bei Gleichstand die schnellere Person. Pro Tag zählen ${TAGES_MAX} Duelle für die Liga, gegen dieselbe Person höchstens ${GEGNER_MAX}.`;
+}
+function duellZeile(id, d){
+  const th=THEMEN[d.info.thema]||THEMEN.mix;
+  const gegner=teilnehmer(d).filter(p=>p!==me.pid);
+  const namen=gegner.map(nameVon).join(", ");
+  let rechts="", kl="";
+  if(binDran(d)){ kl="dran"; rechts=`<span class="gross" style="color:var(--board)">Los!</span>du bist dran`; }
+  else if(!istFertig(d)){ const fehlt=gegner.filter(p=>!(d.teil&&d.teil[p])); const lv=fehlt.map(p=>d.live&&d.live[p]).find(Boolean);
+    rechts=`<span class="gross wait">⏳</span>${lv?`spielt gerade …`:`wartet auf ${fehlt.length}`}`; }
+  else { const rl=rangliste(d), ich=rl.find(x=>x.pid===me.pid);
+    const w=d.wertung&&d.wertung[me.pid];
+    if(!ich) rechts=`<span class="gross" style="color:var(--muted)">–</span>verpasst`;
+    else if(rl.length===1) rechts=`<span class="gross win">🏆</span>kampflos${w?` +${w.p}`:""}`;
+    else rechts=`<span class="gross ${ich.platz===1?"win":"lose"}">${ich.platz===1?"🏆":ich.platz+"."}</span>${ich.r}:${Math.max(...rl.filter(x=>x.pid!==me.pid).map(x=>x.r))}${w?` · +${w.p}`:""}`; }
+  return `<li><button class="duell ${kl}" data-duell="${esc(id)}"><span class="ic">${th.icon}</span>
+    <span><b>${gegner.length>1?"👥 ":""}${esc(namen||"…")}</b><span class="sub">${esc(th.name)} · ${istFertig(d)?"beendet":restText(Number(d.info.ende)-jetzt())}</span></span>
+    <span class="rechts">${rechts}</span></button></li>`;
+}
+function restText(ms){ if(ms<=0) return "abgelaufen"; const h=Math.floor(ms/3600000); return h>=1?`noch ${h} Std`:`noch ${Math.max(1,Math.ceil(ms/60000))} Min`; }
+
+/* ---------- Neues Duell ---------- */
+let neu={modus:"1", thema:"perfekt", gegner:[]};
+function renderNeu(){
+  $("#neu-titel").textContent = neu.modus==="1" ? "⚔️ 1 gegen 1" : "👥 Gruppen-Duell";
+  $("#gegner-titel").textContent = neu.modus==="1" ? "2. Gegner" : "2. Mitspieler:innen (1 bis 3)";
+  $("#themen").innerHTML=Object.entries(THEMEN).map(([k,t])=>`<button type="button" data-thema="${k}" aria-pressed="${neu.thema===k}"><i>${t.icon}</i><span><b>${esc(t.name)}</b><small>${esc(t.sub)}</small></span></button>`).join("");
+  const liste=spieler().sort((a,b)=>(istOnline(b)-istOnline(a)) || nameVon(a).localeCompare(nameVon(b),"de"));
+  const max = neu.modus==="1" ? 1 : 3;
+  $("#gegner").innerHTML = liste.length ? liste.map(p=>{ const sel=neu.gegner.includes(p);
+    return `<button type="button" data-gegner="${esc(p)}" aria-pressed="${sel}" ${!sel&&neu.gegner.length>=max&&max>1?"disabled":""}><span class="sw" style="background:${esc(farbe(p))}"></span>${esc(nameVon(p))}${istOnline(p)?'<span class="on" title="online"></span>':""}</button>`; }).join("")
+    : `<p class="small">Noch niemand sonst in der Liga.</p>`;
+  if(ohneNamen()) $("#gegner").insertAdjacentHTML("afterbegin", `<p class="small" style="grid-column:1/-1;margin:0">Die Namen sind ausgeblendet – du siehst nur die Teams. Mit 🎲 Zufall geht es am schnellsten.</p>`);
+  $("#neu-start").disabled = !neu.gegner.length;
+  $("#neu-err").textContent="";
+}
+async function duellStarten(){
+  const meineOffen=Object.values(duelle).filter(d=>d.info&&d.info.von===me.pid&&!istFertig(d)).length;
+  if(meineOffen>=OFFEN_MAX){ $("#neu-err").textContent=`Du hast schon ${OFFEN_MAX} offene Duelle. Warte, bis jemand antwortet.`; return; }
+  const pool=POOL.filter(q=>neu.thema==="mix"||q.t===neu.thema);
+  const fragen=shuffle(pool).slice(0,FRAGEN_PRO_DUELL).map(q=>q.id);
+  const teil={[me.pid]:true}; neu.gegner.forEach(p=>teil[p]=true);
+  const start=jetzt();
+  const info={von:me.pid, code:me.code, thema:neu.thema, fragen, teil, start:TS(), ende:start+STUNDEN_ZEIT*3600000, round:(pub.round&&pub.round.id)||""};
+  try{
+    const ref=db.ref(`${BASE}/duelle`).push();
+    await ref.child("info").set(info);
+    duelle[ref.key]={info:{...info,start}};
+    spielen(ref.key);
+  }catch(e){ console.warn(e); $("#neu-err").textContent="Das Duell konnte nicht gestartet werden. Prüfe dein Internet."; }
+}
+
+/* ---------- Spielen ---------- */
+let sp=null;
+function spielen(id){
+  const d=duelle[id]; if(!d) return;
+  if(d.teil&&d.teil[me.pid]) return ergebnis(id);
+  const fragen=arr(d.info.fragen).map(fid=>POOL.find(q=>q.id===fid)).filter(Boolean);
+  sp={id, fragen, i:0, richtig:0, zeit:0, ans:"", lock:false, t0:0, tick:null};
+  aktiv=id;
+  $("#sp-ges").textContent=fragen.length;
+  zeige("s-spiel"); frage();
+}
+function geistInfo(qi){
+  const d=duelle[sp.id]; const andere=gespielt(d).filter(p=>p!==me.pid); if(!andere.length) return "";
+  return andere.map(p=>{ const a=String(d.teil[p].ans||"")[qi]; return `${esc(nameVon(p))}: ${a==="1"?"✓":"✗"}`; }).join(" · ");
+}
+function frage(){
+  const q=sp.fragen[sp.i];
+  const opts=shuffle(q.o.map((t,k)=>({t,ok:k===0})));
+  sp.opts=opts; sp.lock=false;
+  $("#sp-n").textContent=sp.i+1; $("#sp-ok").textContent=sp.richtig;
+  $("#sp-q").innerHTML=esc(q.f).replace("___",'<span style="display:inline-block;min-width:2.2em;border-bottom:4px solid var(--led)">&nbsp;</span>');
+  $("#sp-q").parentElement.classList.remove("pop"); void $("#sp-q").offsetWidth; $("#sp-q").parentElement.classList.add("pop");
+  $("#sp-antw").innerHTML=opts.map((o,k)=>`<button class="${KL[k]}" data-k="${k}"><span class="l">${BUCH[k]}</span><span>${esc(o.t)}</span></button>`).join("");
+  $("#sp-feed").innerHTML="";
+  sp.t0=Date.now();
+  clearInterval(sp.tick);
+  sp.tick=setInterval(()=>{ const rest=Math.max(0,SEK_PRO_FRAGE*1000-(Date.now()-sp.t0));
+    const tm=$("#sp-timer"); tm.firstElementChild.style.width=(rest/(SEK_PRO_FRAGE*10))+"%"; tm.classList.toggle("low", rest<5000);
+    if(rest<=0){ clearInterval(sp.tick); antwort(-1); } },100);
+}
+function antwort(k){
+  if(sp.lock) return; sp.lock=true; clearInterval(sp.tick);
+  const ms=Math.min(SEK_PRO_FRAGE*1000, Date.now()-sp.t0);
+  const ok = k>=0 && sp.opts[k].ok;
+  sp.zeit+=ms; if(ok) sp.richtig++; sp.ans+=ok?"1":"0";
+  const btns=[...document.querySelectorAll("#sp-antw button")];
+  btns.forEach((b,i)=>{ if(sp.opts[i].ok) b.classList.add("right"); else if(i===k) b.classList.add("wrong"); else b.classList.add("dim"); });
+  $("#sp-ok").textContent=sp.richtig;
+  const q=sp.fragen[sp.i], g=geistInfo(sp.i);
+  $("#sp-feed").innerHTML=`<div style="color:${ok?"var(--ok)":"var(--bad)"}">${ok?"Richtig! 🎉":k<0?"Zu langsam ⏱️":"Leider falsch"}${ok?"":` – ${esc(q.tipp)}`}</div>${g?`<span class="geist">👻 ${g}</span>`:""}`;
+  try{ db.ref(`${BASE}/duelle/${sp.id}/live/${me.pid}`).set({code:me.code, n:sp.i+1}); }catch(e){}
+  setTimeout(()=>{ sp.i++; if(sp.i<sp.fragen.length) frage(); else abgeben(); }, ok?900:1900);
+}
+async function abgeben(){
+  const r={code:me.code, richtig:sp.richtig, zeit:sp.zeit, ans:sp.ans, ts:TS()};
+  try{
+    await db.ref(`${BASE}/duelle/${sp.id}/teil/${me.pid}`).set(r);
+    try{ await db.ref(`${BASE}/duelle/${sp.id}/live/${me.pid}`).remove(); }catch(e){}
+    const d=duelle[sp.id]; d.teil=d.teil||{}; d.teil[me.pid]={...r, ts:jetzt()};
+  }catch(e){ console.warn(e); }
+  await buchen();
+  ergebnis(sp.id);
+}
+
+/* ---------- Ergebnis ---------- */
+function ergebnis(id){
+  const d=duelle[id]; if(!d) return zeige("s-lobby");
+  aktiv=id; zeige("s-erg");
+  renderErgebnis();
+}
+function renderErgebnis(){
+  if(screen!=="s-erg"||!aktiv) return;
+  const d=duelle[aktiv]; const th=THEMEN[d.info.thema]||THEMEN.mix;
+  const rl=rangliste(d), alle=teilnehmer(d), fertig=istFertig(d);
+  const ich=rl.find(x=>x.pid===me.pid), w=d.wertung&&d.wertung[me.pid];
+  let kopf;
+  if(binDran(d)) kopf=`<div class="e">⚔️</div><b>Du bist dran!</b><span>${esc(th.name)} · ${arr(d.info.fragen).length} Fragen</span><br><button class="btn led" style="margin-top:12px" id="erg-spielen">Jetzt spielen ›</button>`;
+  else if(!fertig) kopf=`<div class="e">⏳</div><b>${ich?ich.r:0} von ${arr(d.info.fragen).length} richtig</b><span>Jetzt sind die anderen dran – du bekommst das Ergebnis hier und in der Arena.</span>`;
+  else if(!ich) kopf=`<div class="e">😴</div><b>Verpasst</b><span>Die 48 Stunden sind um.</span>`;
+  else if(rl.length===1) kopf=`<div class="e">🏆</div><b>Sieg kampflos!</b><span>Niemand hat rechtzeitig gespielt.</span>`;
+  else kopf=`<div class="e">${ich.platz===1?"🏆":ich.platz===2?"🥈":"💪"}</div><b>${ich.platz===1?"Gewonnen!":ich.platz===2&&alle.length>2?"Platz 2!":"Knapp daneben!"}</b><span>${ich.platz===1?"Stark gespielt.":"Revanche? Du schaffst das!"}</span>`;
+  if(w) kopf+=`<br><span class="punkte">${w.p>0?`+${w.p} Liga-Punkte`:"zählt heute nicht mehr"}</span>`;
+  $("#erg-kopf").innerHTML=kopf;
+  const n=arr(d.info.fragen).length;
+  $("#erg-vs").innerHTML=alle.map(p=>{
+    const x=rl.find(y=>y.pid===p), lv=d.live&&d.live[p];
+    const wert = x ? `${x.r}<small>${(x.z/1000).toFixed(1).replace(".",",")} s</small>` : lv ? `…<small>spielt: ${lv.n}/${n}</small>` : fertig ? `–<small>verpasst</small>` : `⏳<small>noch offen</small>`;
+    return `<div class="zeile ${p===me.pid?"ich":""}"><span class="platz">${x&&fertig?(x.platz===1&&rl.length>1?"🏆":x.platz+"."):""}</span>
+      <span class="name">${esc(nameVon(p))}<small>${esc((teamVon(p)||{}).name||"")}</small><div class="balken"><i style="width:${x?x.r/n*100:lv?lv.n/n*100:0}%;background:${esc(farbe(p))}"></i></div></span>
+      <span class="wert">${wert}</span></div>`; }).join("");
+  // Vergleich pro Frage – erst wenn ich gespielt habe
+  if(ich){
+    const sp2=gespielt(d);
+    $("#erg-tab").innerHTML=`<table class="vergleich"><tr><th>Frage</th>${sp2.map(p=>`<th>${esc(nameVon(p))}</th>`).join("")}</tr>
+      ${arr(d.info.fragen).map((fid,i)=>{ const q=POOL.find(x=>x.id===fid);
+        return `<tr><td>${esc(q?q.o[0]:"")}</td>${sp2.map(p=>{ const a=String(d.teil[p].ans||"")[i]; return `<td class="${a==="1"?"ok":"no"}">${a==="1"?"✓":"✗"}</td>`; }).join("")}</tr>`; }).join("")}</table>
+      <p class="small" style="margin:6px 0 0">In der ersten Spalte steht jeweils die richtige Antwort.</p>`;
+  } else $("#erg-tab").innerHTML="";
+  const st=ligaStatus();
+  $("#erg-liga").textContent = !st.ok ? st.txt : w&&w.grund==="tageslimit" ? `Heute zählen schon ${TAGES_MAX} Duelle – morgen geht es weiter!`
+    : w&&w.grund==="gegnerlimit" ? `Gegen dieselbe Person zählen pro Tag höchstens ${GEGNER_MAX} Duelle. Fordere doch mal jemand anderen heraus!` : "";
+  $("#erg-revanche").classList.toggle("hidden", !fertig || !ich);
+  const b=$("#erg-spielen"); if(b) b.onclick=()=>spielen(aktiv);
+}
+
+/* ---------- Online-Anwesenheit & Benachrichtigung ---------- */
+let pingGezeigt={};
+function pruefePing(){
+  if(screen==="s-spiel") return;
+  const neu=Object.entries(duelle).find(([id,d])=>binDran(d) && d.info.von!==me.pid && !pingGezeigt[id] && jetzt()-(Number(d.info.start)||0)<15*60*1000);
+  if(!neu) return;
+  const [id,d]=neu; pingGezeigt[id]=true;
+  const p=$("#ping");
+  p.innerHTML=`<span style="font-size:30px">⚔️</span><div><b>${esc(nameVon(d.info.von))} fordert dich heraus!</b><span class="small" style="color:#c9d2e3">${esc((THEMEN[d.info.thema]||THEMEN.mix).name)}</span></div><button class="btn led" id="ping-los">Annehmen</button>`;
+  p.classList.remove("hidden");
+  $("#ping-los").onclick=()=>{ p.classList.add("hidden"); spielen(id); };
+  setTimeout(()=>p.classList.add("hidden"), 20000);
+}
+function anwesend(){
+  if(!me||!db) return;
+  const ref=db.ref(`${BASE}/lobby/${me.pid}`);
+  const setzen=()=>ref.set({code:me.code, name:me.name||"", ts:TS()}).catch(()=>{});
+  setzen(); try{ ref.onDisconnect().remove(); }catch(e){}
+  setInterval(setzen, 60000);
+}
+
+/* ---------- Start ---------- */
+document.addEventListener("click", e=>{
+  const go=e.target.closest("[data-go]");
+  if(go){ if(go.dataset.go==="neu"){ const st=ligaStatus(); neu={modus:go.dataset.modus||"1", thema:neu.thema||"perfekt", gegner:[]}; zeige("s-neu"); renderNeu(); }
+          else { zeige("s-lobby"); renderLobby(); } return; }
+  const f=e.target.closest("[data-fordern]"); if(f){ neu={modus:"1", thema:neu.thema||"perfekt", gegner:[f.dataset.fordern]}; zeige("s-neu"); renderNeu(); return; }
+  const th=e.target.closest("[data-thema]"); if(th){ neu.thema=th.dataset.thema; renderNeu(); return; }
+  const g=e.target.closest("[data-gegner]");
+  if(g){ const p=g.dataset.gegner;
+    if(neu.modus==="1") neu.gegner = neu.gegner[0]===p ? [] : [p];
+    else neu.gegner = neu.gegner.includes(p) ? neu.gegner.filter(x=>x!==p) : neu.gegner.concat(neu.gegner.length<3?[p]:[]);
+    renderNeu(); return; }
+  const du=e.target.closest("[data-duell]"); if(du){ const d=duelle[du.dataset.duell]; if(d&&binDran(d)) spielen(du.dataset.duell); else ergebnis(du.dataset.duell); return; }
+  const a=e.target.closest("#sp-antw button"); if(a){ antwort(Number(a.dataset.k)); return; }
+});
+$("#zufall").addEventListener("click", ()=>{
+  const alle=spieler(); if(!alle.length) return;
+  const on=alle.filter(istOnline); const quelle=on.length?on:alle;
+  const n = neu.modus==="1" ? 1 : Math.min(3, quelle.length);
+  neu.gegner=shuffle(quelle).slice(0,n); renderNeu();
+});
+$("#neu-start").addEventListener("click", ()=>{ $("#neu-start").disabled=true; duellStarten(); });
+$("#erg-revanche").addEventListener("click", ()=>{ const d=duelle[aktiv]; if(!d) return;
+  neu={modus:teilnehmer(d).length>2?"n":"1", thema:d.info.thema, gegner:teilnehmer(d).filter(p=>p!==me.pid)}; zeige("s-neu"); renderNeu(); });
+$("#code-form").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const code=$("#code-in").value.toUpperCase().replace(/[^A-Z0-9]/g,"");
+  if(code.length<4){ $("#code-err").textContent="Der Code hat mindestens 4 Zeichen."; return; }
+  try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val();
+    if(!c||!c.pid){ $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
+    me={code, pid:c.pid, name:c.name||""}; localStorage.setItem(CODE_KEY, JSON.stringify(me)); los();
+  }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
+});
+
+let gestartet=false;
+function los(){
+  if(gestartet) return; gestartet=true;
+  $("#me").classList.remove("hidden");
+  db.ref(`${BASE}/public`).on("value", s=>{
+    pub=s.val()||{};
+    if(!pub.roster || !pub.roster[me.pid]){ if(pub.round) { block("🤔","Nicht in der Liga","Du bist in dieser Runde noch in keinem Team. Frag deine Lehrkraft."); return; } }
+    $("#me-name").textContent=(pub.names&&pub.names[me.pid])||"Ich";
+    $("#me-farbe").style.background=farbe(me.pid);
+    if(!screen || screen==="s-code" || screen==="s-block") { zeige("s-lobby"); }
+    renderLobby(); renderErgebnis();
+  });
+  db.ref(`${BASE}/duelle`).orderByKey().limitToLast(300).on("value", s=>{
+    duelle=s.val()||{};
+    Object.values(duelle).forEach(d=>{ if(!d.info) d.info={teil:{},fragen:[],ende:0}; });
+    Object.keys(duelle).forEach(k=>{ if(!duelle[k].info.von) delete duelle[k]; });
+    if(pub) buchen().then(()=>{ renderLobby(); renderErgebnis(); });
+    renderLobby(); renderErgebnis(); pruefePing();
+  });
+  db.ref(`${BASE}/lobby`).on("value", s=>{ lobby=s.val()||{}; if(screen==="s-lobby") renderLobby(); if(screen==="s-neu") renderNeu(); });
+  anwesend();
+  setInterval(()=>{ if(screen==="s-lobby") renderLobby(); }, 30000);
+}
+if(!db) block("📵","Keine Verbindung","Prüfe dein Internet und lade die Seite neu.");
+else if(me) los(); else { zeige("s-code"); }
+</script>
+</body>
+</html>

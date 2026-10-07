@@ -389,6 +389,7 @@ const STANDARD_BEREICHE = [
   {id:"pt",     kurz:"PT",   name:"Perfekt-Training",            dateien:["a1-perfekt-2.html"]},
   {id:"live",   kurz:"LIVE", name:"Live im Unterricht",          dateien:["a1-live-duell.html","a1-live-perfekt.html"]},
   {id:"ferien", kurz:"FL",   name:"Ferienliga Perfekt",          dateien:["a1-ferien-perfekt.html"]},
+  {id:"duell",  kurz:"DU",   name:"Duell-Arena",                 dateien:["duell.html"]},
   {id:"eigene", kurz:"E",    name:"Eigene Aufgaben",             dateien:[]}
 ];
 const dateiName = f => String(f||"").split("?")[0].split("/").pop().toLowerCase();
@@ -1792,7 +1793,14 @@ function rulesJSON(){
       battle:{ ".read":true,
         players:{ "$pid":{ ".write":`!newData.exists() || (newData.hasChildren(['code', 'name']) && ${codeOk})` }},
         answers:{ "$q":{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'a', 't']) && newData.child('a').isNumber() && ${codeOk}` }}}
-      }
+      },
+      lobby:{ ".read":true, "$pid":{ ".write":`!newData.exists() || (newData.hasChildren(['code']) && ${codeOk})` }},
+      duelle:{ ".read":true, "$d":{
+        info:{ ".write":`!data.exists() && newData.hasChildren(['von', 'code', 'teil', 'fragen']) && root.child(${K} + '/codes/' + newData.child('code').val() + '/pid').val() === newData.child('von').val()` },
+        teil:{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'richtig', 'zeit']) && ${codeOk} && root.child(${K} + '/duelle/' + $d + '/info/teil/' + $pid).val() === true` }},
+        live:{ "$pid":{ ".write":`!newData.exists() || ${codeOk}` }},
+        wertung:{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'p']) && newData.child('p').isNumber() && newData.child('p').val() >= 0 && newData.child('p').val() <= 3 && ${codeOk}` }}
+      }}
     }},
     "$other":{ ".read":true, ".write":true }
   }};

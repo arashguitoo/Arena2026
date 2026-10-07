@@ -1,0 +1,10 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Duell-Arena",
+  "bereich": {"id": "duell", "kurz": "DU", "name": "Duell-Arena"},
+  "tasks": [
+    {"nr": 1, "key": "duell-arena", "title": "Duell-Arena", "icon": "⚔️", "max": 50, "art": "Einzel",
+     "file": "duell.html",
+     "text": "Fordere andere heraus – 1 gegen 1 oder in der Gruppe. Sieg +3, Platz 2 +2, Mitspielen +1. Pro Tag zählen 5 Duelle."}
+  ]
+}
