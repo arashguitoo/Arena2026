@@ -429,7 +429,7 @@ function renderFerien(){
   const n=jetzt();
   const ganz=Math.max(1, F.ende-F.start);
   const anteil=Math.max(0, Math.min(1, (n-F.start)/ganz));
-  const tagAlle=Math.max(1, Math.floor(ganz/86400000)+1);
+  const tagAlle=Math.max(1, Math.ceil(ganz/86400000));
   const tagNun=Math.max(1, Math.min(tagAlle, Math.floor((n-F.start)/86400000)+1));
   const rest = n<F.start ? `startet in ${restLang(F.start-n, true)}`
     : n>F.ende ? "ist vorbei" : `noch ${restLang(F.ende-n)}`;

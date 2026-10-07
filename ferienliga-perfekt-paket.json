@@ -1,0 +1,189 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Ferienliga Perfekt (16 Tage)",
+  "ferien": {
+    "name": "Ferienliga Perfekt",
+    "start": "2026-10-08",
+    "tage": 16,
+    "uhr": "08:00",
+    "offenBis": "24h"
+  },
+  "tasks": [
+    {
+      "tag": 1,
+      "nr": 48,
+      "key": "fp-01-gestern-oder-heute",
+      "title": "Gestern oder heute?",
+      "icon": "⏪",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag01",
+      "text": "Das Perfekt erzählt, was schon passiert ist. Erkennst du es?"
+    },
+    {
+      "tag": 2,
+      "nr": 49,
+      "key": "fp-02-haben-formen",
+      "title": "haben – alle Formen",
+      "icon": "✋",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag02",
+      "text": "ich habe, du hast, er hat … Welche Form passt?"
+    },
+    {
+      "tag": 3,
+      "nr": 50,
+      "key": "fp-03-ge-t",
+      "title": "ge…t – regelmäßig",
+      "icon": "🔨",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag03",
+      "text": "machen → gemacht, arbeiten → gearbeitet. Welche Form ist richtig?"
+    },
+    {
+      "tag": 4,
+      "nr": 51,
+      "key": "fp-04-ge-en",
+      "title": "ge…en – unregelmäßig",
+      "icon": "🌀",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag04",
+      "text": "essen → gegessen, trinken → getrunken. Kennst du die Formen?"
+    },
+    {
+      "tag": 5,
+      "nr": 52,
+      "key": "fp-05-satzklammer",
+      "title": "Die Satzklammer",
+      "icon": "🧱",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag05",
+      "text": "Ich habe gestern Pizza gegessen. Bau die Sätze!"
+    },
+    {
+      "tag": 6,
+      "nr": 53,
+      "key": "fp-06-sein-formen",
+      "title": "sein – alle Formen",
+      "icon": "🚶",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag06",
+      "text": "ich bin gegangen, wir sind gefahren … Welche Form passt?"
+    },
+    {
+      "tag": 7,
+      "nr": 54,
+      "key": "fp-07-haben-oder-sein",
+      "title": "haben oder sein?",
+      "icon": "⚖️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag07",
+      "text": "60 Sekunden: Kommt das Verb zu haben oder zu sein?"
+    },
+    {
+      "tag": 8,
+      "nr": 55,
+      "key": "fp-08-lias-wochenende",
+      "title": "Lias Wochenende",
+      "icon": "📱",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag08",
+      "text": "Lia erzählt von ihrem Wochenende. Lies und beantworte die Fragen."
+    },
+    {
+      "tag": 9,
+      "nr": 56,
+      "key": "fp-09-trennbar",
+      "title": "Trennbar: ge in der Mitte",
+      "icon": "✂️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag09",
+      "text": "aufstehen → auf·ge·standen. Wo steht das ge-?"
+    },
+    {
+      "tag": 10,
+      "nr": 57,
+      "key": "fp-10-nicht-trennbar",
+      "title": "be-, ver-, er-: kein ge-",
+      "icon": "🔒",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag10",
+      "text": "besuchen → besucht, verstehen → verstanden. Ganz ohne ge-!"
+    },
+    {
+      "tag": 11,
+      "nr": 58,
+      "key": "fp-11-drei-werkstaetten",
+      "title": "Drei Werkstätten",
+      "icon": "🏭",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag11",
+      "text": "60 Sekunden: normal, trennbar oder ganz ohne ge-?"
+    },
+    {
+      "tag": 12,
+      "nr": 59,
+      "key": "fp-12-ieren",
+      "title": "-ieren: telefoniert!",
+      "icon": "📸",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag12",
+      "text": "telefonieren → telefoniert. Kein ge-, nur ein -t!"
+    },
+    {
+      "tag": 13,
+      "nr": 60,
+      "key": "fp-13-fragen",
+      "title": "Fragen im Perfekt",
+      "icon": "❓",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag13",
+      "text": "Hast du den Film gesehen? Bau die Fragen!"
+    },
+    {
+      "tag": 14,
+      "nr": 61,
+      "key": "fp-14-gespraeche",
+      "title": "Gespräche ordnen",
+      "icon": "💬",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag14",
+      "text": "Drei kurze Gespräche über das Wochenende. Was kommt zuerst?"
+    },
+    {
+      "tag": 15,
+      "nr": 62,
+      "key": "fp-15-fehlerdetektiv",
+      "title": "Fehlerdetektiv",
+      "icon": "🕵️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag15",
+      "text": "In jeder Gruppe ist ein Satz falsch. Findest du ihn?"
+    },
+    {
+      "tag": 16,
+      "nr": 63,
+      "key": "fp-16-finale",
+      "title": "Das große Finale",
+      "icon": "🏆",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag16",
+      "text": "60 Sekunden, alles gemischt: Zeig, was du in den Ferien gelernt hast!"
+    }
+  ]
+}
