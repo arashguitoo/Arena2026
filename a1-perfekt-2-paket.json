@@ -1,0 +1,46 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Perfekt-Training",
+  "tasks": [
+    {
+      "nr": 44,
+      "key": "pf2-hilfsverb-profi",
+      "title": "Hilfsverb-Profi",
+      "icon": "🔁",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=hilfsverb",
+      "text": "45 Sekunden: wir sind, ihr habt, du bist … Welche Form passt?"
+    },
+    {
+      "nr": 45,
+      "key": "pf2-vorsilben-check",
+      "title": "Vorsilben-Check",
+      "icon": "🧲",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=vorsilben",
+      "text": "60 Sekunden: auf·stehen oder be·suchen? Sortiere die Verben."
+    },
+    {
+      "nr": 46,
+      "key": "pf2-partizip-baustelle",
+      "title": "Partizip-Baustelle",
+      "icon": "🏗️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=baustelle",
+      "text": "50 Sekunden: aufgestanden oder geaufstanden? besucht oder gebesucht?"
+    },
+    {
+      "nr": 47,
+      "key": "pf2-perfekt-profi",
+      "title": "Perfekt-Profi",
+      "icon": "🏆",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=profi",
+      "text": "Vierzehn Fragen: Welche Antwort ist richtig?"
+    }
+  ]
+}
