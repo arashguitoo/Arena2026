@@ -1,0 +1,21 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Live-Duell (Unterricht)",
+  "bereich": {
+    "id": "live",
+    "kurz": "LIVE",
+    "name": "Live im Unterricht"
+  },
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "live-duell",
+      "title": "Live-Duell",
+      "icon": "🔴",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-duell.html",
+      "text": "Nur im Unterricht: Alle spielen gleichzeitig, die Ergebnisse laufen auf der Leinwand."
+    }
+  ]
+}

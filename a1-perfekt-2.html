@@ -381,19 +381,20 @@ const PROFI = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  hilfsverb:{key:"pf2-hilfsverb-profi", nr:44, icon:"🔁", title:"Hilfsverb-Profi", thema:"haben oder sein – alle Formen", color:"#B91C1C", run:spielHilfsverb, timer:true,
+  hilfsverb:{key:"pf2-hilfsverb-profi", nr:1, icon:"🔁", title:"Hilfsverb-Profi", thema:"haben oder sein – alle Formen", color:"#B91C1C", run:spielHilfsverb, timer:true,
     text:"45 Sekunden: wir sind, ihr habt, du bist … Welche Form passt?",
     rules:["Lies den Satz.","Wähle die richtige Form von haben oder sein.","Bewegung von A nach B, aufstehen, einschlafen, bleiben → sein.","Achte auf die Person: ich bin, du bist, er ist, wir sind, ihr seid …","Du hast 45 Sekunden. Fehler kosten einen halben Punkt."]},
-  vorsilben:{key:"pf2-vorsilben-check", nr:45, icon:"🧲", title:"Vorsilben-Check", thema:"trennbar oder nicht trennbar?", color:"#0F766E", run:spielVorsilben, timer:true,
+  vorsilben:{key:"pf2-vorsilben-check", nr:2, icon:"🧲", title:"Vorsilben-Check", thema:"trennbar oder nicht trennbar?", color:"#0F766E", run:spielVorsilben, timer:true,
     text:"60 Sekunden: auf·stehen oder be·suchen? Sortiere die Verben.",
     rules:["Du siehst ein Verb mit Vorsilbe.","Trennbar: an-, auf-, ein-, mit-, ab-, aus-, zu-, fern-, zurück- → ge in der Mitte.","Nicht trennbar: be-, ver-, er-, ent-, ge- → kein ge-.","Du hast 60 Sekunden."]},
-  baustelle:{key:"pf2-partizip-baustelle", nr:46, icon:"🏗️", title:"Partizip-Baustelle", thema:"Wo steht das ge-?", color:"#B45309", run:spielBaustelle, timer:true,
+  baustelle:{key:"pf2-partizip-baustelle", nr:3, icon:"🏗️", title:"Partizip-Baustelle", thema:"Wo steht das ge-?", color:"#B45309", run:spielBaustelle, timer:true,
     text:"50 Sekunden: aufgestanden oder geaufstanden? besucht oder gebesucht?",
     rules:["Du siehst einen Infinitiv mit Vorsilbe.","Wähle das richtige Partizip II.","Trennbar: auf·ge·standen. Nicht trennbar: besucht – ganz ohne ge-.","Du hast 50 Sekunden. Fehler kosten einen halben Punkt."]},
-  profi:{key:"pf2-perfekt-profi", nr:47, icon:"🏆", title:"Perfekt-Profi", thema:"Alles zusammen", color:"#7B4BC9", run:spielProfi,
+  profi:{key:"pf2-perfekt-profi", nr:4, icon:"🏆", title:"Perfekt-Profi", thema:"Alles zusammen", color:"#7B4BC9", run:spielProfi,
     text:"Vierzehn Fragen: Welche Antwort ist richtig?",
     rules:["Lies die Frage.","Wähle die richtige Antwort.","Prüfe drei Dinge: haben oder sein? Wo steht das ge-? Steht das Partizip am Ende?"]}
 };
+const BEREICH_KURZ = "PT";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 const MENU_TEXT = "Vier Spiele zum Perfekt: haben oder sein mit allen Formen, Vorsilben trennbar oder nicht trennbar, das richtige Partizip und ein großer Mix. Welche Spiele Punkte bringen, siehst du in der Arena.";
@@ -797,7 +798,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Perfekt";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Perfekt";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
   document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
 }

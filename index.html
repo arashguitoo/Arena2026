@@ -132,7 +132,7 @@ section{margin-bottom:16px}
   text-decoration:none;color:inherit;box-shadow:0 2px 0 rgba(0,0,0,.13)}
 .karte-ic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;padding:8px 2px}
 .karte-ic span{font-size:23px;line-height:1}
-.karte-ic b{font-family:var(--display);font-weight:900;font-size:17px;line-height:1;opacity:.85}
+.karte-ic b{font-family:var(--display);font-weight:900;font-size:15px;line-height:1;opacity:.9;white-space:nowrap}
 .karte-body{padding:10px 13px 11px;min-width:0}
 .karte-body h3{font-family:var(--display);font-weight:800;font-size:23px;line-height:1.02;margin:0 0 2px;color:var(--board)}
 .karte-body p{margin:0 0 6px;font-size:14.5px;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
@@ -442,6 +442,7 @@ function renderFerien(){
 }
 
 /* ---------- Hero ---------- */
+const ordVon = t => Number(t.ord!==undefined ? t.ord : t.nr)||0;
 function farbeVon(t){
   const paletten=["#E4412F","#1F6FD1","#1E9E6A","#7B4BC9","#E9800E","#0E9FB0","#B45309","#DB2777","#0F766E","#7C3AED"];
   return paletten[(Number(t.nr)||0) % paletten.length];
@@ -470,7 +471,7 @@ function renderHero(){
   kandidaten.sort((a,b)=>{
     const ba=Number(a.bis)||FERN, bb=Number(b.bis)||FERN;
     if(ba!==bb) return ba-bb;
-    return (Number(b.nr)||0)-(Number(a.nr)||0);
+    return ordVon(a)-ordVon(b);
   });
   const t=kandidaten[0];
 
@@ -592,7 +593,7 @@ function karte(t, ph){
 
   const offen = ph==="jetzt" && t.file && mein;
   const inner=`<div class="karte-ic" style="background:${offen?farbeVon(t):"#8a8f9c"}">
-      <span>${esc(t.icon||"🎯")}</span><b>${esc(t.nr||"")}</b></div>
+      <span>${esc(t.icon||"🎯")}</span><b>${esc(t.code||t.nr||"")}</b></div>
     <div class="karte-body"><h3>${esc(t.title)}</h3>${t.text?`<p>${esc(t.text)}</p>`:""}
       <div class="karte-meta">${tags.join("")}${offen?`<span class="go">${erg!==null?"Nochmal":"Spielen"} ›</span>`:""}</div></div>`;
   const klassen = `karte ${ph!=="jetzt"?"zu":""} ${me&&!mein?"fremd":""}`;
@@ -606,10 +607,10 @@ function renderKarten(){
   if(reiter==="jetzt") liste.sort((a,b)=>{
     const ea=meinErgebnis(a)===null?0:1, eb=meinErgebnis(b)===null?0:1;
     if(ea!==eb) return ea-eb;
-    return (Number(a.bis)||FERN)-(Number(b.bis)||FERN);
+    return ((Number(a.bis)||FERN)-(Number(b.bis)||FERN)) || ordVon(a)-ordVon(b);
   });
   if(reiter==="bald") liste.sort((a,b)=>(Number(a.von)||0)-(Number(b.von)||0));
-  if(reiter==="vorbei") liste.sort((a,b)=>(Number(b.nr)||0)-(Number(a.nr)||0));
+  if(reiter==="vorbei") liste.sort((a,b)=>((Number(b.bis)||0)-(Number(a.bis)||0)) || ordVon(b)-ordVon(a));
   if(!liste.length){
     const msg = reiter==="jetzt" ? ["Gerade nichts offen","Schau im Reiter „Bald“, was als Nächstes kommt."]
       : reiter==="bald" ? ["Nichts in Sicht","Im Moment ist kein weiteres Spiel geplant."]

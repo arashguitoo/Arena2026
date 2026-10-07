@@ -458,28 +458,29 @@ const BIO_FRAGEN = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  habensein:{key:"l10-haben-oder-sein", nr:26, icon:"✈️", title:"Haben oder sein?", thema:"Perfekt mit sein", color:"#B91C1C", run:spielHabenSein, timer:true,
+  habensein:{key:"l10-haben-oder-sein", nr:1, icon:"✈️", title:"Haben oder sein?", thema:"Perfekt mit sein", color:"#B91C1C", run:spielHabenSein, timer:true,
     text:"45 Sekunden: Ich bin gefahren – oder ich habe gearbeitet?",
     rules:["Lies den Satz.","Wähle die richtige Form: haben oder sein.","Merke: Bewegung von A nach B → sein.","Du hast 45 Sekunden. Fehler kosten einen halben Punkt."]},
-  fabrik:{key:"l10-partizip-fabrik", nr:27, icon:"🏭", title:"Partizip-Fabrik", thema:"ge- oder kein ge-?", color:"#0F766E", run:spielFabrik, timer:true,
+  fabrik:{key:"l10-partizip-fabrik", nr:2, icon:"🏭", title:"Partizip-Fabrik", thema:"ge- oder kein ge-?", color:"#0F766E", run:spielFabrik, timer:true,
     text:"60 Sekunden: In welche Werkstatt kommt das Verb?",
     rules:["Du siehst einen Infinitiv.","Drei Werkstätten: normal mit ge-, trennbar mit ge- in der Mitte, ganz ohne ge-.","Verben auf -ieren und Verben mit be-, er-, ver- haben kein ge-.","Du hast 60 Sekunden."]},
-  trennbar:{key:"l10-trennbar-werkstatt", nr:28, icon:"🔧", title:"Trennbar-Werkstatt", thema:"Trennbare Verben", color:"#B45309", run:spielTrennbar, timer:true,
+  trennbar:{key:"l10-trennbar-werkstatt", nr:3, icon:"🔧", title:"Trennbar-Werkstatt", thema:"Trennbare Verben", color:"#B45309", run:spielTrennbar, timer:true,
     text:"45 Sekunden: abholen → hat Gäste abgeholt. Wo steht das ge-?",
     rules:["Lies den Satz mit der Lücke.","Wähle das richtige Partizip.","Bei trennbaren Verben steht das ge- in der Mitte: ab-ge-holt.","Du hast 45 Sekunden."]},
-  lotse:{key:"l10-willkommens-lotse", nr:29, icon:"🧭", title:"Willkommens-Lotse", thema:"Angebote zuordnen", color:"#1F6FD1", run:spielLotse,
+  lotse:{key:"l10-willkommens-lotse", nr:4, icon:"🧭", title:"Willkommens-Lotse", thema:"Angebote zuordnen", color:"#1F6FD1", run:spielLotse,
     text:"Zwölf Menschen sind neu hier. Welches Angebot hilft?",
     rules:["Lies, was die Person sagt oder sucht.","Wähle das passende Angebot im Willkommenszentrum.","Sechs Bereiche: Wohnen, Familie, Arbeit, Mobilität, Deutsch lernen, Alltag."]},
-  formular:{key:"l10-das-formular", nr:30, icon:"📋", title:"Das Formular", thema:"Anmeldung im Bürgeramt", color:"#4D7C0F", run:spielFormular,
+  formular:{key:"l10-das-formular", nr:5, icon:"📋", title:"Das Formular", thema:"Anmeldung im Bürgeramt", color:"#4D7C0F", run:spielFormular,
     text:"Welche Frage gehört zu welchem Feld? Und wie fragst du nach?",
     rules:["Oben siehst du das Anmeldeformular.","Lies die Frage und tippe auf die richtige Nummer.","Am Ende: Was sagst du, wenn du etwas nicht verstehst?"]},
-  chef:{key:"l10-chef-sagt", nr:31, icon:"👨‍🍳", title:"Chef sagt", thema:"Aufforderungen", color:"#C2410C", run:spielChef,
+  chef:{key:"l10-chef-sagt", nr:6, icon:"👨‍🍳", title:"Chef sagt", thema:"Aufforderungen", color:"#C2410C", run:spielChef,
     text:"Bei der Arbeit: Welche Aufforderung ist richtig?",
     rules:["Du siehst eine Situation.","Wähle den richtigen Satz.","Achtung: Das Verb steht ganz vorne – und bei trennbaren Verben die Vorsilbe ganz hinten."]},
-  lebensweg:{key:"l10-lebensweg", nr:32, icon:"🛤️", title:"Lebensweg", thema:"Biografien lesen", color:"#7B4BC9", run:spielLebensweg,
+  lebensweg:{key:"l10-lebensweg", nr:7, icon:"🛤️", title:"Lebensweg", thema:"Biografien lesen", color:"#7B4BC9", run:spielLebensweg,
     text:"Drei Lebenswege: Bring die Sätze in die richtige Reihenfolge.",
     rules:["Achte auf die Wörter zuerst, danach, dann, später, jetzt.","Achte auf die Jahreszahlen.","Tippe die Sätze in der richtigen Reihenfolge an.","Jede richtige Position gibt Punkte."]}
 };
+const BEREICH_KURZ = "L10";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 const MENU_TEXT = "Sieben Spiele zu Lektion 10: Perfekt mit sein, trennbare Verben, Partizipien ohne ge-, Aufforderungen, das Anmeldeformular und Biografien. Welche Spiele Punkte bringen, siehst du in der Arena.";
@@ -938,7 +939,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Neu hier";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Neu hier";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
   document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
 }

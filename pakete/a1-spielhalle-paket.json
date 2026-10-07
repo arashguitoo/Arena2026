@@ -1,0 +1,71 @@
+{
+  "app": "liga-aufgaben",
+  "name": "A1-Spielhalle",
+  "bereich": {
+    "id": "grund",
+    "kurz": "G",
+    "name": "Grundlagen"
+  },
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "a1-verb-sprint",
+      "title": "Verb-Sprint",
+      "icon": "⚡",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=verben",
+      "text": "Präsens: 60 Sekunden – wähle die richtige Verbform."
+    },
+    {
+      "nr": 2,
+      "key": "a1-artikel-blitz",
+      "title": "Artikel-Blitz",
+      "icon": "🎯",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=artikel",
+      "text": "der, die oder das? 45 Sekunden – sammle eine Serie!"
+    },
+    {
+      "nr": 3,
+      "key": "a1-einkaufswagen",
+      "title": "Einkaufswagen",
+      "icon": "🛒",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=einkauf",
+      "text": "Akkusativ: einen, eine oder ein? Pass auf die Fallen auf."
+    },
+    {
+      "nr": 4,
+      "key": "a1-familien-memory",
+      "title": "Familien-Memory",
+      "icon": "🃏",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=memory",
+      "text": "Possessivpronomen: ich + der Vater = mein Vater. Finde alle Paare."
+    },
+    {
+      "nr": 5,
+      "key": "a1-satz-baustelle",
+      "title": "Satz-Baustelle",
+      "icon": "🧱",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=saetze",
+      "text": "Modalverben: Bau richtige Sätze. Wo steht das Verb?"
+    },
+    {
+      "nr": 6,
+      "key": "a1-cafe-kiel",
+      "title": "Café Kiel",
+      "icon": "☕",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=cafe",
+      "text": "Bestellen, einkaufen, verabreden – wähle die richtige Antwort."
+    }
+  ]
+}

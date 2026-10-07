@@ -433,28 +433,29 @@ const SMALLTALK = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  gratulieren:{key:"l11-gratulations-maschine", nr:33, icon:"🎉", title:"Gratulations-Maschine", thema:"Possessivartikel im Dativ", color:"#DB2777", run:spielGratulieren, timer:true,
+  gratulieren:{key:"l11-gratulations-maschine", nr:1, icon:"🎉", title:"Gratulations-Maschine", thema:"Possessivartikel im Dativ", color:"#DB2777", run:spielGratulieren, timer:true,
     text:"45 Sekunden: Ich gratuliere meinem Chef – oder meiner Chefin?",
     rules:["Lies den Satz mit der Lücke.","Wähle die richtige Form.","der/das → -em · die → -er · Plural → -en","Du hast 45 Sekunden. Fehler kosten einen halben Punkt."]},
-  jahresrad:{key:"l11-jahres-rad", nr:34, icon:"🗓️", title:"Jahres-Rad", thema:"Monate & Jahreszeiten", color:"#0E9FB0", run:spielJahresrad, timer:true,
+  jahresrad:{key:"l11-jahres-rad", nr:2, icon:"🗓️", title:"Jahres-Rad", thema:"Monate & Jahreszeiten", color:"#0E9FB0", run:spielJahresrad, timer:true,
     text:"60 Sekunden: In welche Jahreszeit gehört der Monat?",
     rules:["Du siehst einen Monat oder eine Aktivität.","Tippe auf die richtige Jahreszeit.","Du hast 60 Sekunden."]},
-  datum:{key:"l11-datums-duell", nr:35, icon:"🔢", title:"Datums-Duell", thema:"Ordinalzahlen & Datum", color:"#0369A1", run:spielDatum, timer:true,
+  datum:{key:"l11-datums-duell", nr:3, icon:"🔢", title:"Datums-Duell", thema:"Ordinalzahlen & Datum", color:"#0369A1", run:spielDatum, timer:true,
     text:"60 Sekunden: am 1.5. – wie sagt man das?",
     rules:["Du siehst ein Datum oder hörst es in Worten.","Tippe auf die passende Lösung.","Merke: am ersten, am zweiten, am dritten … ab 20: am zwanzigsten.","Du hast 60 Sekunden."]},
-  pingpong:{key:"l11-pronomen-pingpong", nr:36, icon:"🏓", title:"Pronomen-Pingpong", thema:"Personalpronomen im Dativ", color:"#7C3AED", run:spielPingpong, timer:true,
+  pingpong:{key:"l11-pronomen-pingpong", nr:4, icon:"🏓", title:"Pronomen-Pingpong", thema:"Personalpronomen im Dativ", color:"#7C3AED", run:spielPingpong, timer:true,
     text:"45 Sekunden: Wie gefällt dir das Geschenk? – Es gefällt mir!",
     rules:["Du liest eine Frage und antwortest.","Wähle das richtige Pronomen: mir, dir, ihm, ihr, uns, euch, ihnen.","Du hast 45 Sekunden."]},
-  schenken:{key:"l11-wem-was", nr:37, icon:"🎀", title:"Wem schenkst du was?", thema:"Wem? und Was?", color:"#E9800E", run:spielSchenken,
+  schenken:{key:"l11-wem-was", nr:5, icon:"🎀", title:"Wem schenkst du was?", thema:"Wem? und Was?", color:"#E9800E", run:spielSchenken,
     text:"Bau die Sätze: erst die Person, dann das Geschenk.",
     rules:["Tippe die Wörter in der richtigen Reihenfolge an.","Ein Wort in der Zeile antippen = zurücklegen.","Merke: Verb auf Position 2, dann Wem?, dann Was?","1. Versuch = 1 Punkt, 2. Versuch = ½ Punkt."]},
-  einladung:{key:"l11-die-einladung", nr:38, icon:"💌", title:"Die Einladung", thema:"Einladung & Antwort", color:"#15803D", run:spielEinladung,
+  einladung:{key:"l11-die-einladung", nr:6, icon:"💌", title:"Die Einladung", thema:"Einladung & Antwort", color:"#15803D", run:spielEinladung,
     text:"Lies Aditas Einladung und bring die Antworten in die richtige Reihenfolge.",
     rules:["Teil 1: Fragen zur Einladung.","Teil 2: Eine Zusage und eine Absage ordnen.","Achte auf Anrede und Gruß."]},
-  feste:{key:"l11-drei-feste", nr:39, icon:"🥳", title:"Drei Feste", thema:"Texte verstehen & Smalltalk", color:"#B45309", run:spielFeste,
+  feste:{key:"l11-drei-feste", nr:7, icon:"🥳", title:"Drei Feste", thema:"Texte verstehen & Smalltalk", color:"#B45309", run:spielFeste,
     text:"Drei Berichte über Feste – und Smalltalk auf der Party.",
     rules:["Lies die drei Texte. Du kannst sie immer wieder öffnen.","Beantworte die Fragen und finde heraus, wer das sagt.","Am Ende: Welche Antwort passt zur Smalltalk-Frage?"]}
 };
+const BEREICH_KURZ = "L11";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 const MENU_TEXT = "Sieben Spiele zu Lektion 11: Dativ, Monate und Jahreszeiten, Datum mit Ordinalzahlen, Pronomen, schenken und geben, Einladungen und Feste. Welche Spiele Punkte bringen, siehst du in der Arena.";
@@ -925,7 +926,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Feste";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Feste";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
   document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
 }

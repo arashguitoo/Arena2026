@@ -350,6 +350,7 @@ const SPIELE = {
     text:"Bestellen, einkaufen, verabreden: Wähle die richtige Antwort.",
     rules:["Du bist im Café, im Supermarkt und schreibst mit Mina.","Wähle immer die richtige Antwort.","12 Antworten. Jede richtige Antwort zählt."]}
 };
+const BEREICH_KURZ = "G";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 
@@ -724,7 +725,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1";
   $("#head-title").textContent=g?g.title:"A1-Spielhalle";
   document.title=`${g?g.title:"A1-Spielhalle"} – Plöner Liga`;
 }

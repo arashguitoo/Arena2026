@@ -1,0 +1,51 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Lese-Arena",
+  "bereich": {
+    "id": "lesen",
+    "kurz": "LES",
+    "name": "Lesen"
+  },
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "lesen-gespraech-ordnen",
+      "title": "Gespräch ordnen",
+      "icon": "💬",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=dialog",
+      "text": "Vier Gespräche sind durcheinander. Bring sie in die richtige Reihenfolge."
+    },
+    {
+      "nr": 2,
+      "key": "lesen-text-puzzle",
+      "title": "Text-Puzzle",
+      "icon": "🧩",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=puzzle",
+      "text": "Eine E-Mail, eine Nachricht, eine Geschichte: Was kommt zuerst?"
+    },
+    {
+      "nr": 3,
+      "key": "lesen-fragen-zum-text",
+      "title": "Fragen zum Text",
+      "icon": "📖",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=fragen",
+      "text": "Lies die Texte und beantworte die Fragen. Der Text bleibt immer sichtbar."
+    },
+    {
+      "nr": 4,
+      "key": "lesen-wer-passt",
+      "title": "Wer passt zusammen?",
+      "icon": "🔎",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=match",
+      "text": "Fünf Personen suchen etwas. Welche Anzeige passt? Achtung: Eine passt zu niemandem."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Perfekt-Spiele (Lektion 9)",
+  "bereich": {
+    "id": "l9",
+    "kurz": "L9",
+    "name": "Lektion 9 · Perfekt mit haben"
+  },
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "l9-partizip-werkstatt",
+      "title": "Partizip-Werkstatt",
+      "icon": "⚒️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt.html?spiel=werkstatt",
+      "text": "60 Sekunden: machen → gemacht, trinken → getrunken. Welche Form ist richtig?"
+    },
+    {
+      "nr": 2,
+      "key": "l9-zeitmaschine",
+      "title": "Zeitmaschine",
+      "icon": "🕰️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt.html?spiel=zeitmaschine",
+      "text": "Bring alles in die richtige Reihenfolge: erst die Zeit, dann die Geschichte."
+    }
+  ]
+}

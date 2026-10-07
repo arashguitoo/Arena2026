@@ -1,0 +1,746 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Alle Aufgaben – neue Nummern",
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "a1-verb-sprint",
+      "title": "Verb-Sprint",
+      "icon": "⚡",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=verben",
+      "text": "Präsens: 60 Sekunden – wähle die richtige Verbform.",
+      "bereich": "grund"
+    },
+    {
+      "nr": 2,
+      "key": "a1-artikel-blitz",
+      "title": "Artikel-Blitz",
+      "icon": "🎯",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=artikel",
+      "text": "der, die oder das? 45 Sekunden – sammle eine Serie!",
+      "bereich": "grund"
+    },
+    {
+      "nr": 3,
+      "key": "a1-einkaufswagen",
+      "title": "Einkaufswagen",
+      "icon": "🛒",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=einkauf",
+      "text": "Akkusativ: einen, eine oder ein? Pass auf die Fallen auf.",
+      "bereich": "grund"
+    },
+    {
+      "nr": 4,
+      "key": "a1-familien-memory",
+      "title": "Familien-Memory",
+      "icon": "🃏",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=memory",
+      "text": "Possessivpronomen: ich + der Vater = mein Vater. Finde alle Paare.",
+      "bereich": "grund"
+    },
+    {
+      "nr": 5,
+      "key": "a1-satz-baustelle",
+      "title": "Satz-Baustelle",
+      "icon": "🧱",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=saetze",
+      "text": "Modalverben: Bau richtige Sätze. Wo steht das Verb?",
+      "bereich": "grund"
+    },
+    {
+      "nr": 6,
+      "key": "a1-cafe-kiel",
+      "title": "Café Kiel",
+      "icon": "☕",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-spielhalle.html?spiel=cafe",
+      "text": "Bestellen, einkaufen, verabreden – wähle die richtige Antwort.",
+      "bereich": "grund"
+    },
+    {
+      "nr": 1,
+      "key": "l8-moebel-umzug",
+      "title": "Möbel-Umzug",
+      "icon": "🚚",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=moebel",
+      "text": "60 Sekunden: Wohin kommt der Kühlschrank? Räum die Wohnung ein!",
+      "bereich": "l8"
+    },
+    {
+      "nr": 2,
+      "key": "l8-wohnungs-check",
+      "title": "Wohnungs-Check",
+      "icon": "🔍",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=check",
+      "text": "Schau dir den Plan an: Gibt es einen Balkon? Oder keinen?",
+      "bereich": "l8"
+    },
+    {
+      "nr": 3,
+      "key": "l8-gegensatz-memory",
+      "title": "Gegensätze-Memory",
+      "icon": "🃏",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=gegensatz",
+      "text": "Finde die Gegensätze: groß und klein, laut und ruhig …",
+      "bereich": "l8"
+    },
+    {
+      "nr": 4,
+      "key": "l8-kartenstapel",
+      "title": "Kartenstapel",
+      "icon": "🎴",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=karten",
+      "text": "Drei Karten, ein Satz: Unsere Küche ist groß – oder eure?",
+      "bereich": "l8"
+    },
+    {
+      "nr": 5,
+      "key": "l8-lebende-saetze",
+      "title": "Lebende Sätze",
+      "icon": "🙋",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=saetze",
+      "text": "Stell die Leute mit ihren Schildern richtig auf!",
+      "bereich": "l8"
+    },
+    {
+      "nr": 6,
+      "key": "l8-schilder-hausordnung",
+      "title": "Schilder & Hausordnung",
+      "icon": "🚫",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=schilder",
+      "text": "Was darf man hier? Lies Schilder und eine echte Hausordnung.",
+      "bereich": "l8"
+    },
+    {
+      "nr": 7,
+      "key": "l8-anzeigen-detektiv",
+      "title": "Anzeigen-Detektiv",
+      "icon": "🏷️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=anzeigen",
+      "text": "Drei Anzeigen, zehn Sätze: Welche Wohnung ist gemeint?",
+      "bereich": "l8"
+    },
+    {
+      "nr": 8,
+      "key": "l8-lesedetektiv",
+      "title": "Lesedetektiv",
+      "icon": "📖",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=lesen",
+      "text": "Vier Menschen erzählen, wie sie wohnen. Richtig oder falsch?",
+      "bereich": "l8"
+    },
+    {
+      "nr": 9,
+      "key": "l8-gegensatz-sprint",
+      "title": "Gegensatz-Sprint",
+      "icon": "⚡",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=gsprint",
+      "text": "45 Sekunden: Die Wohnung ist nicht hell. Sie ist …?",
+      "bereich": "l8"
+    },
+    {
+      "nr": 10,
+      "key": "l8-zahlen-rennen",
+      "title": "Zahlen-Rennen",
+      "icon": "🏁",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=zahlen",
+      "text": "60 Sekunden: 1.540 € – wie sagt man das? Achtung: 45 oder 54?",
+      "bereich": "l8"
+    },
+    {
+      "nr": 11,
+      "key": "l8-verb-rakete",
+      "title": "Verb-Rakete",
+      "icon": "🚀",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=rakete",
+      "text": "45 Sekunden: will, willst, wollt? darf oder dürft? Schnell!",
+      "bereich": "l8"
+    },
+    {
+      "nr": 12,
+      "key": "l8-artikel-countdown",
+      "title": "Artikel-Countdown",
+      "icon": "💣",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-wohnen.html?spiel=countdown",
+      "text": "Jedes Wort hat einen eigenen Countdown – und er wird immer schneller. 3 Leben!",
+      "bereich": "l8"
+    },
+    {
+      "nr": 1,
+      "key": "l9-partizip-werkstatt",
+      "title": "Partizip-Werkstatt",
+      "icon": "⚒️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt.html?spiel=werkstatt",
+      "text": "60 Sekunden: machen → gemacht, trinken → getrunken. Welche Form ist richtig?",
+      "bereich": "l9"
+    },
+    {
+      "nr": 2,
+      "key": "l9-zeitmaschine",
+      "title": "Zeitmaschine",
+      "icon": "🕰️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt.html?spiel=zeitmaschine",
+      "text": "Bring alles in die richtige Reihenfolge: erst die Zeit, dann die Geschichte.",
+      "bereich": "l9"
+    },
+    {
+      "nr": 1,
+      "key": "lesen-gespraech-ordnen",
+      "title": "Gespräch ordnen",
+      "icon": "💬",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=dialog",
+      "text": "Vier Gespräche sind durcheinander. Bring sie in die richtige Reihenfolge.",
+      "bereich": "lesen"
+    },
+    {
+      "nr": 2,
+      "key": "lesen-text-puzzle",
+      "title": "Text-Puzzle",
+      "icon": "🧩",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=puzzle",
+      "text": "Eine E-Mail, eine Nachricht, eine Geschichte: Was kommt zuerst?",
+      "bereich": "lesen"
+    },
+    {
+      "nr": 3,
+      "key": "lesen-fragen-zum-text",
+      "title": "Fragen zum Text",
+      "icon": "📖",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=fragen",
+      "text": "Lies die Texte und beantworte die Fragen. Der Text bleibt immer sichtbar.",
+      "bereich": "lesen"
+    },
+    {
+      "nr": 4,
+      "key": "lesen-wer-passt",
+      "title": "Wer passt zusammen?",
+      "icon": "🔎",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-lesen.html?spiel=match",
+      "text": "Fünf Personen suchen etwas. Welche Anzeige passt? Achtung: Eine passt zu niemandem.",
+      "bereich": "lesen"
+    },
+    {
+      "nr": 1,
+      "key": "l10-haben-oder-sein",
+      "title": "Haben oder sein?",
+      "icon": "✈️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=habensein",
+      "text": "45 Sekunden: Ich bin gefahren – oder ich habe gearbeitet?",
+      "bereich": "l10"
+    },
+    {
+      "nr": 2,
+      "key": "l10-partizip-fabrik",
+      "title": "Partizip-Fabrik",
+      "icon": "🏭",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=fabrik",
+      "text": "60 Sekunden: In welche Werkstatt kommt das Verb?",
+      "bereich": "l10"
+    },
+    {
+      "nr": 3,
+      "key": "l10-trennbar-werkstatt",
+      "title": "Trennbar-Werkstatt",
+      "icon": "🔧",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=trennbar",
+      "text": "45 Sekunden: abholen → hat Gäste abgeholt. Wo steht das ge-?",
+      "bereich": "l10"
+    },
+    {
+      "nr": 4,
+      "key": "l10-willkommens-lotse",
+      "title": "Willkommens-Lotse",
+      "icon": "🧭",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=lotse",
+      "text": "Zwölf Menschen sind neu hier. Welches Angebot hilft?",
+      "bereich": "l10"
+    },
+    {
+      "nr": 5,
+      "key": "l10-das-formular",
+      "title": "Das Formular",
+      "icon": "📋",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=formular",
+      "text": "Welche Frage gehört zu welchem Feld? Und wie fragst du nach?",
+      "bereich": "l10"
+    },
+    {
+      "nr": 6,
+      "key": "l10-chef-sagt",
+      "title": "Chef sagt",
+      "icon": "👨‍🍳",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=chef",
+      "text": "Bei der Arbeit: Welche Aufforderung ist richtig?",
+      "bereich": "l10"
+    },
+    {
+      "nr": 7,
+      "key": "l10-lebensweg",
+      "title": "Lebensweg",
+      "icon": "🛤️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=lebensweg",
+      "text": "Drei Lebenswege: Bring die Sätze in die richtige Reihenfolge.",
+      "bereich": "l10"
+    },
+    {
+      "nr": 1,
+      "key": "l11-gratulations-maschine",
+      "title": "Gratulations-Maschine",
+      "icon": "🎉",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=gratulieren",
+      "text": "45 Sekunden: Ich gratuliere meinem Chef – oder meiner Chefin?",
+      "bereich": "l11"
+    },
+    {
+      "nr": 2,
+      "key": "l11-jahres-rad",
+      "title": "Jahres-Rad",
+      "icon": "🗓️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=jahresrad",
+      "text": "60 Sekunden: In welche Jahreszeit gehört der Monat?",
+      "bereich": "l11"
+    },
+    {
+      "nr": 3,
+      "key": "l11-datums-duell",
+      "title": "Datums-Duell",
+      "icon": "🔢",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=datum",
+      "text": "60 Sekunden: am 1.5. – wie sagt man das?",
+      "bereich": "l11"
+    },
+    {
+      "nr": 4,
+      "key": "l11-pronomen-pingpong",
+      "title": "Pronomen-Pingpong",
+      "icon": "🏓",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=pingpong",
+      "text": "45 Sekunden: Wie gefällt dir das Geschenk? – Es gefällt mir!",
+      "bereich": "l11"
+    },
+    {
+      "nr": 5,
+      "key": "l11-wem-was",
+      "title": "Wem schenkst du was?",
+      "icon": "🎀",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=schenken",
+      "text": "Bau die Sätze: erst die Person, dann das Geschenk.",
+      "bereich": "l11"
+    },
+    {
+      "nr": 6,
+      "key": "l11-die-einladung",
+      "title": "Die Einladung",
+      "icon": "💌",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=einladung",
+      "text": "Lies Aditas Einladung und bring die Antworten in die richtige Reihenfolge.",
+      "bereich": "l11"
+    },
+    {
+      "nr": 7,
+      "key": "l11-drei-feste",
+      "title": "Drei Feste",
+      "icon": "🥳",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=feste",
+      "text": "Drei Berichte über Feste – und Smalltalk auf der Party.",
+      "bereich": "l11"
+    },
+    {
+      "nr": 1,
+      "key": "pf2-hilfsverb-profi",
+      "title": "Hilfsverb-Profi",
+      "icon": "🔁",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=hilfsverb",
+      "text": "45 Sekunden: wir sind, ihr habt, du bist … Welche Form passt?",
+      "bereich": "pt"
+    },
+    {
+      "nr": 2,
+      "key": "pf2-vorsilben-check",
+      "title": "Vorsilben-Check",
+      "icon": "🧲",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=vorsilben",
+      "text": "60 Sekunden: auf·stehen oder be·suchen? Sortiere die Verben.",
+      "bereich": "pt"
+    },
+    {
+      "nr": 3,
+      "key": "pf2-partizip-baustelle",
+      "title": "Partizip-Baustelle",
+      "icon": "🏗️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=baustelle",
+      "text": "50 Sekunden: aufgestanden oder geaufstanden? besucht oder gebesucht?",
+      "bereich": "pt"
+    },
+    {
+      "nr": 4,
+      "key": "pf2-perfekt-profi",
+      "title": "Perfekt-Profi",
+      "icon": "🏆",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-perfekt-2.html?spiel=profi",
+      "text": "Vierzehn Fragen: Welche Antwort ist richtig?",
+      "bereich": "pt"
+    },
+    {
+      "nr": 1,
+      "key": "fp-01-gestern-oder-heute",
+      "title": "Gestern oder heute?",
+      "icon": "⏪",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag01",
+      "text": "Das Perfekt erzählt, was schon passiert ist. Erkennst du es?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 2,
+      "key": "fp-02-haben-formen",
+      "title": "haben – alle Formen",
+      "icon": "✋",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag02",
+      "text": "ich habe, du hast, er hat … Welche Form passt?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 3,
+      "key": "fp-03-ge-t",
+      "title": "ge…t – regelmäßig",
+      "icon": "🔨",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag03",
+      "text": "machen → gemacht, arbeiten → gearbeitet. Welche Form ist richtig?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 4,
+      "key": "fp-04-ge-en",
+      "title": "ge…en – unregelmäßig",
+      "icon": "🌀",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag04",
+      "text": "essen → gegessen, trinken → getrunken. Kennst du die Formen?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 5,
+      "key": "fp-05-satzklammer",
+      "title": "Die Satzklammer",
+      "icon": "🧱",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag05",
+      "text": "Ich habe gestern Pizza gegessen. Bau die Sätze!",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 6,
+      "key": "fp-06-sein-formen",
+      "title": "sein – alle Formen",
+      "icon": "🚶",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag06",
+      "text": "ich bin gegangen, wir sind gefahren … Welche Form passt?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 7,
+      "key": "fp-07-haben-oder-sein",
+      "title": "haben oder sein?",
+      "icon": "⚖️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag07",
+      "text": "60 Sekunden: Kommt das Verb zu haben oder zu sein?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 8,
+      "key": "fp-08-lias-wochenende",
+      "title": "Lias Wochenende",
+      "icon": "📱",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag08",
+      "text": "Lia erzählt von ihrem Wochenende. Lies und beantworte die Fragen.",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 9,
+      "key": "fp-09-trennbar",
+      "title": "Trennbar: ge in der Mitte",
+      "icon": "✂️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag09",
+      "text": "aufstehen → auf·ge·standen. Wo steht das ge-?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 10,
+      "key": "fp-10-nicht-trennbar",
+      "title": "be-, ver-, er-: kein ge-",
+      "icon": "🔒",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag10",
+      "text": "besuchen → besucht, verstehen → verstanden. Ganz ohne ge-!",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 11,
+      "key": "fp-11-drei-werkstaetten",
+      "title": "Drei Werkstätten",
+      "icon": "🏭",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag11",
+      "text": "60 Sekunden: normal, trennbar oder ganz ohne ge-?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 12,
+      "key": "fp-12-ieren",
+      "title": "-ieren: telefoniert!",
+      "icon": "📸",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag12",
+      "text": "telefonieren → telefoniert. Kein ge-, nur ein -t!",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 13,
+      "key": "fp-13-fragen",
+      "title": "Fragen im Perfekt",
+      "icon": "❓",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag13",
+      "text": "Hast du den Film gesehen? Bau die Fragen!",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 14,
+      "key": "fp-14-gespraeche",
+      "title": "Gespräche ordnen",
+      "icon": "💬",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag14",
+      "text": "Drei kurze Gespräche über das Wochenende. Was kommt zuerst?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 15,
+      "key": "fp-15-fehlerdetektiv",
+      "title": "Fehlerdetektiv",
+      "icon": "🕵️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag15",
+      "text": "In jeder Gruppe ist ein Satz falsch. Findest du ihn?",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 16,
+      "key": "fp-16-finale",
+      "title": "Das große Finale",
+      "icon": "🏆",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-ferien-perfekt.html?spiel=tag16",
+      "text": "60 Sekunden, alles gemischt: Zeig, was du in den Ferien gelernt hast!",
+      "bereich": "ferien"
+    },
+    {
+      "nr": 1,
+      "key": "live-duell",
+      "title": "Live-Duell",
+      "icon": "🔴",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-duell.html",
+      "text": "Nur im Unterricht: Alle spielen gleichzeitig, die Ergebnisse laufen auf der Leinwand.",
+      "bereich": "live"
+    },
+    {
+      "nr": 2,
+      "key": "live-pf-haben",
+      "title": "Live: Perfekt mit haben",
+      "icon": "✋",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-perfekt.html?set=haben",
+      "text": "Nur im Unterricht: Alle spielen gleichzeitig – Perfekt mit haben.",
+      "bereich": "live"
+    },
+    {
+      "nr": 3,
+      "key": "live-pf-sein",
+      "title": "Live: Perfekt mit sein",
+      "icon": "🚶",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-perfekt.html?set=sein",
+      "text": "Nur im Unterricht: Alle spielen gleichzeitig – Perfekt mit sein.",
+      "bereich": "live"
+    },
+    {
+      "nr": 4,
+      "key": "live-pf-trennbar",
+      "title": "Live: trennbare Verben",
+      "icon": "✂️",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-perfekt.html?set=trennbar",
+      "text": "Nur im Unterricht: Perfekt mit trennbaren Verben – aufgestanden, eingekauft …",
+      "bereich": "live"
+    },
+    {
+      "nr": 5,
+      "key": "live-pf-mix",
+      "title": "Live: Perfekt-Mix",
+      "icon": "🌀",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-perfekt.html?set=mix",
+      "text": "Nur im Unterricht: haben, sein und trennbare Verben gemischt.",
+      "bereich": "live"
+    }
+  ],
+  "bereiche": [
+    {
+      "id": "grund",
+      "kurz": "G",
+      "name": "Grundlagen"
+    },
+    {
+      "id": "l8",
+      "kurz": "L8",
+      "name": "Lektion 8 · Wohnen"
+    },
+    {
+      "id": "l9",
+      "kurz": "L9",
+      "name": "Lektion 9 · Perfekt mit haben"
+    },
+    {
+      "id": "lesen",
+      "kurz": "LES",
+      "name": "Lesen"
+    },
+    {
+      "id": "l10",
+      "kurz": "L10",
+      "name": "Lektion 10 · Neu hier?"
+    },
+    {
+      "id": "l11",
+      "kurz": "L11",
+      "name": "Lektion 11 · Alles Gute!"
+    },
+    {
+      "id": "pt",
+      "kurz": "PT",
+      "name": "Perfekt-Training"
+    },
+    {
+      "id": "ferien",
+      "kurz": "FL",
+      "name": "Ferienliga Perfekt"
+    },
+    {
+      "id": "live",
+      "kurz": "LIVE",
+      "name": "Live im Unterricht"
+    }
+  ]
+}

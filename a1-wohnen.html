@@ -453,44 +453,45 @@ const LESEN_FRAGEN = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  moebel:   {key:"l8-moebel-umzug",        nr:7,  icon:"🚚", title:"Möbel-Umzug",        thema:"Zimmer & Möbel",        color:"#E4412F", run:spielUmzug, timer:true,
+  moebel:   {key:"l8-moebel-umzug",        nr:1,  icon:"🚚", title:"Möbel-Umzug",        thema:"Zimmer & Möbel",        color:"#E4412F", run:spielUmzug, timer:true,
     text:"60 Sekunden: Wohin kommt der Kühlschrank? Räum die Wohnung ein!",
     rules:["Du siehst ein Möbelstück.","Tippe auf das richtige Zimmer.","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
-  check:    {key:"l8-wohnungs-check",      nr:8,  icon:"🔍", title:"Wohnungs-Check",     thema:"es gibt + einen / keinen", color:"#1F6FD1", run:spielCheck,
+  check:    {key:"l8-wohnungs-check",      nr:2,  icon:"🔍", title:"Wohnungs-Check",     thema:"es gibt + einen / keinen", color:"#1F6FD1", run:spielCheck,
     text:"Schau dir den Plan an: Gibt es einen Balkon? Oder keinen?",
     rules:["Du siehst den Plan einer Wohnung.","Was gibt es – und was gibt es nicht?","Wähle: einen, eine, ein – oder keinen, keine, kein.","Nach 5 Fragen kommt eine neue Wohnung."]},
-  gegensatz:{key:"l8-gegensatz-memory",    nr:9,  icon:"🃏", title:"Gegensätze-Memory",  thema:"neu – alt, hell – dunkel", color:"#7B4BC9", run:spielGegensatz,
+  gegensatz:{key:"l8-gegensatz-memory",    nr:3,  icon:"🃏", title:"Gegensätze-Memory",  thema:"neu – alt, hell – dunkel", color:"#7B4BC9", run:spielGegensatz,
     text:"Finde die Gegensätze: groß und klein, laut und ruhig …",
     rules:["Decke zwei Karten auf.","Sind es Gegensätze (z. B. hell – dunkel), bleiben sie offen.","Je weniger Züge, desto mehr Punkte."]},
-  karten:   {key:"l8-kartenstapel",        nr:10, icon:"🎴", title:"Kartenstapel",       thema:"unser, euer, ihr",       color:"#E9800E", run:spielKarten,
+  karten:   {key:"l8-kartenstapel",        nr:4, icon:"🎴", title:"Kartenstapel",       thema:"unser, euer, ihr",       color:"#E9800E", run:spielKarten,
     text:"Drei Karten, ein Satz: Unsere Küche ist groß – oder eure?",
     rules:["Du ziehst drei Karten: Person, Zimmer, Adjektiv.","Lies, wer spricht.","Wähle den richtigen Satz."]},
-  saetze:   {key:"l8-lebende-saetze",      nr:11, icon:"🙋", title:"Lebende Sätze",      thema:"wollen & dürfen",        color:"#1E9E6A", run:spielLebende,
+  saetze:   {key:"l8-lebende-saetze",      nr:5, icon:"🙋", title:"Lebende Sätze",      thema:"wollen & dürfen",        color:"#1E9E6A", run:spielLebende,
     text:"Stell die Leute mit ihren Schildern richtig auf!",
     rules:["Jede Person hält ein Wort.","Tippe die Personen in der richtigen Reihenfolge an.","Denk an die Satzklammer: wollen/dürfen auf Position 2, das zweite Verb ans Ende.","1. Versuch = 1 Punkt, 2. Versuch = ½ Punkt."]},
-  schilder: {key:"l8-schilder-hausordnung",nr:12, icon:"🚫", title:"Schilder & Hausordnung", thema:"dürfen – erlaubt / verboten", color:"#0E9FB0", run:spielSchilder,
+  schilder: {key:"l8-schilder-hausordnung",nr:6, icon:"🚫", title:"Schilder & Hausordnung", thema:"dürfen – erlaubt / verboten", color:"#0E9FB0", run:spielSchilder,
     text:"Was darf man hier? Lies Schilder und eine echte Hausordnung.",
     rules:["Teil 1: Schau auf das Schild. Welcher Satz passt?","Teil 2: Wähle die richtige Form von dürfen.","Teil 3: Lies die Hausordnung und antworte mit Ja oder Nein."]},
-  anzeigen: {key:"l8-anzeigen-detektiv",   nr:13, icon:"🏷️", title:"Anzeigen-Detektiv",  thema:"Wohnungsanzeigen & Zahlen", color:"#C2410C", run:spielAnzeigen,
+  anzeigen: {key:"l8-anzeigen-detektiv",   nr:7, icon:"🏷️", title:"Anzeigen-Detektiv",  thema:"Wohnungsanzeigen & Zahlen", color:"#C2410C", run:spielAnzeigen,
     text:"Drei Anzeigen, zehn Sätze: Welche Wohnung ist gemeint?",
     rules:["Lies die drei Wohnungsanzeigen.","Lies den Satz.","Tippe auf A, B oder C."]},
-  lesen:    {key:"l8-lesedetektiv",        nr:14, icon:"📖", title:"Lesedetektiv",       thema:"Texte verstehen",        color:"#4D7C0F", run:spielLesen,
+  lesen:    {key:"l8-lesedetektiv",        nr:8, icon:"📖", title:"Lesedetektiv",       thema:"Texte verstehen",        color:"#4D7C0F", run:spielLesen,
     text:"Vier Menschen erzählen, wie sie wohnen. Richtig oder falsch?",
     rules:["Lies die Texte von Samira, Familie Rahimi, Herrn Petersen und Jonas.","Du kannst die Texte immer wieder öffnen.","Antworte: Richtig oder Falsch? Und am Ende: Wer sagt das?"]}
   ,
-  gsprint:  {key:"l8-gegensatz-sprint",    nr:15, icon:"⚡", title:"Gegensatz-Sprint",   thema:"Adjektive",              color:"#DB2777", run:spielGegensatzSprint, timer:true,
+  gsprint:  {key:"l8-gegensatz-sprint",    nr:9, icon:"⚡", title:"Gegensatz-Sprint",   thema:"Adjektive",              color:"#DB2777", run:spielGegensatzSprint, timer:true,
     text:"45 Sekunden: Die Wohnung ist nicht hell. Sie ist …?",
     rules:["Lies den Satz.","Tippe auf das Gegenteil.","Du hast 45 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
-  zahlen:   {key:"l8-zahlen-rennen",       nr:16, icon:"🏁", title:"Zahlen-Rennen",      thema:"Zahlen bis 9.999",       color:"#0369A1", run:spielZahlen, timer:true,
+  zahlen:   {key:"l8-zahlen-rennen",       nr:10, icon:"🏁", title:"Zahlen-Rennen",      thema:"Zahlen bis 9.999",       color:"#0369A1", run:spielZahlen, timer:true,
     text:"60 Sekunden: 1.540 € – wie sagt man das? Achtung: 45 oder 54?",
     rules:["Du siehst eine Zahl oder ein Zahlwort.","Tippe auf die passende Lösung.","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","12 richtige Antworten = volle Punktzahl."]},
-  rakete:   {key:"l8-verb-rakete",         nr:17, icon:"🚀", title:"Verb-Rakete",        thema:"wollen & dürfen",        color:"#7C3AED", run:spielRakete, timer:true,
+  rakete:   {key:"l8-verb-rakete",         nr:11, icon:"🚀", title:"Verb-Rakete",        thema:"wollen & dürfen",        color:"#7C3AED", run:spielRakete, timer:true,
     text:"45 Sekunden: will, willst, wollt? darf oder dürft? Schnell!",
     rules:["Lies den Satz.","Tippe auf die richtige Form von wollen oder dürfen.","Du hast 45 Sekunden. Fehler kosten einen halben Punkt.","14 richtige Antworten = volle Punktzahl."]},
-  countdown:{key:"l8-artikel-countdown",   nr:18, icon:"💣", title:"Artikel-Countdown",  thema:"der, die, das – Wohnen", color:"#B91C1C", run:spielCountdown, timer:true,
+  countdown:{key:"l8-artikel-countdown",   nr:12, icon:"💣", title:"Artikel-Countdown",  thema:"der, die, das – Wohnen", color:"#B91C1C", run:spielCountdown, timer:true,
     text:"Jedes Wort hat einen eigenen Countdown – und er wird immer schneller. 3 Leben!",
     rules:["der, die oder das? Antworte, bevor die Zeit abläuft.","Mit jeder richtigen Antwort wird die Zeit kürzer.","Falsch oder zu langsam = ein Leben weg. Du hast 3 Leben.","20 richtige Antworten = volle Punktzahl."]}
 };
+const BEREICH_KURZ = "L8";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 const MENU_TEXT = "Zwölf Spiele zum Thema Wohnen: Zimmer und Möbel, es gibt, Gegensätze, unser/euer/ihr, wollen, dürfen, Zahlen, Anzeigen und Lesetexte – fünf davon gegen die Zeit. Welche Spiele Punkte bringen, siehst du in der Arena.";
@@ -1103,7 +1104,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Wohnen";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Wohnen";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
   document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
 }

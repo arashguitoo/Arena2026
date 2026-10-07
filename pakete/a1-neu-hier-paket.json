@@ -1,0 +1,81 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Neu hier? (Lektion 10)",
+  "bereich": {
+    "id": "l10",
+    "kurz": "L10",
+    "name": "Lektion 10 · Neu hier?"
+  },
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "l10-haben-oder-sein",
+      "title": "Haben oder sein?",
+      "icon": "✈️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=habensein",
+      "text": "45 Sekunden: Ich bin gefahren – oder ich habe gearbeitet?"
+    },
+    {
+      "nr": 2,
+      "key": "l10-partizip-fabrik",
+      "title": "Partizip-Fabrik",
+      "icon": "🏭",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=fabrik",
+      "text": "60 Sekunden: In welche Werkstatt kommt das Verb?"
+    },
+    {
+      "nr": 3,
+      "key": "l10-trennbar-werkstatt",
+      "title": "Trennbar-Werkstatt",
+      "icon": "🔧",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=trennbar",
+      "text": "45 Sekunden: abholen → hat Gäste abgeholt. Wo steht das ge-?"
+    },
+    {
+      "nr": 4,
+      "key": "l10-willkommens-lotse",
+      "title": "Willkommens-Lotse",
+      "icon": "🧭",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=lotse",
+      "text": "Zwölf Menschen sind neu hier. Welches Angebot hilft?"
+    },
+    {
+      "nr": 5,
+      "key": "l10-das-formular",
+      "title": "Das Formular",
+      "icon": "📋",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=formular",
+      "text": "Welche Frage gehört zu welchem Feld? Und wie fragst du nach?"
+    },
+    {
+      "nr": 6,
+      "key": "l10-chef-sagt",
+      "title": "Chef sagt",
+      "icon": "👨‍🍳",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=chef",
+      "text": "Bei der Arbeit: Welche Aufforderung ist richtig?"
+    },
+    {
+      "nr": 7,
+      "key": "l10-lebensweg",
+      "title": "Lebensweg",
+      "icon": "🛤️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-neu-hier.html?spiel=lebensweg",
+      "text": "Drei Lebenswege: Bring die Sätze in die richtige Reihenfolge."
+    }
+  ]
+}

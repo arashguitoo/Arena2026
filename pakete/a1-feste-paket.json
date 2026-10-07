@@ -1,0 +1,81 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Alles Gute! (Lektion 11)",
+  "bereich": {
+    "id": "l11",
+    "kurz": "L11",
+    "name": "Lektion 11 · Alles Gute!"
+  },
+  "tasks": [
+    {
+      "nr": 1,
+      "key": "l11-gratulations-maschine",
+      "title": "Gratulations-Maschine",
+      "icon": "🎉",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=gratulieren",
+      "text": "45 Sekunden: Ich gratuliere meinem Chef – oder meiner Chefin?"
+    },
+    {
+      "nr": 2,
+      "key": "l11-jahres-rad",
+      "title": "Jahres-Rad",
+      "icon": "🗓️",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=jahresrad",
+      "text": "60 Sekunden: In welche Jahreszeit gehört der Monat?"
+    },
+    {
+      "nr": 3,
+      "key": "l11-datums-duell",
+      "title": "Datums-Duell",
+      "icon": "🔢",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=datum",
+      "text": "60 Sekunden: am 1.5. – wie sagt man das?"
+    },
+    {
+      "nr": 4,
+      "key": "l11-pronomen-pingpong",
+      "title": "Pronomen-Pingpong",
+      "icon": "🏓",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=pingpong",
+      "text": "45 Sekunden: Wie gefällt dir das Geschenk? – Es gefällt mir!"
+    },
+    {
+      "nr": 5,
+      "key": "l11-wem-was",
+      "title": "Wem schenkst du was?",
+      "icon": "🎀",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=schenken",
+      "text": "Bau die Sätze: erst die Person, dann das Geschenk."
+    },
+    {
+      "nr": 6,
+      "key": "l11-die-einladung",
+      "title": "Die Einladung",
+      "icon": "💌",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=einladung",
+      "text": "Lies Aditas Einladung und bring die Antworten in die richtige Reihenfolge."
+    },
+    {
+      "nr": 7,
+      "key": "l11-drei-feste",
+      "title": "Drei Feste",
+      "icon": "🥳",
+      "max": 10,
+      "art": "Einzel",
+      "file": "a1-feste.html?spiel=feste",
+      "text": "Drei Berichte über Feste – und Smalltalk auf der Party."
+    }
+  ]
+}

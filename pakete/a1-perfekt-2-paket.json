@@ -1,9 +1,14 @@
 {
   "app": "liga-aufgaben",
   "name": "Perfekt-Training",
+  "bereich": {
+    "id": "pt",
+    "kurz": "PT",
+    "name": "Perfekt-Training"
+  },
   "tasks": [
     {
-      "nr": 44,
+      "nr": 1,
       "key": "pf2-hilfsverb-profi",
       "title": "Hilfsverb-Profi",
       "icon": "🔁",
@@ -13,7 +18,7 @@
       "text": "45 Sekunden: wir sind, ihr habt, du bist … Welche Form passt?"
     },
     {
-      "nr": 45,
+      "nr": 2,
       "key": "pf2-vorsilben-check",
       "title": "Vorsilben-Check",
       "icon": "🧲",
@@ -23,7 +28,7 @@
       "text": "60 Sekunden: auf·stehen oder be·suchen? Sortiere die Verben."
     },
     {
-      "nr": 46,
+      "nr": 3,
       "key": "pf2-partizip-baustelle",
       "title": "Partizip-Baustelle",
       "icon": "🏗️",
@@ -33,7 +38,7 @@
       "text": "50 Sekunden: aufgestanden oder geaufstanden? besucht oder gebesucht?"
     },
     {
-      "nr": 47,
+      "nr": 4,
       "key": "pf2-perfekt-profi",
       "title": "Perfekt-Profi",
       "icon": "🏆",

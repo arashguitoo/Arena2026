@@ -1,6 +1,11 @@
 {
   "app": "liga-aufgaben",
   "name": "Ferienliga Perfekt (16 Tage)",
+  "bereich": {
+    "id": "ferien",
+    "kurz": "FL",
+    "name": "Ferienliga Perfekt"
+  },
   "ferien": {
     "name": "Ferienliga Perfekt",
     "start": "2026-10-08",
@@ -11,7 +16,7 @@
   "tasks": [
     {
       "tag": 1,
-      "nr": 48,
+      "nr": 1,
       "key": "fp-01-gestern-oder-heute",
       "title": "Gestern oder heute?",
       "icon": "⏪",
@@ -22,7 +27,7 @@
     },
     {
       "tag": 2,
-      "nr": 49,
+      "nr": 2,
       "key": "fp-02-haben-formen",
       "title": "haben – alle Formen",
       "icon": "✋",
@@ -33,7 +38,7 @@
     },
     {
       "tag": 3,
-      "nr": 50,
+      "nr": 3,
       "key": "fp-03-ge-t",
       "title": "ge…t – regelmäßig",
       "icon": "🔨",
@@ -44,7 +49,7 @@
     },
     {
       "tag": 4,
-      "nr": 51,
+      "nr": 4,
       "key": "fp-04-ge-en",
       "title": "ge…en – unregelmäßig",
       "icon": "🌀",
@@ -55,7 +60,7 @@
     },
     {
       "tag": 5,
-      "nr": 52,
+      "nr": 5,
       "key": "fp-05-satzklammer",
       "title": "Die Satzklammer",
       "icon": "🧱",
@@ -66,7 +71,7 @@
     },
     {
       "tag": 6,
-      "nr": 53,
+      "nr": 6,
       "key": "fp-06-sein-formen",
       "title": "sein – alle Formen",
       "icon": "🚶",
@@ -77,7 +82,7 @@
     },
     {
       "tag": 7,
-      "nr": 54,
+      "nr": 7,
       "key": "fp-07-haben-oder-sein",
       "title": "haben oder sein?",
       "icon": "⚖️",
@@ -88,7 +93,7 @@
     },
     {
       "tag": 8,
-      "nr": 55,
+      "nr": 8,
       "key": "fp-08-lias-wochenende",
       "title": "Lias Wochenende",
       "icon": "📱",
@@ -99,7 +104,7 @@
     },
     {
       "tag": 9,
-      "nr": 56,
+      "nr": 9,
       "key": "fp-09-trennbar",
       "title": "Trennbar: ge in der Mitte",
       "icon": "✂️",
@@ -110,7 +115,7 @@
     },
     {
       "tag": 10,
-      "nr": 57,
+      "nr": 10,
       "key": "fp-10-nicht-trennbar",
       "title": "be-, ver-, er-: kein ge-",
       "icon": "🔒",
@@ -121,7 +126,7 @@
     },
     {
       "tag": 11,
-      "nr": 58,
+      "nr": 11,
       "key": "fp-11-drei-werkstaetten",
       "title": "Drei Werkstätten",
       "icon": "🏭",
@@ -132,7 +137,7 @@
     },
     {
       "tag": 12,
-      "nr": 59,
+      "nr": 12,
       "key": "fp-12-ieren",
       "title": "-ieren: telefoniert!",
       "icon": "📸",
@@ -143,7 +148,7 @@
     },
     {
       "tag": 13,
-      "nr": 60,
+      "nr": 13,
       "key": "fp-13-fragen",
       "title": "Fragen im Perfekt",
       "icon": "❓",
@@ -154,7 +159,7 @@
     },
     {
       "tag": 14,
-      "nr": 61,
+      "nr": 14,
       "key": "fp-14-gespraeche",
       "title": "Gespräche ordnen",
       "icon": "💬",
@@ -165,7 +170,7 @@
     },
     {
       "tag": 15,
-      "nr": 62,
+      "nr": 15,
       "key": "fp-15-fehlerdetektiv",
       "title": "Fehlerdetektiv",
       "icon": "🕵️",
@@ -176,7 +181,7 @@
     },
     {
       "tag": 16,
-      "nr": 63,
+      "nr": 16,
       "key": "fp-16-finale",
       "title": "Das große Finale",
       "icon": "🏆",

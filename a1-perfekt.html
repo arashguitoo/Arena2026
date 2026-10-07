@@ -305,13 +305,14 @@ const GESCHICHTEN = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  werkstatt:{key:"l9-partizip-werkstatt", nr:19, icon:"⚒️", title:"Partizip-Werkstatt", thema:"Partizip II", color:"#B45309", run:spielWerkstatt, timer:true,
+  werkstatt:{key:"l9-partizip-werkstatt", nr:1, icon:"⚒️", title:"Partizip-Werkstatt", thema:"Partizip II", color:"#B45309", run:spielWerkstatt, timer:true,
     text:"60 Sekunden: machen → gemacht, trinken → getrunken. Welche Form ist richtig?",
     rules:["Du siehst einen Infinitiv.","Tippe auf das richtige Partizip II.","ge…t oder ge…en? Pass auf!","Du hast 60 Sekunden. Fehler kosten einen halben Punkt.","15 richtige Antworten = volle Punktzahl."]},
-  zeitmaschine:{key:"l9-zeitmaschine", nr:20, icon:"🕰️", title:"Zeitmaschine", thema:"Zeitangaben & Geschichten", color:"#0F766E", run:spielZeitmaschine,
+  zeitmaschine:{key:"l9-zeitmaschine", nr:2, icon:"🕰️", title:"Zeitmaschine", thema:"Zeitangaben & Geschichten", color:"#0F766E", run:spielZeitmaschine,
     text:"Bring alles in die richtige Reihenfolge: erst die Zeit, dann die Geschichte.",
     rules:["Teil 1: Sortiere die Zeitangaben – von früher zu heute.","Teil 2: Bring die Sätze einer Geschichte in die richtige Reihenfolge.","Tippe die Karten in der richtigen Reihenfolge an.","Eine Karte in der Zeile antippen = zurücklegen.","Jede richtige Position gibt Punkte."]}
 };
+const BEREICH_KURZ = "L9";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 const MENU_TEXT = "Zwei Spiele zum Perfekt: Partizip II im Zeitspiel und die Zeitmaschine mit Zeitangaben und Geschichten. Welche Spiele Punkte bringen, siehst du in der Arena.";
@@ -561,7 +562,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Perfekt";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Perfekt";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
   document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
 }

@@ -362,19 +362,20 @@ const SUCHENDE = [
    SPIELE
    ========================================================== */
 const SPIELE = {
-  dialog:  {key:"lesen-gespraech-ordnen", nr:21, icon:"💬", title:"Gespräch ordnen",  thema:"Dialoge verstehen",   color:"#0E7490", run:spielDialog,
+  dialog:  {key:"lesen-gespraech-ordnen", nr:1, icon:"💬", title:"Gespräch ordnen",  thema:"Dialoge verstehen",   color:"#0E7490", run:spielDialog,
     text:"Vier Gespräche sind durcheinander. Bring sie in die richtige Reihenfolge.",
     rules:["Du siehst die Sätze eines Gesprächs – aber falsch sortiert.","Tippe die Sätze in der richtigen Reihenfolge an.","Eine Karte in der Zeile antippen = zurücklegen.","Jede richtige Position gibt Punkte."]},
-  puzzle:  {key:"lesen-text-puzzle",      nr:22, icon:"🧩", title:"Text-Puzzle",      thema:"E-Mails & Geschichten", color:"#7C3AED", run:spielPuzzle,
+  puzzle:  {key:"lesen-text-puzzle",      nr:2, icon:"🧩", title:"Text-Puzzle",      thema:"E-Mails & Geschichten", color:"#7C3AED", run:spielPuzzle,
     text:"Eine E-Mail, eine Nachricht, eine Geschichte: Was kommt zuerst?",
     rules:["Achte auf Anrede und Gruß.","Achte auf die Wörter zuerst, dann, danach, am Ende.","Tippe die Teile in der richtigen Reihenfolge an.","Jede richtige Position gibt Punkte."]},
-  fragen:  {key:"lesen-fragen-zum-text",  nr:23, icon:"📖", title:"Fragen zum Text",  thema:"Drei Texte, neun Fragen", color:"#15803D", run:spielFragen,
+  fragen:  {key:"lesen-fragen-zum-text",  nr:3, icon:"📖", title:"Fragen zum Text",  thema:"Drei Texte, neun Fragen", color:"#15803D", run:spielFragen,
     text:"Lies die Texte und beantworte die Fragen. Der Text bleibt immer sichtbar.",
     rules:["Lies den Text oben in Ruhe.","Wähle die richtige Antwort.","Nach einer falschen Antwort kannst du noch einmal nachlesen.","Neun Fragen zu drei Texten."]},
-  match:   {key:"lesen-wer-passt",        nr:24, icon:"🔎", title:"Wer passt zusammen?", thema:"Anzeigen lesen",    color:"#B45309", run:spielMatch,
+  match:   {key:"lesen-wer-passt",        nr:4, icon:"🔎", title:"Wer passt zusammen?", thema:"Anzeigen lesen",    color:"#B45309", run:spielMatch,
     text:"Fünf Personen suchen etwas. Welche Anzeige passt? Achtung: Eine passt zu niemandem.",
     rules:["Oben stehen sechs Anzeigen: A bis F.","Lies, was die Person sucht.","Tippe auf die passende Anzeige.","Eine Anzeige passt zu keiner Person."]}
 };
+const BEREICH_KURZ = "LES";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
 const MENU_TEXT = "Vier Spiele zum Lesen: Gespräche ordnen, Texte zusammensetzen, Fragen zum Text beantworten und Anzeigen zuordnen. Welche Spiele Punkte bringen, siehst du in der Arena.";
@@ -643,7 +644,7 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`Spiel ${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Lesen";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Lesen";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
   document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
 }

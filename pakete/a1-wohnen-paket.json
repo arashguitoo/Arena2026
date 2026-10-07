@@ -1,9 +1,14 @@
 {
   "app": "liga-aufgaben",
   "name": "Wohnen-Spielhalle (Lektion 8)",
+  "bereich": {
+    "id": "l8",
+    "kurz": "L8",
+    "name": "Lektion 8 · Wohnen"
+  },
   "tasks": [
     {
-      "nr": 7,
+      "nr": 1,
       "key": "l8-moebel-umzug",
       "title": "Möbel-Umzug",
       "icon": "🚚",
@@ -13,7 +18,7 @@
       "text": "60 Sekunden: Wohin kommt der Kühlschrank? Räum die Wohnung ein!"
     },
     {
-      "nr": 8,
+      "nr": 2,
       "key": "l8-wohnungs-check",
       "title": "Wohnungs-Check",
       "icon": "🔍",
@@ -23,7 +28,7 @@
       "text": "Schau dir den Plan an: Gibt es einen Balkon? Oder keinen?"
     },
     {
-      "nr": 9,
+      "nr": 3,
       "key": "l8-gegensatz-memory",
       "title": "Gegensätze-Memory",
       "icon": "🃏",
@@ -33,7 +38,7 @@
       "text": "Finde die Gegensätze: groß und klein, laut und ruhig …"
     },
     {
-      "nr": 10,
+      "nr": 4,
       "key": "l8-kartenstapel",
       "title": "Kartenstapel",
       "icon": "🎴",
@@ -43,7 +48,7 @@
       "text": "Drei Karten, ein Satz: Unsere Küche ist groß – oder eure?"
     },
     {
-      "nr": 11,
+      "nr": 5,
       "key": "l8-lebende-saetze",
       "title": "Lebende Sätze",
       "icon": "🙋",
@@ -53,7 +58,7 @@
       "text": "Stell die Leute mit ihren Schildern richtig auf!"
     },
     {
-      "nr": 12,
+      "nr": 6,
       "key": "l8-schilder-hausordnung",
       "title": "Schilder & Hausordnung",
       "icon": "🚫",
@@ -63,7 +68,7 @@
       "text": "Was darf man hier? Lies Schilder und eine echte Hausordnung."
     },
     {
-      "nr": 13,
+      "nr": 7,
       "key": "l8-anzeigen-detektiv",
       "title": "Anzeigen-Detektiv",
       "icon": "🏷️",
@@ -73,7 +78,7 @@
       "text": "Drei Anzeigen, zehn Sätze: Welche Wohnung ist gemeint?"
     },
     {
-      "nr": 14,
+      "nr": 8,
       "key": "l8-lesedetektiv",
       "title": "Lesedetektiv",
       "icon": "📖",
@@ -83,7 +88,7 @@
       "text": "Vier Menschen erzählen, wie sie wohnen. Richtig oder falsch?"
     },
     {
-      "nr": 15,
+      "nr": 9,
       "key": "l8-gegensatz-sprint",
       "title": "Gegensatz-Sprint",
       "icon": "⚡",
@@ -93,7 +98,7 @@
       "text": "45 Sekunden: Die Wohnung ist nicht hell. Sie ist …?"
     },
     {
-      "nr": 16,
+      "nr": 10,
       "key": "l8-zahlen-rennen",
       "title": "Zahlen-Rennen",
       "icon": "🏁",
@@ -103,7 +108,7 @@
       "text": "60 Sekunden: 1.540 € – wie sagt man das? Achtung: 45 oder 54?"
     },
     {
-      "nr": 17,
+      "nr": 11,
       "key": "l8-verb-rakete",
       "title": "Verb-Rakete",
       "icon": "🚀",
@@ -113,7 +118,7 @@
       "text": "45 Sekunden: will, willst, wollt? darf oder dürft? Schnell!"
     },
     {
-      "nr": 18,
+      "nr": 12,
       "key": "l8-artikel-countdown",
       "title": "Artikel-Countdown",
       "icon": "💣",

@@ -201,6 +201,46 @@ dialog::backdrop{background:rgba(20,34,59,.55)}
 .task-li .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 @media (max-width:700px){.task-li{grid-template-columns:52px 1fr}.task-li .acts{grid-column:1/-1;justify-content:flex-start}}
 .gruppe{margin-bottom:16px}
+/* Aufgaben nach Bereichen */
+.form-panel{margin-bottom:16px;box-shadow:0 0 0 3px var(--led)}
+.auf-kopf{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.filter{display:flex;gap:6px;flex-wrap:wrap}
+.filter button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 13px;cursor:pointer;font-weight:700;font-size:14.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.filter button b{font-family:var(--display);font-weight:900;font-size:18px;color:var(--board)}
+.filter button i{font-style:normal}
+.filter button[aria-pressed="true"]{background:var(--board);border-color:var(--board);color:#fff}
+.filter button[aria-pressed="true"] b{color:var(--led)}
+#auf-suche{flex:1;min-width:200px;max-width:360px;min-height:40px;border:2px solid var(--line);border-radius:999px;padding:6px 16px;background:#fff}
+.bereich{background:#fff;border:2px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.bereich>summary{list-style:none;display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;user-select:none}
+.bereich>summary::-webkit-details-marker{display:none}
+.bereich>summary::before{content:"▸";color:var(--muted);font-size:15px;transition:transform .15s}
+.bereich[open]>summary::before{transform:rotate(90deg)}
+.bereich[open]>summary{border-bottom:2px solid var(--line);background:#FBF6EC}
+.b-kurz{font-family:var(--display);font-weight:900;font-size:20px;background:var(--board);color:var(--led);border-radius:8px;padding:2px 9px;min-width:46px;text-align:center}
+.b-name{font-family:var(--display);font-weight:800;font-size:21px;color:var(--board);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.b-zahlen{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.b-zahlen i{font-style:normal;font-size:13px;font-weight:700;border-radius:999px;padding:2px 9px}
+.b-zahlen b{font-family:var(--display);font-weight:900;font-size:18px;color:var(--muted);min-width:24px;text-align:right}
+.ph-jetzt{background:#d6f2e5;color:#12704a}.ph-bald{background:#dce8fb;color:#1a4f94}.ph-vorbei{background:#efe5d3;color:var(--muted)}
+.b-leiste{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 14px;border-bottom:2px solid var(--line);background:#FFFDF8}
+.az-liste{list-style:none;margin:0;padding:0}
+.az{display:grid;grid-template-columns:64px 1fr auto auto;gap:12px;align-items:center;padding:9px 14px;border-top:1px solid var(--line)}
+.az:first-child{border-top:0}
+.az.aktiv{background:#FFF3D1}
+.az-code{font-family:var(--display);font-weight:900;font-size:19px;color:var(--board);font-variant-numeric:tabular-nums}
+.az-main{min-width:0}
+.az-titel{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.az-sub{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.az-ph{font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.az-acts{display:flex;gap:4px;align-items:center}
+.az-acts select{width:auto;min-height:34px;padding:2px 6px;font-size:14px}
+@media (max-width:720px){
+  .az{grid-template-columns:52px 1fr;row-gap:6px}
+  .az-ph{grid-column:2;justify-self:start}
+  .az-acts{grid-column:1 / -1;justify-content:flex-end}
+  .b-name{font-size:18px}
+}
 .gruppe-kopf{display:flex;align-items:center;gap:9px;padding:6px 0 4px;border-bottom:3px solid var(--line);margin-bottom:6px}
 .gruppe-kopf b{font-family:var(--display);font-weight:800;font-size:21px;color:var(--board)}
 .gruppe-kopf span{margin-left:auto;background:var(--board);color:var(--led);font-family:var(--display);font-weight:900;font-size:17px;border-radius:999px;padding:1px 11px}
@@ -338,6 +378,21 @@ const COLORS = [
 const ANIMALS = ["Haie","Adler","Füchse","Wölfe","Falken","Luchse"];
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const STATUS = [["bald","Bald (gesperrt)"],["offen","Offen"],["neu","Neu"],["fertig","Erledigt (gesperrt)"]];
+/* Bereiche: jede Aufgabe gehört zu einem Bereich und hat darin eine eigene Nummer → L8.3, FL.12 */
+const STANDARD_BEREICHE = [
+  {id:"grund",  kurz:"G",    name:"Grundlagen",                  dateien:["a1-spielhalle.html"]},
+  {id:"l8",     kurz:"L8",   name:"Lektion 8 · Wohnen",          dateien:["a1-wohnen.html"]},
+  {id:"l9",     kurz:"L9",   name:"Lektion 9 · Perfekt mit haben", dateien:["a1-perfekt.html"]},
+  {id:"lesen",  kurz:"LES",  name:"Lesen",                       dateien:["a1-lesen.html"]},
+  {id:"l10",    kurz:"L10",  name:"Lektion 10 · Neu hier?",      dateien:["a1-neu-hier.html"]},
+  {id:"l11",    kurz:"L11",  name:"Lektion 11 · Alles Gute!",    dateien:["a1-feste.html"]},
+  {id:"pt",     kurz:"PT",   name:"Perfekt-Training",            dateien:["a1-perfekt-2.html"]},
+  {id:"live",   kurz:"LIVE", name:"Live im Unterricht",          dateien:["a1-live-duell.html","a1-live-perfekt.html"]},
+  {id:"ferien", kurz:"FL",   name:"Ferienliga Perfekt",          dateien:["a1-ferien-perfekt.html"]},
+  {id:"eigene", kurz:"E",    name:"Eigene Aufgaben",             dateien:[]}
+];
+const dateiName = f => String(f||"").split("?")[0].split("/").pop().toLowerCase();
+function bereichRaten(t){ const d=dateiName(t.file); const b=STANDARD_BEREICHE.find(x=>x.dateien.includes(d)); return b?b.id:"eigene"; }
 
 /* ---------- Hilfen ---------- */
 const $ = (s, r=document) => r.querySelector(s);
@@ -371,7 +426,8 @@ function fresh(){
     settings:{ ligaName:"Plöner Liga", kursName:"Jugendintegrationskurs Plön", arenaUrl:"",
       showTable:true, nameMode:"vorname", wertung:"summe",
       ferien:{aktiv:false, name:"Ferienliga", start:"", tage:14, uhr:"08:00", offenBis:"ende", dauer:2} },
-    students:[], tasks:[], rounds:[], activeRoundId:null, entries:[]
+    students:[], tasks:[], rounds:[], activeRoundId:null, entries:[],
+    bereiche:STANDARD_BEREICHE.map(({id,kurz,name})=>({id,kurz,name}))
   };
 }
 function migrate(d){
@@ -398,8 +454,27 @@ function migrate(d){
     t.von=Number(t.von)||0; t.bis=Number(t.bis)||0;
   });
   if(d.activeRoundId===undefined) d.activeRoundId=null;
+  /* Bereiche einführen – einmalig: Aufgaben zuordnen und pro Bereich neu nummerieren */
+  if(!Array.isArray(d.bereiche) || !d.bereiche.length){
+    d.bereiche=STANDARD_BEREICHE.map(({id,kurz,name})=>({id,kurz,name}));
+    const alt=d.tasks.slice().sort((a,b)=>(Number(a.nr)||0)-(Number(b.nr)||0));
+    alt.forEach(t=>{ t.nrAlt=t.nr; t.gruppe=bereichRaten(t); });
+    d.bereiche.forEach(b=>{
+      const g=alt.filter(t=>t.gruppe===b.id);
+      if(b.id==="ferien") g.sort((x,y)=>(Number(x.ferienTag)||99)-(Number(y.ferienTag)||99));
+      g.forEach((t,i)=>t.nr=i+1);
+    });
+    d.__umgestellt=true;
+  }
+  d.tasks.forEach(t=>{ if(!t.gruppe || !d.bereiche.some(b=>b.id===t.gruppe)) t.gruppe=bereichRaten(t); });
+  if(!d.bereiche.some(b=>b.id==="eigene")) d.bereiche.push({id:"eigene", kurz:"E", name:"Eigene Aufgaben"});
   return d;
 }
+const bereichVon = t => state.bereiche.find(b=>b.id===t.gruppe) || state.bereiche.find(b=>b.id==="eigene") || {id:"eigene",kurz:"E",name:"Eigene Aufgaben"};
+const taskCode = t => `${bereichVon(t).kurz}.${t.nr}`;
+const taskOrd = t => Math.max(0,state.bereiche.indexOf(bereichVon(t)))*1000 + (Number(t.nr)||0);
+const nachOrd = (a,b) => taskOrd(a)-taskOrd(b);
+function naechsteNr(gid){ return Math.max(0,...state.tasks.filter(t=>t.gruppe===gid).map(t=>Number(t.nr)||0))+1; }
 function load(){
   try{ const raw=localStorage.getItem(LS_KEY); if(raw) return migrate(JSON.parse(raw)); }catch(e){ console.warn(e); }
   return fresh();
@@ -638,7 +713,8 @@ function vPunkte(){
   const r=activeRound();
   if(!r) return `<div class="sec-head"><h2>Punkte eintragen</h2></div><div class="panel"><div class="empty"><b>Keine aktive Runde</b>Punkte werden immer einer Runde zugeordnet.<div class="row" style="justify-content:center;margin-top:14px"><button class="btn" data-act="goto" data-tab="teams">Runde starten</button></div></div></div>`;
   const unassigned=state.students.filter(s=>s.active!==false && !teamOf(r,s.id));
-  const taskOpts=state.tasks.map(t=>`<option value="${t.id}" ${scoreTask.taskId===t.id?"selected":""}>${esc(t.title)}</option>`).join("");
+  const taskOpts=state.bereiche.map(b=>{ const ts=state.tasks.filter(t=>bereichVon(t)===b).sort(nachOrd);
+    return ts.length?`<optgroup label="${esc(b.kurz+" · "+b.name)}">${ts.map(t=>`<option value="${t.id}" ${scoreTask.taskId===t.id?"selected":""}>${esc(taskCode(t))} ${esc(t.title)}</option>`).join("")}</optgroup>`:""; }).join("");
   const entries=state.entries.filter(e=>e.roundId===r.id && (!logFilter || (e.taskTitle||"")===logFilter)).sort((a,b)=>b.ts-a.ts);
   const titles=[...new Set(state.entries.filter(e=>e.roundId===r.id).map(e=>e.taskTitle||""))].filter(Boolean);
   const row = sid => { const v=pending[sid]||0; const au=autoOf(r.id,sid); return `<div class="srow">
@@ -704,7 +780,7 @@ function updatePendingUI(key){
 function makeTask(title){
   const keys=new Set(state.tasks.map(t=>t.key));
   let k=slugify(title), base=k, n=2; while(keys.has(k)) k=`${base}-${n++}`;
-  return {id:uid(), key:k, nr:(Math.max(0,...state.tasks.map(t=>Number(t.nr)||0))+1), title, text:"", file:"", icon:"🎯", art:"Einzel", max:10, due:"", von:0, bis:0, status:"offen", assign:{alle:true,teams:{},players:{}}, created:Date.now()};
+  return {id:uid(), key:k, gruppe:"eigene", nr:naechsteNr("eigene"), title, text:"", file:"", icon:"🎯", art:"Einzel", max:10, due:"", von:0, bis:0, status:"offen", assign:{alle:true,teams:{},players:{}}, created:Date.now()};
 }
 function savePending(){
   const r=activeRound(); if(!r) return;
@@ -978,17 +1054,72 @@ function printGuides(list){
 }
 
 /* ----- Aufgaben ----- */
+let aufFilter="alle", aufSuche="", aufNeu=false;
+const AUF_OFFEN_KEY="liga_bereiche_offen";
+function bereicheOffen(){ try{ return JSON.parse(localStorage.getItem(AUF_OFFEN_KEY))||{}; }catch(e){ return {}; } }
+function bereichMerken(id, auf){ const o=bereicheOffen(); o[id]=auf; try{ localStorage.setItem(AUF_OFFEN_KEY, JSON.stringify(o)); }catch(e){} }
+const PH_INFO={jetzt:["🎮","Jetzt offen"], bald:["🔒","Kommt noch"], vorbei:["✓","Vorbei"]};
+function aufPasst(x){
+  if(aufFilter!=="alle" && phase(x)!==aufFilter) return false;
+  const q=aufSuche.trim().toLowerCase(); if(!q) return true;
+  return [taskCode(x), x.title, x.key, x.file, x.text].some(v=>String(v||"").toLowerCase().includes(q));
+}
+function aufZeile(x, r){
+  const pids=assignedPids(x,r);
+  const done=r?pids.filter(p=>autoVal(r.id,p,x.key)!==null).length:0;
+  const ph=phase(x), zs=(x.von||x.bis)?zeitStatus(x):null;
+  const fc=fileCheck[x.id];
+  return `<li class="az ${editTaskId===x.id?"aktiv":""}">
+    <span class="az-code">${esc(taskCode(x))}</span>
+    <div class="az-main">
+      <div class="az-titel"><span>${esc(x.icon)}</span> ${esc(x.title)}${fc?` <span class="badge" style="background:${fc==="ok"?"var(--ok)":"var(--warn)"}">${fc==="ok"?"Datei ✓":fc==="404"?"Datei fehlt":"?"}</span>`:""}</div>
+      <div class="az-sub">${esc(assignLabel(x,r))}${r&&pids.length?` · ${done}/${pids.length} gespielt`:""}${zs?` · 🕒 ${x.von?fmtDT(x.von):"sofort"} → ${x.bis?fmtDT(x.bis):"offen"}`:""}</div>
+    </div>
+    <span class="az-ph ph-${ph}" title="${esc(zs?zs.txt:PH_INFO[ph][1])}">${PH_INFO[ph][0]} ${esc(zs?zs.txt:PH_INFO[ph][1])}</span>
+    <div class="az-acts">
+      <select data-act="task-status" data-id="${x.id}" aria-label="Status">${STATUS.map(([k,l])=>`<option value="${k}" ${x.status===k?"selected":""}>${l.replace(/ \(.*\)/,"")}</option>`).join("")}</select>
+      <button class="icon-btn" title="Bearbeiten" aria-label="Bearbeiten" data-act="task-edit" data-id="${x.id}">✎</button>
+      <button class="icon-btn" title="Aufgabe löschen" aria-label="Aufgabe löschen" data-act="del-task" data-id="${x.id}">✕</button>
+    </div></li>`;
+}
+function aufListeHTML(){
+  const r=activeRound(), offen=bereicheOffen(), filtert=aufFilter!=="alle"||aufSuche.trim();
+  const bl=state.bereiche.map(b=>{
+    const alle=state.tasks.filter(t=>bereichVon(t)===b).sort(nachOrd);
+    const zeig=alle.filter(aufPasst);
+    if(filtert && !zeig.length) return "";
+    if(!alle.length && b.id==="eigene") return "";
+    const z={jetzt:0,bald:0,vorbei:0}; alle.forEach(t=>z[phase(t)]++);
+    const auf = filtert ? true : (offen[b.id]!==undefined ? offen[b.id] : z.jetzt>0);
+    return `<details class="bereich" data-bereich="${esc(b.id)}" ${auf?"open":""}>
+      <summary><span class="b-kurz">${esc(b.kurz)}</span><span class="b-name">${esc(b.name)}</span>
+        <span class="b-zahlen">${z.jetzt?`<i class="ph-jetzt">🎮 ${z.jetzt}</i>`:""}${z.bald?`<i class="ph-bald">🔒 ${z.bald}</i>`:""}${z.vorbei?`<i class="ph-vorbei">✓ ${z.vorbei}</i>`:""}<b>${alle.length}</b></span></summary>
+      <div class="b-leiste">
+        <span class="small">Alle ${alle.length} Aufgaben:</span>
+        <button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="offen" ${alle.length?"":"disabled"}>öffnen</button>
+        <button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="bald" ${alle.length?"":"disabled"}>auf Bald</button>
+        <button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="fertig" ${alle.length?"":"disabled"}>erledigt</button>
+        <span class="spacer"></span>
+        <button class="btn ghost sm" data-act="task-new" data-g="${esc(b.id)}">+ Aufgabe</button>
+        <button class="icon-btn" title="Bereich umbenennen" aria-label="Bereich umbenennen" data-act="grp-edit" data-g="${esc(b.id)}">✎</button>
+        ${!alle.length&&b.id!=="eigene"?`<button class="icon-btn" title="Leeren Bereich löschen" aria-label="Bereich löschen" data-act="grp-del" data-g="${esc(b.id)}">✕</button>`:""}
+      </div>
+      ${zeig.length?`<ul class="az-liste">${zeig.map(x=>aufZeile(x,r)).join("")}</ul>`:`<p class="small" style="margin:6px 14px 12px">Noch keine Aufgaben in diesem Bereich.</p>`}
+    </details>`;
+  }).join("");
+  return bl || `<div class="empty"><b>Nichts gefunden</b>Kein Treffer für diese Suche oder diesen Filter.</div>`;
+}
 function vAufgaben(){
   const r=activeRound();
   const t=editTaskId?state.tasks.find(x=>x.id===editTaskId):null;
   const hasResults = t ? state.rounds.some(rd=>Object.values(auto.live[rd.id]||{}).some(p=>p&&p[t.key]!==undefined)) : false;
   const a=t?t.assign:{alle:true,teams:{},players:{}};
-  const nextNr=Math.max(0,...state.tasks.map(x=>Number(x.nr)||0))+1;
-  const sorted=state.tasks.slice().sort((x,y)=>(Number(y.nr)||0)-(Number(x.nr)||0));
-  const form=`<div class="panel">
-    <h3>${t?"Aufgabe bearbeiten":"Neue Aufgabe"}</h3>
+  const gSel = t ? t.gruppe : (typeof aufNeu==="string" ? aufNeu : "eigene");
+  const form=`<div class="panel form-panel" id="auf-form">
+    <div class="row" style="margin-bottom:6px"><h3 style="margin:0">${t?`Aufgabe ${esc(taskCode(t))} bearbeiten`:"Neue Aufgabe"}</h3><span class="spacer"></span><button class="icon-btn" data-act="task-cancel" title="Schließen" aria-label="Schließen">✕</button></div>
     <div class="row" style="align-items:flex-end">
-      <label class="f" style="max-width:90px">Nr.<input type="number" id="ta-nr" value="${t?t.nr:nextNr}"></label>
+      <label class="f" style="max-width:260px">Bereich<select id="ta-gruppe">${state.bereiche.map(b=>`<option value="${esc(b.id)}" ${gSel===b.id?"selected":""}>${esc(b.kurz)} · ${esc(b.name)}</option>`).join("")}</select></label>
+      <label class="f" style="max-width:90px">Nr.<input type="number" id="ta-nr" min="1" value="${t?t.nr:naechsteNr(gSel)}"></label>
       <label class="f" style="max-width:90px">Icon<input type="text" id="ta-icon" value="${esc(t?t.icon:"🎯")}" maxlength="4"></label>
       <label class="f" style="min-width:220px">Titel<input type="text" id="ta-title" value="${esc(t?t.title:"")}" placeholder="z. B. Wörter-Jagd"></label>
     </div>
@@ -1022,39 +1153,23 @@ function vAufgaben(){
     </div>
     <div class="row" style="margin-top:16px"><button class="btn led" data-act="task-save">${t?"Änderungen speichern":"Aufgabe anlegen"}</button>${t?`<button class="btn ghost" data-act="task-cancel">Abbrechen</button>`:""}</div>
   </div>`;
-  const zeile=(x)=>{
-      const pids=assignedPids(x,r);
-      const done=r?pids.filter(p=>autoVal(r.id,p,x.key)!==null).length:0;
-      const stLabel=(STATUS.find(s=>s[0]===x.status)||STATUS[1])[1].replace(/ \(.*\)/,"");
-      return `<li class="task-li">
-        <div class="task-ic"><span>${esc(x.icon)}</span><b>${esc(x.nr)}</b></div>
-        <div style="min-width:0"><div class="name" style="font-weight:700">${esc(x.title)} <span class="badge st-${x.status}">${stLabel}</span></div>
-          <div class="small">${esc(assignLabel(x,r))} – max. ${x.max} Punkte${r&&pids.length?` – ${done}/${pids.length} erledigt`:""}</div>
-          ${(x.von||x.bis)?`<div class="small">🕒 ${x.von?fmtDT(x.von):"sofort"} → ${x.bis?fmtDT(x.bis):"offen"} <span class="badge zs-${zeitStatus(x).k}">${esc(zeitStatus(x).txt)}</span></div>`:""}
-          <div class="small">Kennung: <b>${esc(x.key)}</b>${x.file?` – Datei: ${esc(x.file)}`:" – keine Datei"}${fileCheck[x.id]?` <span class="badge" style="background:${fileCheck[x.id]==="ok"?"var(--ok)":"var(--warn)"}">${fileCheck[x.id]==="ok"?"Datei gefunden":fileCheck[x.id]==="404"?"Datei fehlt auf dem Server":"nicht prüfbar"}</span>`:""}</div></div>
-        <div class="acts">
-          <select data-act="task-status" data-id="${x.id}" aria-label="Status" style="width:auto;min-height:36px;padding:4px 8px">${STATUS.map(([k,l])=>`<option value="${k}" ${x.status===k?"selected":""}>${l.replace(/ \(.*\)/,"")}</option>`).join("")}</select>
-          <button class="btn ghost sm" data-act="task-edit" data-id="${x.id}">Bearbeiten</button>
-          <button class="icon-btn" title="Aufgabe löschen" aria-label="Aufgabe löschen" data-act="del-task" data-id="${x.id}">✕</button>
-        </div></li>`; };
-  const gruppen=[["jetzt","🎮 Jetzt offen","Das können die TN gerade spielen."],
-                 ["bald","🔒 Kommt noch","Wartet auf den Countdown oder steht auf „Bald“."],
-                 ["vorbei","✓ Vorbei","Zeit abgelaufen oder abgeschlossen."]];
-  const list=`<div class="panel">
-    ${sorted.length?`<div class="row" style="margin-bottom:10px"><button class="btn ghost sm" data-act="check-files">Dateien auf dem Server prüfen</button>${state.settings.arenaUrl?"":`<span class="small">Dafür muss oben die Adresse der Arena eingetragen sein.</span>`}</div>
-    ${gruppen.map(([k,titel,sub])=>{ const grp=sorted.filter(x=>phase(x)===k);
-      return `<div class="gruppe"><div class="gruppe-kopf"><b>${titel}</b><span>${grp.length}</span></div>
-        ${grp.length?`<ul class="list">${grp.map(zeile).join("")}</ul>`:`<p class="small" style="margin:0 0 4px">${sub}</p>`}</div>`; }).join("")}`
-    :`<div class="empty"><b>Noch keine Aufgaben</b>Leg oben die erste Aufgabe an. Sie erscheint dann sofort in der Arena.</div>`}
-  </div>`;
-  return `<div class="sec-head"><h2>Aufgaben</h2></div>
-  ${state.tasks.length?`<div class="ueberblick">${[["jetzt","Jetzt offen","🎮"],["bald","Kommt noch","🔒"],["vorbei","Vorbei","✓"]].map(([k,l,i])=>
-    `<div><i>${i}</i><b>${state.tasks.filter(x=>phase(x)===k).length}</b><span>${l}</span></div>`).join("")}</div>`:""}
-  <div class="row" style="margin-bottom:12px"><p class="lead" style="margin:0;flex:1;min-width:260px">Aufgaben, die du hier anlegst, erscheinen automatisch in der Arena. Für eine neue Aufgabe lädst du nur noch die Aufgabendatei auf GitHub hoch – die index.html bleibt, wie sie ist.</p>
-    <button class="btn ghost sm" data-act="task-pack">Aufgaben-Paket laden</button>
-    <button class="btn ghost sm" data-act="task-paste">Als Text einfügen</button></div>
-  <div class="drop" id="drop">Paket-Datei hierher ziehen – oder oben auf „Aufgaben-Paket laden“ tippen</div>
-  <div class="grid2" style="align-items:start">${form}${list}</div>`;
+  const zahl=k=>state.tasks.filter(x=>k==="alle"||phase(x)===k).length;
+  return `<div class="sec-head"><h2>Aufgaben</h2>
+    <div class="row"><button class="btn led sm" data-act="task-new">+ Neue Aufgabe</button>
+      <button class="btn ghost sm" data-act="task-pack">Paket laden</button>
+      <button class="btn ghost sm" data-act="task-paste">Als Text einfügen</button>
+      <button class="btn ghost sm" data-act="check-files" ${state.settings.arenaUrl?"":"disabled title='Erst die Adresse der Arena eintragen'"}>Dateien prüfen</button></div></div>
+  ${(t||aufNeu)?form:""}
+  ${state.tasks.length?`<div class="auf-kopf">
+      <div class="filter" role="group" aria-label="Filter">${[["alle","Alle",""],["jetzt","Jetzt offen","🎮"],["bald","Kommt noch","🔒"],["vorbei","Vorbei","✓"]].map(([k,l,i])=>
+        `<button data-act="auf-filter" data-v="${k}" aria-pressed="${aufFilter===k}">${i?`<i>${i}</i>`:""}<b>${zahl(k)}</b>${l}</button>`).join("")}</div>
+      <input type="search" id="auf-suche" placeholder="Suchen: Titel, L8.3, Datei …" value="${esc(aufSuche)}" aria-label="Aufgaben suchen">
+    </div>
+    <div id="auf-liste">${aufListeHTML()}</div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost sm" data-act="grp-new">+ Neuer Bereich</button>
+      <span class="small">Ein Bereich pro Lektion oder Thema – die Nummern zählen in jedem Bereich ab 1.</span></div>`
+  :`<div class="panel"><div class="empty"><b>Noch keine Aufgaben</b>Lade ein Aufgaben-Paket oder leg die erste Aufgabe an. Sie erscheint dann sofort in der Arena.</div></div>`}
+  <div class="drop" id="drop">Paket-Datei hierher ziehen</div>`;
 }
 function paketAusText(text, quelle){
   let obj;
@@ -1062,19 +1177,35 @@ function paketAusText(text, quelle){
   catch(e){ paketErgebnis(quelle, null, "Das ist kein gültiges JSON. Bitte den ganzen Dateiinhalt einfügen – von { bis }."); return; }
   const list=Array.isArray(obj)?obj:(obj&&Array.isArray(obj.tasks)?obj.tasks:null);
   if(!list){ paketErgebnis(quelle, null, "In der Datei steht keine Aufgaben-Liste. Erwartet wird { \"tasks\": [ … ] }."); return; }
-  const neu=[], schon=[];
+  const neu=[], schon=[], aktualisiert=[];
   const FP = obj && obj.ferien && obj.ferien.start ? obj.ferien : null;
+  const PB = obj && obj.bereich && obj.bereich.id ? obj.bereich : null;
+  if(PB && !state.bereiche.some(b=>b.id===PB.id)){
+    const pos=state.bereiche.findIndex(b=>b.id==="eigene");
+    state.bereiche.splice(pos<0?state.bereiche.length:pos, 0, {id:PB.id, kurz:String(PB.kurz||PB.id).toUpperCase(), name:PB.name||PB.id});
+  }
+  if(obj && Array.isArray(obj.bereiche)) obj.bereiche.forEach(nb=>{ if(nb&&nb.id&&!state.bereiche.some(b=>b.id===nb.id)){
+    const pos=state.bereiche.findIndex(b=>b.id==="eigene"); state.bereiche.splice(pos<0?state.bereiche.length:pos,0,{id:nb.id,kurz:String(nb.kurz||nb.id).toUpperCase(),name:nb.name||nb.id}); } });
+  const gid = x => (x.bereich && state.bereiche.some(b=>b.id===x.bereich)) ? x.bereich : PB ? PB.id : null;
   if(FP) snapshot("Vor dem Ferien-Paket");
   list.forEach(x=>{
     if(!x||!x.title) return;
     const key=slugify(x.key||x.title);
     const da=state.tasks.find(t=>t.key===key);
-    if(da){ schon.push(x.title); if(FP && Number(x.tag)>0) da.ferienTag=Number(x.tag); return; }
+    if(da){
+      if(FP && Number(x.tag)>0) da.ferienTag=Number(x.tag);
+      const g=gid(x)||da.gruppe, nr=Number(x.nr)||da.nr;
+      if(g!==da.gruppe || nr!==da.nr){
+        Object.assign(da,{gruppe:g, nr});
+        aktualisiert.push(`${taskCode(da)} ${da.title}`);
+      } else schon.push(x.title);
+      return; }
     const t=makeTask(x.title);
-    Object.assign(t,{key, nr:Number(x.nr)||t.nr, icon:x.icon||t.icon, text:x.text||"", file:x.file||"",
+    const g=gid(x)||bereichRaten({file:x.file});
+    Object.assign(t,{key, gruppe:g, nr:Number(x.nr)||naechsteNr(g), icon:x.icon||t.icon, text:x.text||"", file:x.file||"",
       art:x.art==="Team"?"Team":"Einzel", max:Math.max(1,Number(x.max)||10), status:"bald"});
     if(FP && Number(x.tag)>0) t.ferienTag=Number(x.tag);
-    state.tasks.push(t); neu.push(`${t.nr}. ${t.title}`);
+    state.tasks.push(t); neu.push(`${taskCode(t)} ${t.title}`);
   });
   let ferien=null;
   if(FP){
@@ -1086,8 +1217,8 @@ function paketAusText(text, quelle){
     state.tasks.filter(t=>Number(t.ferienTag)>0).forEach(t=>{ const zz=tagZeiten(t.ferienTag); t.von=zz.von; t.bis=zz.bis; t.status="offen"; n++; });
     const z=ferienZeiten(); ferien={n, start:z.start, ende:z.ende, h:FP.offenBis==="24h"};
   }
-  if(neu.length||ferien) save(); else render();
-  paketErgebnis(obj&&obj.name?obj.name:quelle, {neu, schon, ferien}, null);
+  if(neu.length||ferien||aktualisiert.length||PB) save(); else render();
+  paketErgebnis(obj&&obj.name?obj.name:quelle, {neu, schon, ferien, aktualisiert}, null);
 }
 function paketErgebnis(quelle, erg, fehler){
   const body = fehler
@@ -1095,9 +1226,10 @@ function paketErgebnis(quelle, erg, fehler){
     : `<p><b>${erg.neu.length}</b> ${erg.neu.length===1?"Aufgabe":"Aufgaben"} geladen${erg.schon.length?`, ${erg.schon.length} gab es schon`:""}.</p>
        ${erg.ferien?`<div class="notice"><b>🏖️ Ferienliga eingerichtet:</b> ${erg.ferien.n} Tagesspiele, ${fmtDT(erg.ferien.start)} bis ${fmtDT(erg.ferien.ende)}.
          ${erg.ferien.h?"Jedes Spiel ist genau 24 Stunden offen.":""} Alles läuft jetzt von selbst – du musst nichts mehr freischalten. Den Plan siehst du im Reiter <b>Ferienliga</b>.</div>`:""}
+       ${erg.aktualisiert&&erg.aktualisiert.length?`<p class="small"><b>${erg.aktualisiert.length}</b> vorhandene Aufgaben bekamen ihre neue Nummer bzw. ihren Bereich.</p>`:""}
        ${erg.neu.length?`<div class="code" style="max-height:180px;white-space:pre-wrap">${esc(erg.neu.join("\n"))}</div>
        ${erg.ferien?"":`<div class="notice">Alle stehen auf <b>Bald</b>. Schalte sie frei, wenn es losgehen soll – oder plane sie im Reiter <b>Ferienliga</b> ein.</div>`}`
-       :(erg.ferien?"":`<div class="notice">Es kam nichts Neues dazu – diese Aufgaben sind schon in der Liste.</div>`)}`;
+       :(erg.ferien||(erg.aktualisiert&&erg.aktualisiert.length)?"":`<div class="notice">Es kam nichts Neues dazu – diese Aufgaben sind schon in der Liste.</div>`)}`;
   confirmDlg(esc(quelle||"Aufgaben-Paket"), body, "Alles klar", ()=>{}, false, "Schließen");
 }
 function paketDateien(files){
@@ -1124,14 +1256,15 @@ function saveTaskForm(){
   const assign={alle:$("#ta-alle").checked, teams:{}, players:{}};
   $$(".ta-team").forEach(c=>{ if(c.checked) assign.teams[c.dataset.tid]=true; });
   $$(".ta-player").forEach(c=>{ if(c.checked) assign.players[c.dataset.sid]=true; });
-  const data={nr:parseInt($("#ta-nr").value,10)||0, icon:$("#ta-icon").value.trim()||"🎯", title, key, file:$("#ta-file").value.trim(),
+  const gruppe=$("#ta-gruppe")?$("#ta-gruppe").value:"eigene";
+  const data={gruppe, nr:parseInt($("#ta-nr").value,10)||naechsteNr(gruppe), icon:$("#ta-icon").value.trim()||"🎯", title, key, file:$("#ta-file").value.trim(),
     max, art:$("#ta-art").value, status:$("#ta-status").value, due:$("#ta-due").value, text:$("#ta-text").value.trim(), assign,
     von:dtParse($("#ta-von").value), bis:dtParse($("#ta-bis").value)};
   if(data.von && data.bis && data.bis<=data.von){ toast("Das Ende muss nach dem Start liegen."); return; }
   if(t) Object.assign(t,data); else state.tasks.push(Object.assign(makeTask(title),data));
   if(!assign.alle && !Object.keys(assign.teams).length && !Object.keys(assign.players).length) toast("Gespeichert – aber noch niemandem zugeteilt.");
   else toast(t?"Aufgabe gespeichert.":"Aufgabe angelegt.");
-  editTaskId=null; save();
+  editTaskId=null; aufNeu=false; save();
 }
 
 /* ----- Ferienliga ----- */
@@ -1168,7 +1301,7 @@ function planUebernehmen(){
 function planAuto(){
   const F=state.settings.ferien;
   const tage=Math.max(1,Number(F.tage)||14);
-  const offen=state.tasks.filter(t=>t.file).sort((a,b)=>(Number(a.nr)||0)-(Number(b.nr)||0));
+  const offen=state.tasks.filter(t=>t.file).sort(nachOrd);
   if(!offen.length){ toast("Es gibt noch keine Aufgaben mit Datei."); return; }
   offen.forEach((t,i)=> t.ferienTag = i<tage ? i+1 : 0);
   save(); toast(`${Math.min(offen.length,tage)} Aufgaben auf ${tage} Tage verteilt. Jetzt noch „Plan übernehmen“.`);
@@ -1176,7 +1309,8 @@ function planAuto(){
 function vFerien(){
   const F=state.settings.ferien, z=ferienZeiten();
   const tage=Math.max(1,Number(F.tage)||14);
-  const sorted=state.tasks.slice().sort((a,b)=>(Number(a.ferienTag)||99)-(Number(b.ferienTag)||99) || (Number(a.nr)||0)-(Number(b.nr)||0));
+  const sorted=state.tasks.slice().sort((a,b)=>(Number(a.ferienTag)||99)-(Number(b.ferienTag)||99) || nachOrd(a,b));
+  const imPlan=sorted.filter(t=>Number(t.ferienTag)>0), rest=sorted.filter(t=>!(Number(t.ferienTag)>0));
   const geplant=state.tasks.filter(t=>Number(t.ferienTag)>0).length;
   const now=Date.now();
   const lauf = z ? (now<z.start ? `startet in ${restKurz(z.start-now)}` : now>z.ende ? "vorbei" : `noch ${restKurz(z.ende-now)}`) : "";
@@ -1210,14 +1344,16 @@ function vFerien(){
     </div>
     <div class="panel">
       <h3>Tagesplan</h3>
-      ${state.tasks.length?`<div class="tbl-wrap"><table class="stable"><thead><tr><th>Tag</th><th>Aufgabe</th><th>Öffnet</th><th>Status</th></tr></thead><tbody>
-        ${sorted.map(t=>{ const tg=Number(t.ferienTag)||0; const zz=tg?tagZeiten(tg):null; const st=zeitStatus(t);
+      ${state.tasks.length?(()=>{ const zeile=t=>{ const tg=Number(t.ferienTag)||0; const zz=tg?tagZeiten(tg):null; const st=zeitStatus(t);
           return `<tr><td><select data-act="f-tag" data-id="${t.id}" style="width:auto;min-height:34px;padding:2px 6px">
               <option value="0">–</option>${Array.from({length:tage},(_,i)=>`<option value="${i+1}" ${tg===i+1?"selected":""}>Tag ${i+1}</option>`).join("")}</select></td>
-            <td><b>${esc(t.icon)} ${esc(t.title)}</b><div class="small">${esc(t.key)}</div></td>
+            <td><b>${esc(t.icon)} ${esc(t.title)}</b><div class="small">${esc(taskCode(t))} · ${esc(bereichVon(t).name)}</div></td>
             <td class="small">${zz?fmtDT(zz.von):"–"}</td>
-            <td>${(t.von||t.bis)?`<span class="badge zs-${st.k}">${esc(st.txt)}</span>`:`<span class="badge plain">ohne Zeit</span>`}</td></tr>`; }).join("")}
-      </tbody></table></div>`:`<div class="empty"><b>Noch keine Aufgaben</b>Leg erst Aufgaben an oder lade ein Aufgaben-Paket.</div>`}
+            <td>${(t.von||t.bis)?`<span class="badge zs-${st.k}">${esc(st.txt)}</span>`:`<span class="badge plain">ohne Zeit</span>`}</td></tr>`; };
+        const kopf=`<thead><tr><th>Tag</th><th>Aufgabe</th><th>Öffnet</th><th>Status</th></tr></thead>`;
+        return `${imPlan.length?`<div class="tbl-wrap"><table class="stable">${kopf}<tbody>${imPlan.map(zeile).join("")}</tbody></table></div>`:`<p class="small">Noch keine Aufgabe eingeplant.</p>`}
+          ${rest.length?`<details class="box" style="margin-top:12px"><summary>Weitere Aufgaben einplanen (${rest.length})</summary>
+            <div class="tbl-wrap"><table class="stable">${kopf}<tbody>${rest.map(zeile).join("")}</tbody></table></div></details>`:""}`; })():`<div class="empty"><b>Noch keine Aufgaben</b>Leg erst Aufgaben an oder lade ein Aufgaben-Paket.</div>`}
     </div>
   </div>`;
 }
@@ -1231,7 +1367,7 @@ function vStatistik(){
   if(!state.rounds.length) return `<div class="sec-head"><h2>Statistik</h2></div><div class="panel"><div class="empty"><b>Noch keine Daten</b>Sobald eine Runde läuft und Ergebnisse eintreffen, siehst du hier die Auswertung.</div></div>`;
   const rounds=state.rounds.slice().sort((a,b)=>(a.start||"").localeCompare(b.start||""));
   const r=state.rounds.find(x=>x.id===statRoundId) || activeRound() || rounds[rounds.length-1];
-  const tasks=state.tasks.filter(t=>t.status!=="bald" || Object.values(auto.live[r.id]||{}).some(p=>p&&p[t.key]!==undefined)).sort((a,b)=>(Number(a.nr)||0)-(Number(b.nr)||0));
+  const tasks=state.tasks.filter(t=>t.status!=="bald" || Object.values(auto.live[r.id]||{}).some(p=>p&&p[t.key]!==undefined)).sort(nachOrd);
   const players=r.teams.flatMap(t=>t.members.map(sid=>({sid,t})));
   const liveR=auto.live[r.id]||{};
   let results=0, assignedTotal=0, doneTotal=0, triesSum=0, triesN=0, autoPts=0;
@@ -1279,7 +1415,7 @@ function vStatistik(){
 
   <div class="panel"><h3>Ergebnisse pro Person</h3>
     <p class="small" style="margin-top:0">Zahl = bestes Ergebnis. Rot = zugeteilt, aber noch nicht gemacht. Antippen zum Korrigieren.</p>
-    ${players.length&&tasks.length?`<div class="tbl-wrap"><table class="mx"><thead><tr><th></th>${tasks.map(t=>`<th class="rot small" title="${esc(t.title)}">${esc(t.nr)}. ${esc(t.title)}</th>`).join("")}<th class="rot small">Runde gesamt</th></tr></thead><tbody>
+    ${players.length&&tasks.length?`<div class="tbl-wrap"><table class="mx"><thead><tr><th></th>${tasks.map(t=>`<th class="rot small" title="${esc(t.title)}">${esc(taskCode(t))} ${esc(t.title)}</th>`).join("")}<th class="rot small">Runde gesamt</th></tr></thead><tbody>
     ${players.map(x=>`<tr><td class="nm"><span class="swatch" style="display:inline-block;background:${colorHex(x.t.color)};width:6px;height:14px;vertical-align:middle;margin-right:6px"></span>${esc(studentName(x.sid))}</td>
       ${tasks.map(t=>{ const v=autoVal(r.id,x.sid,t.key); const asg=assignedPids(t,r).includes(x.sid);
         const cls=v!==null?"":asg?"open":"none"; const n=triesOf(r.id,x.sid,t.key);
@@ -1497,18 +1633,23 @@ function safeRender(){
   if(ae && $("#view").contains(ae) && ae.matches("input,textarea,select")){ pendingRemoteRender=true; renderHeader(); }
   else render();
 }
+let remoteGeladen=null;
 function startSync(){
   adminRef=kursRef().child("admin/state");
   adminRef.once("value").then(snap=>{
     const v=snap.val();
     const localHas=state.students.length||state.entries.length||state.rounds.length;
     const localStr=JSON.stringify(state);
-    const finish=()=>{ syncReady=true; const n=ensureCodes(); listenRemote(); listenAuto(); if(n) save(); else render(); schedulePublish(); };
+    const finish=()=>{ syncReady=true; const n=ensureCodes(); listenRemote(); listenAuto();
+      const um=!!state.__umgestellt; delete state.__umgestellt;
+      if(n||um) save(); else render(); schedulePublish();
+      if(um) toast("Neu: Aufgaben sind jetzt nach Bereichen nummeriert – L8.3, L10.2, FL.5 …"); };
     if(!v){
       if(localHas){ finish(); cloudWrite().then(()=>toast("Daten dieses Geräts nach Firebase übernommen.")); }
       else { setSync("saved"); finish(); }
       return;
     }
+    remoteGeladen=v.data;
     let remote; try{ remote=migrate(JSON.parse(v.data)); }catch(e){ toast("Online-Daten beschädigt – bitte Cloud-Sicherung zurückholen."); finish(); return; }
     if(localHas && v.data!==localStr && (state.updated||0)>(v.updated||0) && v.device!==DEVICE_ID){
       confirmDlg("Welcher Stand soll gelten?",
@@ -1523,8 +1664,9 @@ function startSync(){
 function listenRemote(){
   adminRef.on("value", snap=>{
     const v=snap.val(); if(!v || v.device===DEVICE_ID) return;
+    if(v.data===remoteGeladen) return; remoteGeladen=v.data;
     if(v.data===JSON.stringify(state)) return;
-    try{ state=migrate(JSON.parse(v.data)); }catch(e){ return; }
+    try{ state=migrate(JSON.parse(v.data)); delete state.__umgestellt; }catch(e){ return; }
     cacheLocal(); safeRender();
     toast("Neuer Stand von einem anderen Gerät geladen.");
   });
@@ -1568,7 +1710,7 @@ function publicSnapshot(){
     const a=t.assign||{}; const teams={}, players={};
     Object.keys(a.teams||{}).forEach(k=>{ if(a.teams[k]) teams[k]=true; });
     Object.keys(a.players||{}).forEach(k=>{ if(a.players[k]) players[k]=true; });
-    snap.tasks[t.key]={nr:Number(t.nr)||0, title:t.title, text:t.text||"", file:t.file||"", icon:t.icon||"🎯", art:t.art||"Einzel",
+    snap.tasks[t.key]={nr:Number(t.nr)||0, code:taskCode(t), ord:taskOrd(t), bereich:bereichVon(t).name, title:t.title, text:t.text||"", file:t.file||"", icon:t.icon||"🎯", art:t.art||"Einzel",
       max:Number(t.max)||10, due:t.due||"", status:t.status, open:isOpen(t),
       von:Number(t.von)||0, bis:Number(t.bis)||FERN, assign:{alle:!!a.alle, teams, players}};
   });
@@ -1886,7 +2028,40 @@ document.addEventListener("click", e=>{
         "Laden", ()=>{ const t=$("#dlg-paste"); paketAusText(t?t.value:"", "Eingefügter Text"); }, false);
       setTimeout(()=>{ const t=$("#dlg-paste"); if(t) t.focus(); },40); break;
     }
-    case "task-cancel": editTaskId=null; render(); break;
+    case "task-cancel": editTaskId=null; aufNeu=false; render(); break;
+    case "task-new": editTaskId=null; aufNeu=el.dataset.g||"eigene"; render(); window.scrollTo({top:0,behavior:"smooth"}); break;
+    case "auf-filter": aufFilter=el.dataset.v; render(); break;
+    case "grp-status": {
+      const b=state.bereiche.find(x=>x.id===el.dataset.g); if(!b) break;
+      const ts=state.tasks.filter(t=>bereichVon(t)===b); const v=el.dataset.v;
+      const wort={offen:"öffnen",bald:"auf Bald stellen",fertig:"als erledigt sperren"}[v];
+      confirmDlg(`${esc(b.kurz)} · ${esc(b.name)}`, `Alle <b>${ts.length}</b> Aufgaben dieses Bereichs ${wort}?${v==="offen"&&ts.some(t=>t.bis&&t.bis<Date.now())?`<div class="notice">Bei Aufgaben mit abgelaufener Zeit bleibt die Zeitgrenze bestehen – ändere sie dort einzeln.</div>`:""}`,
+        "Ja, alle", ()=>{ snapshot(`Vor Sammeländerung ${b.kurz}`); ts.forEach(t=>t.status=v); save(); toast(`${b.kurz}: ${ts.length} Aufgaben geändert.`); });
+      break;
+    }
+    case "grp-edit": case "grp-new": {
+      const b=a==="grp-edit"?state.bereiche.find(x=>x.id===el.dataset.g):null;
+      confirmDlg(b?"Bereich umbenennen":"Neuer Bereich",
+        `<div class="row" style="align-items:flex-end"><label class="f" style="max-width:110px">Kürzel<input type="text" id="dlg-kurz" maxlength="5" value="${esc(b?b.kurz:"")}" placeholder="L12"></label>
+         <label class="f">Name<input type="text" id="dlg-name" value="${esc(b?b.name:"")}" placeholder="Lektion 12 · Gesundheit"></label></div>
+         <p class="small">Das Kürzel steht vor jeder Nummer: <b>L12.1</b>, <b>L12.2</b> … Kurz halten – höchstens 5 Zeichen.</p>`,
+        b?"Speichern":"Anlegen", ()=>{
+          const kurz=($("#dlg-kurz").value||"").trim().toUpperCase().replace(/\s+/g,""), name=($("#dlg-name").value||"").trim();
+          if(!kurz||!name){ toast("Bitte Kürzel und Name eintragen."); return; }
+          if(state.bereiche.some(x=>x!==b && x.kurz===kurz)){ toast(`Das Kürzel ${kurz} gibt es schon.`); return; }
+          if(b){ b.kurz=kurz; b.name=name; }
+          else { let id=slugify(kurz), n=2; while(state.bereiche.some(x=>x.id===id)) id=slugify(kurz)+"-"+(n++);
+            const pos=state.bereiche.findIndex(x=>x.id==="eigene"); state.bereiche.splice(pos<0?state.bereiche.length:pos,0,{id,kurz,name}); bereichMerken(id,true); }
+          save(); toast(b?"Bereich gespeichert.":`Bereich ${kurz} angelegt.`);
+        });
+      setTimeout(()=>{ const i=$("#dlg-kurz"); if(i) i.focus(); },50);
+      break;
+    }
+    case "grp-del": {
+      const i=state.bereiche.findIndex(x=>x.id===el.dataset.g);
+      if(i>=0 && !state.tasks.some(t=>t.gruppe===el.dataset.g)){ state.bereiche.splice(i,1); save(); toast("Bereich gelöscht."); }
+      break;
+    }
     case "task-edit": editTaskId=el.dataset.id; render(); window.scrollTo({top:0,behavior:"smooth"}); break;
     case "del-task": {
       const t=state.tasks.find(x=>x.id===el.dataset.id); if(!t) return;
@@ -1898,7 +2073,15 @@ document.addEventListener("click", e=>{
   }
 });
 
+document.addEventListener("input", e=>{
+  if(e.target.id==="auf-suche"){ aufSuche=e.target.value; const l=$("#auf-liste"); if(l) l.innerHTML=aufListeHTML(); }
+});
+document.addEventListener("toggle", e=>{
+  const d=e.target; if(!d.matches || !d.matches("details.bereich")) return;
+  if(aufFilter==="alle" && !aufSuche.trim()) bereichMerken(d.dataset.bereich, d.open);
+}, true);
 document.addEventListener("change", e=>{
+  if(e.target.id==="ta-gruppe" && !editTaskId){ const n=$("#ta-nr"); if(n) n.value=naechsteNr(e.target.value); }
   const el=e.target.closest("[data-act]");
   if(e.target.id==="ta-alle"){ const m=$("#ta-more"); if(m) m.hidden=e.target.checked; return; }
   if(!el) return;
