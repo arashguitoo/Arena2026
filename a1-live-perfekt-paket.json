@@ -1,0 +1,14 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Live-Perfekt (Unterricht)",
+  "tasks": [
+    {"nr": 40, "key": "live-pf-haben", "title": "Live: Perfekt mit haben", "icon": "✋", "max": 10, "art": "Team",
+     "file": "a1-live-perfekt.html?set=haben", "text": "Nur im Unterricht: Alle spielen gleichzeitig – Perfekt mit haben."},
+    {"nr": 41, "key": "live-pf-sein", "title": "Live: Perfekt mit sein", "icon": "🚶", "max": 10, "art": "Team",
+     "file": "a1-live-perfekt.html?set=sein", "text": "Nur im Unterricht: Alle spielen gleichzeitig – Perfekt mit sein."},
+    {"nr": 42, "key": "live-pf-trennbar", "title": "Live: trennbare Verben", "icon": "✂️", "max": 10, "art": "Team",
+     "file": "a1-live-perfekt.html?set=trennbar", "text": "Nur im Unterricht: Perfekt mit trennbaren Verben – aufgestanden, eingekauft …"},
+    {"nr": 43, "key": "live-pf-mix", "title": "Live: Perfekt-Mix", "icon": "🌀", "max": 10, "art": "Team",
+     "file": "a1-live-perfekt.html?set=mix", "text": "Nur im Unterricht: haben, sein und trennbare Verben gemischt."}
+  ]
+}

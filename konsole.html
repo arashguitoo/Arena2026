@@ -1342,8 +1342,8 @@ function vSicherung(){
         <div class="row" style="margin-top:12px"><span class="small">Kurs-Code: <b>${esc(codePath())}</b></span><span class="spacer"></span><button class="btn ghost sm" data-act="publish-now">Arena jetzt aktualisieren</button></div>
         <hr class="court">
         <h3>Live-Spiel im Unterricht</h3>
-        <p class="lead">Öffne die Leinwand-Ansicht auf dem Beamer-Rechner und melde dich dort mit diesem Konto an. Die TN spielen am Handy über die Aufgabe in der Arena mit.</p>
-        <div class="row"><button class="btn led sm" data-act="beamer" ${S.arenaUrl?"":"disabled"}>Leinwand öffnen</button>${S.arenaUrl?"":`<span class="small">Trag zuerst oben die Adresse der Arena ein.</span>`}</div>
+        <p class="lead">Öffne die Leinwand-Ansicht auf dem Beamer-Rechner und melde dich dort mit diesem Konto an. Bei <b>Live-Perfekt</b> wählst du dort den Fragesatz: haben, sein, trennbare Verben oder Mix. Die TN spielen am Handy über die Aufgabe in der Arena mit.</p>
+        <div class="row"><button class="btn led sm" data-act="beamer" data-datei="a1-live-perfekt.html" ${S.arenaUrl?"":"disabled"}>Live-Perfekt öffnen</button><button class="btn ghost sm" data-act="beamer" data-datei="a1-live-duell.html" ${S.arenaUrl?"":"disabled"}>Live-Duell öffnen</button>${S.arenaUrl?"":`<span class="small">Trag zuerst oben die Adresse der Arena ein.</span>`}</div>
       </div>
       <div class="panel">
         <h3>Einstellungen</h3>
@@ -1695,7 +1695,7 @@ document.addEventListener("click", e=>{
     case "beamer": {
       const basis=(state.settings.arenaUrl||"").trim().replace(/[^\/]*$/,"");
       if(!basis){ toast("Trag zuerst die Adresse der Arena ein."); break; }
-      window.open(basis+"a1-live-duell.html?rolle=beamer","_blank");
+      window.open(basis+(el.dataset.datei||"a1-live-duell.html")+"?rolle=beamer","_blank");
       break;
     }
     case "set-namemode": state.settings.nameMode=el.dataset.v; save(); break;
