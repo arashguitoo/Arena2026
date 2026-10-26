@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14223B">
+<meta name="robots" content="noindex, nofollow">
+<title>Tafel-Duell – Plöner Liga</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --board:#14223B; --board-2:#1C2E4D; --board-3:#24395E; --led:#FFC53D; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358; --line:#E8DCC6;
+  --ok:#1E9E6A; --bad:#E4412F; --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--board);color:#fff;font-family:var(--body);overflow:hidden}
+button,input{font:inherit;color:inherit}
+.hidden{display:none!important}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:7px 16px;border-radius:12px;border:0;background:var(--board-3);color:#fff;font-weight:700;cursor:pointer;font-size:16px}
+.btn.led{background:var(--led);color:var(--board)}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}
+.btn:disabled{opacity:.4;cursor:default}
+.small{font-size:15px;color:#aebad0}
+
+/* ---------- Einrichten ---------- */
+#setup{height:100%;overflow:auto;padding:4vh 4vw}
+.setup-in{max-width:1000px;margin:0 auto}
+#setup h1{font-family:var(--display);font-weight:900;font-size:clamp(44px,6vw,80px);margin:0;color:var(--led);line-height:1}
+#setup .lead{color:#c9d2e3;font-size:20px;margin:6px 0 22px}
+.box{background:var(--board-2);border-radius:18px;padding:18px 20px;margin-bottom:16px}
+.box h2{font-family:var(--display);font-weight:800;font-size:28px;margin:0 0 10px}
+.teamwahl{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.teamwahl label{display:flex;align-items:center;gap:10px;background:var(--board-3);border-radius:12px;padding:10px 12px;cursor:pointer}
+.teamwahl input[type=text]{flex:1;min-width:0;background:transparent;border:0;border-bottom:2px solid rgba(255,255,255,.25);padding:4px 2px;font-weight:700;font-size:18px}
+.teamwahl .sw{width:12px;height:30px;border-radius:4px;flex:none}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:0;border-radius:999px;padding:9px 18px;background:var(--board-3);color:#fff;font-weight:700;cursor:pointer;font-size:17px}
+.seg button[aria-pressed="true"]{background:var(--led);color:var(--board)}
+.themen{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.thema{background:var(--board-3);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.thema label{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px;cursor:pointer}
+.thema .zahl{display:flex;align-items:center;gap:6px}
+.thema .zahl button{width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;font-weight:900;cursor:pointer;font-size:18px}
+.thema .zahl b{font-family:var(--display);font-size:24px;min-width:26px;text-align:center}
+.thema.aus{opacity:.45}
+.login{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.login input{min-height:44px;border-radius:10px;border:0;padding:6px 12px;background:#fff;color:var(--ink);min-width:220px}
+.err{color:#ff9a8b;font-weight:700;min-height:22px;margin-top:6px}
+.switch{display:flex;align-items:center;gap:10px;font-weight:700;cursor:pointer}
+.switch input{width:22px;height:22px}
+
+/* ---------- Spiel ---------- */
+#spiel{height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.score{display:flex;gap:1.2vw;padding:2.2vh 2vw 1.4vh;align-items:stretch}
+.score .team{flex:1;border-radius:18px;padding:1vh 1.4vw;display:flex;align-items:center;gap:1vw;background:var(--board-2);position:relative;transition:transform .2s, box-shadow .2s;border:0;color:#fff;text-align:left}
+.score .team i{width:1.1vw;min-width:10px;align-self:stretch;border-radius:6px}
+.score .team b{font-family:var(--display);font-weight:800;font-size:clamp(20px,2.3vw,38px);line-height:1;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score .team .p{font-family:var(--display);font-weight:900;font-size:clamp(34px,4.4vw,76px);line-height:1;color:var(--led);font-variant-numeric:tabular-nums}
+.score .team.dran{box-shadow:0 0 0 5px var(--led);transform:translateY(-2px)}
+.score .team.dran::after{content:attr(data-label);position:absolute;top:-1.4vh;left:50%;transform:translateX(-50%);background:var(--led);color:var(--board);font-weight:800;font-size:clamp(12px,1vw,16px);border-radius:999px;padding:1px 12px;white-space:nowrap}
+.score .team.plus{animation:plus .7s ease-out}
+@keyframes plus{0%{transform:scale(1)}30%{transform:scale(1.07)}100%{transform:scale(1)}}
+.flug{position:absolute;right:1.2vw;top:-3vh;font-family:var(--display);font-weight:900;font-size:clamp(28px,3vw,52px);color:var(--led);animation:flug 1.1s ease-out forwards;pointer-events:none}
+@keyframes flug{0%{opacity:0;transform:translateY(20px)}20%{opacity:1}100%{opacity:0;transform:translateY(-40px)}}
+
+.buehne{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1vh 4vw 2vh;min-height:0;position:relative}
+.kopf{display:flex;align-items:center;gap:1.4vw;margin-bottom:2.2vh;flex-wrap:wrap;justify-content:center}
+.typ{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.4vw,40px);background:var(--led);color:var(--board);border-radius:999px;padding:.3vh 1.6vw;letter-spacing:.03em}
+.thema-tag{font-family:var(--display);font-weight:800;font-size:clamp(18px,1.8vw,30px);border:2px solid rgba(255,255,255,.35);border-radius:999px;padding:.2vh 1.2vw}
+.nr{font-size:clamp(16px,1.5vw,26px);color:#c9d2e3;font-weight:700}
+.wer{font-family:var(--display);font-weight:900;font-size:clamp(22px,2.4vw,42px);margin-bottom:1.6vh;display:flex;align-items:center;gap:.8vw}
+.wer i{width:1.2vw;min-width:10px;height:1em;border-radius:4px}
+.aufgabe{font-family:var(--display);font-weight:800;font-size:clamp(34px,4.6vw,86px);line-height:1.08;text-align:center;max-width:92vw}
+.hinweis{font-size:clamp(18px,1.9vw,32px);color:#c9d2e3;margin-top:1.2vh;text-align:center}
+.gap{display:inline-block;min-width:2.6em;border-bottom:.12em solid var(--led);margin:0 .1em}
+.loesung{margin-top:2.6vh;font-family:var(--display);font-weight:800;font-size:clamp(28px,3.6vw,66px);color:var(--board);background:var(--led);border-radius:18px;padding:1vh 2.4vw;text-align:center;animation:pop .3s ease-out;max-width:92vw}
+.loesung small{display:block;font-family:var(--body);font-weight:700;font-size:clamp(15px,1.4vw,24px);opacity:.75}
+.meldung{margin-top:2vh;font-family:var(--display);font-weight:900;font-size:clamp(28px,3.4vw,60px);text-align:center;animation:pop .3s ease-out}
+.meldung.ok{color:#7ee2b3} .meldung.bad{color:#ff9a8b}
+@keyframes pop{0%{transform:scale(.92);opacity:0}100%{transform:none;opacity:1}}
+.emoji{font-size:clamp(60px,8vw,150px);line-height:1.1;letter-spacing:.06em;text-align:center}
+
+/* Kacheln */
+.zeile{display:flex;flex-wrap:wrap;gap:1vw;justify-content:center;min-height:9vh;align-items:center;border-bottom:4px dashed rgba(255,255,255,.25);padding:1vh 1vw 2vh;margin-bottom:3vh;min-width:60vw}
+.zeile.ok{border-color:var(--ok)} .zeile.bad{border-color:var(--bad)}
+.pool{display:flex;flex-wrap:wrap;gap:1vw;justify-content:center}
+.kachel{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.4vw,62px);background:var(--paper);color:var(--board);border:0;border-radius:14px;padding:.6vh 1.6vw;cursor:pointer;box-shadow:0 .6vh 0 rgba(0,0,0,.3)}
+.kachel.weg{visibility:hidden}
+.zeile .kachel{background:var(--led)}
+.zeile.ok .kachel{background:#9be3c3} .zeile.bad .kachel{background:#ffb4a8}
+/* Fehler finden */
+.woerter{display:flex;flex-wrap:wrap;gap:1vw;justify-content:center;background:var(--paper);border-radius:20px;padding:2.4vh 2.4vw;max-width:92vw}
+.woerter button{font-family:var(--display);font-weight:800;font-size:clamp(34px,4.4vw,82px);background:transparent;border:0;color:var(--board);border-radius:12px;padding:.2vh .8vw;cursor:pointer;border-bottom:.08em dashed rgba(20,34,59,.25)}
+.woerter button:hover{background:#FFF3D1}
+.woerter button.falsch{background:#ffd5cd;text-decoration:line-through;color:var(--bad)}
+.woerter button.richtig{background:#c9f2df}
+.woerter button.aus{opacity:.35;pointer-events:none}
+/* Quiz */
+.optionen{display:grid;grid-template-columns:1fr 1fr;gap:1.4vw;width:min(1500px,92vw);margin-top:3vh}
+.optionen.zwei{width:min(1100px,80vw)}
+.optionen button{display:flex;align-items:center;gap:1.2vw;border:0;border-radius:18px;padding:2vh 1.6vw;color:#fff;font-weight:700;font-size:clamp(22px,2.6vw,48px);cursor:pointer;text-align:left;box-shadow:inset 0 -.8vh 0 rgba(0,0,0,.2)}
+.optionen button .l{font-family:var(--display);font-weight:900;font-size:1.2em;width:1.2em;text-align:center}
+.optionen .o0{background:var(--a)}.optionen .o1{background:var(--b)}.optionen .o2{background:var(--c)}.optionen .o3{background:var(--d)}
+.optionen button.aus{opacity:.22;pointer-events:none}
+.optionen button.richtig{box-shadow:0 0 0 .6vh #fff,0 0 0 1.3vh var(--ok)}
+.optionen button.falsch{opacity:.3;pointer-events:none;text-decoration:line-through}
+
+/* Lehrtafel */
+.tafel{background:var(--paper);color:var(--ink);border-radius:22px;padding:3vh 3vw;width:min(1500px,94vw);max-height:76vh;overflow:auto;box-shadow:0 1vh 0 rgba(0,0,0,.25)}
+.tafel h2{font-family:var(--display);font-weight:900;font-size:clamp(36px,4vw,74px);color:var(--board);margin:0 0 1.2vh;line-height:1}
+.tafel h2 small{font-size:.45em;color:var(--muted);font-weight:800;margin-left:.6em}
+.tafel .spalten{display:grid;grid-template-columns:1fr 1fr;gap:2.4vw}
+.tafel h3{font-family:var(--display);font-weight:800;font-size:clamp(22px,2vw,36px);color:var(--board);margin:1vh 0 .6vh;border-bottom:3px solid var(--led);display:inline-block}
+.tafel p,.tafel li{font-size:clamp(18px,1.6vw,30px);line-height:1.35;margin:.3vh 0}
+.tafel ul{margin:0;padding-left:1.2em}
+.tafel table{border-collapse:collapse;font-size:clamp(17px,1.55vw,29px);width:100%}
+.tafel th,.tafel td{padding:.5vh .8vw;border-bottom:2px solid var(--line);text-align:left}
+.tafel th{font-family:var(--display);font-weight:800;color:var(--board);font-size:1.1em}
+.tafel .hl{background:#FFE8A3;border-radius:6px;padding:0 .25em;font-weight:800}
+.tafel .rot{color:var(--bad);font-weight:800}
+.tafel .klammer{display:flex;gap:.6vw;align-items:center;flex-wrap:wrap;font-size:clamp(20px,1.8vw,34px);margin:.6vh 0}
+.tafel .klammer span{background:#EFE5D3;border-radius:10px;padding:.4vh .8vw}
+.tafel .klammer span.v{background:var(--board);color:var(--led);font-weight:800}
+.tafel .bsp{font-size:clamp(18px,1.6vw,30px);line-height:1.4;background:#F5EEDF;border-left:6px solid var(--led);border-radius:8px;padding:.8vh 1vw;margin:.8vh 0}
+.reiter-tafel{display:flex;gap:8px;margin-bottom:1.6vh;flex-wrap:wrap;justify-content:center}
+.reiter-tafel button{border:0;border-radius:999px;padding:6px 16px;background:var(--board-3);color:#fff;font-weight:700;cursor:pointer;font-size:16px}
+.reiter-tafel button[aria-pressed="true"]{background:var(--led);color:var(--board)}
+
+/* Timer */
+.uhr{position:fixed;right:2vw;bottom:12vh;width:clamp(90px,9vw,160px);height:clamp(90px,9vw,160px)}
+.uhr svg{width:100%;height:100%;transform:rotate(-90deg)}
+.uhr circle{fill:none;stroke-width:10}
+.uhr .bg{stroke:rgba(255,255,255,.12)} .uhr .fg{stroke:var(--led);stroke-linecap:round;transition:stroke-dashoffset .2s linear}
+.uhr.low .fg{stroke:var(--bad)}
+.uhr b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:clamp(36px,3.6vw,64px)}
+.uhr.pause b{opacity:.5}
+
+/* Moderation */
+.moder{display:flex;gap:8px;align-items:center;padding:1vh 1.6vw;background:rgba(0,0,0,.25);flex-wrap:wrap}
+.moder .sp{flex:1}
+.moder .k{font-size:13px;color:#8d9ab3}
+.moder .korr{display:flex;gap:4px;align-items:center;font-size:13px;color:#8d9ab3}
+.moder .korr button{min-height:30px;padding:2px 8px;font-size:13px;border-radius:8px}
+.moder.zu{opacity:0;pointer-events:none}
+
+/* Ende */
+#ende{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4vh 4vw;text-align:center;overflow:auto}
+#ende h1{font-family:var(--display);font-weight:900;font-size:clamp(50px,7vw,120px);color:var(--led);margin:0;line-height:1}
+.podest{display:flex;gap:2vw;align-items:flex-end;margin:4vh 0}
+.podest div{background:var(--board-2);border-radius:18px 18px 0 0;padding:2vh 2vw;min-width:16vw;display:flex;flex-direction:column;justify-content:flex-start}
+.podest b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(24px,2.6vw,46px)}
+.podest .p{font-family:var(--display);font-weight:900;font-size:clamp(40px,5vw,90px);color:var(--led);line-height:1}
+.podest .m{font-size:clamp(40px,4.4vw,80px)}
+.uebertrag{background:var(--board-2);border-radius:16px;padding:16px 20px;max-width:760px}
+.konfetti{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.konfetti i{position:absolute;top:-4vh;width:12px;height:22px;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(115vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ================= EINRICHTEN ================= -->
+<section id="setup"><div class="setup-in">
+  <h1>⚔️ Tafel-Duell</h1>
+  <p class="lead">Team gegen Team an der Leinwand – ohne Handys. Das Team, das dran ist, tippt seine Antwort an der Tafel. Richtig? Punkte gibt es automatisch. Falsch? Das nächste Team darf klauen.</p>
+
+  <div class="box"><h2>1. Teams</h2>
+    <div class="seg" style="margin-bottom:12px"><button data-quelle="frei" aria-pressed="true">Eigene Teams</button><button data-quelle="liga" aria-pressed="false">Teams aus der Liga</button></div>
+    <div id="liga-login" class="hidden" style="margin-bottom:12px">
+      <p class="small" style="margin:0 0 8px">Mit deinem Konsolen-Konto anmelden – dann kommen die Liga-Teams, und am Ende kannst du die Punkte in die Liga übertragen.</p>
+      <form class="login" id="login-form"><input type="email" id="l-mail" placeholder="E-Mail" autocomplete="username"><input type="password" id="l-pass" placeholder="Passwort" autocomplete="current-password"><button class="btn led" type="submit">Anmelden</button></form>
+      <div class="err" id="l-err"></div>
+    </div>
+    <div class="teamwahl" id="teamwahl"></div>
+    <p class="small" style="margin:10px 0 0" id="team-hinweis"></p>
+  </div>
+
+  <div class="box"><h2>2. Themen und Aufgaben</h2>
+    <div class="themen" id="themenwahl"></div>
+    <p class="small" style="margin:12px 0 0" id="summe"></p>
+    <label class="switch" style="margin-top:12px"><input type="checkbox" id="mit-tafel" checked> Vor jedem Thema eine Lehrtafel zeigen</label>
+  </div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+    <button class="btn led" id="start" style="min-height:62px;font-size:24px;padding:10px 34px">Duell starten ›</button>
+    <button class="btn ghost" id="nur-tafel" style="min-height:62px">📘 Nur Lehrtafeln zeigen</button>
+    <span class="small">Tipp: Browser auf Vollbild, dann Bildschirm teilen.</span>
+  </div>
+</div></section>
+
+<!-- ================= SPIEL ================= -->
+<section id="spiel" class="hidden">
+  <div class="score" id="score"></div>
+  <div class="buehne" id="buehne"></div>
+  <div class="moder" id="moder"></div>
+  <div class="uhr hidden" id="uhr"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"></circle><circle class="fg" cx="60" cy="60" r="52"></circle></svg><b id="uhr-z">0</b></div>
+</section>
+
+<!-- ================= ENDE ================= -->
+<section id="ende" class="hidden"></section>
+<div class="konfetti" id="konfetti"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script>
+/* ==========================================================
+   TAFEL-DUELL – Team gegen Team an der Leinwand
+   Das Team, das dran ist, tippt die Antwort an der Tafel.
+   Richtig → Punkte automatisch. Falsch / Zeit um → nächstes Team darf klauen (1 Punkt).
+   Tasten: Leertaste Timer · → weiter · ← zurück · T Lehrtafel · L Lösung zeigen · H Leiste
+   ========================================================== */
+const KURS_CODE="ploen-jik";
+const TYPEN = {
+  quiz:  {name:"Quiz",          icon:"🅰️", sek:25, p:1},
+  ordnen:{name:"Satz ordnen",   icon:"🧩", sek:50, p:2},
+  fehler:{name:"Fehler finden", icon:"🕵️", sek:30, p:2},
+  bild:  {name:"Bild-Geschichte", icon:"🎬", sek:60, p:2},
+  blitz: {name:"Blitz",         icon:"⚡", sek:10, p:1}
+};
+const KLAU_SEK=15, KLAU_P=1;
+const THEMEN = {
+  praesens:{name:"Präsens",      icon:"🟢", std:3},
+  perfekt: {name:"Perfekt",      icon:"⏪", std:3},
+  modal:   {name:"Modalverben",  icon:"💪", std:3},
+  akk:     {name:"Akkusativ",    icon:"🎯", std:5},
+  dativ:   {name:"Dativ",        icon:"🎁", std:2}
+};
+
+/* ---------- Aufgaben (o[0] ist immer richtig; Fehler: x = Index des falschen Wortes) ---------- */
+const A = [
+  // PRÄSENS
+  {th:"praesens",t:"quiz",f:"Du ___ Deutsch.",h:"lernen",o:["lernst","lernt","lerne","lernen"]},
+  {th:"praesens",t:"quiz",f:"Er ___ nach Kiel.",h:"fahren",o:["fährt","fahrt","fährst","fahren"]},
+  {th:"praesens",t:"quiz",f:"Wir ___ Pizza.",h:"essen",o:["essen","isst","esst","esse"]},
+  {th:"praesens",t:"quiz",f:"___ du gern Bücher?",h:"lesen",o:["Liest","Lest","Lesen","Lese"]},
+  {th:"praesens",t:"quiz",f:"Ihr ___ aus Syrien.",h:"kommen",o:["kommt","kommen","kommst","komme"]},
+  {th:"praesens",t:"quiz",f:"Ich ___ 16 Jahre alt.",h:"sein",o:["bin","ist","bist","sind"]},
+  {th:"praesens",t:"ordnen",w:["am","Montag","spiele","ich","Fußball"],a:["am Montag spiele ich Fußball","ich spiele am Montag Fußball"],p:"."},
+  {th:"praesens",t:"ordnen",w:["wohnst","du","in","Plön"],a:["wohnst du in Plön"],p:"?"},
+  {th:"praesens",t:"ordnen",w:["was","machst","du","heute"],a:["was machst du heute"],p:"?"},
+  {th:"praesens",t:"fehler",w:["Er","fahrt","nach","Kiel."],x:1,l:"Er fährt nach Kiel.",tipp:"fahren: a → ä bei du und er/sie/es"},
+  {th:"praesens",t:"fehler",w:["Du","spielt","gut","Fußball."],x:1,l:"Du spielst gut Fußball.",tipp:"du → -st"},
+  {th:"praesens",t:"blitz",f:"essen – du …",o:["du isst","du esst"]},
+  {th:"praesens",t:"blitz",f:"sehen – er …",o:["er sieht","er seht"]},
+  {th:"praesens",t:"blitz",f:"haben – du …",o:["du hast","du habst"]},
+  // PERFEKT
+  {th:"perfekt",t:"quiz",f:"Ihr ___ nach Hamburg gefahren.",o:["seid","habt","sind","ist"]},
+  {th:"perfekt",t:"quiz",f:"trinken → Partizip II?",o:["getrunken","getrinkt","getrunkt","getrinken"]},
+  {th:"perfekt",t:"quiz",f:"Ich habe meine Oma ___.",h:"besuchen",o:["besucht","gebesucht","begesucht","besuchen"]},
+  {th:"perfekt",t:"quiz",f:"einkaufen → Partizip II?",o:["eingekauft","geeinkauft","einkauft","eingekaufen"]},
+  {th:"perfekt",t:"ordnen",w:["gestern","habe","ich","Pizza","gegessen"],a:["gestern habe ich Pizza gegessen","ich habe gestern Pizza gegessen"],p:"."},
+  {th:"perfekt",t:"ordnen",w:["was","hast","du","am","Wochenende","gemacht"],a:["was hast du am Wochenende gemacht"],p:"?"},
+  {th:"perfekt",t:"bild",e:"📞 👵",h:"gestern · anrufen",w:["gestern","habe","ich","meine","Oma","angerufen"],a:["gestern habe ich meine Oma angerufen","ich habe gestern meine Oma angerufen"],p:"."},
+  {th:"perfekt",t:"bild",e:"🚌 ➡️ 🏙️",h:"am Samstag · fahren",w:["am","Samstag","bin","ich","in","die","Stadt","gefahren"],a:["am Samstag bin ich in die Stadt gefahren","ich bin am Samstag in die Stadt gefahren"],p:"."},
+  {th:"perfekt",t:"bild",e:"⏰ 🛏️ ➡️ 🧍",h:"heute · aufstehen",w:["heute","bin","ich","früh","aufgestanden"],a:["heute bin ich früh aufgestanden","ich bin heute früh aufgestanden"],p:"."},
+  {th:"perfekt",t:"fehler",w:["Ich","habe","nach","Kiel","gefahren."],x:1,l:"Ich bin nach Kiel gefahren.",tipp:"fahren → sein"},
+  {th:"perfekt",t:"fehler",w:["Wir","haben","Fußball","gespielen."],x:3,l:"Wir haben Fußball gespielt.",tipp:"regelmäßig: ge…t"},
+  {th:"perfekt",t:"blitz",f:"gehen",o:["ist gegangen","hat gegangen"]},
+  {th:"perfekt",t:"blitz",f:"aufstehen",o:["ist aufgestanden","hat aufgestanden"]},
+  {th:"perfekt",t:"blitz",f:"telefonieren",o:["hat telefoniert","hat getelefoniert"]},
+  // MODALVERBEN
+  {th:"modal",t:"quiz",f:"Ich ___ gut schwimmen.",h:"können",o:["kann","kannst","können","könnt"]},
+  {th:"modal",t:"quiz",f:"Du ___ jetzt nach Hause gehen.",h:"müssen",o:["musst","muss","müsst","müssen"]},
+  {th:"modal",t:"quiz",f:"Hier ___ man nicht rauchen.",h:"dürfen",o:["darf","darfst","dürfen","dürft"]},
+  {th:"modal",t:"quiz",f:"___ ihr ins Kino gehen?",h:"wollen",o:["Wollt","Will","Wollen","Willst"]},
+  {th:"modal",t:"quiz",f:"Ich ___ einen Tee, bitte.",h:"möchten",o:["möchte","möchtest","möchten","möchtet"]},
+  {th:"modal",t:"quiz",f:"Welcher Satz ist richtig?",o:["Ich kann gut kochen.","Ich kann kochen gut.","Ich kochen kann gut.","Ich kann gut kocht."]},
+  {th:"modal",t:"ordnen",w:["ich","muss","heute","Hausaufgaben","machen"],a:["ich muss heute Hausaufgaben machen","heute muss ich Hausaufgaben machen"],p:"."},
+  {th:"modal",t:"ordnen",w:["wir","wollen","am","Samstag","Fußball","spielen"],a:["wir wollen am Samstag Fußball spielen","am Samstag wollen wir Fußball spielen"],p:"."},
+  {th:"modal",t:"ordnen",w:["darf","ich","das","Fenster","öffnen"],a:["darf ich das Fenster öffnen"],p:"?"},
+  {th:"modal",t:"fehler",w:["Er","kann","gut","singt."],x:3,l:"Er kann gut singen.",tipp:"Modalverb + Infinitiv am Ende"},
+  {th:"modal",t:"fehler",w:["Du","muss","jetzt","gehen."],x:1,l:"Du musst jetzt gehen.",tipp:"du musst"},
+  {th:"modal",t:"blitz",f:"können – du …",o:["du kannst","du könnst"]},
+  {th:"modal",t:"blitz",f:"müssen – er …",o:["er muss","er müsst"]},
+  {th:"modal",t:"blitz",f:"wollen – ich …",o:["ich will","ich wolle"]},
+  // AKKUSATIV (als Objekt)
+  {th:"akk",t:"quiz",f:"Ich habe ___ Bruder.",h:"der Bruder",o:["einen","ein","eine","einem"]},
+  {th:"akk",t:"quiz",f:"Wir kaufen ___ Tisch.",h:"der Tisch",o:["den","der","dem","die"]},
+  {th:"akk",t:"quiz",f:"Ich suche ___ Wohnung.",h:"die Wohnung",o:["eine","einen","ein","einer"]},
+  {th:"akk",t:"quiz",f:"Siehst du ___ Mann dort?",h:"der Mann",o:["den","der","dem","das"]},
+  {th:"akk",t:"quiz",f:"Ich trinke ___ Kaffee.",h:"der Kaffee",o:["keinen","kein","keine","keinem"]},
+  {th:"akk",t:"quiz",f:"Er braucht ___ Handy.",h:"das Handy",o:["ein","einen","eine","einem"]},
+  {th:"akk",t:"quiz",f:"Ich besuche ___ Opa.",h:"mein Opa",o:["meinen","mein","meinem","meine"]},
+  {th:"akk",t:"quiz",f:"Der Apfel? Ich esse ___.",o:["ihn","er","sie","es"]},
+  {th:"akk",t:"quiz",f:"Ich sehe dich. Siehst du ___ auch?",o:["mich","ich","mir","mein"]},
+  {th:"akk",t:"quiz",f:"„Der Junge kauft einen Ball.“ – Was ist das Akkusativ-Objekt?",o:["einen Ball","der Junge","kauft","der Junge kauft"]},
+  {th:"akk",t:"quiz",f:"„Lina sieht den Film.“ – Wen oder was sieht Lina?",o:["den Film","Lina","sieht","Lina sieht"]},
+  {th:"akk",t:"ordnen",w:["ich","kaufe","einen","Kuchen"],a:["ich kaufe einen Kuchen"],p:"."},
+  {th:"akk",t:"ordnen",w:["hast","du","einen","Bruder"],a:["hast du einen Bruder"],p:"?"},
+  {th:"akk",t:"ordnen",w:["wir","brauchen","keinen","Fernseher"],a:["wir brauchen keinen Fernseher"],p:"."},
+  {th:"akk",t:"ordnen",w:["ich","esse","den","Apfel"],a:["ich esse den Apfel","den Apfel esse ich"],p:"."},
+  {th:"akk",t:"fehler",w:["Ich","habe","ein","Hund."],x:2,l:"Ich habe einen Hund.",tipp:"der Hund → einen Hund"},
+  {th:"akk",t:"fehler",w:["Wir","suchen","der","Bahnhof."],x:2,l:"Wir suchen den Bahnhof.",tipp:"der Bahnhof → den Bahnhof"},
+  {th:"akk",t:"fehler",w:["Er","kauft","einen","Lampe."],x:2,l:"Er kauft eine Lampe.",tipp:"die Lampe bleibt: eine Lampe"},
+  {th:"akk",t:"fehler",w:["Kennst","du","er?"],x:2,l:"Kennst du ihn?",tipp:"er → ihn"},
+  {th:"akk",t:"blitz",f:"der Tisch → Ich kaufe …",o:["den Tisch","der Tisch"]},
+  {th:"akk",t:"blitz",f:"ein Stuhl → Ich brauche …",o:["einen Stuhl","ein Stuhl"]},
+  {th:"akk",t:"blitz",f:"die Lampe → Ich suche …",o:["die Lampe","den Lampe"]},
+  {th:"akk",t:"blitz",f:"das Bett → Ich kaufe …",o:["das Bett","den Bett"]},
+  {th:"akk",t:"blitz",f:"mein Bruder → Ich besuche …",o:["meinen Bruder","mein Bruder"]},
+  {th:"akk",t:"blitz",f:"kein Hund → Ich habe …",o:["keinen Hund","kein Hund"]},
+  // DATIV (wenig)
+  {th:"dativ",t:"quiz",f:"Ich fahre mit ___ Bus.",h:"der Bus",o:["dem","den","der","das"]},
+  {th:"dativ",t:"quiz",f:"Ich schenke ___ Mutter Blumen.",h:"meine Mutter",o:["meiner","meine","meinen","mein"]},
+  {th:"dativ",t:"quiz",f:"Kannst du ___ helfen?",o:["mir","mich","ich","mein"]},
+  {th:"dativ",t:"ordnen",w:["ich","gebe","dem","Lehrer","das","Heft"],a:["ich gebe dem Lehrer das Heft"],p:"."},
+  {th:"dativ",t:"fehler",w:["Ich","helfe","dich."],x:2,l:"Ich helfe dir.",tipp:"helfen + Dativ: dir"},
+  {th:"dativ",t:"blitz",f:"mit + der Zug",o:["mit dem Zug","mit den Zug"]}
+];
+const MIX={std:["quiz","ordnen","fehler","blitz","quiz","ordnen","fehler","blitz"], perfekt:["quiz","bild","fehler","blitz","ordnen","bild","quiz"]};
+
+/* ---------- Lehrtafeln ---------- */
+const TAFELN = {
+  praesens:`<h2>Präsens <small>Was passiert jetzt?</small></h2>
+    <div class="spalten"><div>
+      <h3>Endungen</h3>
+      <table><tr><th></th><th>spielen</th><th>fahren</th><th>essen</th></tr>
+        <tr><td>ich</td><td>spiel<span class="hl">e</span></td><td>fahr<span class="hl">e</span></td><td>ess<span class="hl">e</span></td></tr>
+        <tr><td>du</td><td>spiel<span class="hl">st</span></td><td>f<span class="rot">ä</span>hr<span class="hl">st</span></td><td><span class="rot">i</span>ss<span class="hl">t</span></td></tr>
+        <tr><td>er/sie/es</td><td>spiel<span class="hl">t</span></td><td>f<span class="rot">ä</span>hr<span class="hl">t</span></td><td><span class="rot">i</span>ss<span class="hl">t</span></td></tr>
+        <tr><td>wir</td><td>spiel<span class="hl">en</span></td><td>fahr<span class="hl">en</span></td><td>ess<span class="hl">en</span></td></tr>
+        <tr><td>ihr</td><td>spiel<span class="hl">t</span></td><td>fahr<span class="hl">t</span></td><td>ess<span class="hl">t</span></td></tr>
+        <tr><td>sie/Sie</td><td>spiel<span class="hl">en</span></td><td>fahr<span class="hl">en</span></td><td>ess<span class="hl">en</span></td></tr></table>
+    </div><div>
+      <h3>Vokalwechsel nur bei du + er/sie/es</h3>
+      <p>a → <b>ä</b>: fahren → du f<b>ä</b>hrst, schlafen → er schl<b>ä</b>ft</p>
+      <p>e → <b>i</b>: essen → du <b>i</b>sst, sprechen → er spr<b>i</b>cht</p>
+      <p>e → <b>ie</b>: lesen → du l<b>ie</b>st, sehen → er s<b>ie</b>ht</p>
+      <h3>Das Verb steht auf Platz 2</h3>
+      <div class="klammer"><span>Am Montag</span><span class="v">spiele</span><span>ich Fußball.</span></div>
+      <div class="klammer"><span>Was</span><span class="v">machst</span><span>du?</span></div>
+      <p>Ja/Nein-Frage: Verb auf Platz 1 – <b>Wohnst</b> du in Plön?</p>
+    </div></div>`,
+  perfekt:`<h2>Perfekt <small>Was ist passiert?</small></h2>
+    <div class="klammer"><span>Ich</span><span class="v">habe</span><span>gestern Pizza</span><span class="v">gegessen</span><span>.</span></div>
+    <p><b>haben</b> oder <b>sein</b> auf Platz 2 – das <b>Partizip II</b> ganz am Ende.</p>
+    <div class="spalten"><div>
+      <h3>Partizip II</h3>
+      <table><tr><td>regelmäßig</td><td><b>ge</b>…<b>t</b></td><td>machen → gemacht</td></tr>
+        <tr><td>unregelmäßig</td><td><b>ge</b>…<b>en</b></td><td>trinken → getrunken</td></tr>
+        <tr><td>trennbar</td><td>…<b>ge</b>…</td><td>einkaufen → ein<b>ge</b>kauft</td></tr>
+        <tr><td>be-, ver-, er-</td><td>kein ge-</td><td>besuchen → besucht</td></tr>
+        <tr><td>-ieren</td><td>kein ge-</td><td>telefonieren → telefoniert</td></tr></table>
+    </div><div>
+      <h3>sein oder haben?</h3>
+      <p><b>sein</b>: Bewegung von A nach B – gehen, fahren, fliegen, kommen</p>
+      <p><b>sein</b>: Veränderung – aufstehen, einschlafen · und: <b>bleiben</b></p>
+      <p><b>haben</b>: alle anderen – essen, spielen, lernen …</p>
+      <div class="bsp">Ich <b>bin</b> nach Kiel <b>gefahren</b>. · Ich <b>habe</b> Fußball <b>gespielt</b>.</div>
+    </div></div>`,
+  modal:`<h2>Modalverben <small>können, müssen, wollen, dürfen, möchten</small></h2>
+    <div class="spalten"><div>
+      <table><tr><th></th><th>können</th><th>müssen</th><th>wollen</th><th>dürfen</th><th>möchten</th></tr>
+        <tr><td>ich</td><td><span class="hl">kann</span></td><td><span class="hl">muss</span></td><td><span class="hl">will</span></td><td><span class="hl">darf</span></td><td>möchte</td></tr>
+        <tr><td>du</td><td>kannst</td><td>musst</td><td>willst</td><td>darfst</td><td>möchtest</td></tr>
+        <tr><td>er/sie/es</td><td><span class="hl">kann</span></td><td><span class="hl">muss</span></td><td><span class="hl">will</span></td><td><span class="hl">darf</span></td><td>möchte</td></tr>
+        <tr><td>wir</td><td>können</td><td>müssen</td><td>wollen</td><td>dürfen</td><td>möchten</td></tr>
+        <tr><td>ihr</td><td>könnt</td><td>müsst</td><td>wollt</td><td>dürft</td><td>möchtet</td></tr>
+        <tr><td>sie/Sie</td><td>können</td><td>müssen</td><td>wollen</td><td>dürfen</td><td>möchten</td></tr></table>
+      <p style="margin-top:1vh"><b>ich</b> und <b>er/sie/es</b>: gleich – ohne Endung!</p>
+    </div><div>
+      <h3>Satzklammer</h3>
+      <div class="klammer"><span>Ich</span><span class="v">kann</span><span>gut</span><span class="v">schwimmen</span><span>.</span></div>
+      <div class="klammer"><span>Heute</span><span class="v">muss</span><span>ich Hausaufgaben</span><span class="v">machen</span><span>.</span></div>
+      <p>Modalverb auf Platz 2 – <b>Infinitiv</b> ganz am Ende.</p>
+      <h3>Bedeutung</h3>
+      <p>können = Fähigkeit · müssen = Pflicht · wollen = Wunsch (stark)</p>
+      <p>dürfen = Erlaubnis · möchten = Wunsch (höflich)</p>
+    </div></div>`,
+  akk:`<h2>Akkusativ <small>das Objekt: Wen? oder Was?</small></h2>
+    <div class="bsp" style="font-size:clamp(20px,1.9vw,36px)">Der Junge kauft <b>einen Ball</b>. → <i>Was</i> kauft der Junge? → <span class="hl">einen Ball</span> = Akkusativ-Objekt</div>
+    <div class="spalten"><div>
+      <h3>Nur maskulin ändert sich!</h3>
+      <table><tr><th></th><th>Nominativ</th><th>Akkusativ</th></tr>
+        <tr><td>maskulin</td><td>der / ein / kein / mein</td><td><span class="hl">den / einen / keinen / meinen</span></td></tr>
+        <tr><td>feminin</td><td>die / eine</td><td>die / eine</td></tr>
+        <tr><td>neutral</td><td>das / ein</td><td>das / ein</td></tr>
+        <tr><td>Plural</td><td>die / –</td><td>die / –</td></tr></table>
+      <h3>Pronomen</h3>
+      <p>ich → <b>mich</b> · du → <b>dich</b> · er → <b>ihn</b> · sie → sie · es → es</p>
+      <p>wir → <b>uns</b> · ihr → <b>euch</b> · sie/Sie → sie/Sie</p>
+    </div><div>
+      <h3>Verben mit Akkusativ</h3>
+      <p>haben · brauchen · kaufen · suchen · sehen · essen · trinken · möchten · finden · besuchen · kennen · lieben</p>
+      <div class="bsp">Ich habe <b>einen</b> Bruder.<br>Wir kaufen <b>den</b> Tisch.<br>Ich trinke <b>keinen</b> Kaffee.<br>Der Apfel? Ich esse <b>ihn</b>.</div>
+    </div></div>`,
+  dativ:`<h2>Dativ <small>kurz: Wem?</small></h2>
+    <div class="spalten"><div>
+      <table><tr><th></th><th>Nominativ</th><th>Dativ</th></tr>
+        <tr><td>maskulin</td><td>der / ein</td><td><span class="hl">dem / einem</span></td></tr>
+        <tr><td>feminin</td><td>die / eine</td><td><span class="hl">der / einer</span></td></tr>
+        <tr><td>neutral</td><td>das / ein</td><td><span class="hl">dem / einem</span></td></tr>
+        <tr><td>Plural</td><td>die</td><td><span class="hl">den</span> (+n)</td></tr></table>
+      <p style="margin-top:1vh">Pronomen: mir · dir · ihm · ihr · uns · euch · ihnen</p>
+    </div><div>
+      <h3>Wann?</h3>
+      <p>nach <b>mit, bei, zu, von, aus, nach</b> – mit <b>dem</b> Bus</p>
+      <p>Verben: <b>helfen</b>, <b>danken</b>, <b>gefallen</b> – Kannst du <b>mir</b> helfen?</p>
+      <p>Geben/schenken: <b>Wem</b>? (Dativ) <b>Was</b>? (Akkusativ)</p>
+      <div class="bsp">Ich schenke <b>meiner Mutter</b> <span class="hl">Blumen</span>.</div>
+    </div></div>`
+};
+const TH_REIHE=["praesens","perfekt","modal","akk","dativ"];
+
+/* ---------- Firebase (nur für Liga-Teams und Übertragung) ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+  authDomain: "lern-deutsch-arash.firebaseapp.com",
+  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lern-deutsch-arash",
+  storageBucket: "lern-deutsch-arash.firebasestorage.app",
+  messagingSenderId: "845503292114",
+  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+};
+const KURS=String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
+const BASE=`jugendliga/${KURS}`;
+let db=null, auth=null, user=null;
+try{ if(window.firebase){ firebase.initializeApp(firebaseConfig); db=firebase.database(); auth=firebase.auth(); } }catch(e){ console.warn(e); }
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr=v=>Array.isArray(v)?v.filter(Boolean):(v&&typeof v==="object"?Object.values(v):[]);
+function zufall(){ try{ return crypto.getRandomValues(new Uint32Array(1))[0]/4294967296; }catch(e){ return Math.random(); } }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(zufall()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const FARBEN=["#E4412F","#1F6FD1","#1E9E6A","#E9800E"];
+
+/* ---------- Einrichten ---------- */
+let cfg={quelle:"frei",
+  frei:[{name:"Team A",color:FARBEN[0],an:true},{name:"Team B",color:FARBEN[1],an:true},{name:"Team C",color:FARBEN[2],an:false},{name:"Team D",color:FARBEN[3],an:false}],
+  liga:[], themen:Object.fromEntries(Object.entries(THEMEN).map(([k,t])=>[k,{an:true,n:t.std}]))};
+const verfuegbar = th => A.filter(a=>a.th===th).length;
+function renderSetup(){
+  document.querySelectorAll("[data-quelle]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.quelle===cfg.quelle));
+  $("#liga-login").classList.toggle("hidden", cfg.quelle!=="liga" || !!user);
+  const liste = cfg.quelle==="liga" ? cfg.liga : cfg.frei;
+  $("#teamwahl").innerHTML = cfg.quelle==="liga" && !user ? "" : liste.length ? liste.map((t,i)=>`<label><input type="checkbox" data-team="${i}" ${t.an?"checked":""}>
+      <span class="sw" style="background:${esc(t.color)}"></span>${cfg.quelle==="frei"?`<input type="text" data-tname="${i}" value="${esc(t.name)}">`:`<b>${esc(t.name)}</b><span class="small">${t.size||0} Pers.</span>`}</label>`).join("")
+    : `<p class="small">In der Liga gibt es gerade keine Runde mit Teams.</p>`;
+  $("#team-hinweis").textContent = cfg.quelle==="liga" ? (user?"Am Ende kannst du die Punkte als Team-Bonus in die Liga übertragen.":"") : "2 bis 4 Teams. Namen kannst du antippen und ändern.";
+  $("#themenwahl").innerHTML=TH_REIHE.map(k=>{ const t=THEMEN[k], c=cfg.themen[k];
+    return `<div class="thema ${c.an?"":"aus"}"><label><input type="checkbox" data-th="${k}" ${c.an?"checked":""}> ${t.icon} ${t.name}</label>
+      <div class="zahl"><button data-thn="${k}" data-d="-1" aria-label="weniger">−</button><b>${c.n}</b><button data-thn="${k}" data-d="1" aria-label="mehr">+</button><span class="small">Aufgaben</span></div></div>`; }).join("");
+  const sum=TH_REIHE.reduce((s,k)=>s+(cfg.themen[k].an?cfg.themen[k].n:0),0);
+  $("#summe").textContent=`${sum} Aufgaben · etwa ${Math.round(sum*1.4)} Minuten (plus Lehrtafeln)`;
+  const n=liste.filter(t=>t.an).length;
+  $("#start").disabled = n<2 || n>4 || !sum;
+}
+document.addEventListener("click", e=>{
+  if(!$("#setup").classList.contains("hidden")){
+    const q=e.target.closest("[data-quelle]"); if(q){ cfg.quelle=q.dataset.quelle; renderSetup(); return; }
+    const z=e.target.closest("[data-thn]"); if(z){ const c=cfg.themen[z.dataset.thn]; c.n=Math.max(1,Math.min(verfuegbar(z.dataset.thn), c.n+Number(z.dataset.d))); renderSetup(); return; }
+  }
+});
+document.addEventListener("change", e=>{
+  const c=e.target.closest("[data-team]"); if(c){ (cfg.quelle==="liga"?cfg.liga:cfg.frei)[Number(c.dataset.team)].an=c.checked; renderSetup(); }
+  const th=e.target.closest("[data-th]"); if(th){ cfg.themen[th.dataset.th].an=th.checked; renderSetup(); }
+});
+document.addEventListener("input", e=>{ const t=e.target.closest("[data-tname]"); if(t) cfg.frei[Number(t.dataset.tname)].name=t.value||"Team"; });
+$("#login-form").addEventListener("submit", e=>{
+  e.preventDefault(); if(!auth){ $("#l-err").textContent="Keine Verbindung."; return; }
+  $("#l-err").textContent="Moment …";
+  auth.signInWithEmailAndPassword($("#l-mail").value.trim(), $("#l-pass").value)
+    .catch(err=>{ $("#l-err").textContent=/invalid|wrong|not-found/.test(err.code||"")?"E-Mail oder Passwort stimmt nicht.":"Anmeldung fehlgeschlagen."; });
+});
+if(auth) auth.onAuthStateChanged(async u=>{
+  user=u; $("#l-err").textContent="";
+  if(u && db){ try{ const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+      cfg.liga=arr(pub.teams).map(t=>({id:t.id, name:t.name, color:t.color, size:t.size, an:true})); }catch(e){ cfg.liga=[]; } }
+  renderSetup();
+});
+
+/* ---------- Ablauf ---------- */
+let S=null;
+function ablaufBauen(mitTafel){
+  const out=[];
+  TH_REIHE.forEach(th=>{ const c=cfg.themen[th]; if(!c.an) return;
+    if(mitTafel) out.push({lehr:th});
+    const proTyp={}; Object.keys(TYPEN).forEach(t=>proTyp[t]=shuffle(A.filter(a=>a.th===th&&a.t===t)));
+    const mix=MIX[th]||MIX.std;
+    let i=0, n=0; while(n<c.n && i<100){ const t=mix[i%mix.length]; if(proTyp[t].length){ out.push(proTyp[t].shift()); n++; } i++; }
+  });
+  return out;
+}
+function spielStarten(nurTafel){
+  const teams=(cfg.quelle==="liga"?cfg.liga:cfg.frei).filter(t=>t.an).map(t=>({...t, p:0}));
+  const ablauf = nurTafel ? TH_REIHE.map(th=>({lehr:th})) : ablaufBauen($("#mit-tafel").checked);
+  S={teams: nurTafel?[]:teams, ablauf, i:0, dran:0, quelle:cfg.quelle, nurTafel};
+  $("#setup").classList.add("hidden"); $("#ende").classList.add("hidden"); $("#spiel").classList.remove("hidden");
+  try{ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(()=>{}); }catch(e){}
+  zeige();
+}
+$("#start").addEventListener("click", ()=>spielStarten(false));
+$("#nur-tafel").addEventListener("click", ()=>spielStarten(true));
+
+const aufgabenNr = () => S.ablauf.slice(0,S.i+1).filter(x=>!x.lehr).length;
+const aufgabenGes = () => S.ablauf.filter(x=>!x.lehr).length;
+function themaJetzt(){ for(let k=S.i;k>=0;k--){ const x=S.ablauf[k]; if(x) return x.lehr||x.th; } return "praesens"; }
+
+function renderScore(){
+  const a=S.ablauf[S.i]; const v=S.r;
+  $("#score").innerHTML=S.teams.map((t,i)=>{ const dran = a && !a.lehr && v && v.phase!=="fertig" && v.team===i;
+    return `<div class="team ${dran?"dran":""}" data-label="${v&&v.phase==="klau"?"darf klauen":"ist dran"}" data-team-i="${i}"><i style="background:${esc(t.color)}"></i><b>${esc(t.name)}</b><span class="p">${t.p}</span></div>`; }).join("");
+  $("#score").classList.toggle("hidden", !S.teams.length);
+}
+function renderModer(){
+  const a=S.ablauf[S.i];
+  const korr = S.teams.length ? `<span class="korr">Korrektur: ${S.teams.map((t,i)=>`<button class="btn ghost" data-korr="${i}" data-w="1" title="${esc(t.name)} +1">${esc(t.name.split(" ").pop())} +1</button><button class="btn ghost" data-korr="${i}" data-w="-1">−1</button>`).join("")}</span>` : "";
+  $("#moder").innerHTML=`${korr}<span class="sp"></span>
+    ${a&&!a.lehr?`<button class="btn" id="m-timer" title="Leertaste">⏱ Pause</button><button class="btn" id="m-loes" title="L">👁 Lösung</button>`:""}
+    <button class="btn" id="m-tafel" title="T">📘 Lehrtafel</button>
+    <button class="btn ghost" id="m-zur" ${S.i===0?"disabled":""} title="←">‹</button>
+    <button class="btn led" id="m-weiter" title="→">${S.i+1>=S.ablauf.length?(S.nurTafel?"Fertig":"Ergebnis 🏆"):"Weiter ›"}</button>
+    <span class="k">→ weiter · Leertaste Pause · T Tafel · H Leiste</span>`;
+}
+
+function zeige(){
+  stopUhr();
+  const a=S.ablauf[S.i];
+  if(a.lehr) return zeigeTafel(a.lehr, false);
+  const T=TYPEN[a.t];
+  S.r={phase:"frage", team:S.dran, versucht:[], gelegt:[]};
+  let mitte="";
+  if(a.t==="ordnen"||a.t==="bild"){
+    S.r.kacheln=shuffle(a.w.map((w,k)=>({w,k}))); if(S.r.kacheln.map(x=>x.w).join(" ")===a.a[0]) S.r.kacheln.push(S.r.kacheln.shift());
+    mitte = (a.t==="bild" ? `<div class="emoji">${a.e}</div><div class="hinweis" style="color:#fff;font-weight:700;margin:0 0 2vh">${esc(a.h)} – erzählt im Perfekt!</div>` : `<div class="hinweis" style="margin:0 0 2vh">Tippt die Wörter in der richtigen Reihenfolge an.</div>`)
+      + `<div class="zeile" id="zeile"></div><div class="pool" id="pool"></div>`;
+  }
+  if(a.t==="quiz"||a.t==="blitz"){
+    S.r.opts=shuffle(a.o.map((t,k)=>({t,ok:k===0})));
+    mitte=`<div class="aufgabe" ${a.t==="blitz"?'style="font-size:clamp(50px,7vw,130px)"':""}>${esc(a.f).replace("___",'<span class="gap">&nbsp;</span>')}</div>${a.h?`<div class="hinweis">(${esc(a.h)})</div>`:""}
+      <div class="optionen ${S.r.opts.length===2?"zwei":""}" id="opts">${S.r.opts.map((o,k)=>`<button class="o${k}" data-opt="${k}"><span class="l">${"ABCD"[k]}</span>${esc(o.t)}</button>`).join("")}</div>`;
+  }
+  if(a.t==="fehler") mitte=`<div class="hinweis" style="margin:0 0 2vh">Ein Wort ist falsch – tippt es an!</div><div class="woerter" id="woerter">${a.w.map((w,k)=>`<button data-wort="${k}">${esc(w)}</button>`).join("")}</div>`;
+  $("#buehne").innerHTML=`<div class="kopf"><span class="typ">${T.icon} ${T.name}</span><span class="thema-tag">${THEMEN[a.th].icon} ${THEMEN[a.th].name}</span><span class="nr">Aufgabe ${aufgabenNr()} von ${aufgabenGes()}</span></div>
+    <div class="wer" id="wer"></div>${mitte}<div id="meldung"></div><div id="loes-box"></div>`;
+  if(a.t==="ordnen"||a.t==="bild") drawKacheln();
+  werZeile(); renderScore(); renderModer();
+  setUhr(T.sek, true);
+}
+function werZeile(){
+  const t=S.teams[S.r.team]; if(!t){ $("#wer").innerHTML=""; return; }
+  const a=S.ablauf[S.i], T=TYPEN[a.t], w=S.r.phase==="klau"?KLAU_P:T.p;
+  $("#wer").innerHTML = S.r.phase==="fertig" ? "" : `<i style="background:${esc(t.color)}"></i>${S.r.phase==="klau"?"Klau-Chance":"Dran"}: ${esc(t.name)} · ${w} ${w===1?"Punkt":"Punkte"}`;
+}
+function drawKacheln(){
+  const a=S.ablauf[S.i];
+  const fertig = S.r.gelegt.length===a.w.length;
+  $("#zeile").innerHTML=S.r.gelegt.map((x,k)=>`<button class="kachel" data-weg="${k}">${esc(k===0?cap(x.w):x.w)}</button>`).join("")+(fertig?`<span class="kachel" style="background:transparent;color:#fff;box-shadow:none">${a.p}</span>`:"");
+  $("#pool").innerHTML=S.r.kacheln.map((x,k)=>`<button class="kachel ${S.r.gelegt.includes(x)?"weg":""}" data-kachel="${k}">${esc(x.w)}</button>`).join("");
+}
+function pruefeKacheln(){
+  const a=S.ablauf[S.i];
+  if(S.r.gelegt.length!==a.w.length || S.r.phase==="fertig") return;
+  const norm=s=>s.toLowerCase().replace(/\s+/g," ").trim();
+  const ok=a.a.some(x=>norm(x)===norm(S.r.gelegt.map(y=>y.w).join(" ")));
+  $("#zeile").classList.add(ok?"ok":"bad");
+  S.r.sperre=true;
+  setTimeout(()=>{ S.r.sperre=false; antwort(ok); }, ok?250:1100);
+}
+/* Kern: automatische Bewertung */
+function antwort(ok){
+  if(!S.r || S.r.phase==="fertig") return;
+  const a=S.ablauf[S.i], T=TYPEN[a.t], team=S.r.team, t=S.teams[team];
+  stopUhr();
+  if(ok){
+    const w = S.r.phase==="klau" ? KLAU_P : T.p;
+    if(t){ t.p+=w; flieg(team,w); }
+    S.r.phase="fertig"; ton(true);
+    $("#meldung").innerHTML=`<div class="meldung ok">✓ Richtig! ${t?`+${w} für ${esc(t.name)}`:""}</div>`;
+    loesung(true);
+  } else {
+    ton(false);
+    if(S.r.phase==="frage" && S.teams.length>1 && a.t!=="blitz"){
+      S.r.phase="klau"; S.r.team=(team+1)%S.teams.length;
+      $("#meldung").innerHTML=`<div class="meldung bad">✗ Leider nicht – ${esc(S.teams[S.r.team].name)} darf klauen!</div>`;
+      if(a.t==="ordnen"||a.t==="bild"){ S.r.gelegt=[]; drawKacheln(); $("#zeile").className="zeile"; }
+      werZeile(); renderScore(); setUhr(KLAU_SEK, true);
+    } else {
+      S.r.phase="fertig";
+      $("#meldung").innerHTML=`<div class="meldung bad">✗ Diesmal kein Punkt.</div>`;
+      loesung(false);
+    }
+  }
+  werZeile(); renderScore();
+}
+function loesung(){
+  const a=S.ablauf[S.i]; if(!a||a.lehr) return;
+  if(S.r.phase!=="fertig"){ S.r.phase="fertig"; stopUhr(); werZeile(); renderScore(); }
+  $("#uhr").classList.add("hidden");
+  let html="";
+  if(a.t==="ordnen"||a.t==="bild") html=`${esc(cap(a.a[0]))}${a.p}${a.a.length>1?`<small>auch richtig: ${esc(cap(a.a[1]))}${a.p}</small>`:""}`;
+  if(a.t==="quiz"||a.t==="blitz"){ document.querySelectorAll("#opts button").forEach((b,k)=>{ if(S.r.opts[k].ok) b.classList.add("richtig"); else b.classList.add("aus"); }); html=a.t==="blitz"?`${esc(a.f)} → ${esc(a.o[0])}`:esc(a.f).includes("___")?esc(a.f).replace("___",`<u>${esc(a.o[0])}</u>`):esc(a.o[0]); }
+  if(a.t==="fehler"){ document.querySelectorAll("#woerter button").forEach((b,k)=>{ if(k===a.x) b.classList.add("falsch"); else b.classList.add("aus"); }); html=`${esc(a.l)}<small>${esc(a.tipp)}</small>`; }
+  $("#loes-box").innerHTML=`<div class="loesung">${html}</div>`;
+}
+function flieg(i,w){
+  const el=document.querySelector(`#score .team[data-team-i="${i}"]`); if(!el) return;
+  renderScore();
+  const el2=document.querySelector(`#score .team[data-team-i="${i}"]`); if(!el2) return;
+  el2.classList.add("plus"); const f=document.createElement("span"); f.className="flug"; f.textContent=(w>0?"+":"")+w; el2.appendChild(f); setTimeout(()=>f.remove(),1100);
+}
+function weiter(){
+  const a=S.ablauf[S.i];
+  if(S.i+1>=S.ablauf.length) return S.nurTafel ? zurueckZumSetup() : ende();
+  if(a && !a.lehr) S.dran=(S.dran+1)%Math.max(1,S.teams.length);
+  S.i++; zeige();
+}
+function zurueck(){ if(S.i>0){ S.i--; zeige(); } }
+
+/* ---------- Lehrtafel ---------- */
+let tafelOffen=null;
+function zeigeTafel(th, overlay){
+  stopUhr(); $("#uhr").classList.add("hidden");
+  if(overlay) tafelOffen={th, html:$("#buehne").innerHTML, r:S.r};
+  $("#buehne").innerHTML=`<div class="reiter-tafel">${TH_REIHE.map(k=>`<button data-tafel="${k}" aria-pressed="${k===th}">${THEMEN[k].icon} ${THEMEN[k].name}</button>`).join("")}${overlay?`<button data-tafel-zu style="background:var(--led);color:var(--board)">Zurück zur Aufgabe ✕</button>`:""}</div>
+    <div class="tafel">${TAFELN[th]}</div>`;
+  renderScore(); renderModer();
+}
+function tafelZu(){
+  if(!tafelOffen) return;
+  $("#buehne").innerHTML=tafelOffen.html; S.r=tafelOffen.r; tafelOffen=null;
+  const a=S.ablauf[S.i]; if(a.t==="ordnen"||a.t==="bild") drawKacheln();
+  renderScore(); renderModer();
+  if(S.r && S.r.phase!=="fertig"){ $("#uhr").classList.remove("hidden"); startStop(true); }
+}
+
+/* ---------- Timer & Ton ---------- */
+let rest=0, laeuft=false, gesamt=1, tick=null;
+const LEN=2*Math.PI*52;
+function setUhr(sek, an){
+  clearInterval(tick); gesamt=sek; rest=sek*1000; laeuft=false;
+  const u=$("#uhr"); u.classList.remove("hidden","low"); u.classList.add("pause");
+  const fg=u.querySelector(".fg"); fg.style.strokeDasharray=LEN; fg.style.strokeDashoffset=0;
+  $("#uhr-z").textContent=sek;
+  if(an) startStop(true);
+}
+function startStop(an){
+  if(!S.r || S.r.phase==="fertig") return;
+  laeuft = an===true ? true : !laeuft;
+  $("#uhr").classList.toggle("pause", !laeuft);
+  const b=$("#m-timer"); if(b) b.textContent = laeuft ? "⏱ Pause" : "⏱ Weiter";
+  clearInterval(tick);
+  if(laeuft){ let t0=Date.now();
+    tick=setInterval(()=>{ const n=Date.now(); rest-=n-t0; t0=n;
+      if(rest<=0){ rest=0; clearInterval(tick); laeuft=false; zeitUm(); }
+      $("#uhr-z").textContent=Math.ceil(rest/1000);
+      $("#uhr .fg").style.strokeDashoffset=LEN*(1-rest/(gesamt*1000));
+      $("#uhr").classList.toggle("low", rest<5000);
+    },100); }
+}
+function zeitUm(){ ton(false,true); if(S.r && S.r.phase!=="fertig"){ $("#meldung").innerHTML=`<div class="meldung bad">⏱ Zeit ist um!</div>`; setTimeout(()=>antwort(false), 500); } }
+function stopUhr(){ clearInterval(tick); laeuft=false; const u=$("#uhr"); if(u) u.classList.add("pause"); }
+let ac=null;
+function ton(gut, lang){
+  try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); const o=ac.createOscillator(), g=ac.createGain();
+    o.connect(g); g.connect(ac.destination); o.type="sine"; o.frequency.value=gut?880:lang?330:220;
+    g.gain.setValueAtTime(.12, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime+(lang?.9:.3));
+    o.start(); o.stop(ac.currentTime+(lang?.9:.3)); }catch(e){}
+}
+
+/* ---------- Bedienung ---------- */
+document.addEventListener("click", e=>{
+  if(!S || $("#spiel").classList.contains("hidden")) return;
+  const tb=e.target.closest("[data-tafel]"); if(tb){ const ov=!!tafelOffen; const keep=tafelOffen; zeigeTafel(tb.dataset.tafel, false); if(ov) tafelOffen=keep; if(tafelOffen) $("#buehne .reiter-tafel").insertAdjacentHTML("beforeend",`<button data-tafel-zu style="background:var(--led);color:var(--board)">Zurück zur Aufgabe ✕</button>`); return; }
+  if(e.target.closest("[data-tafel-zu]")) return tafelZu();
+  const kz=e.target.closest("[data-korr]"); if(kz){ const i=Number(kz.dataset.korr), w=Number(kz.dataset.w); S.teams[i].p=Math.max(0,S.teams[i].p+w); renderScore(); return; }
+  if(e.target.closest("#m-timer")) return startStop();
+  if(e.target.closest("#m-loes")) return loesung();
+  if(e.target.closest("#m-weiter")) return weiter();
+  if(e.target.closest("#m-zur")) return zurueck();
+  if(e.target.closest("#m-tafel")){ if(tafelOffen) return tafelZu(); const a=S.ablauf[S.i]; return zeigeTafel(themaJetzt(), !a.lehr); }
+  if(!S.r || S.r.phase==="fertig" || S.r.sperre) return;
+  const k=e.target.closest("[data-kachel]"); if(k){ const x=S.r.kacheln[Number(k.dataset.kachel)]; if(!S.r.gelegt.includes(x)) S.r.gelegt.push(x); drawKacheln(); pruefeKacheln(); return; }
+  const w=e.target.closest("[data-weg]"); if(w){ S.r.gelegt.splice(Number(w.dataset.weg),1); drawKacheln(); return; }
+  const o=e.target.closest("[data-opt]"); if(o){ const i=Number(o.dataset.opt);
+    if(!S.r.opts[i].ok) o.classList.add("falsch");
+    antwort(S.r.opts[i].ok); return; }
+  const wo=e.target.closest("[data-wort]"); if(wo){ const a=S.ablauf[S.i], k2=Number(wo.dataset.wort);
+    if(k2===a.x) wo.classList.add("richtig"); else wo.classList.add("aus");
+    antwort(k2===a.x); return; }
+});
+document.addEventListener("keydown", e=>{
+  if(!S || $("#spiel").classList.contains("hidden") || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
+  if(e.code==="Space"){ e.preventDefault(); startStop(); }
+  else if(e.key==="ArrowRight"){ if(tafelOffen) tafelZu(); else weiter(); }
+  else if(e.key==="ArrowLeft") zurueck();
+  else if(e.key==="l"||e.key==="L") loesung();
+  else if(e.key==="t"||e.key==="T"){ if(tafelOffen) tafelZu(); else { const a=S.ablauf[S.i]; zeigeTafel(themaJetzt(), !a.lehr); } }
+  else if(e.key==="h"||e.key==="H") $("#moder").classList.toggle("zu");
+  else if(e.key==="Escape" && tafelOffen) tafelZu();
+});
+
+/* ---------- Ende & Übertragung ---------- */
+function zurueckZumSetup(){ stopUhr(); $("#uhr").classList.add("hidden"); $("#spiel").classList.add("hidden"); $("#ende").classList.add("hidden"); $("#setup").classList.remove("hidden"); renderSetup(); }
+const bonus = platz => platz===1?5:platz===2?3:platz===3?2:1;
+function ende(){
+  stopUhr(); $("#uhr").classList.add("hidden");
+  $("#spiel").classList.add("hidden"); const el=$("#ende"); el.classList.remove("hidden");
+  const rang=S.teams.map((t,i)=>({...t,i})).sort((a,b)=>b.p-a.p);
+  rang.forEach((t,k)=>{ t.platz = k>0 && rang[k-1].p===t.p ? rang[k-1].platz : k+1; });
+  const sieger=rang.filter(t=>t.platz===1);
+  const podest=[rang[1],rang[0],rang[2]].filter(Boolean);
+  const med=["🥇","🥈","🥉","4."];
+  el.innerHTML=`<h1>${sieger.length>1?"Unentschieden!":esc(sieger[0].name)+" gewinnt!"}</h1>
+    <div class="podest">${podest.map(t=>`<div style="height:${t.platz===1?"34vh":t.platz===2?"26vh":"20vh"};box-shadow:inset 0 .8vh 0 ${esc(t.color)}"><span class="m">${med[t.platz-1]||""}</span><b>${esc(t.name)}</b><span class="p">${t.p}</span></div>`).join("")}</div>
+    ${rang.length>3?`<p class="small">4. ${esc(rang[3].name)} – ${rang[3].p} Punkte</p>`:""}
+    ${S.quelle==="liga"&&user?`<div class="uebertrag"><b style="font-size:20px">In die Liga übertragen?</b>
+        <p class="small" style="margin:6px 0 12px">Als Team-Bonus in der laufenden Runde. Steht danach auch in der Konsole unter „Punkte eintragen“.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <button class="btn led" data-ueb="platz">Sieger-Bonus: ${rang.map(t=>`${esc(t.name)} +${bonus(t.platz)}`).join(" · ")}</button>
+          <button class="btn" data-ueb="alle">Alle Punkte 1:1</button></div><div class="err" id="ueb-msg"></div></div>`:""}
+    <div style="display:flex;gap:10px;margin-top:20px"><button class="btn ghost" id="nochmal">Neue Runde</button><button class="btn ghost" id="zurueck-setup">Teams & Themen ändern</button></div>`;
+  konfetti(sieger[0]?sieger[0].color:"#FFC53D");
+  $("#nochmal").onclick=()=>spielStarten(false);
+  $("#zurueck-setup").onclick=zurueckZumSetup;
+  document.querySelectorAll("[data-ueb]").forEach(b=>b.onclick=()=>uebertragen(b.dataset.ueb, rang));
+}
+async function uebertragen(art, rang){
+  const msg=$("#ueb-msg"); msg.style.color="#c9d2e3"; msg.textContent="Übertrage …";
+  document.querySelectorAll("[data-ueb]").forEach(b=>b.disabled=true);
+  try{
+    const ref=db.ref(`${BASE}/admin/state`);
+    const v=(await ref.once("value")).val(); if(!v||!v.data) throw new Error("Kein Konsolen-Stand gefunden");
+    const st=JSON.parse(v.data);
+    const r=(st.rounds||[]).find(x=>x.id===st.activeRoundId); if(!r) throw new Error("Keine aktive Runde");
+    const h=new Date(); const iso=`${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,"0")}-${String(h.getDate()).padStart(2,"0")}`;
+    const ts=Date.now(); st.entries=st.entries||[]; const plus={};
+    rang.forEach(t=>{ const pts = art==="platz" ? bonus(t.platz) : t.p; if(!pts || !r.teams.some(x=>x.id===t.id)) return;
+      st.entries.push({id:"td"+ts.toString(36)+Math.random().toString(36).slice(2,6), ts, roundId:r.id, studentId:null, teamId:t.id, taskId:null, taskTitle:"Tafel-Duell", points:pts, date:iso, note:art==="platz"?`Platz ${t.platz}`:"Punkte 1:1"});
+      plus[t.id]=pts; });
+    st.updated=ts;
+    await ref.set({data:JSON.stringify(st), updated:ts, device:"tafel-duell"});
+    const mt=(await db.ref(`${BASE}/public/manualTeam`).once("value")).val()||{};
+    const upd={}; Object.entries(plus).forEach(([id,p])=>upd[id]=(Number(mt[id])||0)+p);
+    if(Object.keys(upd).length) await db.ref(`${BASE}/public/manualTeam`).update(upd);
+    msg.style.color="#9be3c3"; msg.textContent="✓ Übertragen – die Tabelle in der Arena ist aktualisiert.";
+  }catch(e){ console.warn(e); msg.style.color="#ff9a8b"; msg.textContent="Übertragen hat nicht geklappt: "+(e.message||"bitte in der Konsole von Hand eintragen.");
+    document.querySelectorAll("[data-ueb]").forEach(b=>b.disabled=false); }
+}
+function konfetti(farbe){
+  const k=$("#konfetti"); k.innerHTML="";
+  const f=[farbe,"#FFC53D","#fff","#1F6FD1","#E4412F"];
+  for(let i=0;i<90;i++){ const c=document.createElement("i"); c.style.left=(Math.random()*100)+"vw"; c.style.background=f[i%f.length];
+    c.style.animationDuration=(2.4+Math.random()*2.4)+"s"; c.style.animationDelay=(Math.random()*1.2)+"s"; k.appendChild(c); }
+  setTimeout(()=>k.innerHTML="", 6500);
+}
+renderSetup();
+</script>
+</body>
+</html>
