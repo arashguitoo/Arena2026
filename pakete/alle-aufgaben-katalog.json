@@ -465,7 +465,7 @@
       "bereich": "pt"
     },
     {
-      "nr": 1,
+      "nr": 5,
       "key": "fp-01-gestern-oder-heute",
       "title": "Gestern oder heute?",
       "icon": "⏪",
@@ -473,10 +473,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag01",
       "text": "Das Perfekt erzählt, was schon passiert ist. Erkennst du es?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 2,
+      "nr": 6,
       "key": "fp-02-haben-formen",
       "title": "haben – alle Formen",
       "icon": "✋",
@@ -484,10 +484,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag02",
       "text": "ich habe, du hast, er hat … Welche Form passt?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 3,
+      "nr": 7,
       "key": "fp-03-ge-t",
       "title": "ge…t – regelmäßig",
       "icon": "🔨",
@@ -495,10 +495,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag03",
       "text": "machen → gemacht, arbeiten → gearbeitet. Welche Form ist richtig?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 4,
+      "nr": 8,
       "key": "fp-04-ge-en",
       "title": "ge…en – unregelmäßig",
       "icon": "🌀",
@@ -506,10 +506,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag04",
       "text": "essen → gegessen, trinken → getrunken. Kennst du die Formen?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 5,
+      "nr": 9,
       "key": "fp-05-satzklammer",
       "title": "Die Satzklammer",
       "icon": "🧱",
@@ -517,10 +517,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag05",
       "text": "Ich habe gestern Pizza gegessen. Bau die Sätze!",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 6,
+      "nr": 10,
       "key": "fp-06-sein-formen",
       "title": "sein – alle Formen",
       "icon": "🚶",
@@ -528,10 +528,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag06",
       "text": "ich bin gegangen, wir sind gefahren … Welche Form passt?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 7,
+      "nr": 11,
       "key": "fp-07-haben-oder-sein",
       "title": "haben oder sein?",
       "icon": "⚖️",
@@ -539,10 +539,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag07",
       "text": "60 Sekunden: Kommt das Verb zu haben oder zu sein?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 8,
+      "nr": 12,
       "key": "fp-08-lias-wochenende",
       "title": "Lias Wochenende",
       "icon": "📱",
@@ -550,10 +550,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag08",
       "text": "Lia erzählt von ihrem Wochenende. Lies und beantworte die Fragen.",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 9,
+      "nr": 13,
       "key": "fp-09-trennbar",
       "title": "Trennbar: ge in der Mitte",
       "icon": "✂️",
@@ -561,10 +561,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag09",
       "text": "aufstehen → auf·ge·standen. Wo steht das ge-?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 10,
+      "nr": 14,
       "key": "fp-10-nicht-trennbar",
       "title": "be-, ver-, er-: kein ge-",
       "icon": "🔒",
@@ -572,10 +572,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag10",
       "text": "besuchen → besucht, verstehen → verstanden. Ganz ohne ge-!",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 11,
+      "nr": 15,
       "key": "fp-11-drei-werkstaetten",
       "title": "Drei Werkstätten",
       "icon": "🏭",
@@ -583,10 +583,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag11",
       "text": "60 Sekunden: normal, trennbar oder ganz ohne ge-?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 12,
+      "nr": 16,
       "key": "fp-12-ieren",
       "title": "-ieren: telefoniert!",
       "icon": "📸",
@@ -594,10 +594,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag12",
       "text": "telefonieren → telefoniert. Kein ge-, nur ein -t!",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 13,
+      "nr": 17,
       "key": "fp-13-fragen",
       "title": "Fragen im Perfekt",
       "icon": "❓",
@@ -605,10 +605,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag13",
       "text": "Hast du den Film gesehen? Bau die Fragen!",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 14,
+      "nr": 18,
       "key": "fp-14-gespraeche",
       "title": "Gespräche ordnen",
       "icon": "💬",
@@ -616,10 +616,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag14",
       "text": "Drei kurze Gespräche über das Wochenende. Was kommt zuerst?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 15,
+      "nr": 19,
       "key": "fp-15-fehlerdetektiv",
       "title": "Fehlerdetektiv",
       "icon": "🕵️",
@@ -627,10 +627,10 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag15",
       "text": "In jeder Gruppe ist ein Satz falsch. Findest du ihn?",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
-      "nr": 16,
+      "nr": 20,
       "key": "fp-16-finale",
       "title": "Das große Finale",
       "icon": "🏆",
@@ -638,7 +638,7 @@
       "art": "Einzel",
       "file": "a1-ferien-perfekt.html?spiel=tag16",
       "text": "60 Sekunden, alles gemischt: Zeig, was du in den Ferien gelernt hast!",
-      "bereich": "ferien"
+      "bereich": "pt"
     },
     {
       "nr": 1,
@@ -694,6 +694,28 @@
       "file": "a1-live-perfekt.html?set=mix",
       "text": "Nur im Unterricht: haben, sein und trennbare Verben gemischt.",
       "bereich": "live"
+    },
+    {
+      "nr": 1,
+      "key": "duell-arena",
+      "title": "Duell-Arena",
+      "icon": "⚔️",
+      "max": 50,
+      "art": "Einzel",
+      "file": "duell.html",
+      "text": "Fordere andere heraus – 1 gegen 1 oder in der Gruppe. Sieg +3, Platz 2 +2, Mitspielen +1. Pro Tag zählen 5 Duelle.",
+      "bereich": "duell"
+    },
+    {
+      "nr": 6,
+      "key": "live-pf-warmup",
+      "title": "Live: Ferien-Check",
+      "icon": "🔥",
+      "max": 10,
+      "art": "Team",
+      "file": "a1-live-perfekt.html?set=warmup",
+      "text": "Nur im Unterricht: Was weißt du noch aus der Ferienliga?",
+      "bereich": "live"
     }
   ],
   "bereiche": [
@@ -733,14 +755,14 @@
       "name": "Perfekt-Training"
     },
     {
-      "id": "ferien",
-      "kurz": "FL",
-      "name": "Ferienliga Perfekt"
-    },
-    {
       "id": "live",
       "kurz": "LIVE",
       "name": "Live im Unterricht"
+    },
+    {
+      "id": "duell",
+      "kurz": "DU",
+      "name": "Duell-Arena"
     }
   ]
 }

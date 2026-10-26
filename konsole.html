@@ -386,9 +386,8 @@ const STANDARD_BEREICHE = [
   {id:"lesen",  kurz:"LES",  name:"Lesen",                       dateien:["a1-lesen.html"]},
   {id:"l10",    kurz:"L10",  name:"Lektion 10 · Neu hier?",      dateien:["a1-neu-hier.html"]},
   {id:"l11",    kurz:"L11",  name:"Lektion 11 · Alles Gute!",    dateien:["a1-feste.html"]},
-  {id:"pt",     kurz:"PT",   name:"Perfekt-Training",            dateien:["a1-perfekt-2.html"]},
+  {id:"pt",     kurz:"PT",   name:"Perfekt-Training",            dateien:["a1-perfekt-2.html","a1-ferien-perfekt.html"]},
   {id:"live",   kurz:"LIVE", name:"Live im Unterricht",          dateien:["a1-live-duell.html","a1-live-perfekt.html"]},
-  {id:"ferien", kurz:"FL",   name:"Ferienliga Perfekt",          dateien:["a1-ferien-perfekt.html"]},
   {id:"duell",  kurz:"DU",   name:"Duell-Arena",                 dateien:["duell.html"]},
   {id:"eigene", kurz:"E",    name:"Eigene Aufgaben",             dateien:[]}
 ];
@@ -466,6 +465,20 @@ function migrate(d){
       g.forEach((t,i)=>t.nr=i+1);
     });
     d.__umgestellt=true;
+  }
+  /* Ferienliga Perfekt → normale Aufgaben im Perfekt-Training (PT.5 …), einmalig */
+  if(!d.settings.ferienIntegriert){
+    const fl=d.tasks.filter(t=>t.gruppe==="ferien" || (!t.gruppe && dateiName(t.file)==="a1-ferien-perfekt.html") || dateiName(t.file)==="a1-ferien-perfekt.html");
+    if(fl.length){
+      if(!d.bereiche.some(b=>b.id==="pt")){ const pos=d.bereiche.findIndex(b=>b.id==="ferien"); d.bereiche.splice(pos<0?d.bereiche.length:pos,0,{id:"pt",kurz:"PT",name:"Perfekt-Training"}); }
+      const start=Math.max(0,...d.tasks.filter(t=>t.gruppe==="pt" && !fl.includes(t)).map(t=>Number(t.nr)||0));
+      fl.sort((a,b)=>(Number(a.ferienTag)||Number(a.nr)||0)-(Number(b.ferienTag)||Number(b.nr)||0))
+        .forEach((t,i)=>{ t.gruppe="pt"; t.nr=start+i+1; t.von=0; t.bis=0; t.ferienTag=0; });
+      d.settings.ferien.aktiv=false;
+      d.__umgestellt = d.__umgestellt || "ferien";
+    }
+    d.bereiche=d.bereiche.filter(b=>b.id!=="ferien" || d.tasks.some(t=>t.gruppe==="ferien"));
+    d.settings.ferienIntegriert=true;
   }
   d.tasks.forEach(t=>{ if(!t.gruppe || !d.bereiche.some(b=>b.id===t.gruppe)) t.gruppe=bereichRaten(t); });
   if(!d.bereiche.some(b=>b.id==="eigene")) d.bereiche.push({id:"eigene", kurz:"E", name:"Eigene Aufgaben"});
@@ -1643,9 +1656,9 @@ function startSync(){
     const localHas=state.students.length||state.entries.length||state.rounds.length;
     const localStr=JSON.stringify(state);
     const finish=()=>{ syncReady=true; const n=ensureCodes(); listenRemote(); listenAuto();
-      const um=!!state.__umgestellt; delete state.__umgestellt;
+      const um=state.__umgestellt; delete state.__umgestellt;
       if(n||um) save(); else render(); schedulePublish();
-      if(um) toast("Neu: Aufgaben sind jetzt nach Bereichen nummeriert – L8.3, L10.2, FL.5 …"); };
+      if(um) toast(um==="ferien" ? "Die Ferienspiele sind jetzt normale Aufgaben: PT.5 bis PT.20 – ohne Zeitgrenze, Status unverändert." : "Neu: Aufgaben sind jetzt nach Bereichen nummeriert – L8.3, L10.2, PT.5 …"); };
     if(!v){
       if(localHas){ finish(); cloudWrite().then(()=>toast("Daten dieses Geräts nach Firebase übernommen.")); }
       else { setSync("saved"); finish(); }
