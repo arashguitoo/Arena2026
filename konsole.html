@@ -1100,6 +1100,7 @@ function aufListeHTML(){
         <button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="offen" ${alle.length?"":"disabled"}>öffnen</button>
         <button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="bald" ${alle.length?"":"disabled"}>auf Bald</button>
         <button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="fertig" ${alle.length?"":"disabled"}>erledigt</button>
+        ${alle.some(t=>t.von||t.bis)?`<button class="btn ghost sm" data-act="grp-status" data-g="${esc(b.id)}" data-v="nachholen" title="Wieder öffnen, ohne Countdown und ohne Ablaufzeit">⏰ nachholen lassen</button>`:""}
         <span class="spacer"></span>
         <button class="btn ghost sm" data-act="task-new" data-g="${esc(b.id)}">+ Aufgabe</button>
         <button class="icon-btn" title="Bereich umbenennen" aria-label="Bereich umbenennen" data-act="grp-edit" data-g="${esc(b.id)}">✎</button>
@@ -2042,9 +2043,9 @@ document.addEventListener("click", e=>{
     case "grp-status": {
       const b=state.bereiche.find(x=>x.id===el.dataset.g); if(!b) break;
       const ts=state.tasks.filter(t=>bereichVon(t)===b); const v=el.dataset.v;
-      const wort={offen:"öffnen",bald:"auf Bald stellen",fertig:"als erledigt sperren"}[v];
-      confirmDlg(`${esc(b.kurz)} · ${esc(b.name)}`, `Alle <b>${ts.length}</b> Aufgaben dieses Bereichs ${wort}?${v==="offen"&&ts.some(t=>t.bis&&t.bis<Date.now())?`<div class="notice">Bei Aufgaben mit abgelaufener Zeit bleibt die Zeitgrenze bestehen – ändere sie dort einzeln.</div>`:""}`,
-        "Ja, alle", ()=>{ snapshot(`Vor Sammeländerung ${b.kurz}`); ts.forEach(t=>t.status=v); save(); toast(`${b.kurz}: ${ts.length} Aufgaben geändert.`); });
+      const wort={offen:"öffnen",bald:"auf Bald stellen",fertig:"als erledigt sperren",nachholen:"wieder öffnen – ohne Zeitgrenze, damit alle nachholen können"}[v];
+      confirmDlg(`${esc(b.kurz)} · ${esc(b.name)}`, `Alle <b>${ts.length}</b> Aufgaben dieses Bereichs ${wort}?${v==="offen"&&ts.some(t=>t.bis&&t.bis<Date.now())?`<div class="notice">Bei Aufgaben mit abgelaufener Zeit bleibt die Zeitgrenze bestehen – dafür gibt es „nachholen lassen“.</div>`:""}${v==="nachholen"?`<div class="notice">Wer schon gespielt hat, behält sein Ergebnis – es zählt weiter nur ein besseres. Alle anderen können jetzt noch punkten.</div>`:""}`,
+        "Ja, alle", ()=>{ snapshot(`Vor Sammeländerung ${b.kurz}`); ts.forEach(t=>{ if(v==="nachholen"){ t.von=0; t.bis=0; t.status="offen"; } else t.status=v; }); save(); toast(`${b.kurz}: ${ts.length} Aufgaben geändert.`); });
       break;
     }
     case "grp-edit": case "grp-new": {

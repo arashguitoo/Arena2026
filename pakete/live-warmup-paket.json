@@ -1,0 +1,9 @@
+{
+  "app": "liga-aufgaben",
+  "name": "Live: Ferien-Check",
+  "bereich": {"id": "live", "kurz": "LIVE", "name": "Live im Unterricht"},
+  "tasks": [
+    {"nr": 6, "key": "live-pf-warmup", "title": "Live: Ferien-Check", "icon": "🔥", "max": 10, "art": "Team",
+     "file": "a1-live-perfekt.html?set=warmup", "text": "Nur im Unterricht: Was weißt du noch aus der Ferienliga?"}
+  ]
+}
