@@ -127,6 +127,8 @@ button,input{font:inherit;color:inherit}
 .tafel .klammer span{background:#EFE5D3;border-radius:10px;padding:.4vh .8vw}
 .tafel .klammer span.v{background:var(--board);color:var(--led);font-weight:800}
 .tafel .bsp{font-size:clamp(18px,1.6vw,30px);line-height:1.4;background:#F5EEDF;border-left:6px solid var(--led);border-radius:8px;padding:.8vh 1vw;margin:.8vh 0}
+.tafel-ov{position:fixed;inset:0 0 62px 0;z-index:50;background:rgba(14,24,42,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3vh 3vw}
+.tafel-ov .tafel{max-height:80vh}
 .reiter-tafel{display:flex;gap:8px;margin-bottom:1.6vh;flex-wrap:wrap;justify-content:center}
 .reiter-tafel button{border:0;border-radius:999px;padding:6px 16px;background:var(--board-3);color:#fff;font-weight:700;cursor:pointer;font-size:16px}
 .reiter-tafel button[aria-pressed="true"]{background:var(--led);color:var(--board)}
@@ -141,7 +143,7 @@ button,input{font:inherit;color:inherit}
 .uhr.pause b{opacity:.5}
 
 /* Moderation */
-.moder{display:flex;gap:8px;align-items:center;padding:1vh 1.6vw;background:rgba(0,0,0,.25);flex-wrap:wrap}
+.moder{display:flex;gap:8px;align-items:center;padding:1vh 1.6vw;background:#0f1b30;flex-wrap:wrap;position:relative;z-index:60}
 .moder .sp{flex:1}
 .moder .k{font-size:13px;color:#8d9ab3}
 .moder .korr{display:flex;gap:4px;align-items:center;font-size:13px;color:#8d9ab3}
@@ -167,6 +169,7 @@ button,input{font:inherit;color:inherit}
 
 <!-- ================= EINRICHTEN ================= -->
 <section id="setup"><div class="setup-in">
+  <a href="index.html" style="color:#c9d2e3;text-decoration:none;font-weight:700">‹ Zur Arena</a>
   <h1>⚔️ Tafel-Duell</h1>
   <p class="lead">Team gegen Team an der Leinwand – ohne Handys. Das Team, das dran ist, tippt seine Antwort an der Tafel. Richtig? Punkte gibt es automatisch. Falsch? Das nächste Team darf klauen.</p>
 
@@ -199,6 +202,7 @@ button,input{font:inherit;color:inherit}
   <div class="score" id="score"></div>
   <div class="buehne" id="buehne"></div>
   <div class="moder" id="moder"></div>
+  <div class="tafel-ov hidden" id="tafel-ov"></div>
   <div class="uhr hidden" id="uhr"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"></circle><circle class="fg" cx="60" cy="60" r="52"></circle></svg><b id="uhr-z">0</b></div>
 </section>
 
@@ -517,12 +521,14 @@ function renderModer(){
   $("#moder").innerHTML=`${korr}<span class="sp"></span>
     ${a&&!a.lehr?`<button class="btn" id="m-timer" title="Leertaste">⏱ Pause</button><button class="btn" id="m-loes" title="L">👁 Lösung</button>`:""}
     <button class="btn" id="m-tafel" title="T">📘 Lehrtafel</button>
+    <button class="btn ghost" id="m-home" title="Zurück zum Start">🏠 Start</button>
     <button class="btn ghost" id="m-zur" ${S.i===0?"disabled":""} title="←">‹</button>
     <button class="btn led" id="m-weiter" title="→">${S.i+1>=S.ablauf.length?(S.nurTafel?"Fertig":"Ergebnis 🏆"):"Weiter ›"}</button>
     <span class="k">→ weiter · Leertaste Pause · T Tafel · H Leiste</span>`;
 }
 
 function zeige(){
+  if(tafelOffen){ tafelOffen=null; $("#tafel-ov").classList.add("hidden"); }
   stopUhr();
   const a=S.ablauf[S.i];
   if(a.lehr) return zeigeTafel(a.lehr, false);
@@ -609,28 +615,33 @@ function flieg(i,w){
   el2.classList.add("plus"); const f=document.createElement("span"); f.className="flug"; f.textContent=(w>0?"+":"")+w; el2.appendChild(f); setTimeout(()=>f.remove(),1100);
 }
 function weiter(){
+  if(tafelOffen) return tafelZu();
   const a=S.ablauf[S.i];
   if(S.i+1>=S.ablauf.length) return S.nurTafel ? zurueckZumSetup() : ende();
   if(a && !a.lehr) S.dran=(S.dran+1)%Math.max(1,S.teams.length);
   S.i++; zeige();
 }
-function zurueck(){ if(S.i>0){ S.i--; zeige(); } }
+function zurueck(){ if(tafelOffen) return tafelZu(); if(S.i>0){ S.i--; zeige(); } }
 
 /* ---------- Lehrtafel ---------- */
-let tafelOffen=null;
+let tafelOffen=null;   // Ebene über einer laufenden Aufgabe
+const tafelReiter = (th, ov) => `<div class="reiter-tafel">${TH_REIHE.map(k=>`<button data-tafel="${k}" aria-pressed="${k===th}">${THEMEN[k].icon} ${THEMEN[k].name}</button>`).join("")}${ov?`<button data-tafel-zu style="background:var(--led);color:var(--board)">✕ Zurück zur Aufgabe</button>`:""}</div>`;
 function zeigeTafel(th, overlay){
+  if(overlay){
+    if(!tafelOffen){ tafelOffen={th, lief:laeuft}; stopUhr(); }
+    tafelOffen.th=th;
+    const ov=$("#tafel-ov"); ov.innerHTML=tafelReiter(th,true)+`<div class="tafel">${TAFELN[th]}</div>`; ov.classList.remove("hidden");
+    return;
+  }
   stopUhr(); $("#uhr").classList.add("hidden");
-  if(overlay) tafelOffen={th, html:$("#buehne").innerHTML, r:S.r};
-  $("#buehne").innerHTML=`<div class="reiter-tafel">${TH_REIHE.map(k=>`<button data-tafel="${k}" aria-pressed="${k===th}">${THEMEN[k].icon} ${THEMEN[k].name}</button>`).join("")}${overlay?`<button data-tafel-zu style="background:var(--led);color:var(--board)">Zurück zur Aufgabe ✕</button>`:""}</div>
-    <div class="tafel">${TAFELN[th]}</div>`;
+  $("#buehne").innerHTML=tafelReiter(th,false)+`<div class="tafel">${TAFELN[th]}</div>`;
   renderScore(); renderModer();
 }
 function tafelZu(){
   if(!tafelOffen) return;
-  $("#buehne").innerHTML=tafelOffen.html; S.r=tafelOffen.r; tafelOffen=null;
-  const a=S.ablauf[S.i]; if(a.t==="ordnen"||a.t==="bild") drawKacheln();
-  renderScore(); renderModer();
-  if(S.r && S.r.phase!=="fertig"){ $("#uhr").classList.remove("hidden"); startStop(true); }
+  const lief=tafelOffen.lief; tafelOffen=null;
+  $("#tafel-ov").classList.add("hidden"); $("#tafel-ov").innerHTML="";
+  if(lief && S.r && S.r.phase!=="fertig") startStop(true);
 }
 
 /* ---------- Timer & Ton ---------- */
@@ -670,7 +681,7 @@ function ton(gut, lang){
 /* ---------- Bedienung ---------- */
 document.addEventListener("click", e=>{
   if(!S || $("#spiel").classList.contains("hidden")) return;
-  const tb=e.target.closest("[data-tafel]"); if(tb){ const ov=!!tafelOffen; const keep=tafelOffen; zeigeTafel(tb.dataset.tafel, false); if(ov) tafelOffen=keep; if(tafelOffen) $("#buehne .reiter-tafel").insertAdjacentHTML("beforeend",`<button data-tafel-zu style="background:var(--led);color:var(--board)">Zurück zur Aufgabe ✕</button>`); return; }
+  const tb=e.target.closest("[data-tafel]"); if(tb){ zeigeTafel(tb.dataset.tafel, !!tafelOffen); return; }
   if(e.target.closest("[data-tafel-zu]")) return tafelZu();
   const kz=e.target.closest("[data-korr]"); if(kz){ const i=Number(kz.dataset.korr), w=Number(kz.dataset.w); S.teams[i].p=Math.max(0,S.teams[i].p+w); renderScore(); return; }
   if(e.target.closest("#m-timer")) return startStop();
@@ -678,6 +689,7 @@ document.addEventListener("click", e=>{
   if(e.target.closest("#m-weiter")) return weiter();
   if(e.target.closest("#m-zur")) return zurueck();
   if(e.target.closest("#m-tafel")){ if(tafelOffen) return tafelZu(); const a=S.ablauf[S.i]; return zeigeTafel(themaJetzt(), !a.lehr); }
+  if(e.target.closest("#m-home")) return heim();
   if(!S.r || S.r.phase==="fertig" || S.r.sperre) return;
   const k=e.target.closest("[data-kachel]"); if(k){ const x=S.r.kacheln[Number(k.dataset.kachel)]; if(!S.r.gelegt.includes(x)) S.r.gelegt.push(x); drawKacheln(); pruefeKacheln(); return; }
   const w=e.target.closest("[data-weg]"); if(w){ S.r.gelegt.splice(Number(w.dataset.weg),1); drawKacheln(); return; }
@@ -691,7 +703,7 @@ document.addEventListener("click", e=>{
 document.addEventListener("keydown", e=>{
   if(!S || $("#spiel").classList.contains("hidden") || /INPUT|TEXTAREA/.test(e.target.tagName)) return;
   if(e.code==="Space"){ e.preventDefault(); startStop(); }
-  else if(e.key==="ArrowRight"){ if(tafelOffen) tafelZu(); else weiter(); }
+  else if(e.key==="ArrowRight") weiter();
   else if(e.key==="ArrowLeft") zurueck();
   else if(e.key==="l"||e.key==="L") loesung();
   else if(e.key==="t"||e.key==="T"){ if(tafelOffen) tafelZu(); else { const a=S.ablauf[S.i]; zeigeTafel(themaJetzt(), !a.lehr); } }
@@ -700,7 +712,13 @@ document.addEventListener("keydown", e=>{
 });
 
 /* ---------- Ende & Übertragung ---------- */
-function zurueckZumSetup(){ stopUhr(); $("#uhr").classList.add("hidden"); $("#spiel").classList.add("hidden"); $("#ende").classList.add("hidden"); $("#setup").classList.remove("hidden"); renderSetup(); }
+function heim(){
+  const laufend = !S.nurTafel && S.teams.some(t=>t.p>0) && S.i+1<S.ablauf.length;
+  if(laufend && !confirm("Duell abbrechen und zum Start? Der Punktestand geht verloren.")) return;
+  if(tafelOffen) tafelZu();
+  zurueckZumSetup();
+}
+function zurueckZumSetup(){ stopUhr(); tafelOffen=null; $("#tafel-ov").classList.add("hidden"); $("#uhr").classList.add("hidden"); $("#spiel").classList.add("hidden"); $("#ende").classList.add("hidden"); $("#setup").classList.remove("hidden"); renderSetup(); }
 const bonus = platz => platz===1?5:platz===2?3:platz===3?2:1;
 function ende(){
   stopUhr(); $("#uhr").classList.add("hidden");
