@@ -391,6 +391,8 @@ const STANDARD_BEREICHE = [
   {id:"duell",  kurz:"DU",   name:"Duell-Arena",                 dateien:["duell.html"]},
   {id:"eigene", kurz:"E",    name:"Eigene Aufgaben",             dateien:[]}
 ];
+const LIVE_STANDARD = [["live-grammatik","Live: Grammatik-Duell","🧠"],["live-pf-warmup","Live: Ferien-Check","🔥"],
+  ["live-pf-haben","Live: Perfekt mit haben","✋"],["live-pf-sein","Live: Perfekt mit sein","🚶"],["live-pf-trennbar","Live: trennbare Verben","✂️"],["live-pf-mix","Live: Perfekt-Mix","🌀"]];
 const dateiName = f => String(f||"").split("?")[0].split("/").pop().toLowerCase();
 function bereichRaten(t){ const d=dateiName(t.file); const b=STANDARD_BEREICHE.find(x=>x.dateien.includes(d)); return b?b.id:"eigene"; }
 
@@ -481,6 +483,17 @@ function migrate(d){
     d.settings.ferienIntegriert=true;
   }
   d.tasks.forEach(t=>{ if(!t.gruppe || !d.bereiche.some(b=>b.id===t.gruppe)) t.gruppe=bereichRaten(t); });
+  /* Live-Spiele (live.html + PIN) brauchen eine Aufgabe, damit Punkte zählen – fehlende werden ergänzt */
+  if(d.bereiche.some(b=>b.id==="live") || true){
+    if(!d.bereiche.some(b=>b.id==="live")){ const pos=d.bereiche.findIndex(b=>b.id==="eigene"); d.bereiche.splice(pos<0?d.bereiche.length:pos,0,{id:"live",kurz:"LIVE",name:"Live im Unterricht"}); }
+    LIVE_STANDARD.forEach(([key,title,icon])=>{
+      if(d.tasks.some(t=>t.key===key)) return;
+      const nr=Math.max(0,...d.tasks.filter(t=>t.gruppe==="live").map(t=>Number(t.nr)||0))+1;
+      d.tasks.push({id:"lv"+Math.random().toString(36).slice(2,10), key, gruppe:"live", nr, title, icon, text:"Nur im Unterricht – mitmachen über live.html mit der PIN von der Leinwand.",
+        file:"live.html", art:"Team", max:10, due:"", von:0, bis:0, status:"offen", assign:{alle:true,teams:{},players:{}}, created:Date.now()});
+      d.__umgestellt = d.__umgestellt || "live";
+    });
+  }
   if(!d.bereiche.some(b=>b.id==="eigene")) d.bereiche.push({id:"eigene", kurz:"E", name:"Eigene Aufgaben"});
   return d;
 }
@@ -491,7 +504,7 @@ const nachOrd = (a,b) => taskOrd(a)-taskOrd(b);
 function naechsteNr(gid){ return Math.max(0,...state.tasks.filter(t=>t.gruppe===gid).map(t=>Number(t.nr)||0))+1; }
 function load(){
   try{ const raw=localStorage.getItem(LS_KEY); if(raw) return migrate(JSON.parse(raw)); }catch(e){ console.warn(e); }
-  return fresh();
+  return migrate(fresh());
 }
 let state = load();
 let auto = {live:{}, proof:{}, tries:{}};
@@ -1658,7 +1671,7 @@ function startSync(){
     const finish=()=>{ syncReady=true; const n=ensureCodes(); listenRemote(); listenAuto();
       const um=state.__umgestellt; delete state.__umgestellt;
       if(n||um) save(); else render(); schedulePublish();
-      if(um) toast(um==="ferien" ? "Die Ferienspiele sind jetzt normale Aufgaben: PT.5 bis PT.20 – ohne Zeitgrenze, Status unverändert." : "Neu: Aufgaben sind jetzt nach Bereichen nummeriert – L8.3, L10.2, PT.5 …"); };
+      if(um) toast(um==="live" ? "Live-Spiele sind jetzt startklar – Punkte zählen automatisch." : um==="ferien" ? "Die Ferienspiele sind jetzt normale Aufgaben: PT.5 bis PT.20 – ohne Zeitgrenze, Status unverändert." : "Neu: Aufgaben sind jetzt nach Bereichen nummeriert – L8.3, L10.2, PT.5 …"); };
     if(!v){
       if(localHas){ finish(); cloudWrite().then(()=>toast("Daten dieses Geräts nach Firebase übernommen.")); }
       else { setSync("saved"); finish(); }

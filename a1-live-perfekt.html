@@ -129,6 +129,35 @@ button{font:inherit;color:inherit}
 .dist{color:#aebad0;font-size:16px;margin-top:10px;text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 .wahl{display:grid;gap:10px}.wahl a{justify-content:space-between;text-decoration:none}.wahl small{font-weight:400;opacity:.75;font-size:15px}
+.pin-box{background:var(--led);color:var(--board);border-radius:22px;padding:14px 22px;display:inline-flex;flex-direction:column;align-items:center}
+.pin-box small{font-weight:800;font-size:clamp(14px,1.3vw,20px);letter-spacing:.08em;text-transform:uppercase}
+.pin-box b{font-family:var(--display);font-weight:900;font-size:clamp(70px,9vw,150px);line-height:.95;letter-spacing:.08em}
+.zugang{display:flex;gap:22px;align-items:center;flex-wrap:wrap;margin:6px 0 16px}
+.zugang .url{font-size:clamp(18px,1.9vw,30px);font-weight:800;background:var(--board-2);border-radius:12px;padding:8px 14px;word-break:break-all}
+#qr{background:#fff;padding:10px;border-radius:14px;width:clamp(130px,12vw,200px);height:clamp(130px,12vw,200px)}
+#qr img,#qr canvas{width:100%!important;height:100%!important}
+.th-tag{display:inline-block;font-family:var(--display);font-weight:800;font-size:clamp(16px,1.6vw,26px);border:2px solid rgba(255,255,255,.35);border-radius:999px;padding:2px 14px;margin-bottom:8px}
+.tafel-ov{position:fixed;inset:0 0 74px 0;z-index:40;background:rgba(14,24,42,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2vh 3vw}
+.bm-foot{position:relative;z-index:45}
+.tafel{background:var(--paper);color:var(--ink);border-radius:22px;padding:3vh 3vw;width:min(1500px,94vw);max-height:78vh;overflow:auto;text-align:left}
+.tafel h2{font-family:var(--display);font-weight:900;font-size:clamp(36px,4vw,74px);color:var(--board);margin:0 0 1.2vh;line-height:1}
+.tafel h2 small{font-size:.45em;color:var(--muted);font-weight:800;margin-left:.6em}
+.tafel .spalten{display:grid;grid-template-columns:1fr 1fr;gap:2.4vw}
+.tafel h3{font-family:var(--display);font-weight:800;font-size:clamp(22px,2vw,36px);color:var(--board);margin:1vh 0 .6vh;border-bottom:3px solid var(--led);display:inline-block}
+.tafel p,.tafel li{font-size:clamp(18px,1.6vw,30px);line-height:1.35;margin:.3vh 0}
+.tafel table{border-collapse:collapse;font-size:clamp(17px,1.55vw,29px);width:100%}
+.tafel th,.tafel td{padding:.5vh .8vw;border-bottom:2px solid var(--line);text-align:left}
+.tafel th{font-family:var(--display);font-weight:800;color:var(--board);font-size:1.1em}
+.tafel .hl{background:#FFE8A3;border-radius:6px;padding:0 .25em;font-weight:800}
+.tafel .rot{color:var(--bad);font-weight:800}
+.tafel .klammer{display:flex;gap:.6vw;align-items:center;flex-wrap:wrap;font-size:clamp(20px,1.8vw,34px);margin:.6vh 0}
+.tafel .klammer span{background:#EFE5D3;border-radius:10px;padding:.4vh .8vw}
+.tafel .klammer span.v{background:var(--board);color:var(--led);font-weight:800}
+.tafel .bsp{font-size:clamp(18px,1.6vw,30px);line-height:1.4;background:#F5EEDF;border-left:6px solid var(--led);border-radius:8px;padding:.8vh 1vw;margin:.8vh 0}
+.reiter-tafel{display:flex;gap:8px;margin-bottom:1.6vh;flex-wrap:wrap;justify-content:center}
+.reiter-tafel button{border:0;border-radius:999px;padding:6px 16px;background:var(--board-3,#24395E);color:#fff;font-weight:700;cursor:pointer;font-size:16px}
+.reiter-tafel button[aria-pressed="true"]{background:var(--led);color:var(--board)}
+.pin-in{width:100%;min-height:76px;border:3px solid var(--line);border-radius:16px;text-align:center;font-family:var(--display);font-weight:900;font-size:52px;letter-spacing:.3em;background:#fff}
 </style>
 </head>
 <body>
@@ -140,6 +169,13 @@ button{font:inherit;color:inherit}
     <span class="pts" id="me-pts"></span>
   </div></header>
   <main>
+    <section class="card hidden" id="p-pin">
+      <h2>🔴 Live-Spiel</h2>
+      <p>Gib die <b>Spiel-PIN</b> von der Leinwand ein.</p>
+      <form id="pin-form" autocomplete="off"><input class="pin-in" id="pin-in" inputmode="numeric" maxlength="4" placeholder="0000" aria-label="Spiel-PIN"><button class="btn wide" type="submit" style="margin-top:10px">Weiter</button></form>
+      <div class="err" id="pin-err" role="alert"></div>
+    </section>
+
     <section class="card" id="p-code">
       <h2>Live-Perfekt</h2>
       <p>Gib deinen Code ein. Dann bist du dabei!</p>
@@ -200,16 +236,19 @@ button{font:inherit;color:inherit}
     </div>
 
     <div class="bm-body" id="b-body"></div>
+    <div class="tafel-ov hidden" id="tafel-ov"></div>
 
     <div class="bm-foot">
       <button class="btn led" id="b-main">Spiel starten</button>
       <button class="btn ghost" id="b-neu" style="color:#fff;box-shadow:inset 0 0 0 2px #fff">Neues Spiel</button>
       <a class="btn ghost" href="?rolle=beamer" style="color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)">Anderer Fragesatz</a>
-      <span class="hint">Leertaste = weiter</span>
+      <button class="btn ghost" id="b-tafel" style="color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)">📘 Lehrtafel</button>
+      <span class="hint">Leertaste = weiter · T = Lehrtafel</span>
     </div>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -319,6 +358,196 @@ const SETS = {
       {f:"Welche Frage ist richtig?", o:["Bist du gestern geschwommen?","Hast du gestern geschwommen?","Bist du gestern geschwimmt?","Bist geschwommen du gestern?"], r:0, tipp:"schwimmen → sein; Partizip am Ende"}
     ]}
 };
+/* Grammatik-Duell: Fragen aus dem Tafel-Duell (Quiz, Blitz, Fehler als Auswahl) */
+const G_THEMEN = {
+  praesens:{name:"Präsens",      icon:"🟢", std:3},
+  perfekt: {name:"Perfekt",      icon:"⏪", std:3},
+  modal:   {name:"Modalverben",  icon:"💪", std:3},
+  akk:     {name:"Akkusativ",    icon:"🎯", std:5},
+  dativ:   {name:"Dativ",        icon:"🎁", std:2}
+};
+
+const G_ALLE = [
+  // PRÄSENS
+  {th:"praesens",t:"quiz",f:"Du ___ Deutsch.",h:"lernen",o:["lernst","lernt","lerne","lernen"]},
+  {th:"praesens",t:"quiz",f:"Er ___ nach Kiel.",h:"fahren",o:["fährt","fahrt","fährst","fahren"]},
+  {th:"praesens",t:"quiz",f:"Wir ___ Pizza.",h:"essen",o:["essen","isst","esst","esse"]},
+  {th:"praesens",t:"quiz",f:"___ du gern Bücher?",h:"lesen",o:["Liest","Lest","Lesen","Lese"]},
+  {th:"praesens",t:"quiz",f:"Ihr ___ aus Syrien.",h:"kommen",o:["kommt","kommen","kommst","komme"]},
+  {th:"praesens",t:"quiz",f:"Ich ___ 16 Jahre alt.",h:"sein",o:["bin","ist","bist","sind"]},
+  {th:"praesens",t:"ordnen",w:["am","Montag","spiele","ich","Fußball"],a:["am Montag spiele ich Fußball","ich spiele am Montag Fußball"],p:"."},
+  {th:"praesens",t:"ordnen",w:["wohnst","du","in","Plön"],a:["wohnst du in Plön"],p:"?"},
+  {th:"praesens",t:"ordnen",w:["was","machst","du","heute"],a:["was machst du heute"],p:"?"},
+  {th:"praesens",t:"fehler",w:["Er","fahrt","nach","Kiel."],x:1,l:"Er fährt nach Kiel.",tipp:"fahren: a → ä bei du und er/sie/es"},
+  {th:"praesens",t:"fehler",w:["Du","spielt","gut","Fußball."],x:1,l:"Du spielst gut Fußball.",tipp:"du → -st"},
+  {th:"praesens",t:"blitz",f:"essen – du …",o:["du isst","du esst"]},
+  {th:"praesens",t:"blitz",f:"sehen – er …",o:["er sieht","er seht"]},
+  {th:"praesens",t:"blitz",f:"haben – du …",o:["du hast","du habst"]},
+  // PERFEKT
+  {th:"perfekt",t:"quiz",f:"Ihr ___ nach Hamburg gefahren.",o:["seid","habt","sind","ist"]},
+  {th:"perfekt",t:"quiz",f:"trinken → Partizip II?",o:["getrunken","getrinkt","getrunkt","getrinken"]},
+  {th:"perfekt",t:"quiz",f:"Ich habe meine Oma ___.",h:"besuchen",o:["besucht","gebesucht","begesucht","besuchen"]},
+  {th:"perfekt",t:"quiz",f:"einkaufen → Partizip II?",o:["eingekauft","geeinkauft","einkauft","eingekaufen"]},
+  {th:"perfekt",t:"ordnen",w:["gestern","habe","ich","Pizza","gegessen"],a:["gestern habe ich Pizza gegessen","ich habe gestern Pizza gegessen"],p:"."},
+  {th:"perfekt",t:"ordnen",w:["was","hast","du","am","Wochenende","gemacht"],a:["was hast du am Wochenende gemacht"],p:"?"},
+  {th:"perfekt",t:"bild",e:"📞 👵",h:"gestern · anrufen",w:["gestern","habe","ich","meine","Oma","angerufen"],a:["gestern habe ich meine Oma angerufen","ich habe gestern meine Oma angerufen"],p:"."},
+  {th:"perfekt",t:"bild",e:"🚌 ➡️ 🏙️",h:"am Samstag · fahren",w:["am","Samstag","bin","ich","in","die","Stadt","gefahren"],a:["am Samstag bin ich in die Stadt gefahren","ich bin am Samstag in die Stadt gefahren"],p:"."},
+  {th:"perfekt",t:"bild",e:"⏰ 🛏️ ➡️ 🧍",h:"heute · aufstehen",w:["heute","bin","ich","früh","aufgestanden"],a:["heute bin ich früh aufgestanden","ich bin heute früh aufgestanden"],p:"."},
+  {th:"perfekt",t:"fehler",w:["Ich","habe","nach","Kiel","gefahren."],x:1,l:"Ich bin nach Kiel gefahren.",tipp:"fahren → sein"},
+  {th:"perfekt",t:"fehler",w:["Wir","haben","Fußball","gespielen."],x:3,l:"Wir haben Fußball gespielt.",tipp:"regelmäßig: ge…t"},
+  {th:"perfekt",t:"blitz",f:"gehen",o:["ist gegangen","hat gegangen"]},
+  {th:"perfekt",t:"blitz",f:"aufstehen",o:["ist aufgestanden","hat aufgestanden"]},
+  {th:"perfekt",t:"blitz",f:"telefonieren",o:["hat telefoniert","hat getelefoniert"]},
+  // MODALVERBEN
+  {th:"modal",t:"quiz",f:"Ich ___ gut schwimmen.",h:"können",o:["kann","kannst","können","könnt"]},
+  {th:"modal",t:"quiz",f:"Du ___ jetzt nach Hause gehen.",h:"müssen",o:["musst","muss","müsst","müssen"]},
+  {th:"modal",t:"quiz",f:"Hier ___ man nicht rauchen.",h:"dürfen",o:["darf","darfst","dürfen","dürft"]},
+  {th:"modal",t:"quiz",f:"___ ihr ins Kino gehen?",h:"wollen",o:["Wollt","Will","Wollen","Willst"]},
+  {th:"modal",t:"quiz",f:"Ich ___ einen Tee, bitte.",h:"möchten",o:["möchte","möchtest","möchten","möchtet"]},
+  {th:"modal",t:"quiz",f:"Welcher Satz ist richtig?",o:["Ich kann gut kochen.","Ich kann kochen gut.","Ich kochen kann gut.","Ich kann gut kocht."]},
+  {th:"modal",t:"ordnen",w:["ich","muss","heute","Hausaufgaben","machen"],a:["ich muss heute Hausaufgaben machen","heute muss ich Hausaufgaben machen"],p:"."},
+  {th:"modal",t:"ordnen",w:["wir","wollen","am","Samstag","Fußball","spielen"],a:["wir wollen am Samstag Fußball spielen","am Samstag wollen wir Fußball spielen"],p:"."},
+  {th:"modal",t:"ordnen",w:["darf","ich","das","Fenster","öffnen"],a:["darf ich das Fenster öffnen"],p:"?"},
+  {th:"modal",t:"fehler",w:["Er","kann","gut","singt."],x:3,l:"Er kann gut singen.",tipp:"Modalverb + Infinitiv am Ende"},
+  {th:"modal",t:"fehler",w:["Du","muss","jetzt","gehen."],x:1,l:"Du musst jetzt gehen.",tipp:"du musst"},
+  {th:"modal",t:"blitz",f:"können – du …",o:["du kannst","du könnst"]},
+  {th:"modal",t:"blitz",f:"müssen – er …",o:["er muss","er müsst"]},
+  {th:"modal",t:"blitz",f:"wollen – ich …",o:["ich will","ich wolle"]},
+  // AKKUSATIV (als Objekt)
+  {th:"akk",t:"quiz",f:"Ich habe ___ Bruder.",h:"der Bruder",o:["einen","ein","eine","einem"]},
+  {th:"akk",t:"quiz",f:"Wir kaufen ___ Tisch.",h:"der Tisch",o:["den","der","dem","die"]},
+  {th:"akk",t:"quiz",f:"Ich suche ___ Wohnung.",h:"die Wohnung",o:["eine","einen","ein","einer"]},
+  {th:"akk",t:"quiz",f:"Siehst du ___ Mann dort?",h:"der Mann",o:["den","der","dem","das"]},
+  {th:"akk",t:"quiz",f:"Ich trinke ___ Kaffee.",h:"der Kaffee",o:["keinen","kein","keine","keinem"]},
+  {th:"akk",t:"quiz",f:"Er braucht ___ Handy.",h:"das Handy",o:["ein","einen","eine","einem"]},
+  {th:"akk",t:"quiz",f:"Ich besuche ___ Opa.",h:"mein Opa",o:["meinen","mein","meinem","meine"]},
+  {th:"akk",t:"quiz",f:"Der Apfel? Ich esse ___.",o:["ihn","er","sie","es"]},
+  {th:"akk",t:"quiz",f:"Ich sehe dich. Siehst du ___ auch?",o:["mich","ich","mir","mein"]},
+  {th:"akk",t:"quiz",f:"„Der Junge kauft einen Ball.“ – Was ist das Akkusativ-Objekt?",o:["einen Ball","der Junge","kauft","der Junge kauft"]},
+  {th:"akk",t:"quiz",f:"„Lina sieht den Film.“ – Wen oder was sieht Lina?",o:["den Film","Lina","sieht","Lina sieht"]},
+  {th:"akk",t:"ordnen",w:["ich","kaufe","einen","Kuchen"],a:["ich kaufe einen Kuchen"],p:"."},
+  {th:"akk",t:"ordnen",w:["hast","du","einen","Bruder"],a:["hast du einen Bruder"],p:"?"},
+  {th:"akk",t:"ordnen",w:["wir","brauchen","keinen","Fernseher"],a:["wir brauchen keinen Fernseher"],p:"."},
+  {th:"akk",t:"ordnen",w:["ich","esse","den","Apfel"],a:["ich esse den Apfel","den Apfel esse ich"],p:"."},
+  {th:"akk",t:"fehler",w:["Ich","habe","ein","Hund."],x:2,l:"Ich habe einen Hund.",tipp:"der Hund → einen Hund"},
+  {th:"akk",t:"fehler",w:["Wir","suchen","der","Bahnhof."],x:2,l:"Wir suchen den Bahnhof.",tipp:"der Bahnhof → den Bahnhof"},
+  {th:"akk",t:"fehler",w:["Er","kauft","einen","Lampe."],x:2,l:"Er kauft eine Lampe.",tipp:"die Lampe bleibt: eine Lampe"},
+  {th:"akk",t:"fehler",w:["Kennst","du","er?"],x:2,l:"Kennst du ihn?",tipp:"er → ihn"},
+  {th:"akk",t:"blitz",f:"der Tisch → Ich kaufe …",o:["den Tisch","der Tisch"]},
+  {th:"akk",t:"blitz",f:"ein Stuhl → Ich brauche …",o:["einen Stuhl","ein Stuhl"]},
+  {th:"akk",t:"blitz",f:"die Lampe → Ich suche …",o:["die Lampe","den Lampe"]},
+  {th:"akk",t:"blitz",f:"das Bett → Ich kaufe …",o:["das Bett","den Bett"]},
+  {th:"akk",t:"blitz",f:"mein Bruder → Ich besuche …",o:["meinen Bruder","mein Bruder"]},
+  {th:"akk",t:"blitz",f:"kein Hund → Ich habe …",o:["keinen Hund","kein Hund"]},
+  // DATIV (wenig)
+  {th:"dativ",t:"quiz",f:"Ich fahre mit ___ Bus.",h:"der Bus",o:["dem","den","der","das"]},
+  {th:"dativ",t:"quiz",f:"Ich schenke ___ Mutter Blumen.",h:"meine Mutter",o:["meiner","meine","meinen","mein"]},
+  {th:"dativ",t:"quiz",f:"Kannst du ___ helfen?",o:["mir","mich","ich","mein"]},
+  {th:"dativ",t:"ordnen",w:["ich","gebe","dem","Lehrer","das","Heft"],a:["ich gebe dem Lehrer das Heft"],p:"."},
+  {th:"dativ",t:"fehler",w:["Ich","helfe","dich."],x:2,l:"Ich helfe dir.",tipp:"helfen + Dativ: dir"},
+  {th:"dativ",t:"blitz",f:"mit + der Zug",o:["mit dem Zug","mit den Zug"]}
+];
+
+const G_REIHE=["praesens","perfekt","modal","akk","dativ"];
+SETS.grammatik = { key:"live-grammatik", titel:"Grammatik-Duell", icon:"🧠", sub:"Präsens · Perfekt · Modalverben · Akkusativ · Dativ",
+  auswahl:{praesens:3, perfekt:3, modal:3, akk:5, dativ:2},
+  fragen: G_ALLE.filter(a=>a.t==="quiz"||a.t==="blitz"||a.t==="fehler").map(a=>{
+    if(a.t==="fehler") return {th:a.th, f:"Welcher Satz ist richtig?", o:[a.l, a.w.join(" ")], r:0, tipp:a.tipp};
+    const f=a.f.includes("___")&&a.h ? a.f+` (${a.h})` : a.f;
+    return {th:a.th, f, o:a.o.slice(), r:0, tipp:(a.f.includes("___")?a.f.replace("___",a.o[0]):a.o[0])};
+  })
+};
+const TAFELN = {
+  praesens:`<h2>Präsens <small>Was passiert jetzt?</small></h2>
+    <div class="spalten"><div>
+      <h3>Endungen</h3>
+      <table><tr><th></th><th>spielen</th><th>fahren</th><th>essen</th></tr>
+        <tr><td>ich</td><td>spiel<span class="hl">e</span></td><td>fahr<span class="hl">e</span></td><td>ess<span class="hl">e</span></td></tr>
+        <tr><td>du</td><td>spiel<span class="hl">st</span></td><td>f<span class="rot">ä</span>hr<span class="hl">st</span></td><td><span class="rot">i</span>ss<span class="hl">t</span></td></tr>
+        <tr><td>er/sie/es</td><td>spiel<span class="hl">t</span></td><td>f<span class="rot">ä</span>hr<span class="hl">t</span></td><td><span class="rot">i</span>ss<span class="hl">t</span></td></tr>
+        <tr><td>wir</td><td>spiel<span class="hl">en</span></td><td>fahr<span class="hl">en</span></td><td>ess<span class="hl">en</span></td></tr>
+        <tr><td>ihr</td><td>spiel<span class="hl">t</span></td><td>fahr<span class="hl">t</span></td><td>ess<span class="hl">t</span></td></tr>
+        <tr><td>sie/Sie</td><td>spiel<span class="hl">en</span></td><td>fahr<span class="hl">en</span></td><td>ess<span class="hl">en</span></td></tr></table>
+    </div><div>
+      <h3>Vokalwechsel nur bei du + er/sie/es</h3>
+      <p>a → <b>ä</b>: fahren → du f<b>ä</b>hrst, schlafen → er schl<b>ä</b>ft</p>
+      <p>e → <b>i</b>: essen → du <b>i</b>sst, sprechen → er spr<b>i</b>cht</p>
+      <p>e → <b>ie</b>: lesen → du l<b>ie</b>st, sehen → er s<b>ie</b>ht</p>
+      <h3>Das Verb steht auf Platz 2</h3>
+      <div class="klammer"><span>Am Montag</span><span class="v">spiele</span><span>ich Fußball.</span></div>
+      <div class="klammer"><span>Was</span><span class="v">machst</span><span>du?</span></div>
+      <p>Ja/Nein-Frage: Verb auf Platz 1 – <b>Wohnst</b> du in Plön?</p>
+    </div></div>`,
+  perfekt:`<h2>Perfekt <small>Was ist passiert?</small></h2>
+    <div class="klammer"><span>Ich</span><span class="v">habe</span><span>gestern Pizza</span><span class="v">gegessen</span><span>.</span></div>
+    <p><b>haben</b> oder <b>sein</b> auf Platz 2 – das <b>Partizip II</b> ganz am Ende.</p>
+    <div class="spalten"><div>
+      <h3>Partizip II</h3>
+      <table><tr><td>regelmäßig</td><td><b>ge</b>…<b>t</b></td><td>machen → gemacht</td></tr>
+        <tr><td>unregelmäßig</td><td><b>ge</b>…<b>en</b></td><td>trinken → getrunken</td></tr>
+        <tr><td>trennbar</td><td>…<b>ge</b>…</td><td>einkaufen → ein<b>ge</b>kauft</td></tr>
+        <tr><td>be-, ver-, er-</td><td>kein ge-</td><td>besuchen → besucht</td></tr>
+        <tr><td>-ieren</td><td>kein ge-</td><td>telefonieren → telefoniert</td></tr></table>
+    </div><div>
+      <h3>sein oder haben?</h3>
+      <p><b>sein</b>: Bewegung von A nach B – gehen, fahren, fliegen, kommen</p>
+      <p><b>sein</b>: Veränderung – aufstehen, einschlafen · und: <b>bleiben</b></p>
+      <p><b>haben</b>: alle anderen – essen, spielen, lernen …</p>
+      <div class="bsp">Ich <b>bin</b> nach Kiel <b>gefahren</b>. · Ich <b>habe</b> Fußball <b>gespielt</b>.</div>
+    </div></div>`,
+  modal:`<h2>Modalverben <small>können, müssen, wollen, dürfen, möchten</small></h2>
+    <div class="spalten"><div>
+      <table><tr><th></th><th>können</th><th>müssen</th><th>wollen</th><th>dürfen</th><th>möchten</th></tr>
+        <tr><td>ich</td><td><span class="hl">kann</span></td><td><span class="hl">muss</span></td><td><span class="hl">will</span></td><td><span class="hl">darf</span></td><td>möchte</td></tr>
+        <tr><td>du</td><td>kannst</td><td>musst</td><td>willst</td><td>darfst</td><td>möchtest</td></tr>
+        <tr><td>er/sie/es</td><td><span class="hl">kann</span></td><td><span class="hl">muss</span></td><td><span class="hl">will</span></td><td><span class="hl">darf</span></td><td>möchte</td></tr>
+        <tr><td>wir</td><td>können</td><td>müssen</td><td>wollen</td><td>dürfen</td><td>möchten</td></tr>
+        <tr><td>ihr</td><td>könnt</td><td>müsst</td><td>wollt</td><td>dürft</td><td>möchtet</td></tr>
+        <tr><td>sie/Sie</td><td>können</td><td>müssen</td><td>wollen</td><td>dürfen</td><td>möchten</td></tr></table>
+      <p style="margin-top:1vh"><b>ich</b> und <b>er/sie/es</b>: gleich – ohne Endung!</p>
+    </div><div>
+      <h3>Satzklammer</h3>
+      <div class="klammer"><span>Ich</span><span class="v">kann</span><span>gut</span><span class="v">schwimmen</span><span>.</span></div>
+      <div class="klammer"><span>Heute</span><span class="v">muss</span><span>ich Hausaufgaben</span><span class="v">machen</span><span>.</span></div>
+      <p>Modalverb auf Platz 2 – <b>Infinitiv</b> ganz am Ende.</p>
+      <h3>Bedeutung</h3>
+      <p>können = Fähigkeit · müssen = Pflicht · wollen = Wunsch (stark)</p>
+      <p>dürfen = Erlaubnis · möchten = Wunsch (höflich)</p>
+    </div></div>`,
+  akk:`<h2>Akkusativ <small>das Objekt: Wen? oder Was?</small></h2>
+    <div class="bsp" style="font-size:clamp(20px,1.9vw,36px)">Der Junge kauft <b>einen Ball</b>. → <i>Was</i> kauft der Junge? → <span class="hl">einen Ball</span> = Akkusativ-Objekt</div>
+    <div class="spalten"><div>
+      <h3>Nur maskulin ändert sich!</h3>
+      <table><tr><th></th><th>Nominativ</th><th>Akkusativ</th></tr>
+        <tr><td>maskulin</td><td>der / ein / kein / mein</td><td><span class="hl">den / einen / keinen / meinen</span></td></tr>
+        <tr><td>feminin</td><td>die / eine</td><td>die / eine</td></tr>
+        <tr><td>neutral</td><td>das / ein</td><td>das / ein</td></tr>
+        <tr><td>Plural</td><td>die / –</td><td>die / –</td></tr></table>
+      <h3>Pronomen</h3>
+      <p>ich → <b>mich</b> · du → <b>dich</b> · er → <b>ihn</b> · sie → sie · es → es</p>
+      <p>wir → <b>uns</b> · ihr → <b>euch</b> · sie/Sie → sie/Sie</p>
+    </div><div>
+      <h3>Verben mit Akkusativ</h3>
+      <p>haben · brauchen · kaufen · suchen · sehen · essen · trinken · möchten · finden · besuchen · kennen · lieben</p>
+      <div class="bsp">Ich habe <b>einen</b> Bruder.<br>Wir kaufen <b>den</b> Tisch.<br>Ich trinke <b>keinen</b> Kaffee.<br>Der Apfel? Ich esse <b>ihn</b>.</div>
+    </div></div>`,
+  dativ:`<h2>Dativ <small>kurz: Wem?</small></h2>
+    <div class="spalten"><div>
+      <table><tr><th></th><th>Nominativ</th><th>Dativ</th></tr>
+        <tr><td>maskulin</td><td>der / ein</td><td><span class="hl">dem / einem</span></td></tr>
+        <tr><td>feminin</td><td>die / eine</td><td><span class="hl">der / einer</span></td></tr>
+        <tr><td>neutral</td><td>das / ein</td><td><span class="hl">dem / einem</span></td></tr>
+        <tr><td>Plural</td><td>die</td><td><span class="hl">den</span> (+n)</td></tr></table>
+      <p style="margin-top:1vh">Pronomen: mir · dir · ihm · ihr · uns · euch · ihnen</p>
+    </div><div>
+      <h3>Wann?</h3>
+      <p>nach <b>mit, bei, zu, von, aus, nach</b> – mit <b>dem</b> Bus</p>
+      <p>Verben: <b>helfen</b>, <b>danken</b>, <b>gefallen</b> – Kannst du <b>mir</b> helfen?</p>
+      <p>Geben/schenken: <b>Wem</b>? (Dativ) <b>Was</b>? (Akkusativ)</p>
+      <div class="bsp">Ich schenke <b>meiner Mutter</b> <span class="hl">Blumen</span>.</div>
+    </div></div>`
+};
+
 const PARAM  = new URLSearchParams(location.search);
 const SET_ID = SETS[PARAM.get("set")] ? PARAM.get("set") : null;
 const SET    = SETS[SET_ID] || SETS.mix;
@@ -354,6 +583,7 @@ try{
   }
 }catch(e){ console.warn(e); }
 const serverNow = () => Date.now() + offset;
+const LIVE_URL = location.href.replace(/[?#].*$/,"").replace(/[^\/]*$/,"")+"live.html";
 const ROLLE = new URLSearchParams(location.search).get("rolle")==="beamer" ? "beamer" : "spieler";
 
 /* ==========================================================
@@ -373,7 +603,7 @@ function startBeamer(){
   $("#b-login h2").textContent=SET.titel+" – Leinwand";
   if(!auth||!db){ $("#b-err").textContent="Keine Verbindung zu Firebase."; return; }
 
-  let runde=[], idx=-1, phase="lobby", state=null, players={}, ranking={}, antworten={}, teams=[], roster={}, tick=null, sid=null;
+  let pin="", letztesThema="", runde=[], idx=-1, phase="lobby", state=null, players={}, ranking={}, antworten={}, teams=[], roster={}, tick=null, sid=null;
 
   auth.onAuthStateChanged(u=>{
     if(!u) return;
@@ -396,9 +626,13 @@ function startBeamer(){
   }
   async function neu(frisch=true){
     sid = Date.now().toString(36);
-    runde = shuffle(FRAGEN).map(q=>{ const opts=shuffle(q.o.map((t,i)=>({t, ok:i===q.r}))); return {f:q.f, tipp:q.tipp, o:opts.map(o=>o.t), r:opts.findIndex(o=>o.ok)}; });
-    idx=-1; phase="lobby"; ranking={};
-    await db.ref(BATTLE).set({ state:{phase:"lobby", sid, gesamt:runde.length, dauer:DAUER, titel:SET.titel, key:LIGA_KEY} });
+    let auswahl=FRAGEN;
+    if(SET.auswahl){ auswahl=[]; G_REIHE.forEach(th=>{ const n=SET.auswahl[th]||0; auswahl=auswahl.concat(shuffle(FRAGEN.filter(q=>q.th===th)).slice(0,n)); }); }
+    else auswahl=shuffle(FRAGEN);
+    runde = auswahl.map(q=>{ const opts=shuffle(q.o.map((t,i)=>({t, ok:i===q.r}))); return {f:q.f, tipp:q.tipp, th:q.th||"", o:opts.map(o=>o.t), r:opts.findIndex(o=>o.ok)}; });
+    idx=-1; phase="lobby"; ranking={}; letztesThema="";
+    pin=String(1000+Math.floor(Math.random()*9000));
+    await db.ref(BATTLE).set({ state:{phase:"lobby", sid, pin, gesamt:runde.length, dauer:DAUER, titel:SET.titel, key:LIGA_KEY} });
     malen();
   }
 
@@ -410,30 +644,51 @@ function startBeamer(){
     $("#b-geantwortet").classList.toggle("hidden", phase!=="frage");
     $("#b-nr").textContent=idx+1;
     if(phase==="lobby") return lobby(body);
+    if(phase==="tafel"){ body.innerHTML=tafelHTML(letztesThema,false); $("#b-main").textContent="Los geht's – erste Frage"; $("#b-main").disabled=false; return; }
     if(phase==="frage") return frage(body);
     if(phase==="aufloesung") return aufloesung(body);
     if(phase==="stand") return stand(body, false);
     if(phase==="ende") return ende(body);
   }
+  function tafelHTML(th, ov){
+    th=th||"akk";
+    return `<div class="reiter-tafel">${G_REIHE.map(k=>`<button data-tafel="${k}" aria-pressed="${k===th}">${G_THEMEN[k].icon} ${G_THEMEN[k].name}</button>`).join("")}${ov?`<button data-tafel-zu style="background:var(--led);color:var(--board)">✕ Schließen</button>`:""}</div><div class="tafel">${TAFELN[th]}</div>`;
+  }
+  let tafelOv=null;
+  function tafelAuf(th){ tafelOv=th||tafelOv||letztesThema||(runde[Math.max(0,idx)]||{}).th||"praesens"; const o=$("#tafel-ov"); o.innerHTML=tafelHTML(tafelOv,true); o.classList.remove("hidden"); }
+  function tafelZu(){ tafelOv=null; $("#tafel-ov").classList.add("hidden"); }
+  $("#b-tafel").addEventListener("click", ()=>{ if(tafelOv) tafelZu(); else tafelAuf(); });
+  document.addEventListener("click", e=>{
+    const t=e.target.closest("[data-tafel]"); if(t){ if(phase==="tafel" && !tafelOv && !t.closest("#tafel-ov")){ letztesThema=t.dataset.tafel; $("#b-body").innerHTML=tafelHTML(letztesThema,false); } else tafelAuf(t.dataset.tafel); return; }
+    if(e.target.closest("[data-tafel-zu]")) tafelZu();
+  });
   function lobby(body){
     const url=location.href.replace(/\?.*$/,"");
     body.innerHTML=`<div class="lobby">
       <div><h1>${SET.icon} ${esc(SET.titel)}</h1>
         <p style="font-size:clamp(18px,2vw,26px);color:#c9d2e3;margin:0 0 16px">${esc(SET.sub)} · ${runde.length} Fragen</p>
+        <div class="zugang"><div class="pin-box"><small>Spiel-PIN</small><b>${esc(pin)}</b></div><div id="qr" title="Mit der Kamera scannen"></div></div>
         <ul class="steps">
-          <li><b>1</b><span>Handy nehmen und die Arena öffnen</span></li>
-          <li><b>2</b><span>Aufgabe <b style="font-size:inherit;color:#fff">${esc(SET.titel)}</b> antippen</span></li>
+          <li><b>1</b><span>QR-Code scannen – oder öffnen: <span class="url">${esc(LIVE_URL.replace(/^https?:\/\//,""))}</span></span></li>
+          <li><b>2</b><span>PIN <b style="font-size:inherit;color:#fff">${esc(pin)}</b> eingeben</span></li>
           <li><b>3</b><span>Deinen Code eingeben – fertig!</span></li>
         </ul></div>
       <div class="joined"><div class="n">${Object.keys(players).length} dabei</div>
         <div class="chips">${Object.values(players).map(p=>`<span class="chip"><i style="background:${esc(farbe(p.team))}"></i>${esc(p.name||"?")}</span>`).join("")||`<span style="color:#aebad0">Noch niemand …</span>`}</div>
       </div></div>`;
     $("#b-main").textContent="Spiel starten"; $("#b-main").disabled=Object.keys(players).length===0;
+    try{ if(window.QRCode && $("#qr")) new QRCode($("#qr"), {text:LIVE_URL+"?pin="+pin, width:220, height:220, correctLevel:QRCode.CorrectLevel.M}); else if($("#qr")) $("#qr").remove(); }catch(e){ if($("#qr")) $("#qr").remove(); }
   }
   const farbe = tid => (teams.find(t=>t.id===tid)||{}).color || "#8190ab";
   const teamName = tid => (teams.find(t=>t.id===tid)||{}).name || "ohne Team";
 
   async function frageStarten(){
+    const naechste=runde[idx+1];
+    if(naechste && naechste.th && naechste.th!==letztesThema && phase!=="tafel"){
+      letztesThema=naechste.th; phase="tafel";
+      await db.ref(`${BATTLE}/state`).update({phase:"tafel", thema:(G_THEMEN[naechste.th]||{}).name||""});
+      return malen();
+    }
     idx++;
     if(idx>=runde.length) return endeStarten();
     phase="frage";
@@ -466,7 +721,7 @@ function startBeamer(){
     const R=54, LEN=2*Math.PI*R;
     body.innerHTML=`<div style="display:flex;gap:26px;align-items:center;justify-content:center;margin-bottom:10px">
         <div class="ring" id="b-ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="${R}"></circle><circle class="fg" cx="60" cy="60" r="${R}" data-len="${LEN.toFixed(1)}" style="stroke-dasharray:${LEN.toFixed(1)};stroke-dashoffset:0"></circle></svg><b id="b-sek">${DAUER}</b></div>
-        <h1 class="bm-frage" style="margin:0;flex:1">${esc(q.f)}</h1></div>
+        <div style="flex:1">${q.th&&G_THEMEN[q.th]?`<span class="th-tag">${G_THEMEN[q.th].icon} ${esc(G_THEMEN[q.th].name)}</span>`:""}<h1 class="bm-frage" style="margin:0">${esc(q.f)}</h1></div></div>
       <div class="bm-answers">${q.o.map((t,i)=>`<div class="bm-ans ${CLS[i]}"><span class="l">${LETTER[i]}</span><span>${esc(t)}</span></div>`).join("")}</div>`;
     $("#b-main").textContent="Auflösen"; $("#b-main").disabled=false;
   }
@@ -539,7 +794,7 @@ function startBeamer(){
 
   $("#b-main").addEventListener("click", async ()=>{
     $("#b-main").disabled=true;
-    if(phase==="lobby") return frageStarten();
+    if(phase==="lobby"||phase==="tafel") return frageStarten();
     if(phase==="frage") return aufloesen();
     if(phase==="aufloesung"){
       if(idx+1>=runde.length) return endeStarten();
@@ -550,7 +805,9 @@ function startBeamer(){
   });
   $("#b-neu").addEventListener("click", ()=>{ if(confirm("Neues Spiel starten? Der aktuelle Punktestand wird gelöscht.")) neu(); });
   document.addEventListener("keydown", e=>{
-    if(e.code==="Space"||e.code==="Enter"){ e.preventDefault(); if(!$("#b-main").disabled) $("#b-main").click(); }
+    if(e.key==="t"||e.key==="T"){ if(tafelOv) tafelZu(); else tafelAuf(); return; }
+    if(e.key==="Escape" && tafelOv){ tafelZu(); return; }
+    if(e.code==="Space"||e.code==="Enter"){ e.preventDefault(); if(tafelOv){ tafelZu(); return; } if(!$("#b-main").disabled) $("#b-main").click(); }
   });
 }
 
@@ -558,14 +815,15 @@ function startBeamer(){
    SPIELER
    ========================================================== */
 function startSpieler(){
-  document.title=SET.titel+" – mitspielen";
-  $("#p-code h2").textContent=SET.icon+" "+SET.titel;
-  $("#me-name").textContent=SET.titel;
+  const TITEL = SET_ID ? SET.icon+" "+SET.titel : "🔴 Live-Spiel";
+  document.title=TITEL+" – mitspielen";
+  $("#p-code h2").textContent=TITEL;
+  $("#me-name").textContent=SET_ID?SET.titel:"Live-Spiel";
   let me=null, state=null, meinRanking=null, geantwortet={}, tick=null, gesendet=false, letzteSid=null;
   try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
 
   function zeige(id){
-    ["p-code","p-wait","p-frage","p-result","p-ende"].forEach(s=>{ const el=$("#"+s); if(el) el.classList.toggle("hidden", s!==id); });
+    ["p-pin","p-code","p-wait","p-frage","p-result","p-ende"].forEach(s=>{ const el=$("#"+s); if(el) el.classList.toggle("hidden", s!==id); });
   }
   function warten(emo, big, sub){ $("#w-emo").textContent=emo; $("#w-big").textContent=big; $("#w-sub").textContent=sub||""; zeige("p-wait"); }
 
@@ -607,6 +865,7 @@ function startSpieler(){
     clearInterval(tick);
     if(!state){ warten("⏳","Gleich geht es los","Warte auf deine Lehrkraft."); return; }
     if(state.sid && letzteSid!==state.sid){ letzteSid=state.sid; geantwortet={}; gesendet=false; eintragen(); }
+    if(state.phase==="tafel"){ warten("👀","Schau nach vorne!",state.thema?`Gleich geht es um: ${state.thema}`:"Gleich kommt die nächste Frage."); return; }
     if(state.phase==="lobby"){ warten("✅","Du bist dabei!","Schau auf die Leinwand. Gleich beginnt Frage 1."); return; }
     if(state.phase==="stand"){ warten("📊","Zwischenstand","Schau auf die Leinwand!"); return; }
     if(state.phase==="frage") return frage();
@@ -676,7 +935,21 @@ function startSpieler(){
     }catch(e){ console.warn(e); ziel.textContent="Die Liga-Punkte konnten nicht gespeichert werden. Zeig das deiner Lehrkraft."; }
   }
 
-  if(me) los(); else { zeige("p-code"); setTimeout(()=>$("#code-in")&&$("#code-in").focus(),60); }
+  /* Spiel-PIN: zuerst die PIN von der Leinwand, dann (falls nötig) der eigene Code */
+  const weiterNachPin = () => { if(me) los(); else { zeige("p-code"); setTimeout(()=>$("#code-in")&&$("#code-in").focus(),60); } };
+  async function pinPruefen(eingabe, still){
+    try{
+      const st=(await db.ref(`${BATTLE}/state`).once("value")).val();
+      if(!st || !st.pin){ weiterNachPin(); return; }
+      if(String(eingabe).trim()===String(st.pin)){ try{ sessionStorage.setItem("live_pin", st.pin); }catch(e){} weiterNachPin(); return; }
+      zeige("p-pin"); if(!still) $("#pin-err").textContent="Diese PIN stimmt nicht. Schau noch einmal auf die Leinwand.";
+    }catch(e){ zeige("p-pin"); $("#pin-err").textContent="Keine Verbindung."; }
+  }
+  $("#pin-form").addEventListener("submit", e=>{ e.preventDefault(); $("#pin-err").textContent="Prüfe …"; pinPruefen($("#pin-in").value.replace(/\D/g,"")); });
+  const pinUrl=(new URLSearchParams(location.search).get("pin")||"").replace(/\D/g,"");
+  let pinGemerkt=""; try{ pinGemerkt=sessionStorage.getItem("live_pin")||""; }catch(e){}
+  if(pinUrl||pinGemerkt) pinPruefen(pinUrl||pinGemerkt, true);
+  else { zeige("p-pin"); setTimeout(()=>$("#pin-in")&&$("#pin-in").focus(),60); }
 }
 
 ROLLE==="beamer" ? startBeamer() : startSpieler();
