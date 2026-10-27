@@ -446,7 +446,7 @@ function leitung(){
       const werte={}; $$("[data-lp]").forEach(i=>werte[i.dataset.lp]=Math.max(0,Math.min(100,Math.round(Number(i.value)||0))));
       const up={}, ts=TS();
       Object.entries(werte).forEach(([pid,p])=>{ if(runde){ up[`live/${runde}/${pid}/${key}`]=p; up[`proof/${runde}/${pid}/${key}`]={code:"lehrkraft",points:p,ts}; }
-        up[`log/${pid}/chat-${PIN}`]={key:"chat-"+TH.id, titel:"Chat-Spiel: "+TH.titel, art:"chat", p, max:Number(S.ligaMax)||15, ts, pin:PIN}; });
+        up[`log/${pid}/chat-${PIN}`]={code:"lehrkraft", key:"chat-"+TH.id+"-"+PIN, titel:"Chat-Spiel: "+TH.titel, art:"chat", p, max:Number(S.ligaMax)||15, ts, pin:PIN}; });
       await db.ref(BASE).update(up); await C("uebertragen").set(werte);
       msg.textContent=`✓ Gespeichert für ${Object.keys(werte).length} Personen.`;
     }catch(e){ console.warn(e); msg.textContent="Fehler beim Speichern: "+(e.message||e); }

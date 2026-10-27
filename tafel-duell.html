@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#14223B">
+<meta name="theme-color" content="#1E2A44">
 <meta name="robots" content="noindex, nofollow">
-<title>Tafel-Duell – Plöner Liga</title>
+<title>Tafel-Duell – Lernwelt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --board:#14223B; --board-2:#1C2E4D; --board-3:#24395E; --led:#FFC53D; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358; --line:#E8DCC6;
-  --ok:#1E9E6A; --bad:#E4412F; --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
-  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --board:#1E2A44; --board-2:#2A3A5E; --board-3:#34497A; --led:#F5B82E; --paper:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5;
+  --ok:#14A37F; --bad:#E2483D; --a:#E2483D; --b:#3B4FD8; --c:#F08A24; --d:#14A37F;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
@@ -169,14 +169,14 @@ button,input{font:inherit;color:inherit}
 
 <!-- ================= EINRICHTEN ================= -->
 <section id="setup"><div class="setup-in">
-  <a href="index.html" style="color:#c9d2e3;text-decoration:none;font-weight:700">‹ Zur Arena</a>
+  <a href="lehrer.html" style="color:#c9d2e3;text-decoration:none;font-weight:700">‹ Zur Lehrer-Seite</a>
   <h1>⚔️ Tafel-Duell</h1>
   <p class="lead">Team gegen Team an der Leinwand – ohne Handys. Das Team, das dran ist, tippt seine Antwort an der Tafel. Richtig? Punkte gibt es automatisch. Falsch? Das nächste Team darf klauen.</p>
 
   <div class="box"><h2>1. Teams</h2>
-    <div class="seg" style="margin-bottom:12px"><button data-quelle="frei" aria-pressed="true">Eigene Teams</button><button data-quelle="liga" aria-pressed="false">Teams aus der Liga</button></div>
+    <div class="seg" style="margin-bottom:12px"><button data-quelle="frei" aria-pressed="true">Eigene Teams</button><button data-quelle="liga" aria-pressed="false">Teams aus der Klasse</button></div>
     <div id="liga-login" class="hidden" style="margin-bottom:12px">
-      <p class="small" style="margin:0 0 8px">Mit deinem Konsolen-Konto anmelden – dann kommen die Liga-Teams, und am Ende kannst du die Punkte in die Liga übertragen.</p>
+      <p class="small" style="margin:0 0 8px">Mit deinem Lehrer-Konto anmelden – dann bildest du die Teams aus den Anwesenden, und am Ende bekommt jede Person ihre Punkte.</p>
       <form class="login" id="login-form"><input type="email" id="l-mail" placeholder="E-Mail" autocomplete="username"><input type="password" id="l-pass" placeholder="Passwort" autocomplete="current-password"><button class="btn led" type="submit">Anmelden</button></form>
       <div class="err" id="l-err"></div>
     </div>
@@ -438,7 +438,7 @@ const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
 const FARBEN=["#E4412F","#1F6FD1","#1E9E6A","#E9800E"];
 
 /* ---------- Einrichten ---------- */
-let cfg={quelle:"frei",
+let cfg={quelle:"frei", namen:{}, da:{}, anzTeams:2,
   frei:[{name:"Team A",color:FARBEN[0],an:true},{name:"Team B",color:FARBEN[1],an:true},{name:"Team C",color:FARBEN[2],an:false},{name:"Team D",color:FARBEN[3],an:false}],
   liga:[], themen:Object.fromEntries(Object.entries(THEMEN).map(([k,t])=>[k,{an:true,n:t.std}]))};
 const verfuegbar = th => A.filter(a=>a.th===th).length;
@@ -446,10 +446,11 @@ function renderSetup(){
   document.querySelectorAll("[data-quelle]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.quelle===cfg.quelle));
   $("#liga-login").classList.toggle("hidden", cfg.quelle!=="liga" || !!user);
   const liste = cfg.quelle==="liga" ? cfg.liga : cfg.frei;
-  $("#teamwahl").innerHTML = cfg.quelle==="liga" && !user ? "" : liste.length ? liste.map((t,i)=>`<label><input type="checkbox" data-team="${i}" ${t.an?"checked":""}>
+  if(cfg.quelle==="liga" && user){ $("#teamwahl").innerHTML=klasseHtml(); }
+  else $("#teamwahl").innerHTML = cfg.quelle==="liga" && !user ? "" : liste.length ? liste.map((t,i)=>`<label><input type="checkbox" data-team="${i}" ${t.an?"checked":""}>
       <span class="sw" style="background:${esc(t.color)}"></span>${cfg.quelle==="frei"?`<input type="text" data-tname="${i}" value="${esc(t.name)}">`:`<b>${esc(t.name)}</b><span class="small">${t.size||0} Pers.</span>`}</label>`).join("")
     : `<p class="small">In der Liga gibt es gerade keine Runde mit Teams.</p>`;
-  $("#team-hinweis").textContent = cfg.quelle==="liga" ? (user?"Am Ende kannst du die Punkte als Team-Bonus in die Liga übertragen.":"") : "2 bis 4 Teams. Namen kannst du antippen und ändern.";
+  $("#team-hinweis").textContent = cfg.quelle==="liga" ? (user?"Am Ende bekommt jede Person die Punkte ihres Teams (Platz 1: +8, Platz 2: +5, Platz 3: +3, Platz 4: +2).":"") : "2 bis 4 Teams. Namen kannst du antippen und ändern.";
   $("#themenwahl").innerHTML=TH_REIHE.map(k=>{ const t=THEMEN[k], c=cfg.themen[k];
     return `<div class="thema ${c.an?"":"aus"}"><label><input type="checkbox" data-th="${k}" ${c.an?"checked":""}> ${t.icon} ${t.name}</label>
       <div class="zahl"><button data-thn="${k}" data-d="-1" aria-label="weniger">−</button><b>${c.n}</b><button data-thn="${k}" data-d="1" aria-label="mehr">+</button><span class="small">Aufgaben</span></div></div>`; }).join("");
@@ -468,6 +469,21 @@ document.addEventListener("change", e=>{
   const c=e.target.closest("[data-team]"); if(c){ (cfg.quelle==="liga"?cfg.liga:cfg.frei)[Number(c.dataset.team)].an=c.checked; renderSetup(); }
   const th=e.target.closest("[data-th]"); if(th){ cfg.themen[th.dataset.th].an=th.checked; renderSetup(); }
 });
+function klasseHtml(){
+  const ids=Object.keys(cfg.namen||{}).sort((a,b)=>String(cfg.namen[a]).localeCompare(cfg.namen[b]));
+  return `<div style="width:100%"><div class="small" style="margin-bottom:6px">Wer ist da? (antippen)</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">${ids.map(p=>`<label style="min-height:40px;padding:4px 10px"><input type="checkbox" data-da="${p}" ${cfg.da[p]?"checked":""}> ${esc(cfg.namen[p])}</label>`).join("")}</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">Anzahl Teams <select id="anz-teams" style="font:inherit;min-height:40px;border-radius:10px">${[2,3,4].map(n=>`<option ${cfg.anzTeams===n?"selected":""}>${n}</option>`).join("")}</select>
+      <button class="btn led" type="button" id="auslosen" style="min-height:44px">🎲 Teams auslosen</button></div>
+    ${cfg.liga.map((t,i)=>`<label style="align-items:flex-start"><input type="checkbox" data-team="${i}" ${t.an?"checked":""}><span class="sw" style="background:${esc(t.color)}"></span><span><b>${esc(t.name)}</b><br><span class="small">${t.mitglieder.map(p=>esc(cfg.namen[p])).join(", ")}</span></span></label>`).join("")}</div>`;
+}
+document.addEventListener("click", e=>{ if(e.target.id!=="auslosen") return;
+  const da=shuffle(Object.keys(cfg.da).filter(p=>cfg.da[p])); const n=Number(($("#anz-teams")||{}).value)||2; cfg.anzTeams=n;
+  if(da.length<n){ $("#team-hinweis").textContent="Zu wenige Personen ausgewählt."; return; }
+  const NAMEN=["Team Rot","Team Blau","Team Grün","Team Orange"];
+  cfg.liga=Array.from({length:n},(_,i)=>({id:"k"+i, name:NAMEN[i], color:FARBEN[i], an:true, mitglieder:[]}));
+  da.forEach((p,i)=>cfg.liga[i%n].mitglieder.push(p)); renderSetup(); });
+document.addEventListener("change", e=>{ const c=e.target.closest("[data-da]"); if(c){ cfg.da[c.dataset.da]=c.checked; } });
 document.addEventListener("input", e=>{ const t=e.target.closest("[data-tname]"); if(t) cfg.frei[Number(t.dataset.tname)].name=t.value||"Team"; });
 $("#login-form").addEventListener("submit", e=>{
   e.preventDefault(); if(!auth){ $("#l-err").textContent="Keine Verbindung."; return; }
@@ -478,7 +494,7 @@ $("#login-form").addEventListener("submit", e=>{
 if(auth) auth.onAuthStateChanged(async u=>{
   user=u; $("#l-err").textContent="";
   if(u && db){ try{ const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
-      cfg.liga=arr(pub.teams).map(t=>({id:t.id, name:t.name, color:t.color, size:t.size, an:true})); }catch(e){ cfg.liga=[]; } }
+      cfg.namen=pub.names||{}; cfg.da={}; cfg.liga=[]; }catch(e){ cfg.liga=[]; } }
   renderSetup();
 });
 
@@ -719,7 +735,7 @@ function heim(){
   zurueckZumSetup();
 }
 function zurueckZumSetup(){ stopUhr(); tafelOffen=null; $("#tafel-ov").classList.add("hidden"); $("#uhr").classList.add("hidden"); $("#spiel").classList.add("hidden"); $("#ende").classList.add("hidden"); $("#setup").classList.remove("hidden"); renderSetup(); }
-const bonus = platz => platz===1?5:platz===2?3:platz===3?2:1;
+const bonus = platz => platz===1?8:platz===2?5:platz===3?3:2;
 function ende(){
   stopUhr(); $("#uhr").classList.add("hidden");
   $("#spiel").classList.add("hidden"); const el=$("#ende"); el.classList.remove("hidden");
@@ -731,11 +747,10 @@ function ende(){
   el.innerHTML=`<h1>${sieger.length>1?"Unentschieden!":esc(sieger[0].name)+" gewinnt!"}</h1>
     <div class="podest">${podest.map(t=>`<div style="height:${t.platz===1?"34vh":t.platz===2?"26vh":"20vh"};box-shadow:inset 0 .8vh 0 ${esc(t.color)}"><span class="m">${med[t.platz-1]||""}</span><b>${esc(t.name)}</b><span class="p">${t.p}</span></div>`).join("")}</div>
     ${rang.length>3?`<p class="small">4. ${esc(rang[3].name)} – ${rang[3].p} Punkte</p>`:""}
-    ${S.quelle==="liga"&&user?`<div class="uebertrag"><b style="font-size:20px">In die Liga übertragen?</b>
-        <p class="small" style="margin:6px 0 12px">Als Team-Bonus in der laufenden Runde. Steht danach auch in der Konsole unter „Punkte eintragen“.</p>
+    ${S.quelle==="liga"&&user?`<div class="uebertrag"><b style="font-size:20px">Punkte vergeben?</b>
+        <p class="small" style="margin:6px 0 12px">Jede Person bekommt die Punkte ihres Teams für die Monatswertung.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-          <button class="btn led" data-ueb="platz">Sieger-Bonus: ${rang.map(t=>`${esc(t.name)} +${bonus(t.platz)}`).join(" · ")}</button>
-          <button class="btn" data-ueb="alle">Alle Punkte 1:1</button></div><div class="err" id="ueb-msg"></div></div>`:""}
+          <button class="btn led" data-ueb="platz">${rang.map(t=>`${esc(t.name)} +${bonus(t.platz)}`).join(" · ")}</button></div><div class="err" id="ueb-msg"></div></div>`:""}
     <div style="display:flex;gap:10px;margin-top:20px"><button class="btn ghost" id="nochmal">Neue Runde</button><button class="btn ghost" id="zurueck-setup">Teams & Themen ändern</button></div>`;
   konfetti(sieger[0]?sieger[0].color:"#FFC53D");
   $("#nochmal").onclick=()=>spielStarten(false);
@@ -743,25 +758,15 @@ function ende(){
   document.querySelectorAll("[data-ueb]").forEach(b=>b.onclick=()=>uebertragen(b.dataset.ueb, rang));
 }
 async function uebertragen(art, rang){
-  const msg=$("#ueb-msg"); msg.style.color="#c9d2e3"; msg.textContent="Übertrage …";
+  const msg=$("#ueb-msg"); msg.style.color="#c9d2e3"; msg.textContent="Speichere …";
   document.querySelectorAll("[data-ueb]").forEach(b=>b.disabled=true);
   try{
-    const ref=db.ref(`${BASE}/admin/state`);
-    const v=(await ref.once("value")).val(); if(!v||!v.data) throw new Error("Kein Konsolen-Stand gefunden");
-    const st=JSON.parse(v.data);
-    const r=(st.rounds||[]).find(x=>x.id===st.activeRoundId); if(!r) throw new Error("Keine aktive Runde");
-    const h=new Date(); const iso=`${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,"0")}-${String(h.getDate()).padStart(2,"0")}`;
-    const ts=Date.now(); st.entries=st.entries||[]; const plus={};
-    rang.forEach(t=>{ const pts = art==="platz" ? bonus(t.platz) : t.p; if(!pts || !r.teams.some(x=>x.id===t.id)) return;
-      st.entries.push({id:"td"+ts.toString(36)+Math.random().toString(36).slice(2,6), ts, roundId:r.id, studentId:null, teamId:t.id, taskId:null, taskTitle:"Tafel-Duell", points:pts, date:iso, note:art==="platz"?`Platz ${t.platz}`:"Punkte 1:1"});
-      plus[t.id]=pts; });
-    st.updated=ts;
-    await ref.set({data:JSON.stringify(st), updated:ts, device:"tafel-duell"});
-    const mt=(await db.ref(`${BASE}/public/manualTeam`).once("value")).val()||{};
-    const upd={}; Object.entries(plus).forEach(([id,p])=>upd[id]=(Number(mt[id])||0)+p);
-    if(Object.keys(upd).length) await db.ref(`${BASE}/public/manualTeam`).update(upd);
-    msg.style.color="#9be3c3"; msg.textContent="✓ Übertragen – die Tabelle in der Arena ist aktualisiert.";
-  }catch(e){ console.warn(e); msg.style.color="#ff9a8b"; msg.textContent="Übertragen hat nicht geklappt: "+(e.message||"bitte in der Konsole von Hand eintragen.");
+    const ts=firebase.database.ServerValue.TIMESTAMP, id="tafel-"+Date.now().toString(36); const up={}; let n=0;
+    rang.forEach(t=>{ const pts=bonus(t.platz); (t.mitglieder||[]).forEach(pid=>{ up[`log/${pid}/${id}`]={code:"lehrkraft", key:id, titel:"Tafel-Duell", art:"team", p:pts, max:8, platz:t.platz, ts}; n++; }); });
+    if(!n) throw new Error("Keine Personen in den Teams");
+    await db.ref(BASE).update(up);
+    msg.style.color="#9be3c3"; msg.textContent=`✓ Gespeichert für ${n} Personen.`;
+  }catch(e){ console.warn(e); msg.style.color="#ff9a8b"; msg.textContent="Speichern hat nicht geklappt: "+(e.message||"");
     document.querySelectorAll("[data-ueb]").forEach(b=>b.disabled=false); }
 }
 function konfetti(farbe){

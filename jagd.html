@@ -640,7 +640,7 @@ function leitung(){
       const up={}; const ts=TS(); const ub=S.uebertragen||{};
       Object.entries(werte).forEach(([pid,p])=>{
         if(runde){ up[`live/${runde}/${pid}/${key}`]=p; up[`proof/${runde}/${pid}/${key}`]={code:"lehrkraft", points:p, ts}; }
-        up[`log/${pid}/jagd-${PIN}`]={key:"jagd-"+F.id, titel:"Schnitzeljagd: "+F.titel, art:"team", p, max:Number(S.ligaMax)||F.punkte.liga||30, ts, pin:PIN};
+        up[`log/${pid}/jagd-${PIN}`]={code:"lehrkraft", key:"jagd-"+F.id+"-"+PIN, titel:"Schnitzeljagd: "+F.titel, art:"team", p, max:Number(S.ligaMax)||F.punkte.liga||30, ts, pin:PIN};
       });
       await db.ref(BASE).update(up);
       await J("uebertragen").set(werte);

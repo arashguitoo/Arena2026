@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Lehrer-Seite – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --ink-2:#2A3A5E; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --acc-2:#FFE9E3; --gold:#F5B82E; --gold-2:#FFF4D6; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px}
+h2{font-size:22px} h3{font-size:18px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 16px 60px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:8px 16px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:32px;padding:4px 10px;font-size:14px;border-radius:9px}
+.btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.acc{background:var(--acc)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.rot{background:var(--bad-2);color:var(--bad)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=email],input[type=password],select,textarea{min-height:42px;border:2px solid var(--line);border-radius:10px;padding:6px 10px;background:#fff}
+.err{color:var(--bad);font-weight:700;min-height:20px;margin-top:6px}
+.kopf{background:var(--ink);color:#fff;position:sticky;top:0;z-index:20}
+.kopf .in{max-width:1100px;margin:0 auto;padding:8px 16px;display:flex;gap:14px;align-items:center;min-height:56px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:800;font-size:19px;color:#fff;text-decoration:none}
+.logo i{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--pri),#7C5CFF);display:flex;align-items:center;justify-content:center;font-style:normal}
+.tabs{display:flex;gap:4px;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;color:#cfd6e6;border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer}
+.tabs button.on{background:rgba(255,255,255,.12);color:#fff}
+.kopf .aus{margin-left:auto;color:#cfd6e6;background:none;border:0;cursor:pointer}
+.start{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.st{display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:18px;padding:18px;box-shadow:var(--schatten);border-top:6px solid var(--f)}
+.st .e{font-size:36px}
+.st h3{margin:0}
+.st p{margin:0;color:var(--muted);font-size:15px;flex:1}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:13px;color:var(--muted);font-weight:700}
+td.z{font-family:var(--head);font-weight:800}
+.code{font-family:ui-monospace,Menlo,monospace;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+.kat{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:6px}
+.kat label{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer}
+.kat label.an{border-color:var(--pri);background:var(--pri-2)}
+.kat input{width:20px;height:20px}
+.kat .n{margin-left:auto;font-size:13px;color:var(--muted);white-space:nowrap}
+.hinweis{background:var(--gold-2);border-left:6px solid var(--gold);border-radius:12px;padding:12px 14px}
+.hinweis.rot{background:var(--bad-2);border-color:var(--bad)}
+pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:12px;overflow:auto;max-height:340px;font-size:12px}
+.kacheln{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:14px}
+.kachel{background:#fff;border-radius:16px;padding:14px;box-shadow:var(--schatten)}
+.kachel b{display:block;font-family:var(--head);font-size:28px}
+.kachel span{font-size:13px;color:var(--muted)}
+.sieger{background:linear-gradient(135deg,var(--gold-2),#fff);border:2px solid var(--gold)}
+/* Code-Zettel & Urkunde drucken */
+#druck{display:none}
+@media print{
+  body{background:#fff} .kopf,.wrap{display:none!important} #druck{display:block}
+  .zettel{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
+  .zettel div{border:1px dashed #999;border-radius:4mm;padding:6mm;display:flex;gap:6mm;align-items:center;break-inside:avoid}
+  .zettel b{font-size:16pt} .zettel .c{font-family:monospace;font-size:20pt;letter-spacing:.15em}
+  .urkunde{border:6mm double #F5B82E;border-radius:6mm;padding:20mm;text-align:center;height:250mm;display:flex;flex-direction:column;justify-content:center;gap:8mm}
+}
+</style>
+</head>
+<body>
+<section id="login" class="hidden"><div class="wrap" style="max-width:440px;margin-top:10vh">
+  <div class="card"><div class="logo" style="color:var(--ink);margin-bottom:10px"><i style="color:#fff">✦</i>Lernwelt · Lehrer-Seite</div>
+    <form id="lf"><input type="email" id="lm" placeholder="E-Mail" style="width:100%;margin-bottom:8px" autocomplete="username"><input type="password" id="lp" placeholder="Passwort" style="width:100%;margin-bottom:8px" autocomplete="current-password"><button class="btn" style="width:100%">Anmelden</button></form>
+    <div class="err" id="lerr"></div><p class="small"><a href="index.html">← zur Lernwelt der Jugendlichen</a></p></div></div></section>
+
+<div id="app" class="hidden">
+  <header class="kopf"><div class="in">
+    <a class="logo" href="index.html" target="_blank"><i>✦</i>Lernwelt</a>
+    <nav class="tabs" id="tabs"><button data-tab="heute">🏠 Heute</button><button data-tab="uebungen">📌 Aktuelle Übungen</button><button data-tab="klasse">👥 Klasse</button><button data-tab="monat">🏆 Monat</button><button data-tab="einst">⚙️ Einstellungen</button></nav>
+    <button class="aus" id="aus">Abmelden</button>
+  </div></header>
+  <main class="wrap" id="main"></main>
+</div>
+<div id="druck"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="katalog.js"></script>
+<script src="lernwelt.js"></script>
+<script>
+/* =========================================================
+   LERNWELT · Lehrer-Seite (einfach): Heute · Aktuelle Übungen · Klasse · Monat · Einstellungen
+   ========================================================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=LW.esc, KAT=window.LW_KATALOG||[], BER=window.LW_BEREICHE||[];
+const ZEICHEN="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const LIVE_SETS=[["grammatik","🧠 Grammatik-Mix"],["warmup","🔥 Warm-up"],["haben","✋ Perfekt mit haben"],["sein","🚶 Perfekt mit sein"],["trennbar","✂️ trennbare Verben"],["mix","🌀 Perfekt-Mix"]];
+let user=null, tab="heute", codes={}, pub={}, logs={}, monat=null, malT=null;
+LW.init(true);
+const auth=LW.auth;
+auth.onAuthStateChanged(u=>{ user=u; if(!u){ $("#login").classList.remove("hidden"); $("#app").classList.add("hidden"); return; } $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); laden(); });
+$("#lf").onsubmit=e=>{ e.preventDefault(); $("#lerr").textContent="Moment …"; auth.signInWithEmailAndPassword($("#lm").value.trim(), $("#lp").value).catch(()=>$("#lerr").textContent="E-Mail oder Passwort stimmt nicht."); };
+$("#aus").onclick=()=>auth.signOut();
+$("#tabs").onclick=e=>{ const b=e.target.closest("[data-tab]"); if(!b) return; tab=b.dataset.tab; location.hash=tab; male(); };
+if(location.hash) tab=location.hash.slice(1);
+function laden(){
+  LW.ref("codes").on("value", s=>{ codes=s.val()||{}; mal(); });
+  LW.ref("public").on("value", s=>{ pub=s.val()||{}; mal(); });
+  LW.ref("log").on("value", s=>{ logs=s.val()||{}; mal(); });
+  male();
+}
+function mal(){ clearTimeout(malT); malT=setTimeout(male,80); }
+const namen=()=>pub.names||{};
+const codeVon=pid=>Object.keys(codes).find(c=>codes[c]&&codes[c].pid===pid)||"";
+const MON=()=>LW.monatVon(LW.jetzt());
+function male(){
+  $$("#tabs button").forEach(b=>b.classList.toggle("on", b.dataset.tab===tab));
+  const ae=document.activeElement; if(ae && /INPUT|TEXTAREA|SELECT/.test(ae.tagName) && $("#main").contains(ae)) return;
+  const y=scrollY;
+  $("#main").innerHTML = tab==="uebungen"?uebungen():tab==="klasse"?klasse():tab==="monat"?monatSeite():tab==="einst"?einst():heute();
+  binden(); scrollTo(0,y);
+}
+function schuelerLogs(){ const n=namen(); let anzahl=0; Object.keys(logs).forEach(p=>{ if(n[p]) Object.values(logs[p]||{}).forEach(e=>{ if(e.code!=="lehrkraft") anzahl++; }); }); return anzahl; }
+
+/* ---------- Heute ---------- */
+function heute(){
+  const heuteT=LW.tagVon(LW.jetzt()); const n=namen();
+  const heuteAktiv=Object.keys(n).map(p=>({p, E:LW.eintraege(logs[p]).filter(e=>LW.tagVon(e.ts)===heuteT)})).filter(x=>x.E.length).sort((a,b)=>b.E.length-a.E.length);
+  const r=LW.rangliste(logs, n, MON());
+  const keinLog = Object.keys(n).length && !schuelerLogs();
+  return `${keinLog?`<div class="hinweis" style="margin-bottom:14px"><b>Einmal einrichten:</b> Damit die Jugendlichen ihre Punkte speichern dürfen, müssen einmalig die neuen Firebase-Regeln eingefügt werden. <a href="#einst" data-tab-link="einst"><b>So geht's (2 Minuten) ›</b></a></div>`:""}
+    <h1 style="margin:6px 0 12px">Heute im Unterricht</h1>
+    <div class="start">
+      <div class="st" style="--f:var(--acc)"><span class="e">🎮</span><h3>Live-Quiz</h3><p>Kahoot-Prinzip: alle gleichzeitig am Handy, Leinwand mit PIN. Platz 1–3 bekommen Bonus.</p>
+        <select id="set">${LIVE_SETS.map(([k,t])=>`<option value="${k}">${esc(t)}</option>`).join("")}</select><button class="btn acc" id="quiz">Leinwand öffnen</button></div>
+      <div class="st" style="--f:var(--pri)"><span class="e">⚔️</span><h3>Tafel-Duell</h3><p>Team gegen Team an der Leinwand, ohne Handys. Teams aus den Anwesenden, Punkte für jede Person.</p><a class="btn" href="tafel-duell.html" target="_blank">Öffnen</a></div>
+      <div class="st" style="--f:var(--gold)"><span class="e">🕵️</span><h3>Schnitzeljagd</h3><p>Teams zu 3–4, ca. 90 Minuten, Hör-Aufgaben und Zahlenschloss. Du stellst die Teams zusammen.</p><a class="btn gold" href="jagd.html?leitung=1" target="_blank">Leiten</a></div>
+      <div class="st" style="--f:var(--ok)"><span class="e">💬</span><h3>Chat-Spiel</h3><p>WhatsApp-Gruppen an mehreren Tischen (3–4 Personen) – Nachrichten aus Wort-Kacheln bauen.</p><a class="btn ok" href="chat.html?leitung=1" target="_blank">Leiten</a></div>
+    </div>
+    <p class="small muted">Die Jugendlichen gehen immer auf <b>${esc(location.href.replace(/[^/]*$/,"").replace(/^https?:\/\//,""))}live.html</b> und geben die PIN von der Leinwand ein – oder in der Lernwelt auf „Live im Unterricht“.</p>
+    <div class="row" style="align-items:stretch;margin-top:14px">
+      <div class="card" style="flex:1;min-width:300px"><h2>🔥 Heute geübt</h2>${heuteAktiv.length?`<table>${heuteAktiv.map(x=>`<tr><td><b>${esc(n[x.p])}</b></td><td>${x.E.length} ${x.E.length===1?"Runde":"Runden"}</td><td class="small muted">${esc([...new Set(x.E.map(e=>e.titel||e.key))].slice(0,3).join(", "))}</td></tr>`).join("")}</table>`:`<p class="muted">Heute hat noch niemand geübt.</p>`}</div>
+      <div class="card" style="flex:1;min-width:300px"><h2>🏆 ${esc(LW.monatName(MON()))} – Top 5</h2><table>${r.slice(0,5).map((x,i)=>`<tr><td>${["🥇","🥈","🥉"][i]||i+1}</td><td><b>${esc(x.name)}</b></td><td class="z">${x.punkte}</td></tr>`).join("")}</table><p class="small"><a href="#monat" data-tab-link="monat">Ganze Rangliste ›</a></p></div>
+    </div>
+    ${texte()}`;
+}
+function texte(){ const n=namen(); const t=[]; Object.keys(logs).forEach(p=>LW.eintraege(logs[p]).forEach(e=>{ if(e.text) t.push({name:n[p]||"?", e}); })); t.sort((a,b)=>b.e.ts-a.e.ts);
+  if(!t.length) return "";
+  return `<div class="card"><h2>📝 Geschriebene Texte (DTZ-Schreiben)</h2>${t.slice(0,12).map(x=>{ const d=new Date(x.e.ts); return `<details style="border-bottom:1px solid var(--line);padding:8px 0"><summary><b>${esc(x.name)}</b> · ${esc(x.e.titel||x.e.key)} · ${x.e.p}/10 · <span class="muted small">${d.getDate()}.${d.getMonth()+1}.</span></summary><div style="white-space:pre-wrap;background:var(--soft);border-radius:10px;padding:10px;margin-top:6px">${esc(x.e.text)}</div></details>`; }).join("")}</div>`; }
+
+/* ---------- Aktuelle Übungen ---------- */
+function uebungen(){
+  const akt=pub.aktuell||{}; const m=MON(); const gespielt={};
+  Object.values(logs).forEach(l=>{ const s=new Set(); LW.eintraege(l).forEach(e=>{ if(LW.monatVon(e.ts)===m) s.add(e.key); }); s.forEach(k=>gespielt[k]=(gespielt[k]||0)+1); });
+  const n=Object.keys(akt).filter(k=>akt[k]).length;
+  return `<h1 style="margin:6px 0 4px">📌 Aktuelle Übungen</h1><p class="muted" style="margin:0 0 12px">Was du hier anhakst, sehen die Jugendlichen ganz oben auf ihrer Startseite. Alle anderen Übungen bleiben trotzdem spielbar und bringen Punkte.</p>
+    <div class="row" style="margin-bottom:12px"><b>${n} ausgewählt</b>${n?`<button class="btn sm rot" id="alle-weg">Auswahl leeren</button>`:""}</div>
+    ${BER.map(b=>`<h2 style="margin:18px 0 8px">${b.icon} ${esc(b.titel)}</h2><div class="kat">${KAT.filter(u=>u.bereich===b.id).map(u=>`<label class="${akt[u.key]?"an":""}"><input type="checkbox" data-akt="${u.key}" ${akt[u.key]?"checked":""}><span>${u.icon} <b>${esc(u.titel)}</b></span><span class="n">${gespielt[u.key]||0} gespielt</span></label>`).join("")}</div>`).join("")}`;
+}
+
+/* ---------- Klasse ---------- */
+function klasse(){
+  const n=namen(); const m=MON(); const ids=Object.keys(n).sort((a,b)=>String(n[a]).localeCompare(n[b]));
+  return `<h1 style="margin:6px 0 12px">👥 Klasse</h1>
+    <div class="card"><table><tr><th>Name</th><th>Code</th><th>Punkte ${esc(LW.monatName(m).split(" ")[0])}</th><th>XP · Level</th><th>Serie</th><th>Zuletzt</th><th></th></tr>
+    ${ids.map(p=>{ const E=LW.eintraege(logs[p]); const w=LW.monatsWertung(E,m); const x=LW.xp(E), L=LW.level(x); const last=E.length?new Date(E[E.length-1].ts):null;
+      return `<tr><td><b>${esc(n[p])}</b></td><td><span class="code">${esc(codeVon(p))}</span></td><td class="z">${w.gesamt}</td><td>${x} · ${L.icon} ${L.nr}</td><td>${LW.serie(E)?"🔥"+LW.serie(E):"–"}</td><td class="small muted">${last?`${last.getDate()}.${last.getMonth()+1}.`:"nie"}</td>
+        <td class="row" style="justify-content:flex-end"><button class="btn sm ghost" data-umb="${p}">✏️</button><button class="btn sm ghost" data-neucode="${p}" title="neuer Code">🔄</button><button class="btn sm rot" data-weg="${p}">🗑</button></td></tr>`; }).join("")}</table>
+    ${ids.length?"":`<p class="muted">Noch niemand in der Klasse.</p>`}</div>
+    <div class="row" style="align-items:flex-start">
+      <div class="card" style="flex:1;min-width:300px"><h2>➕ Neue Jugendliche</h2><p class="small muted">Ein Vorname pro Zeile. Jede Person bekommt einen eigenen Code.</p><textarea id="neu" rows="4" style="width:100%" placeholder="Ali&#10;Sara"></textarea><button class="btn" id="anlegen" style="margin-top:8px">Anlegen</button></div>
+      <div class="card" style="flex:1;min-width:300px"><h2>🖨️ Code-Zettel</h2><p class="small muted">Zettel mit Name, Code und QR-Code zum Ausschneiden. Der QR-Code meldet direkt an.</p><button class="btn ghost" id="zettel">Code-Zettel drucken</button></div>
+    </div>`;
+}
+
+/* ---------- Monat ---------- */
+function monatSeite(){
+  const n=namen(); const alle=new Set([MON()]); Object.values(logs).forEach(l=>LW.eintraege(l).forEach(e=>alle.add(LW.monatVon(e.ts))));
+  const ms=[...alle].sort().reverse(); const m=monat||MON(); const r=LW.rangliste(logs,n,m); const fertig=m<MON();
+  const aktiv=r.filter(x=>x.punkte>0).length;
+  return `<div class="row" style="justify-content:space-between;margin:6px 0 12px"><h1 style="margin:0">🏆 Monatswertung</h1><select id="mon">${ms.map(x=>`<option value="${x}" ${x===m?"selected":""}>${esc(LW.monatName(x))}</option>`).join("")}</select></div>
+    <div class="kacheln"><div class="kachel"><b>${aktiv}/${r.length}</b><span>haben Punkte</span></div><div class="kachel"><b>${r.reduce((a,x)=>a+x.w.tage,0)}</b><span>Lerntage zusammen</span></div><div class="kachel"><b>${r.reduce((a,x)=>a+x.w.anzahl,0)}</b><span>Übungen (beste Versuche)</span></div><div class="kachel"><b>${r.reduce((a,x)=>a+x.w.liveN,0)}</b><span>Live-/Team-Ergebnisse</span></div></div>
+    ${r[0]&&r[0].punkte?`<div class="card sieger"><div class="row" style="justify-content:space-between"><div><div class="small muted">${fertig?"Monats-Sieger:in":"Führt gerade"}</div><h2 style="margin:0">👑 ${esc(r[0].name)} · ${r[0].punkte} Punkte</h2></div><button class="btn gold" id="urkunde">🖨️ Urkunde drucken</button></div></div>`:""}
+    <div class="card"><table><tr><th>#</th><th>Name</th><th>Gesamt</th><th>Übungen</th><th>Live/Team/Duell</th><th>Tages-Bonus</th><th>Lerntage</th></tr>
+      ${r.map((x,i)=>`<tr><td>${["🥇","🥈","🥉"][i]||i+1}</td><td><b>${esc(x.name)}</b></td><td class="z">${x.punkte}</td><td>${x.w.uebungen} <span class="small muted">(${x.w.anzahl})</span></td><td>${x.w.live} <span class="small muted">(${x.w.liveN})</span></td><td>${x.w.bonus}</td><td>${x.w.tage}</td></tr>`).join("")}</table>
+      <p class="row" style="margin-top:10px"><button class="btn sm ghost" id="csv">⬇ als Tabelle (CSV)</button></p></div>
+    <details class="card"><summary><b>Wie wird gezählt?</b></summary><ul class="small"><li>Übungen und DTZ-Training: pro Übung der beste Versuch im Monat (max. 10).</li><li>Live-Quiz: bis 15 + Platz-Bonus 5/3/1 · Duell: Sieg 3 · Schnitzeljagd/Chat/Tafel-Duell: was du am Ende vergibst.</li><li>+${LW.TAGES_BONUS} Punkte für jeden Tag mit Übung.</li><li>Ergebnisse vor dem ${esc(LW.monatName(LW.START_MONAT))} zählen in den ${esc(LW.monatName(LW.START_MONAT))}.</li></ul></details>`;
+}
+
+/* ---------- Einstellungen ---------- */
+function regeln(){
+  const u=user?user.uid:"DEINE_BENUTZER_ID";
+  const me=`auth != null && auth.uid === '${u}'`;
+  const K="'jugendliga/' + $kurs";
+  const task=`root.child(${K} + '/public/tasks/' + $task`;
+  const codeOk=`root.child(${K} + '/codes/' + newData.child('code').val() + '/pid').val() === $pid`;
+  const ptsOk=`newData.child('points').isNumber() && newData.child('points').val() >= 0 && newData.child('points').val() <= ${task} + '/max').val()`;
+  const roundOk=`root.child(${K} + '/public/round/id').val() === $round`;
+  const zeitOk=`${task} + '/von').val() <= now && ${task} + '/bis').val() >= now`;
+  const assigned=`(${task} + '/assign/alle').val() === true || ${task} + '/assign/players/' + $pid).val() === true || ${task} + '/assign/teams/' + root.child(${K} + '/public/roster/' + $pid).val()).val() === true)`;
+  return JSON.stringify({ rules:{
+    jugendliga:{ "$kurs":{
+      ".read":me, ".write":me,
+      public:{ ".read":true },
+      codes:{ "$code":{ ".read":true } },
+      log:{ ".read":true, "$pid":{ "$e":{
+        ".write":`!data.exists() && newData.hasChildren(['code', 'key', 'p', 'ts']) && ${codeOk} && newData.child('p').isNumber() && newData.child('p').val() >= 0 && newData.child('p').val() <= 100 && newData.child('ts').val() <= now && newData.child('ts').val() > now - 600000`
+      }}},
+      live:{ ".read":true, "$round":{ "$pid":{ "$task":{
+        ".write":`newData.isNumber() && root.child(${K} + '/proof/' + $round + '/' + $pid + '/' + $task + '/points').val() === newData.val() && (!data.exists() || newData.val() > data.val())`
+      }}}},
+      proof:{ "$round":{ "$pid":{ "$task":{
+        ".write":`newData.hasChildren(['code', 'points']) && ${ptsOk} && ${codeOk} && ${roundOk} && ${task} + '/open').val() === true && ${zeitOk} && ${assigned} && (!data.exists() || newData.child('points').val() > data.child('points').val())`
+      }}}},
+      tries:{ "$round":{ "$pid":{ "$task":{ "$try":{
+        ".write":`!data.exists() && ${ptsOk} && ${codeOk} && ${roundOk}`
+      }}}}},
+      battle:{ ".read":true,
+        players:{ "$pid":{ ".write":`!newData.exists() || (newData.hasChildren(['code', 'name']) && ${codeOk})` }},
+        answers:{ "$q":{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'a', 't']) && newData.child('a').isNumber() && ${codeOk}` }}}
+      },
+      lobby:{ ".read":true, "$pid":{ ".write":`!newData.exists() || (newData.hasChildren(['code']) && ${codeOk})` }},
+      duelle:{ ".read":true, "$d":{
+        info:{ ".write":`!data.exists() && newData.hasChildren(['von', 'code', 'teil', 'fragen']) && root.child(${K} + '/codes/' + newData.child('code').val() + '/pid').val() === newData.child('von').val()` },
+        teil:{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'richtig', 'zeit']) && ${codeOk} && root.child(${K} + '/duelle/' + $d + '/info/teil/' + $pid).val() === true` }},
+        live:{ "$pid":{ ".write":`!newData.exists() || ${codeOk}` }},
+        wertung:{ "$pid":{ ".write":`!data.exists() && newData.hasChildren(['code', 'p']) && newData.child('p').isNumber() && newData.child('p').val() >= 0 && newData.child('p').val() <= 3 && ${codeOk}` }}
+      }}
+    }},
+    "$other":{ ".read":true, ".write":true }
+  }}, null, 2);
+}
+function einst(){
+  return `<h1 style="margin:6px 0 12px">⚙️ Einstellungen</h1>
+    <div class="card"><h2>1 · Firebase-Regeln (einmalig)</h2>
+      <ol><li>Öffne die <a href="https://console.firebase.google.com/project/lern-deutsch-arash/database/lern-deutsch-arash-default-rtdb/rules" target="_blank">Regeln in der Firebase-Konsole</a>.</li>
+      <li>Alles markieren und löschen, dann diese Regeln einfügen (Knopf „Kopieren“).</li><li>Auf <b>Veröffentlichen</b> klicken. Fertig.</li></ol>
+      <p class="small muted">Neu darin: Die Jugendlichen dürfen ihre eigenen Ergebnisse speichern (nur mit gültigem Code, nur 0–100 Punkte, nur mit aktueller Uhrzeit). Alles andere bleibt wie bisher geschützt.</p>
+      <button class="btn" id="kopieren">📋 Regeln kopieren</button> <span id="kop-msg" class="small muted"></span><pre id="regeln">${esc(regeln())}</pre></div>
+    <div class="card"><h2>2 · Sicherung</h2><p class="small muted">Lädt alle Ergebnisse, Namen und Codes als Datei herunter.</p><button class="btn ghost" id="sicherung">⬇ Sicherung herunterladen</button></div>
+    <div class="card"><h2>Archiv</h2><p class="small muted">Die alte Liga mit Teams ist abgeschaltet. Bitte nicht mehr benutzen – sie kann Namen und Codes überschreiben.</p><a class="btn ghost sm" href="konsole.html" target="_blank">Alte Liga-Konsole</a> <a class="btn ghost sm" href="liga.html" target="_blank">Alte Arena</a></div>`;
+}
+
+/* ---------- Aktionen ---------- */
+function neuerCode(){ let c=""; do{ c=Array.from({length:5},()=>ZEICHEN[Math.floor(Math.random()*ZEICHEN.length)]).join(""); }while(codes[c]); return c; }
+function csv(rows){ return rows.map(r=>r.map(x=>`"${String(x).replace(/"/g,'""')}"`).join(";")).join("\n"); }
+function laden_datei(name, text, typ){ const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([text],{type:typ||"text/plain"})); a.download=name; a.click(); }
+function binden(){
+  $$("[data-tab-link]").forEach(a=>a.onclick=e=>{ e.preventDefault(); tab=a.dataset.tabLink; male(); });
+  const q=$("#quiz"); if(q) q.onclick=()=>window.open(`a1-live-perfekt.html?rolle=beamer&set=${$("#set").value}`,"_blank");
+  $$("[data-akt]").forEach(c=>c.onchange=()=>LW.ref(`public/aktuell/${c.dataset.akt}`).set(c.checked?true:null));
+  const aw=$("#alle-weg"); if(aw) aw.onclick=()=>{ if(confirm("Alle aktuellen Übungen abwählen?")) LW.ref("public/aktuell").remove(); };
+  const an=$("#anlegen"); if(an) an.onclick=async()=>{ const liste=$("#neu").value.split("\n").map(s=>s.trim()).filter(Boolean); if(!liste.length) return;
+    const up={}; liste.forEach(name=>{ const pid="s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); const c=neuerCode(); codes[c]={pid,name}; up[`codes/${c}`]={pid,name}; up[`public/names/${pid}`]=name; });
+    await LW.db.ref(LW.BASE).update(up); $("#neu").value=""; male(); };
+  $$("[data-umb]").forEach(b=>b.onclick=async()=>{ const p=b.dataset.umb; const neu=prompt("Neuer Vorname:", namen()[p]); if(!neu||!neu.trim()) return; const up={[`public/names/${p}`]:neu.trim()}; const c=codeVon(p); if(c) up[`codes/${c}/name`]=neu.trim(); await LW.db.ref(LW.BASE).update(up); });
+  $$("[data-neucode]").forEach(b=>b.onclick=async()=>{ const p=b.dataset.neucode; if(!confirm(`Neuer Code für ${namen()[p]}? Der alte Code gilt dann nicht mehr. Punkte bleiben.`)) return; const alt=codeVon(p), c=neuerCode(); const up={[`codes/${c}`]:{pid:p,name:namen()[p]}}; if(alt) up[`codes/${alt}`]=null; await LW.db.ref(LW.BASE).update(up); alert(`Neuer Code: ${c}`); });
+  $$("[data-weg]").forEach(b=>b.onclick=async()=>{ const p=b.dataset.weg; if(!confirm(`${namen()[p]} aus der Klasse entfernen? Der Code gilt dann nicht mehr. (Die Ergebnisse bleiben gespeichert.)`)) return; const up={[`public/names/${p}`]:null}; Object.keys(codes).forEach(c=>{ if(codes[c]&&codes[c].pid===p) up[`codes/${c}`]=null; }); await LW.db.ref(LW.BASE).update(up); });
+  const z=$("#zettel"); if(z) z.onclick=()=>{ const n=namen(); const basis=location.href.replace(/[^/]*$/,"")+"index.html?code=";
+    $("#druck").innerHTML=`<div class="zettel">${Object.keys(n).sort((a,b)=>String(n[a]).localeCompare(n[b])).map(p=>{ const c=codeVon(p); return `<div><span class="qr" data-qr="${basis+c}"></span><span><b>${esc(n[p])}</b><br>Lernwelt Plön<br><span class="c">${esc(c)}</span></span></div>`; }).join("")}</div>`;
+    $$("#druck [data-qr]").forEach(el=>{ try{ new QRCode(el,{text:el.dataset.qr,width:90,height:90}); }catch(e){} }); setTimeout(()=>print(),300); };
+  const mo=$("#mon"); if(mo) mo.onchange=()=>{ monat=mo.value; male(); };
+  const ur=$("#urkunde"); if(ur) ur.onclick=()=>{ const m=monat||MON(); const r=LW.rangliste(logs,namen(),m);
+    $("#druck").innerHTML=`<div class="urkunde"><div style="font-size:60pt">👑</div><div style="font-size:22pt;letter-spacing:.2em">URKUNDE</div><div style="font-size:16pt">Monats-Sieger:in der Lernwelt Plön</div><div style="font-size:40pt;font-weight:800;font-family:Outfit,sans-serif">${esc(r[0].name)}</div><div style="font-size:16pt">${esc(LW.monatName(m))} · ${r[0].punkte} Punkte</div><div style="font-size:13pt;margin-top:10mm">Herzlichen Glückwunsch! Weiter so!</div></div>`; setTimeout(()=>print(),200); };
+  const cs=$("#csv"); if(cs) cs.onclick=()=>{ const m=monat||MON(); const r=LW.rangliste(logs,namen(),m); laden_datei(`monat-${m}.csv`, csv([["Platz","Name","Gesamt","Übungen","Live/Team/Duell","Tages-Bonus","Lerntage"],...r.map((x,i)=>[i+1,x.name,x.punkte,x.w.uebungen,x.w.live,x.w.bonus,x.w.tage])]), "text/csv"); };
+  const ko=$("#kopieren"); if(ko) ko.onclick=async()=>{ try{ await navigator.clipboard.writeText(regeln()); $("#kop-msg").textContent="✓ kopiert"; }catch(e){ const r=document.createRange(); r.selectNode($("#regeln")); getSelection().removeAllRanges(); getSelection().addRange(r); $("#kop-msg").textContent="Markiert – jetzt Strg+C drücken."; } };
+  const si=$("#sicherung"); if(si) si.onclick=()=>laden_datei(`lernwelt-sicherung-${LW.tagVon(Date.now())}.json`, JSON.stringify({log:logs, names:namen(), codes, aktuell:pub.aktuell||{}},null,1), "application/json");
+}
+</script>
+</body>
+</html>

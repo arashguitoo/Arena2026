@@ -11,5 +11,6 @@ for(const f of Object.values(window.JAGD_FAELLE||{})){
       if(b.typ==='ordnen'&&b.audio)add(s.stimme,b.saetze.join(' '));}}
   add(f.intro.stimme,f.finale.ende);
 }
+for(const st of Object.values(window.DTZ_STUFEN||{})) for(const m of st.module) for(const b of m.bloecke){ if(b.typ==='hoeren') b.items.forEach(i=>add(i.stimme,i.t)); }
 for(const t of Object.values(window.CHAT_THEMEN||{})){(t.audio||[]).forEach(a=>add(a.stimme,a.text))}
 console.log(JSON.stringify(out));

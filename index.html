@@ -3,772 +3,399 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14223B">
-<title>Spielarena – Plöner Liga</title>
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Lernwelt Plön</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
-  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6;
-  --ok:#1E9E6A; --bad:#E4412F; --info:#1F6FD1;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
-  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --ink-2:#2A3A5E; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --acc-2:#FFE9E3; --gold:#F5B82E; --gold-2:#FFF4D6; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --r:18px; --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
 }
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{margin:0;font-family:var(--body);font-size:17.5px;line-height:1.45;color:var(--ink);min-height:100vh;
-  background-color:var(--floor);
-  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),
-                   repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
-button,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--board);outline-offset:3px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+a{color:var(--pri)}
 .hidden{display:none!important}
-.wrap{max-width:660px;margin:0 auto;padding:0 16px}
-
-/* ---------- Kopf ---------- */
-.bar{background:var(--board);color:#fff;box-shadow:0 3px 0 var(--led);position:sticky;top:0;z-index:30}
-.bar-in{max-width:660px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;gap:10px;min-height:54px}
-.bar .logo{font-family:var(--display);font-weight:900;font-size:25px;line-height:1;letter-spacing:.01em}
-.bar .dot{width:8px;height:8px;border-radius:50%;background:#7c8698;flex:none}
-.bar .dot.on{background:#39d98a}
-.bar .pts{margin-left:auto;display:flex;align-items:baseline;gap:5px;background:var(--board-2);border-radius:999px;padding:5px 14px}
-.bar .pts b{font-family:var(--display);font-weight:900;font-size:23px;color:var(--led);line-height:1}
-.bar .pts span{font-size:13px;color:#aebad0}
-
-main{padding:16px 0 40px}
-section{margin-bottom:16px}
-
-/* ---------- Begrüßung ---------- */
-.hallo{display:flex;align-items:center;gap:11px;background:var(--paper);border-radius:14px;padding:11px 15px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
-.hallo i{font-style:normal;width:11px;height:34px;border-radius:4px;flex:none;background:#b9ae9c}
-.hallo b{font-family:var(--display);font-weight:800;font-size:23px;line-height:1.05;display:block}
-.hallo small{color:var(--muted);font-size:14.5px}
-.hallo .ab{margin-left:auto;background:none;border:0;color:var(--muted);text-decoration:underline;font-size:13.5px;cursor:pointer;padding:6px 0}
-
-/* ---------- Ferien-Streifen ---------- */
-.ferien{background:var(--board);color:#fff;border-radius:14px;padding:13px 16px 14px;box-shadow:0 2px 0 rgba(0,0,0,.18)}
-.ferien-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
-.ferien b{font-family:var(--display);font-weight:900;font-size:25px;color:var(--led);line-height:1}
-.ferien .rest{margin-left:auto;font-size:14.5px;color:#c9d2e3}
-.balken{height:9px;border-radius:5px;background:rgba(255,255,255,.14);overflow:hidden;margin-top:10px}
-.balken i{display:block;height:100%;border-radius:5px;background:var(--led);transition:width .8s cubic-bezier(.2,.8,.2,1)}
-.ferien small{display:block;margin-top:7px;font-size:14px;color:#aebad0}
-
-/* ---------- Hero ---------- */
-.hero{background:var(--paper);border-radius:20px;overflow:hidden;box-shadow:0 4px 0 rgba(0,0,0,.16)}
-.hero-kopf{display:flex;align-items:center;gap:9px;padding:9px 18px;background:var(--board);color:var(--led);
-  font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.04em}
-.hero-kopf span{margin-left:auto;font-family:var(--body);font-weight:700;font-size:13.5px;color:#c9d2e3;letter-spacing:0}
-.hero-body{padding:18px 18px 20px;display:flex;gap:16px;align-items:flex-start}
-.hero-ic{width:74px;height:74px;border-radius:18px;display:flex;align-items:center;justify-content:center;
-  font-size:38px;flex:none;box-shadow:inset 0 -7px 0 rgba(0,0,0,.2);color:#fff}
-.hero-txt{min-width:0;flex:1}
-.hero-txt h2{font-family:var(--display);font-weight:900;font-size:clamp(30px,8vw,42px);line-height:.98;margin:0 0 4px;color:var(--board)}
-.hero-txt p{margin:0 0 10px;color:var(--muted);font-size:16px}
-.hero-meta{display:flex;flex-wrap:wrap;gap:6px}
-.hero-cta{display:block;margin:0 18px 18px;min-height:58px;border:0;border-radius:14px;background:var(--led);color:var(--board);
-  font-family:var(--display);font-weight:900;font-size:26px;letter-spacing:.02em;cursor:pointer;text-decoration:none;
-  display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.16);transition:transform .08s}
-.hero-cta:active{transform:scale(.985)}
-.hero-cta.ruhig{background:var(--board);color:#fff}
-.hero.fertig .hero-ic{background:var(--ok)}
-.hero.wartet .hero-ic{background:var(--info)}
-
-/* Code-Eingabe im Hero */
-.code-form{display:flex;gap:8px;margin:0 18px 8px}
-.code-form input{flex:1;min-width:0;min-height:58px;border:3px solid var(--line);border-radius:14px;padding:6px 14px;background:#fff;
-  font-family:var(--display);font-weight:900;font-size:30px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
-.code-form input:focus{outline:none;border-color:var(--board)}
-.code-form button{min-height:58px;padding:0 22px;border:0;border-radius:14px;background:var(--led);color:var(--board);
-  font-family:var(--display);font-weight:900;font-size:24px;cursor:pointer;box-shadow:inset 0 -6px 0 rgba(0,0,0,.16)}
-.err{color:var(--bad);font-weight:700;font-size:15px;min-height:22px;margin:0 18px 14px}
-
-/* ---------- Live-Hinweis ---------- */
-.live-streifen{display:flex;align-items:center;gap:12px;background:#E4412F;color:#fff;border-radius:14px;padding:12px 15px;text-decoration:none;box-shadow:0 3px 0 rgba(0,0,0,.18)}
-.live-streifen .e{width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:puls 1.4s infinite;flex:none}
-.live-streifen b{font-family:var(--display);font-weight:900;font-size:24px;line-height:1.05;display:block}
-.live-streifen small{font-size:14.5px;font-weight:700;opacity:.9}
-.live-streifen .go{margin-left:auto;background:#fff;color:#E4412F;border-radius:10px;padding:7px 13px;font-weight:800;white-space:nowrap}
-@keyframes puls{0%{box-shadow:0 0 0 0 rgba(255,255,255,.7)}70%{box-shadow:0 0 0 12px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
-/* ---------- Duell-Hinweis ---------- */
-.duell-streifen{display:flex;align-items:center;gap:12px;background:var(--led);color:var(--board);border-radius:14px;padding:11px 15px;text-decoration:none;box-shadow:0 3px 0 rgba(0,0,0,.15);animation:wackel 2.4s ease-in-out infinite}
-.duell-streifen .e{font-size:30px;line-height:1}
-.duell-streifen b{font-family:var(--display);font-weight:900;font-size:23px;line-height:1.05;display:block}
-.duell-streifen small{font-size:14.5px;font-weight:700;opacity:.8}
-.duell-streifen .go{margin-left:auto;background:var(--board);color:var(--led);border-radius:10px;padding:7px 13px;font-weight:800;white-space:nowrap}
-@keyframes wackel{0%,88%,100%{transform:none}92%{transform:rotate(-1.2deg)}96%{transform:rotate(1.2deg)}}
-/* ---------- Ranking ---------- */
-.rangkarte{background:var(--board);color:#fff;border-radius:16px;padding:12px 14px 13px;box-shadow:0 3px 0 rgba(0,0,0,.18)}
-.rang-kopf{display:flex;align-items:center;gap:9px;margin-bottom:10px}
-.rang-kopf b{font-family:var(--display);font-weight:900;font-size:23px;color:var(--led);line-height:1;letter-spacing:.02em}
-.rang-kopf em{font-style:normal;font-size:13.5px;color:#aebad0}
-.rang-kopf button{margin-left:auto;border:0;background:var(--board-2);color:#fff;border-radius:999px;padding:7px 14px;
-  font-weight:700;font-size:13.5px;cursor:pointer;flex:none}
-.podium{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.pod{background:var(--board-2);border-radius:12px;padding:9px 7px 10px;text-align:center;min-width:0}
-.pod i{font-style:normal;font-size:21px;line-height:1;display:block}
-.pod .pn{display:block;font-size:14px;line-height:1.15;margin:5px 0 4px;padding-bottom:4px;border-bottom:3px solid;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pod b{font-family:var(--display);font-weight:900;font-size:25px;color:var(--led);line-height:1}
-.pod.ich{box-shadow:inset 0 0 0 2px var(--led)}
-.rang-ich{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:11px;padding-top:11px;border-top:2px solid rgba(255,255,255,.15)}
-.rang-ich .r{font-family:var(--display);font-weight:900;font-size:25px;color:var(--led);line-height:1}
-.rang-ich .n{font-weight:800;font-size:16.5px}
-.rang-ich .p{font-family:var(--display);font-weight:900;font-size:25px;margin-left:auto;line-height:1}
-.rang-ich .p u{text-decoration:none;font-family:var(--body);font-weight:700;font-size:12.5px;color:#aebad0;margin-left:4px}
-.rang-ich small{flex-basis:100%;font-size:13.5px;color:#aebad0}
-.geheim-txt{margin:0;font-size:15px;color:#c9d2e3}
-.mehr{display:block;width:100%;margin-top:18px;border:0;border-radius:12px;background:var(--board);color:#fff;
-  padding:14px;font-family:var(--display);font-weight:800;font-size:20px;cursor:pointer;text-align:center}
-
-/* ---------- Schnellknöpfe ---------- */
-.quick{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:9px}
-.quick button{background:var(--paper);border:0;border-radius:14px;padding:11px 10px;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.12);
-  display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.15}
-.quick button i{font-style:normal;font-size:23px}
-.quick button b{font-family:var(--display);font-weight:800;font-size:18px;color:var(--board)}
-.quick button small{font-size:12.5px;color:var(--muted)}
-.quick button:active{transform:scale(.98)}
-
-/* ---------- Reiter ---------- */
-.reiter{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;background:rgba(255,251,243,.75);padding:5px;border-radius:14px;margin-bottom:12px}
-.reiter button{border:0;background:transparent;padding:9px 4px;border-radius:10px;cursor:pointer;color:var(--muted);
-  font-weight:700;font-size:15.5px;line-height:1.1;display:flex;flex-direction:column;align-items:center;gap:1px}
-.reiter button b{font-family:var(--display);font-weight:900;font-size:20px;line-height:1}
-.reiter button[aria-pressed="true"]{background:var(--board);color:#fff}
-.reiter button[aria-pressed="true"] b{color:var(--led)}
-
-/* ---------- Aufgabenkarten ---------- */
-.karten{display:grid;gap:10px}
-.karte{display:grid;grid-template-columns:58px 1fr;background:var(--paper);border-radius:14px;overflow:hidden;
-  text-decoration:none;color:inherit;box-shadow:0 2px 0 rgba(0,0,0,.13)}
-.karte-ic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:#fff;padding:8px 2px}
-.karte-ic span{font-size:23px;line-height:1}
-.karte-ic b{font-family:var(--display);font-weight:900;font-size:15px;line-height:1;opacity:.9;white-space:nowrap}
-.karte-body{padding:10px 13px 11px;min-width:0}
-.karte-body h3{font-family:var(--display);font-weight:800;font-size:23px;line-height:1.02;margin:0 0 2px;color:var(--board)}
-.karte-body p{margin:0 0 6px;font-size:14.5px;color:var(--muted);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.karte-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
-.karte.zu{opacity:.68}
-.karte.fremd{opacity:.5}
-a.karte:active{transform:scale(.99)}
-
-.tag{font-size:12.5px;font-weight:700;padding:2.5px 9px;border-radius:999px;background:#efe5d3;color:var(--muted);white-space:nowrap}
-.tag.mein{background:var(--board);color:var(--led)}
-.tag.zeit{background:#fff3d1;color:#8a6200}
-.tag.wartet{background:#dce8fb;color:#1a4f94}
-.tag.neu{background:var(--led);color:var(--board)}
-.tag.ergebnis{background:#d6f2e5;color:#12704a}
-.tag.team{background:#e3ebf8;color:#1a4f94}
-.go{margin-left:auto;font-weight:700;font-size:13.5px;padding:4px 11px;border-radius:9px;background:var(--board);color:#fff}
-
-.leer{background:rgba(255,251,243,.72);border:3px dashed rgba(255,255,255,.65);border-radius:16px;padding:26px 18px;text-align:center;color:var(--muted)}
-.leer b{display:block;font-family:var(--display);font-size:25px;color:var(--board);margin-bottom:4px}
-
-/* ---------- Overlay ---------- */
-.sheet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;pointer-events:none}
-.sheet.auf{pointer-events:auto}
-.sheet-bg{position:absolute;inset:0;background:rgba(20,34,59,.5);opacity:0;transition:opacity .25s}
-.sheet.auf .sheet-bg{opacity:1}
-.sheet-box{position:relative;width:100%;max-width:660px;max-height:88vh;overflow-y:auto;background:var(--paper);
-  border-radius:20px 20px 0 0;transform:translateY(102%);transition:transform .28s cubic-bezier(.2,.9,.3,1);
-  padding:0 16px calc(24px + env(safe-area-inset-bottom))}
-.sheet.auf .sheet-box{transform:none}
-.sheet-kopf{position:sticky;top:0;background:var(--paper);display:flex;align-items:center;gap:10px;padding:16px 0 12px;z-index:2}
-.sheet-kopf h2{font-family:var(--display);font-weight:900;font-size:31px;line-height:1;margin:0;color:var(--board)}
-.sheet-kopf button{margin-left:auto;border:0;background:#efe5d3;width:40px;height:40px;border-radius:50%;font-size:19px;cursor:pointer;color:var(--muted)}
-
-/* Tabelle im Overlay */
-.trow{display:grid;grid-template-columns:30px 1fr auto;gap:11px;align-items:center;padding:10px 0;border-top:2px solid var(--line)}
-.trow:first-of-type{border-top:0}
-.trow.meins{background:#fff;border-radius:11px;padding:10px 11px;box-shadow:inset 0 0 0 2px var(--led)}
-.rang{font-family:var(--display);font-weight:900;font-size:25px;color:var(--muted);text-align:center}
-.trow:first-of-type .rang{color:#C9951B}
-.tname{font-family:var(--display);font-weight:800;font-size:21px;line-height:1;display:flex;align-items:center;gap:8px;min-width:0}
-.tname em{font-style:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.swatch{width:11px;height:22px;border-radius:3px;flex:none}
-.meter{height:7px;border-radius:4px;background:#efe5d3;margin-top:6px;overflow:hidden}
-.meter i{display:block;height:100%;border-radius:4px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
-.tpts{font-family:var(--display);font-weight:900;font-size:27px;color:var(--board);font-variant-numeric:tabular-nums;min-width:2.2em;text-align:right}
-.hinweis{color:var(--muted);font-size:14.5px;margin:12px 0 0}
-
-.top5{list-style:none;margin:14px 0 0;padding:0}
-.top5 li{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:2px solid var(--line)}
-.top5 .r{font-family:var(--display);font-weight:900;font-size:21px;width:22px;text-align:center;color:var(--muted)}
-.top5 .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.top5 .p{font-family:var(--display);font-weight:900;font-size:23px}
-
-.trikots{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-@media (max-width:420px){.trikots{grid-template-columns:1fr}}
-.trikot{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 0 rgba(0,0,0,.12)}
-.trikot-top{padding:10px 13px;color:#fff;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 11px,transparent 11px 22px)}
-.trikot-top b{font-family:var(--display);font-weight:900;font-size:22px;line-height:1;display:block}
-.trikot-top small{font-size:13.5px;opacity:.9}
-.mitglieder{display:flex;flex-wrap:wrap;gap:5px;padding:10px 12px 12px}
-.mitglieder span{background:#FFFBF3;border:2px solid var(--line);border-radius:999px;padding:2px 9px;font-size:14px}
-.mitglieder span.ich{border-color:var(--board);font-weight:700}
-
-.regeln{list-style:none;margin:0;padding:0;display:grid;gap:9px}
-.regeln li{background:#fff;border-left:5px solid var(--board);border-radius:10px;padding:11px 14px;font-size:16px}
-.regeln li b{display:block;font-family:var(--display);font-weight:800;font-size:21px;color:var(--board);line-height:1.05;margin-bottom:2px}
-
-footer{color:var(--board);opacity:.55;font-size:13.5px;text-align:center;padding:4px 0 26px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px;letter-spacing:-.01em}
+h2{font-size:24px} h3{font-size:19px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:980px;margin:0 auto;padding:16px 16px 110px}
+.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;font-family:var(--body)}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:var(--pri-2);color:var(--pri)}
+.btn.acc{background:var(--acc)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.navy{background:var(--ink)}
+.btn.wide{width:100%}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.sek{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:22px 2px 10px}
+.sek h2{margin:0}
+.sek a{font-weight:700;text-decoration:none;font-size:15px}
+/* Kopf */
+.kopf{background:var(--ink);color:#fff;position:sticky;top:0;z-index:30}
+.kopf .in{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;min-height:58px}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--head);font-weight:800;font-size:20px;color:#fff;text-decoration:none}
+.logo i{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--pri),#7C5CFF);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:18px;color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.kopf .ich{margin-left:auto;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border-radius:999px;padding:4px 12px 4px 4px;font-weight:700;border:0;color:#fff;cursor:pointer}
+.kopf .ich b{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:var(--head)}
+.kopf .ich .pk{color:var(--gold)}
+/* Navigation */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#fff;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav .in{max-width:620px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.nav a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 9px;text-decoration:none;color:var(--muted);font-size:12px;font-weight:700}
+.nav a span{font-size:22px;line-height:1;filter:grayscale(.6);opacity:.8}
+.nav a.on{color:var(--pri)} .nav a.on span{filter:none;opacity:1}
+@media (min-width:900px){
+  .nav{position:sticky;top:58px;bottom:auto;border-top:0;border-bottom:1px solid var(--line);z-index:29}
+  .nav .in{max-width:980px;display:flex;gap:6px;padding:6px 16px}
+  .nav a{flex-direction:row;gap:8px;font-size:15px;padding:8px 14px;border-radius:12px}
+  .nav a.on{background:var(--pri-2)}
+  .wrap{padding-bottom:60px}
+}
+/* Held */
+.held{background:linear-gradient(135deg,var(--ink) 0%,var(--ink-2) 100%);color:#fff;border-radius:22px;padding:20px;display:grid;grid-template-columns:1fr;gap:16px;box-shadow:0 10px 30px rgba(30,42,68,.25);position:relative;overflow:hidden}
+.held:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(124,92,255,.35),transparent 70%)}
+.held h1{font-size:30px;margin:2px 0 6px}
+.held .lvl{display:inline-flex;gap:6px;align-items:center;background:rgba(255,255,255,.1);border-radius:999px;padding:3px 12px;font-weight:700;font-size:15px}
+.xp{height:10px;background:rgba(255,255,255,.14);border-radius:5px;overflow:hidden;margin:10px 0 4px}
+.xp i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#FFD978);border-radius:5px}
+.held .zahlen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;position:relative;z-index:1}
+.held .zahlen div{background:rgba(255,255,255,.07);border-radius:14px;padding:10px 8px;text-align:center}
+.held .zahlen b{display:block;font-family:var(--head);font-size:28px;color:var(--gold);line-height:1.1}
+.held .zahlen span{font-size:13px;opacity:.85}
+@media (min-width:760px){ .held{grid-template-columns:1.2fr 1fr;align-items:center} }
+/* PIN */
+.pin{display:flex;gap:8px;align-items:center}
+.pin input{flex:1;min-width:0;min-height:50px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;font-family:var(--head);font-size:26px;letter-spacing:.3em;text-align:center}
+.livekarte{background:linear-gradient(135deg,#FF6B4A,#FF8F5E);color:#fff}
+.livekarte .pin input{border-color:transparent}
+.livekarte h3{color:#fff}
+/* Übungen */
+.ue{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:var(--schatten);text-decoration:none;color:var(--ink);border:2px solid transparent}
+.ue:hover{border-color:var(--pri-2)}
+.ue .ic{width:48px;height:48px;border-radius:14px;background:var(--pri-2);display:flex;align-items:center;justify-content:center;font-size:24px;flex:none}
+.ue .tx{flex:1;min-width:0}
+.ue b{display:block;font-family:var(--head);font-size:17px}
+.ue .t{font-size:14px;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ue .st{flex:none;text-align:right;font-family:var(--head);font-weight:800;font-size:18px;min-width:54px}
+.ue .st small{display:block;font-family:var(--body);font-weight:600;font-size:11px;color:var(--muted)}
+.ue.fertig .ic{background:var(--ok-2)}
+.ue.voll .st{color:var(--ok)}
+.tag{display:inline-block;border-radius:999px;padding:1px 8px;font-size:12px;font-weight:800;background:var(--gold-2);color:#8A5A00;margin-right:4px;vertical-align:1px}
+.tag.neu{background:var(--acc-2);color:#B23A1F}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none}
+.chip{border:0;flex:none;background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;box-shadow:0 1px 0 var(--line);font-size:15px;white-space:nowrap}
+.chip.on{background:var(--ink);color:#fff}
+.bereich{margin:18px 0 8px;display:flex;gap:10px;align-items:center}
+.bereich .ic{font-size:26px}
+.bereich .bar{width:90px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:4px}
+.bereich .bar i{display:block;height:100%;background:var(--ok)}
+.liste{display:grid;gap:8px}
+.pfad{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.pfadk{display:flex;gap:14px;align-items:center;text-align:left;border:0;background:#fff;border-radius:18px;padding:16px;box-shadow:var(--schatten);cursor:pointer}
+.pfadk .ic{font-size:32px;width:58px;height:58px;border-radius:16px;background:var(--pri-2);display:flex;align-items:center;justify-content:center;flex:none}
+.pfadk .tx{flex:1;display:flex;flex-direction:column;gap:3px}
+.pfadk .tx>b{font-family:var(--head);font-size:18px}
+.pfadk .bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:4px}
+.pfadk .bar i{display:block;height:100%;background:var(--ok)}
+.pfadk .pf{font-size:28px;color:var(--muted)}
+@media (min-width:760px){ .liste{grid-template-columns:1fr 1fr} }
+/* DTZ */
+.dtz{background:linear-gradient(135deg,#0E7490,#14A37F);color:#fff;display:flex;gap:14px;align-items:center;text-decoration:none}
+.dtz .gross{font-size:44px}
+.dtz h3{color:#fff;margin:0 0 4px}
+/* Arena */
+.ak{display:flex;flex-direction:column;gap:8px;margin:0}
+.ak .kopfzeile{display:flex;gap:12px;align-items:center}
+.ak .ic{font-size:30px;width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex:none}
+.ak h3{margin:0}
+.ak p{margin:0;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tags span{font-size:12px;font-weight:800;border-radius:999px;padding:2px 9px;background:var(--soft);border:1px solid var(--line)}
+.tags span.live{background:var(--acc);color:#fff;border-color:transparent}
+/* Rangliste */
+.podest{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;align-items:end;margin:6px 0 14px}
+.podest div{background:#fff;border-radius:16px 16px 6px 6px;text-align:center;padding:12px 6px;box-shadow:var(--schatten)}
+.podest .m{font-size:34px;display:block}
+.podest b{display:block;font-family:var(--head);font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.podest .p{font-family:var(--head);font-weight:800;color:var(--pri);font-size:22px}
+.podest .p1{padding-top:22px;background:linear-gradient(180deg,var(--gold-2),#fff)}
+.rang{display:grid;gap:6px}
+.rz{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;background:#fff;border-radius:14px;padding:10px 14px;box-shadow:0 1px 0 var(--line)}
+.rz .n{font-family:var(--head);font-weight:800;color:var(--muted);text-align:center}
+.rz b{font-weight:700}
+.rz .pk{font-family:var(--head);font-weight:800;font-size:19px}
+.rz.ich{background:var(--pri-2);box-shadow:inset 0 0 0 2px var(--pri)}
+.rz .lv{font-size:12px;color:var(--muted);font-weight:600}
+.seg{display:inline-flex;background:#fff;border-radius:12px;padding:4px;gap:4px;box-shadow:0 1px 0 var(--line)}
+.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font-weight:700;cursor:pointer}
+.seg button.on{background:var(--ink);color:#fff}
+.ruhm{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.ruhm:last-child{border:0}
+.ruhm .kr{font-size:30px}
+/* Ich */
+.kacheln{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.kachel{background:#fff;border-radius:16px;padding:14px;box-shadow:var(--schatten)}
+.kachel b{display:block;font-family:var(--head);font-size:28px;line-height:1.1}
+.kachel span{font-size:13px;color:var(--muted)}
+.balken{display:flex;align-items:flex-end;gap:3px;height:90px;margin-top:8px}
+.balken i{flex:1;background:var(--pri);border-radius:4px 4px 0 0;min-height:3px;opacity:.85}
+.balken i.nix{background:var(--line)}
+.balken i.heute{background:var(--acc)}
+.thema{display:grid;grid-template-columns:130px 1fr 44px;gap:10px;align-items:center;margin:8px 0;font-size:15px}
+.thema .bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+.thema .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--pri),#7C5CFF)}
+.abz{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.abz div{background:#fff;border-radius:16px;padding:14px 10px;text-align:center;box-shadow:var(--schatten)}
+.abz div.nein{opacity:.45;filter:grayscale(1)}
+.abz .e{font-size:34px;display:block}
+.abz b{display:block;font-size:15px}
+.abz span{font-size:12px;color:var(--muted)}
+.verlauf div{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}
+.verlauf div:last-child{border:0}
+.aufteilung{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin:8px 0}
+.aufteilung i{display:block;height:100%}
+.legende{display:flex;gap:14px;flex-wrap:wrap;font-size:14px}
+.legende span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;background:var(--f)}
+/* Anmeldung */
+.anmeldung{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 20% 10%,#2A3A5E 0,var(--ink) 60%)}
+.anmeldung .card{max-width:420px;width:100%;text-align:center;padding:28px 22px}
+.anmeldung .logo{color:var(--ink);justify-content:center;font-size:26px;margin-bottom:6px}
+.anmeldung .logo i{width:44px;height:44px;font-size:24px}
+.anmeldung input{width:100%;min-height:58px;border:2px solid var(--line);border-radius:14px;font-family:var(--head);font-size:28px;letter-spacing:.2em;text-align:center;text-transform:uppercase;margin:14px 0 10px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:12px;padding:10px 16px;font-weight:700;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.leer{color:var(--muted);text-align:center;padding:16px}
+.next{display:flex;gap:12px;align-items:center}
+.next .e{font-size:40px}
 </style>
 </head>
 <body>
 
-<header class="bar"><div class="bar-in">
-  <span class="dot" id="verbindung" title="Verbindung"></span>
-  <span class="logo" id="logo">Plöner Liga</span>
-  <span class="pts hidden" id="kopf-pts"><b id="kopf-zahl">0</b><span>Punkte</span></span>
-</div></header>
-
-<main class="wrap">
-  <section id="hallo" class="hallo hidden"></section>
-  <section id="live-hinweis" class="hidden"></section>
-  <section id="duell-hinweis" class="hidden"></section>
-  <section id="ferien" class="ferien hidden"></section>
-  <section id="hero"></section>
-  <section id="rang" class="hidden"></section>
-  <nav class="quick" id="quick"></nav>
-  <section>
-    <div class="reiter" id="reiter"></div>
-    <div class="karten" id="karten"></div>
-  </section>
-  <footer id="fuss">Plöner Liga</footer>
-</main>
-
-<div class="sheet" id="sheet" aria-hidden="true">
-  <div class="sheet-bg" data-zu></div>
-  <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheet-titel">
-    <div class="sheet-kopf"><h2 id="sheet-titel"></h2><button type="button" data-zu aria-label="Schließen">✕</button></div>
-    <div id="sheet-inhalt"></div>
+<section class="anmeldung hidden" id="anmeldung">
+  <div class="card">
+    <div class="logo"><i>✦</i>Lernwelt Plön</div>
+    <p class="muted" style="margin:0">Üben, Punkte sammeln, gewinnen – jeden Monat neu.</p>
+    <form id="login-form" autocomplete="off"><input id="code" maxlength="8" placeholder="DEIN CODE" aria-label="Dein Code" autocapitalize="characters">
+      <button class="btn wide" type="submit">Los geht's</button></form>
+    <div class="err" id="login-err"></div>
+    <p class="small muted" style="margin-top:14px">Live-Spiel im Unterricht? <a href="live.html"><b>PIN eingeben</b></a></p>
+    <p class="small" style="margin-top:20px"><a href="lehrer.html" class="muted">Lehrkraft</a></p>
   </div>
+</section>
+
+<div id="app" class="hidden">
+  <header class="kopf"><div class="in">
+    <a class="logo" href="#start"><i>✦</i>Lernwelt</a>
+    <button class="ich" id="kopf-ich" onclick="location.hash='#ich'"><b id="kopf-init">?</b><span id="kopf-name"></span><span class="pk" id="kopf-pk"></span></button>
+  </div></header>
+  <nav class="nav"><div class="in">
+    <a href="#start" data-nav="start"><span>🏠</span>Start</a>
+    <a href="#ueben" data-nav="ueben"><span>📚</span>Üben</a>
+    <a href="#arena" data-nav="arena"><span>🏟️</span>Arena</a>
+    <a href="#rang" data-nav="rang"><span>🏆</span>Rangliste</a>
+    <a href="#ich" data-nav="ich"><span>👤</span>Ich</a>
+  </div></nav>
+  <main class="wrap" id="main"></main>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script data-goatcounter="https://aguitoo.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
-
+<script src="katalog.js"></script>
+<script src="lernwelt.js"></script>
 <script>
-/* ==========================================================
-   SPIELARENA – die Aufgaben verwaltest du in der Konsole.
-   Diese Datei musst du nicht mehr ändern.
-   ========================================================== */
-const CONFIG = {
-  ligaName: "Plöner Liga",
-  kursName: "Jugendintegrationskurs Plön",
-  kursCode: "ploen-jik"            // muss in der Konsole gleich sein
-};
+/* =========================================================
+   LERNWELT · Startseite für Jugendliche
+   ========================================================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=LW.esc;
+const KAT=window.LW_KATALOG||[], BER=window.LW_BEREICHE||[];
+let me=null, E=[], logs={}, pub={}, ansicht="start", filter="alle", rangModus="monat", rangMonat=null, malTimer=null;
 
-/* Regeln – Text frei anpassen */
-const REGELN = [
-  { titel: "Dein Code", text: "Du bekommst einen Code. Damit meldest du dich an. Gib ihn niemandem." },
-  { titel: "Zufällige Teams", text: "Für jede Runde werden neue Teams ausgelost. Du spielst mit anderen Leuten zusammen." },
-  { titel: "Punkte sammeln", text: "Jede Aufgabe bringt Punkte – für dich und für dein Team. Dein bestes Ergebnis zählt." },
-  { titel: "Jedes Spiel hat seine Zeit", text: "Manche Spiele öffnen erst später und schließen wieder. Der Countdown zeigt dir, wie lange noch." },
-  { titel: "Rundenende", text: "Am Ende der Runde gewinnt das Team mit den meisten Punkten." }
+const ARENA=[
+  {gruppe:"Live im Unterricht", icon:"🎮", farbe:"#FFE9E3", titel:"Live-Quiz", text:"Alle spielen gleichzeitig – wer ist am schnellsten? Platz 1–3 bekommen Bonus-Punkte.", tags:["live","ganze Klasse","bis 20 Punkte"], pin:true},
+  {gruppe:"Live im Unterricht", icon:"⚔️", farbe:"#E8EBFF", titel:"Tafel-Duell", text:"Team gegen Team an der Leinwand – Sätze ordnen, Lücken füllen, klauen! Deine Lehrkraft leitet.", tags:["live","Teams","unter Aufsicht"]},
+  {gruppe:"Zusammen", icon:"🕵️", farbe:"#FFF4D6", titel:"Schnitzeljagd", text:"Im Team einen Fall lösen: Hör-Aufgaben, Hinweise, Zahlenschloss. Punkte bekommt jede Person.", tags:["live","Team","90 Minuten"], pin:true},
+  {gruppe:"Zusammen", icon:"💬", farbe:"#E2F6EF", titel:"Chat-Spiel", text:"Eine WhatsApp-Gruppe, 3–4 Leute an einem Tisch: Nachrichten aus Wort-Kacheln bauen.", tags:["live","Tisch","3–4 Personen"], pin:true},
+  {gruppe:"Von zu Hause", icon:"⚔️", farbe:"#E8EBFF", titel:"Duell-Arena", text:"Fordere andere heraus – 1 gegen 1 oder in der Gruppe. Sieg +3 Punkte.", tags:["Duell","jederzeit"], link:"duell.html"}
 ];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
-  authDomain: "lern-deutsch-arash.firebaseapp.com",
-  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "lern-deutsch-arash",
-  storageBucket: "lern-deutsch-arash.firebasestorage.app",
-  messagingSenderId: "845503292114",
-  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
-};
-const FB_ROOT = "jugendliga";
-
-/* ---------- Hilfen ---------- */
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmtDate = iso => { if(!iso) return ""; const [y,m,d]=String(iso).split("-"); return `${d}.${m}.${y}`; };
-const fmtScore = n => Number.isInteger(n) ? String(n) : Number(n).toFixed(1).replace(".",",");
-const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
-const KURS = String(CONFIG.kursCode||"kurs").trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
-const CODE_KEY = `liga_code_${KURS}`;
-const FERN = 4102444800000;
-const p2 = n => String(n).padStart(2,"0");
-let tOffset=0;
-const jetzt = () => Date.now() + tOffset;
-function restLang(ms, dativ){
-  if(ms<=0) return "gleich";
-  const s=Math.floor(ms/1000), t=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60);
-  if(t>0) return `${t} ${t===1?"Tag":(dativ?"Tagen":"Tage")} ${h} Std`;
-  if(h>0) return `${h} Std ${m} Min`;
-  return `${m} Min`;
-}
-function wannText(ms){
-  const d=new Date(ms), n=new Date(jetzt());
-  const wd=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][d.getDay()];
-  const tage=Math.round((new Date(d).setHours(0,0,0,0)-new Date(n).setHours(0,0,0,0))/86400000);
-  const uhr=`${p2(d.getHours())}:${p2(d.getMinutes())} Uhr`;
-  if(tage===0) return `heute um ${uhr}`;
-  if(tage===1) return `morgen um ${uhr}`;
-  if(tage>1 && tage<7) return `${wd} um ${uhr}`;
-  return `${p2(d.getDate())}.${p2(d.getMonth()+1)}. um ${uhr}`;
-}
-
-/* ---------- Zustand ---------- */
-let pub = null;          // öffentlicher Stand aus der Konsole
-let live = {};           // automatische Ergebnisse der laufenden Runde
-let me = null;           // {code, pid, name}
-let reiter = "jetzt";    // jetzt | bald | vorbei
-let db = null, liveRef = null, liveRound = null, loaded = false;
-let duelle = {}, duellRef = null;
-
-try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
-
-document.title = `Spielarena – ${CONFIG.ligaName}`;
-$("#logo").textContent = CONFIG.ligaName;
-$("#fuss").textContent = CONFIG.kursName;
-
-/* ---------- Berechnung ---------- */
-function autoSum(pid){ const p=live[pid]; return p ? Object.values(p).reduce((a,v)=>a+(Number(v)||0),0) : 0; }
-function playerPoints(pid){ return ((pub&&pub.manualPlayer&&pub.manualPlayer[pid])||0) + autoSum(pid); }
-function teamRows(){
-  if(!pub || !pub.round) return [];
-  const roster=pub.roster||{};
-  return arr(pub.teams).map(t=>{
-    let sum=(pub.manualTeam&&pub.manualTeam[t.id])||0;
-    Object.keys(roster).forEach(pid=>{ if(roster[pid]===t.id) sum+=autoSum(pid); });
-    const score = pub.wertung==="schnitt" ? Math.round(sum/(t.size||1)*10)/10 : sum;
-    return Object.assign({}, t, {sum, score});
-  }).sort((a,b)=>b.score-a.score);
-}
-const meinTeam = () => (me && pub && pub.roster) ? arr(pub.teams).find(t=>t.id===pub.roster[me.pid]) || null : null;
-/* Einzel-Rangliste: alle Spieler:innen der Runde, Gleichstand bekommt denselben Platz */
-function spielerRows(){
-  if(!pub || !pub.round) return [];
-  const namen=pub.names||{}, teams=arr(pub.teams), ids=new Set();
-  [pub.roster, namen, live, pub.manualPlayer].forEach(o=>{ if(o) Object.keys(o).forEach(p=>ids.add(p)); });
-  const rows=[...ids].map(pid=>{
-    const tm=teams.find(x=>x.id===(pub.roster||{})[pid]);
-    return {pid, name:namen[pid]||"", punkte:playerPoints(pid), color:tm?tm.color:"#b9ae9c",
-            team:tm?tm.name:"", ich:!!(me&&me.pid===pid)};
-  }).sort((a,b)=> b.punkte-a.punkte || String(a.name).localeCompare(String(b.name),"de"));
-  let platz=0, vorher=null;
-  rows.forEach((r,i)=>{ if(r.punkte!==vorher){ platz=i+1; vorher=r.punkte; } r.rang=platz; });
-  return rows;
-}
-const zeigtPunkte = () => !!(pub && pub.round && pub.showTable!==false);
-const spielerName = r => r.name || (r.ich ? "Du" : "Spieler:in");
-function assignedToMe(t){
-  if(!me || !pub) return false;
-  const a=t.assign||{};
-  if(a.alle) return true;
-  if(a.players && a.players[me.pid]) return true;
-  const team=pub.roster && pub.roster[me.pid];
-  return !!(team && a.teams && a.teams[team]);
-}
-function assignText(t){
-  const a=t.assign||{};
-  if(a.alle) return "Für alle";
-  const names=arr(pub.teams).filter(tm=>a.teams&&a.teams[tm.id]).map(tm=>tm.name);
-  const n=Object.keys(a.players||{}).length;
-  if(names.length && n) return `Für ${names.join(", ")} und Spezialaufträge`;
-  if(names.length) return `Für ${names.join(", ")}`;
-  if(n) return "Spezialauftrag";
-  return "";
-}
-/* jetzt | bald | vorbei */
-function phase(t){
-  if(t.status==="bald") return "bald";
-  if(t.status==="fertig") return "vorbei";
-  const von=Number(t.von)||0, bis=Number(t.bis)||FERN, n=jetzt();
-  if(von && n<von) return "bald";
-  if(bis<FERN && n>bis) return "vorbei";
-  return "jetzt";
-}
-const meinErgebnis = t => (me && live[me.pid] && live[me.pid][t.key]!==undefined) ? Number(live[me.pid][t.key]) : null;
-const istLive = key => /^live-/.test(key);   // Live-Spiele laufen über live.html + PIN, nicht als Karte
-function alleAufgaben(){
-  if(!pub) return [];
-  return Object.entries(pub.tasks||{}).filter(([key])=>!istLive(key)).map(([key,t])=>Object.assign({key},t));
-}
-function meineAufgaben(ph){
-  return alleAufgaben().filter(t=>phase(t)===ph && (!me || assignedToMe(t)));
-}
-function fortschritt(){
-  const dran=alleAufgaben().filter(t=>(!me||assignedToMe(t)) && phase(t)!=="bald" && t.key!==DUELL_KEY);
-  const fertig=dran.filter(t=>meinErgebnis(t)!==null);
-  return {ganz:dran.length, fertig:fertig.length};
-}
+LW.init();
+function toast(t){ const d=document.createElement("div"); d.className="toast"; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2600); }
 
 /* ---------- Anmeldung ---------- */
-function login(raw){
-  const code=String(raw||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  const err=$("#code-err");
-  if(code.length<4){ if(err) err.textContent="Der Code hat mindestens 4 Zeichen."; return; }
-  if(!db){ if(err) err.textContent="Keine Verbindung. Bitte später nochmal."; return; }
-  if(err) err.textContent="Prüfe …";
-  db.ref(`${FB_ROOT}/${KURS}/codes/${code}`).once("value").then(s=>{
-    const v=s.val();
-    if(!v||!v.pid){ if($("#code-err")) $("#code-err").textContent="Diesen Code gibt es nicht. Frag deine Lehrkraft."; return; }
-    me={code, pid:v.pid, name:v.name||""};
-    localStorage.setItem(CODE_KEY, JSON.stringify(me));
-    reiter="jetzt"; renderAll();
-  }).catch(()=>{ if($("#code-err")) $("#code-err").textContent="Keine Verbindung. Bitte später nochmal."; });
-}
-function recheckCode(){
-  if(!me||!db) return;
-  db.ref(`${FB_ROOT}/${KURS}/codes/${me.code}`).once("value").then(s=>{
-    const v=s.val();
-    if(!v||v.pid!==me.pid){ me=null; localStorage.removeItem(CODE_KEY); renderAll(); }
-    else if((v.name||"")!==me.name){ me.name=v.name||""; localStorage.setItem(CODE_KEY, JSON.stringify(me)); renderAll(); }
-  }).catch(()=>{});
-}
-
-/* ---------- Begrüßung & Kopf ---------- */
-function renderHallo(){
-  const box=$("#hallo"), kopf=$("#kopf-pts");
-  if(!me){ box.innerHTML=""; box.classList.add("hidden"); kopf.classList.add("hidden"); return; }
-  box.classList.remove("hidden");
-  const team=meinTeam();
-  const zeigePunkte = pub && pub.showTable!==false && pub.round;
-  box.innerHTML=`<i style="background:${team?esc(team.color):"#b9ae9c"}"></i>
-    <div><b>Hallo${me.name?" "+esc(me.name):""}!</b><small>${team?esc(team.name):"Noch in keinem Team"}</small></div>
-    <button class="ab" type="button" id="abmelden">Nicht du?</button>`;
-  $("#abmelden").addEventListener("click", ()=>{ me=null; localStorage.removeItem(CODE_KEY); reiter="jetzt"; renderAll(); });
-  if(zeigePunkte){ kopf.classList.remove("hidden"); $("#kopf-zahl").textContent=playerPoints(me.pid); }
-  else kopf.classList.add("hidden");
-}
-
-/* ---------- Ferien-Streifen ---------- */
-function renderFerien(){
-  const el=$("#ferien"), F=pub&&pub.ferien;
-  if(!F){ el.classList.add("hidden"); return; }
-  el.classList.remove("hidden");
-  const n=jetzt();
-  const ganz=Math.max(1, F.ende-F.start);
-  const anteil=Math.max(0, Math.min(1, (n-F.start)/ganz));
-  const tagAlle=Math.max(1, Math.ceil(ganz/86400000));
-  const tagNun=Math.max(1, Math.min(tagAlle, Math.floor((n-F.start)/86400000)+1));
-  const rest = n<F.start ? `startet in ${restLang(F.start-n, true)}`
-    : n>F.ende ? "ist vorbei" : `noch ${restLang(F.ende-n)}`;
-  const f=fortschritt();
-  el.innerHTML=`<div class="ferien-top"><b>${esc(F.name||"Ferienliga")}</b>
-      ${n>=F.start&&n<=F.ende?`<span style="color:#c9d2e3;font-size:15px">Tag ${tagNun} von ${tagAlle}</span>`:""}
-      <span class="rest">${esc(rest)}</span></div>
-    <div class="balken"><i style="width:${(anteil*100).toFixed(1)}%"></i></div>
-    ${me&&f.ganz?`<small>${f.fertig} von ${f.ganz} Spielen geschafft${f.fertig===f.ganz?" – stark! 🎉":""}</small>`:`<small>Jeden Tag kommt ein neues Spiel dazu.</small>`}`;
-}
-
-/* ---------- Hero ---------- */
-const ordVon = t => Number(t.ord!==undefined ? t.ord : t.nr)||0;
-function farbeVon(t){
-  const paletten=["#E4412F","#1F6FD1","#1E9E6A","#7B4BC9","#E9800E","#0E9FB0","#B45309","#DB2777","#0F766E","#7C3AED"];
-  return paletten[(Number(t.nr)||0) % paletten.length];
-}
-function renderHero(){
-  const box=$("#hero");
-  if(!me){
-    box.innerHTML=`<div class="hero">
-      <div class="hero-kopf">⚡ Mitmachen</div>
-      <div class="hero-body"><div class="hero-ic" style="background:var(--board)">🔑</div>
-        <div class="hero-txt"><h2>Dein Code</h2><p>Tipp deinen Code ein. Dann siehst du deine Spiele und deine Punkte.</p></div></div>
-      <form class="code-form" id="code-form" autocomplete="off">
-        <input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" inputmode="text" autocapitalize="characters">
-        <button type="submit">Los</button></form>
-      <div class="err" id="code-err" role="alert"></div></div>`;
-    $("#code-form").addEventListener("submit", e=>{ e.preventDefault(); login($("#code-in").value); });
-    return;
-  }
-  if(!pub){ box.innerHTML=`<div class="hero"><div class="hero-kopf">⏳ Lädt</div>
-    <div class="hero-body"><div class="hero-ic" style="background:var(--board)">⏳</div>
-    <div class="hero-txt"><h2>Einen Moment</h2><p>Deine Spiele werden geladen.</p></div></div></div>`; return; }
-
-  const offen=meineAufgaben("jetzt").filter(t=>t.key!==DUELL_KEY);
-  const neu=offen.filter(t=>meinErgebnis(t)===null);
-  const kandidaten = neu.length?neu:offen;
-  kandidaten.sort((a,b)=>{
-    const ba=Number(a.bis)||FERN, bb=Number(b.bis)||FERN;
-    if(ba!==bb) return ba-bb;
-    return ordVon(a)-ordVon(b);
-  });
-  const t=kandidaten[0];
-
-  if(!t){
-    const naechste=meineAufgaben("bald").sort((a,b)=>(Number(a.von)||0)-(Number(b.von)||0))[0];
-    const f=fortschritt();
-    const dt=meineAufgaben("jetzt").find(x=>x.key===DUELL_KEY);
-    const duellCta = dt&&dt.file ? `<a class="hero-cta" href="${esc(dt.file)}">⚔️ ${naechste?"Bis dahin: Duell starten":"Duell starten"} ›</a>` : "";
-    if(naechste){
-      const von=Number(naechste.von)||0;
-      box.innerHTML=`<div class="hero wartet">
-        <div class="hero-kopf">🔒 Als Nächstes<span>${esc(wannText(von))}</span></div>
-        <div class="hero-body"><div class="hero-ic">${esc(naechste.icon||"🎯")}</div>
-          <div class="hero-txt"><h2>${esc(naechste.title)}</h2><p>${esc(naechste.text||"")}</p>
-            <div class="hero-meta"><span class="tag wartet">öffnet in ${esc(restLang(von-jetzt(), true))}</span></div></div></div>
-        ${duellCta||`<button class="hero-cta ruhig" type="button" disabled style="opacity:.6">Noch geschlossen</button>`}</div>`;
-    } else {
-      box.innerHTML=`<div class="hero fertig">
-        <div class="hero-kopf">✓ Geschafft</div>
-        <div class="hero-body"><div class="hero-ic">🎉</div>
-          <div class="hero-txt"><h2>Alles erledigt!</h2>
-            <p>${f.ganz?`Du hast ${f.fertig} von ${f.ganz} Spielen gemacht.`:"Gerade ist kein Spiel offen."} ${dt?"Lust auf ein Duell? Fordere jemanden heraus!":"Schau später wieder rein."}</p></div></div>${duellCta}</div>`;
-    }
-    return;
-  }
-
-  const erg=meinErgebnis(t);
-  const bis=Number(t.bis)||FERN;
-  const zeit = bis<FERN ? `<span class="tag zeit">⏳ noch ${esc(restLang(bis-jetzt()))}</span>` : "";
-  const kopf = erg===null ? (t.status==="neu"?"🔥 Neu für dich":"🎮 Jetzt dran") : "🔁 Nochmal probieren";
-  const cta  = erg===null ? "Spielen" : `Besser als ${erg} werden`;
-  box.innerHTML=`<div class="hero">
-    <div class="hero-kopf">${kopf}${bis<FERN?`<span>bis ${esc(wannText(bis))}</span>`:""}</div>
-    <div class="hero-body"><div class="hero-ic" style="background:${farbeVon(t)}">${esc(t.icon||"🎯")}</div>
-      <div class="hero-txt"><h2>${esc(t.title)}</h2>${t.text?`<p>${esc(t.text)}</p>`:""}
-        <div class="hero-meta">${zeit}
-          ${erg!==null?`<span class="tag ergebnis">Dein Ergebnis: ${erg}/${t.max}</span>`:`<span class="tag">bis ${t.max} Punkte</span>`}
-          ${t.art==="Team"?`<span class="tag team">Team</span>`:""}</div></div></div>
-    ${t.file?`<a class="hero-cta" href="${esc(t.file)}">${esc(cta)} ›</a>`:""}</div>`;
-}
-
-/* ---------- Live-Spiel im Unterricht ---------- */
-let liveState=null;
-function renderLive(){
-  const el=$("#live-hinweis"); const st=liveState;
-  const start = st && st.sid ? parseInt(st.sid,36) : 0;
-  const aktiv = st && st.phase && st.phase!=="ende" && start && (jetzt()-start) < 4*3600000;
-  if(!aktiv){ el.classList.add("hidden"); return; }
-  el.classList.remove("hidden");
-  el.innerHTML=`<a class="live-streifen" href="live.html"><span class="e"></span>
-    <span><b>Live-Spiel läuft!</b><small>${esc(st.titel||"Im Unterricht")} – mit der PIN von der Leinwand mitmachen</small></span><span class="go">Mitmachen ›</span></a>`;
-}
-
-/* ---------- Duelle ---------- */
-const DUELL_KEY = "duell-arena";
-function renderDuell(){
-  const el=$("#duell-hinweis");
-  const t=pub&&pub.tasks&&pub.tasks[DUELL_KEY];
-  if(!me || !t || phase(Object.assign({key:DUELL_KEY},t))!=="jetzt"){ el.classList.add("hidden"); return; }
-  if(db && !duellRef){ duellRef=db.ref(`${FB_ROOT}/${KURS}/duelle`).orderByKey().limitToLast(300); duellRef.on("value", s=>{ duelle=s.val()||{}; renderDuell(); }); }
-  const n=jetzt();
-  const dran=Object.values(duelle).filter(d=>d&&d.info&&d.info.teil&&d.info.teil[me.pid] && !(d.teil&&d.teil[me.pid]) && n<=(Number(d.info.ende)||0));
-  if(!dran.length){ el.classList.add("hidden"); return; }
-  const von=dran.map(d=>d.info.von).filter(p=>p!==me.pid);
-  const namen=[...new Set(von.map(p=>(pub.names&&pub.names[p])||"jemand"))];
-  el.classList.remove("hidden");
-  el.innerHTML=`<a class="duell-streifen" href="duell.html"><span class="e">⚔️</span>
-    <span><b>${dran.length===1?"Ein Duell wartet auf dich!":dran.length+" Duelle warten auf dich!"}</b>
-    <small>${namen.length?esc(namen.slice(0,3).join(", "))+(namen.length===1?" fordert dich heraus":" fordern dich heraus"):"Du bist dran"}</small></span>
-    <span class="go">Los ›</span></a>`;
-}
-
-/* ---------- Ranking ---------- */
-const MEDAILLE=["🥇","🥈","🥉"];
-function renderRang(){
-  const el=$("#rang");
-  if(!pub || !pub.round){ el.classList.add("hidden"); return; }
-  el.classList.remove("hidden");
-  if(pub.showTable===false){
-    el.innerHTML=`<div class="rangkarte"><div class="rang-kopf"><b>Ranking</b></div>
-      <p class="geheim-txt">🤫 Noch geheim – der Stand wird später aufgedeckt. Jedes Spiel zählt trotzdem!</p></div>`;
-    return;
-  }
-  const rows=spielerRows();
-  if(!rows.length){
-    el.innerHTML=`<div class="rangkarte"><div class="rang-kopf"><b>Ranking</b></div>
-      <p class="geheim-txt">Noch keine Punkte – das erste Spiel entscheidet. 🚀</p></div>`;
-    return;
-  }
-  const top=rows.slice(0,3), ich=rows.find(r=>r.ich);
-  let unten="";
-  if(ich){
-    const vorn=rows.filter(r=>r.rang<ich.rang);
-    const ziel=vorn.length ? vorn[vorn.length-1] : null;
-    const diff=ziel ? ziel.punkte-ich.punkte : 0;
-    const gleich=rows.filter(r=>r.rang===ich.rang && !r.ich).length;
-    const hinweis = ich.rang===1 ? (gleich?`ganz oben, aber punktgleich – zieh weg! 👑`:"ganz oben – halte die Führung! 👑")
-      : diff>0 ? `${fmtScore(diff)} ${diff===1?"Punkt":"Punkte"} bis Platz ${ziel.rang}`
-      : ziel ? `gleichauf mit Platz ${ziel.rang} – das nächste Spiel entscheidet` : "";
-    unten=`<div class="rang-ich"><span class="r">${ich.rang}.</span><span class="n">Dein Platz</span>
-      <span class="p">${fmtScore(ich.punkte)}<u>Punkte</u></span><small>${esc(hinweis)}</small></div>`;
-  }
-  el.innerHTML=`<div class="rangkarte">
-    <div class="rang-kopf"><b>Ranking</b><em>${rows.length} Spieler:innen</em>
-      <button type="button" data-sheet="ranking">alle ansehen ›</button></div>
-    <div class="podium">${top.map(r=>`<div class="pod${r.ich?" ich":""}"><i>${MEDAILLE[Math.min(2,r.rang-1)]}</i>
-        <span class="pn" style="border-color:${esc(r.color)}">${esc(r.name||(r.ich?"Du":"Platz "+r.rang))}</span>
-        <b>${fmtScore(r.punkte)}</b></div>`).join("")}</div>
-    ${unten}</div>`;
-}
-
-/* ---------- Schnellknöpfe ---------- */
-function renderQuick(){
-  const st=teamRows(), team=meinTeam();
-  const platz = team ? st.findIndex(x=>x.id===team.id)+1 : 0;
-  const zeigt = pub && pub.showTable!==false && pub.round;
-  $("#quick").innerHTML=`
-    <button type="button" data-sheet="tabelle"><i>🏆</i><b>Tabelle</b>
-      <small>${zeigt&&platz?`Platz ${platz} von ${st.length}`:"ansehen"}</small></button>
-    <button type="button" data-sheet="teams"><i>👥</i><b>Teams</b><small>${st.length||""}</small></button>
-    <button type="button" data-sheet="regeln"><i>📖</i><b>Regeln</b><small>kurz</small></button>`;
-}
-
-/* ---------- Reiter & Karten ---------- */
-function renderReiter(){
-  const z=["jetzt","bald","vorbei"].map(p=>meineAufgaben(p).length);
-  if(z[["jetzt","bald","vorbei"].indexOf(reiter)]===0){
-    const ersterMit=["jetzt","bald","vorbei"].find((p,i)=>z[i]>0);
-    if(ersterMit) reiter=ersterMit;
-  }
-  const label=[["jetzt","Jetzt"],["bald","Bald"],["vorbei","Vorbei"]];
-  $("#reiter").innerHTML=label.map(([k,l],i)=>
-    `<button type="button" data-r="${k}" aria-pressed="${reiter===k}"><b>${z[i]}</b>${l}</button>`).join("");
-}
-function karte(t, ph){
-  const erg=meinErgebnis(t);
-  const mein=!me||assignedToMe(t);
-  const von=Number(t.von)||0, bis=Number(t.bis)||FERN;
-  const tags=[];
-  if(ph==="jetzt"){
-    if(t.status==="neu" && erg===null) tags.push(`<span class="tag neu">Neu</span>`);
-    if(bis<FERN) tags.push(`<span class="tag zeit">⏳ noch ${esc(restLang(bis-jetzt()))}</span>`);
-    if(me && mein && erg===null) tags.push(`<span class="tag mein">Für dich</span>`);
-  }
-  if(ph==="bald" && von) tags.push(`<span class="tag wartet">🔒 ${esc(wannText(von))}</span>`);
-  if(ph==="vorbei") tags.push(`<span class="tag">${t.status==="fertig"?"Abgeschlossen":"Zeit vorbei"}</span>`);
-  const duell = t.key===DUELL_KEY;
-  if(duell && ph==="jetzt") tags.push(`<span class="tag ergebnis">⚔️ ${erg||0}/${t.max} Duell-Punkte</span>`);
-  else if(erg!==null) tags.push(`<span class="tag ergebnis">${erg}/${t.max}</span>`);
-  else if(ph==="jetzt") tags.push(`<span class="tag">bis ${t.max} Punkte</span>`);
-  else if(ph==="vorbei" && me) tags.push(`<span class="tag">nicht gespielt</span>`);
-  if(t.art==="Team") tags.push(`<span class="tag team">Team</span>`);
-  if(!me && assignText(t)) tags.push(`<span class="tag">${esc(assignText(t))}</span>`);
-
-  const offen = ph==="jetzt" && t.file && mein;
-  const inner=`<div class="karte-ic" style="background:${offen?farbeVon(t):"#8a8f9c"}">
-      <span>${esc(t.icon||"🎯")}</span><b>${esc(t.code||t.nr||"")}</b></div>
-    <div class="karte-body"><h3>${esc(t.title)}</h3>${t.text?`<p>${esc(t.text)}</p>`:""}
-      <div class="karte-meta">${tags.join("")}${offen?`<span class="go">${duell?"Duellieren":erg!==null?"Nochmal":"Spielen"} ›</span>`:""}</div></div>`;
-  const klassen = `karte ${ph!=="jetzt"?"zu":""} ${me&&!mein?"fremd":""}`;
-  return offen ? `<a class="${klassen}" href="${esc(t.file)}">${inner}</a>` : `<div class="${klassen}" aria-disabled="true">${inner}</div>`;
-}
-function renderKarten(){
-  const box=$("#karten");
-  if(!pub){ box.innerHTML=`<div class="leer"><b>${loaded?"Noch keine Spiele":"Lädt …"}</b>${loaded?"Sobald deine Lehrkraft Spiele freischaltet, erscheinen sie hier.":"Einen Moment."}</div>`; return; }
-  let liste=alleAufgaben().filter(t=>phase(t)===reiter);
-  if(me) liste=liste.filter(t=>assignedToMe(t)).concat(liste.filter(t=>!assignedToMe(t)));
-  if(reiter==="jetzt") liste.sort((a,b)=>{
-    const ea=meinErgebnis(a)===null?0:1, eb=meinErgebnis(b)===null?0:1;
-    if(ea!==eb) return ea-eb;
-    return ((Number(a.bis)||FERN)-(Number(b.bis)||FERN)) || ordVon(a)-ordVon(b);
-  });
-  if(reiter==="bald") liste.sort((a,b)=>(Number(a.von)||0)-(Number(b.von)||0));
-  if(reiter==="vorbei") liste.sort((a,b)=>((Number(b.bis)||0)-(Number(a.bis)||0)) || ordVon(b)-ordVon(a));
-  if(!liste.length){
-    const msg = reiter==="jetzt" ? ["Gerade nichts offen","Schau im Reiter „Bald“, was als Nächstes kommt."]
-      : reiter==="bald" ? ["Nichts in Sicht","Im Moment ist kein weiteres Spiel geplant."]
-      : ["Noch nichts vorbei","Hier landen Spiele, deren Zeit abgelaufen ist."];
-    box.innerHTML=`<div class="leer"><b>${msg[0]}</b>${msg[1]}</div>`; return;
-  }
-  box.innerHTML=liste.map(t=>karte(t, reiter)).join("");
-}
-
-/* ---------- Overlay ---------- */
-function sheetAuf(welches){
-  const s=$("#sheet"), titel=$("#sheet-titel"), inhalt=$("#sheet-inhalt");
-  const st=teamRows(), team=meinTeam();
-  if(welches==="tabelle"){
-    titel.textContent="Tabelle";
-    if(!pub||!pub.round){ inhalt.innerHTML=`<p class="hinweis">Die Liga startet bald. Sobald die Teams ausgelost sind, siehst du hier den Punktestand.</p>`; }
-    else if(pub.showTable===false){ inhalt.innerHTML=`<div class="leer"><b>Noch geheim 🤫</b>Der Punktestand wird später aufgedeckt. Spielt weiter – jedes Spiel zählt!</div>`; }
-    else {
-      const max=Math.max(1,...st.map(x=>Math.abs(x.score)));
-      inhalt.innerHTML=`<p class="hinweis" style="margin:0 0 10px">${esc(pub.round.name||"")}${pub.wertung==="schnitt"?" · Punkte pro Kopf":""}</p>
-        ${st.map((x,i)=>`<div class="trow ${team&&x.id===team.id?"meins":""}">
-          <div class="rang">${i+1}</div>
-          <div><div class="tname"><span class="swatch" style="background:${esc(x.color)}"></span><em>${esc(x.name)}</em></div>
-            <div class="meter"><i style="width:${Math.max(0,x.score)/max*100}%;background:${esc(x.color)}"></i></div></div>
-          <div class="tpts">${fmtScore(x.score)}</div></div>`).join("")}
-        <button class="mehr" type="button" data-sheet="ranking">Einzel-Ranking ansehen ›</button>`;
-    }
-  }
-  if(welches==="ranking"){
-    titel.textContent="Ranking";
-    const rows=spielerRows();
-    if(!pub||!pub.round){ inhalt.innerHTML=`<p class="hinweis">Die Liga startet bald. Sobald die Teams ausgelost sind, siehst du hier das Ranking.</p>`; }
-    else if(pub.showTable===false){ inhalt.innerHTML=`<div class="leer"><b>Noch geheim 🤫</b>Der Punktestand wird später aufgedeckt. Spielt weiter – jedes Spiel zählt!</div>`; }
-    else if(!rows.length){ inhalt.innerHTML=`<div class="leer"><b>Noch leer</b>Das erste Spiel entscheidet, wer vorn steht.</div>`; }
-    else {
-      const max=Math.max(1,...rows.map(r=>r.punkte));
-      const ohneNamen=!Object.keys(pub.names||{}).length;
-      inhalt.innerHTML=`<p class="hinweis" style="margin:0 0 10px">Alle Punkte dieser Runde.${ohneNamen?" Die Namen sind ausgeblendet – dein eigener Platz ist markiert.":""}</p>
-        ${rows.map(r=>`<div class="trow ${r.ich?"meins":""}">
-          <div class="rang">${r.rang}</div>
-          <div><div class="tname"><span class="swatch" style="background:${esc(r.color)}"></span>
-              <em>${esc(spielerName(r))}${(r.ich&&r.name)?" (du)":""}</em></div>
-            <div class="meter"><i style="width:${Math.max(0,r.punkte)/max*100}%;background:${esc(r.color)}"></i></div></div>
-          <div class="tpts">${fmtScore(r.punkte)}</div></div>`).join("")}
-        ${st.length?`<button class="mehr" type="button" data-sheet="tabelle">Zur Teamtabelle ›</button>`:""}`;
-    }
-  }
-  if(welches==="teams"){
-    titel.textContent="Die Teams";
-    const zeigt=pub&&pub.showTable!==false;
-    inhalt.innerHTML = st.length ? `<div class="trikots">${st.map(t=>`<article class="trikot">
-        <div class="trikot-top" style="background-color:${esc(t.color)}"><b>${esc(t.name)}${team&&t.id===team.id?" ★":""}</b>
-          <small>${t.size||0} Spieler:innen${zeigt?` · ${fmtScore(t.score)} Punkte`:""}</small></div>
-        ${arr(t.members).length?`<div class="mitglieder">${arr(t.members).map(m=>`<span class="${me&&me.name&&m===me.name?"ich":""}">${esc(m)}</span>`).join("")}</div>`:""}
-      </article>`).join("")}</div>` : `<p class="hinweis">Die Teams werden bald ausgelost.</p>`;
-  }
-  if(welches==="regeln"){
-    titel.textContent="So läuft die Liga";
-    inhalt.innerHTML=`<ul class="regeln">${REGELN.map(r=>`<li><b>${esc(r.titel)}</b>${esc(r.text)}</li>`).join("")}</ul>`;
-  }
-  s.classList.add("auf"); s.setAttribute("aria-hidden","false");
-  document.body.style.overflow="hidden";
-}
-function sheetZu(){
-  const s=$("#sheet"); s.classList.remove("auf"); s.setAttribute("aria-hidden","true");
-  document.body.style.overflow="";
-}
-document.addEventListener("click", e=>{
-  const q=e.target.closest("[data-sheet]"); if(q){ sheetAuf(q.dataset.sheet); return; }
-  if(e.target.closest("[data-zu]")){ sheetZu(); return; }
-  const r=e.target.closest("[data-r]"); if(r){ reiter=r.dataset.r; renderReiter(); renderKarten(); }
+$("#login-form").addEventListener("submit", async e=>{
+  e.preventDefault(); $("#login-err").textContent="Prüfe …";
+  try{ me=await LW.anmelden($("#code").value); $("#login-err").textContent=""; starten(); }
+  catch(err){ $("#login-err").textContent = err.message==="kurz"?"Der Code hat mindestens 4 Zeichen.":err.message==="unbekannt"?"Diesen Code gibt es nicht. Frag deine Lehrkraft.":"Keine Verbindung. Prüfe dein Internet."; }
 });
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") sheetZu(); });
+async function init(){
+  const q=new URLSearchParams(location.search).get("code"); if(q){ try{ me=await LW.anmelden(q); history.replaceState(null,"",location.pathname+location.hash); }catch(e){} }
+  me = me || await LW.pruefen();
+  if(!me){ $("#anmeldung").classList.remove("hidden"); $("#app").classList.add("hidden"); setTimeout(()=>$("#code").focus(),60); return; }
+  starten();
+}
+function starten(){
+  $("#anmeldung").classList.add("hidden"); $("#app").classList.remove("hidden");
+  $("#kopf-init").textContent=(me.name||"?").charAt(0).toUpperCase(); $("#kopf-name").textContent=me.name;
+  LW.nachsenden().then(n=>{ if(n) toast(`${n} gespeicherte Ergebnisse nachgesendet ✓`); });
+  LW.ref(`log/${me.pid}`).on("value", s=>{ E=LW.eintraege(s.val()); mal(); });
+  LW.ref("log").on("value", s=>{ logs=s.val()||{}; mal(); });
+  LW.ref("public").on("value", s=>{ pub=s.val()||{}; mal(); });
+  window.addEventListener("hashchange", ()=>{ route(); window.scrollTo(0,0); });
+  route();
+}
+function route(){ const h=(location.hash||"#start").slice(1).split("?")[0]; ansicht=["start","ueben","arena","rang","ich"].includes(h)?h:"start"; jetztMalen(); }
+function mal(){ clearTimeout(malTimer); malTimer=setTimeout(jetztMalen, 60); }
 
-/* ---------- Alles zeichnen ---------- */
-function renderAll(){ renderHallo(); renderLive(); renderDuell(); renderFerien(); renderHero(); renderRang(); renderQuick(); renderReiter(); renderKarten(); }
-
-/* ---------- Firebase ---------- */
-renderAll();
-try{
-  if(!window.firebase) throw new Error("Firebase nicht geladen");
-  firebase.initializeApp(firebaseConfig);
-  db=firebase.database();
-  db.ref(".info/connected").on("value", s=>{ $("#verbindung").classList.toggle("on", !!s.val()); });
-  db.ref(".info/serverTimeOffset").on("value", s=>{ tOffset=Number(s.val())||0; });
-  db.ref(`${FB_ROOT}/${KURS}/battle/state`).on("value", s=>{ liveState=s.val(); renderLive(); }, ()=>{});
-  db.ref(`${FB_ROOT}/${KURS}/public`).on("value", s=>{
-    pub=s.val(); loaded=true;
-    if(pub&&pub.liga) $("#logo").textContent=pub.liga;
-    if(pub&&pub.kurs) $("#fuss").textContent=pub.kurs;
-    const rid=pub&&pub.round?pub.round.id:null;
-    if(rid!==liveRound){
-      if(liveRef) liveRef.off();
-      live={}; liveRound=rid; liveRef=null;
-      if(rid){ liveRef=db.ref(`${FB_ROOT}/${KURS}/live/${rid}`); liveRef.on("value", ls=>{ live=ls.val()||{}; renderAll(); }); }
-    }
-    renderAll();
-  }, err=>{ console.warn(err); loaded=true; renderAll(); });
-  setInterval(()=>{ if(pub){ renderFerien(); renderHero(); renderReiter(); renderKarten(); } }, 30000);
-  recheckCode();
-  setTimeout(()=>{ if(!loaded){ loaded=true; renderAll(); } }, 8000);
-}catch(e){
-  console.warn(e); loaded=true; renderAll();
+/* ---------- Hilfen ---------- */
+const MONAT = () => LW.monatVon(LW.jetzt());
+const namen = () => pub.names||{};
+function meineWertung(){ return LW.monatsWertung(E, MONAT()); }
+function rl(m){ return LW.rangliste(logs, namen(), m||MONAT()); }
+function tageBisMonatsende(){ const [y,mo]=MONAT().split("-").map(Number); return Math.max(1, Math.ceil((new Date(y,mo,1)-new Date(LW.jetzt()))/864e5)); }
+function ueKarte(u, W, alle){
+  const mb=W.best[u.key], ab=alle[u.key];
+  const status = mb!==undefined ? `${mb}<small>von ${u.max}</small>` : ab!==undefined ? `<span style="color:var(--muted)">–</span><small>diesen Monat</small>` : `<span class="tag neu">neu</span>`;
+  return `<a class="ue ${mb!==undefined?"fertig":""} ${mb>=u.max?"voll":""}" href="${esc(u.datei)}"><span class="ic">${u.icon}</span><span class="tx"><b>${esc(u.titel)}</b><span class="t">${u.zeit?'<span class="tag">⏱️ Zeit</span>':""}${esc(u.text)}</span></span><span class="st">${status}</span></a>`;
+}
+function pinKarte(){
+  return `<div class="card livekarte"><h3>🎮 Live im Unterricht</h3><p style="margin:0 0 10px;opacity:.95">PIN von der Leinwand eingeben – für Quiz, Schnitzeljagd und Chat-Spiel.</p>
+    <form class="pin" data-pin><input inputmode="numeric" maxlength="4" placeholder="PIN" aria-label="PIN"><button class="btn navy">Los</button></form></div>`;
 }
 
+/* ---------- Ansichten ---------- */
+function jetztMalen(){
+  if(!me) return;
+  $$("[data-nav]").forEach(a=>a.classList.toggle("on", a.dataset.nav===ansicht));
+  const W=meineWertung(); $("#kopf-pk").textContent=`${W.gesamt} P`;
+  const m=$("#main"); const y=window.scrollY;
+  const ae=document.activeElement; if(ae && ae.tagName==="INPUT" && m.contains(ae) && ae.value) return; // nicht beim Tippen neu zeichnen
+  m.innerHTML = ansicht==="ueben"?ueben(W):ansicht==="arena"?arena():ansicht==="rang"?rang():ansicht==="ich"?ichSeite(W):start(W);
+  binden(); window.scrollTo(0,y);
+}
+function start(W){
+  const st=LW.statistik(E), L=st.level, liste=rl(), platz=liste.findIndex(x=>x.pid===me.pid)+1;
+  const aktuell=Object.keys(pub.aktuell||{}).filter(k=>pub.aktuell[k]).map(k=>KAT.find(u=>u.key===k)).filter(Boolean);
+  const alle=st.bestAll;
+  let vorschlag=[];
+  if(!aktuell.length){ const offen=KAT.filter(u=>W.best[u.key]===undefined); const ord=["l11","l10","pt","lesen","l9","l8","grund"]; offen.sort((a,b)=>ord.indexOf(a.bereich)-ord.indexOf(b.bereich)); vorschlag=offen.slice(0,4); }
+  const naechster=LW.meilensteine(E,{sieger:istSieger()}).find(x=>!x.ok);
+  const tage=tageBisMonatsende();
+  return `<section class="held">
+      <div style="position:relative;z-index:1"><div class="small" style="opacity:.8">Hallo</div><h1>${esc(me.name)} 👋</h1>
+        <span class="lvl">${L.icon} Level ${L.nr} · ${esc(L.name)}</span>
+        <div class="xp"><i style="width:${Math.round(L.anteil*100)}%"></i></div>
+        <div class="small" style="opacity:.85">${st.xp} XP${L.bis?` · noch ${L.bis-st.xp} bis ${esc(L.naechstes)}`:""}</div></div>
+      <div class="zahlen"><div><b>${W.gesamt}</b><span>Punkte im ${esc(LW.monatName(MONAT()).split(" ")[0])}</span></div>
+        <div><b>${platz?platz+".":"–"}</b><span>Platz von ${liste.length}</span></div>
+        <div><b>${st.serie?"🔥"+st.serie:"0"}</b><span>Tage in Folge</span></div></div>
+    </section>
+    <div class="sek"><h2>${aktuell.length?"📌 Aktuell von deiner Lehrkraft":"✨ Vorschläge für dich"}</h2><a href="#ueben">Alle ›</a></div>
+    <div class="liste">${(aktuell.length?aktuell:vorschlag).map(u=>ueKarte(u,W,alle)).join("")||`<div class="leer">Alles gemacht – stark! 💪</div>`}</div>
+    <div class="grid2" style="margin-top:14px">
+      ${pinKarte()}
+      <div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">🏆 ${esc(LW.monatName(MONAT()))}</h3><a href="#rang" class="small"><b>Rangliste ›</b></a></div>
+        <div class="rang" style="margin-top:10px">${liste.slice(0,5).map((x,i)=>rangZeile(x,i)).join("")}${platz>5?`<div class="small muted" style="text-align:center">…</div>${rangZeile(liste[platz-1],platz-1)}`:""}</div>
+        <p class="small muted" style="margin:10px 0 0">Noch <b>${tage} ${tage===1?"Tag":"Tage"}</b> – dann wird die Monats-Sieger:in gekürt! 👑</p></div>
+    </div>
+    <a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training</h3><span>Bereite dich Schritt für Schritt auf den Deutsch-Test für Zuwanderer vor: Hören, Lesen, Schreiben, Sprechen.</span></span></a>
+    ${naechster?`<div class="card next"><span class="e">${naechster.icon}</span><div><div class="small muted">Nächster Meilenstein</div><b style="font-family:var(--head);font-size:19px">${esc(naechster.titel)}</b><div class="muted">${esc(naechster.text)}</div></div></div>`:""}`;
+}
+function rangZeile(x,i){ const L=LW.level(x.xp); return `<div class="rz ${x.pid===me.pid?"ich":""}"><span class="n">${["🥇","🥈","🥉"][i]||(i+1)}</span><span><b>${esc(x.name)}</b> <span class="lv">${L.icon} Lv ${L.nr}</span></span><span class="pk">${rangModus==="xp"&&ansicht==="rang"?x.xp+" XP":x.punkte}</span></div>`; }
+function ueben(W){
+  const alle=LW.statistik(E).bestAll;
+  const chips=[["alle","Alle"],...BER.map(b=>[b.id,b.icon+" "+b.titel.replace(/^Lektion (\d+) · /,"L$1 · ")]),["zeit","⏱️ Gegen die Zeit"],["offen","Noch nicht gespielt"]];
+  if(filter==="alle"){
+    const pfad=BER.map(b=>{ const us=KAT.filter(u=>u.bereich===b.id); const f=us.filter(u=>W.best[u.key]!==undefined).length; const nie=us.filter(u=>alle[u.key]===undefined).length;
+      return `<button class="pfadk" data-filter="${b.id}"><span class="ic">${b.icon}</span><span class="tx"><b>${esc(b.titel)}</b><span class="small muted">${esc(b.text)}</span>
+        <span class="bar"><i style="width:${f/us.length*100}%"></i></span><span class="small muted">${f} von ${us.length} diesen Monat${nie?` · <span style="color:var(--acc);font-weight:800">${nie} neu</span>`:""}</span></span><span class="pf">›</span></button>`; }).join("");
+    return `<a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training · Prüfungsvorbereitung</h3><span>Hören · Lesen · Schreiben · Sprechen – im Format der Prüfung.</span></span></a>
+      <div class="chips">${chips.map(([id,t])=>`<button class="chip ${filter===id?"on":""}" data-filter="${id}">${esc(t)}</button>`).join("")}</div>
+      <div class="sek" style="margin-top:8px"><h2>📚 Lernpfad</h2></div><div class="pfad">${pfad}</div>`;
+  }
+  const teile=BER.map(b=>{ let us=KAT.filter(u=>u.bereich===b.id);
+    if(filter==="zeit") us=us.filter(u=>u.zeit); else if(filter==="offen") us=us.filter(u=>W.best[u.key]===undefined); else if(filter!=="alle" && filter!==b.id) us=[];
+    if(!us.length) return "";
+    const alleB=KAT.filter(u=>u.bereich===b.id); const fertig=alleB.filter(u=>W.best[u.key]!==undefined).length;
+    return `<div class="bereich"><span class="ic">${b.icon}</span><div style="flex:1"><h2 style="margin:0">${esc(b.titel)}</h2><div class="small muted">${esc(b.text)}</div></div><div class="small muted" style="text-align:right">${fertig}/${alleB.length}<div class="bar"><i style="width:${fertig/alleB.length*100}%"></i></div></div></div>
+      <div class="liste">${us.map(u=>ueKarte(u,W,alle)).join("")}</div>`; }).join("");
+  return `<a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training · Prüfungsvorbereitung</h3><span>Hören · Lesen · Schreiben · Sprechen – im Format der Prüfung.</span></span></a>
+    <div class="chips">${chips.map(([id,t])=>`<button class="chip ${filter===id?"on":""}" data-filter="${id}">${esc(t)}</button>`).join("")}</div>
+    <p class="small muted" style="margin:4px 2px">Für die Monatswertung zählt bei jeder Übung dein <b>bester Versuch</b> in diesem Monat. Rechts siehst du deinen Monats-Bestwert.</p>
+    ${teile||`<div class="leer">Hier ist nichts mehr offen – super! 🎉</div>`}`;
+}
+function arena(){
+  const gruppen=[...new Set(ARENA.map(a=>a.gruppe))];
+  const solo=KAT.filter(u=>u.zeit).slice(0,6), W=meineWertung(), alle=LW.statistik(E).bestAll;
+  return `<h1 style="margin:6px 2px 4px">🏟️ Arena</h1><p class="muted" style="margin:0 2px 12px">Live gegen die ganze Klasse, zusammen im Team oder im Duell von zu Hause.</p>
+    ${pinKarte()}
+    ${gruppen.map(g=>`<div class="sek"><h2>${esc(g)}</h2></div><div class="grid2">${ARENA.filter(a=>a.gruppe===g).map(a=>`<div class="card ak"><div class="kopfzeile"><span class="ic" style="background:${a.farbe}">${a.icon}</span><div><h3>${esc(a.titel)}</h3></div></div>
+      <p>${esc(a.text)}</p><div class="tags">${a.tags.map(t=>`<span class="${t==="live"?"live":""}">${t==="live"?"LIVE":esc(t)}</span>`).join("")}</div>
+      ${a.link?`<a class="btn wide" href="${a.link}">⚔️ Duell-Arena öffnen</a>`:a.pin?`<div class="small muted">Mitmachen: PIN von der Leinwand oben eingeben.</div>`:`<div class="small muted">Startet deine Lehrkraft im Unterricht.</div>`}</div>`).join("")}</div>`).join("")}
+    <div class="sek"><h2>⏱️ Allein gegen die Uhr</h2><a href="#ueben" data-filter-link="zeit">Alle ›</a></div>
+    <p class="small muted" style="margin:0 2px 8px">Schlag deinen eigenen Rekord – jede Verbesserung bringt Punkte.</p>
+    <div class="liste">${solo.map(u=>ueKarte(u,W,alle)).join("")}</div>`;
+}
+function istSieger(){ try{ return LW.sieger(logs, namen()).some(s=>s.sieger&&s.sieger.pid===me.pid); }catch(e){ return false; } }
+function rang(){
+  const ruhm=LW.sieger(logs, namen());
+  const monate=[...new Set([MONAT(), ...ruhm.map(s=>s.monat)])].sort().reverse();
+  const m=rangMonat||MONAT();
+  const liste = rangModus==="xp" ? rl(m).sort((a,b)=>b.xp-a.xp) : rl(m);
+  const top=liste.slice(0,3); const pod=[top[1],top[0],top[2]];
+  return `<h1 style="margin:6px 2px 10px">🏆 Rangliste</h1>
+    <div class="row" style="justify-content:space-between;margin-bottom:10px"><div class="seg"><button data-rmod="monat" class="${rangModus==="monat"?"on":""}">Monat</button><button data-rmod="xp" class="${rangModus==="xp"?"on":""}">Gesamt-XP</button></div>
+      ${rangModus==="monat"&&monate.length>1?`<select id="rmonat" style="min-height:40px;border-radius:10px;border:1px solid var(--line);padding:4px 8px">${monate.map(x=>`<option value="${x}" ${x===m?"selected":""}>${esc(LW.monatName(x))}</option>`).join("")}</select>`:`<b>${rangModus==="monat"?esc(LW.monatName(m)):"seit Beginn"}</b>`}</div>
+    <div class="podest">${pod.map((x,i)=>x?`<div class="${i===1?"p1":""}"><span class="m">${["🥈","🥇","🥉"][i]}</span><b>${esc(x.name)}</b><span class="p">${rangModus==="xp"?x.xp:x.punkte}</span></div>`:`<div style="visibility:hidden"></div>`).join("")}</div>
+    <div class="rang">${liste.map((x,i)=>rangZeile(x,i)).join("")}</div>
+    <div class="card" style="margin-top:16px"><h3>👑 Hall of Fame</h3>${ruhm.length?ruhm.map(r=>`<div class="ruhm"><span class="kr">👑</span><div><b>${esc(r.sieger.name)}</b> <span class="muted">· ${esc(r.name)} · ${r.sieger.punkte} Punkte</span><div class="small muted">${r.zweite?`🥈 ${esc(r.zweite.name)}`:""} ${r.dritte?`· 🥉 ${esc(r.dritte.name)}`:""}</div></div></div>`).join(""):`<p class="muted" style="margin:0">Die erste Monats-Sieger:in wird Ende ${esc(LW.monatName(MONAT()))} gekürt. Wer wird es? 👀</p>`}</div>
+    <details class="card"><summary><b>So bekommst du Punkte</b></summary><ul style="margin:10px 0 0;padding-left:20px">
+      <li><b>Übungen:</b> Bei jeder Übung zählt dein bester Versuch im Monat (bis 10 Punkte).</li>
+      <li><b>DTZ-Training:</b> wie Übungen – dein bester Versuch pro Teil.</li>
+      <li><b>Live-Quiz:</b> bis 15 Punkte, Platz 1–3 bekommen +5 / +3 / +1.</li>
+      <li><b>Duelle:</b> Sieg +3, Platz 2 in der Gruppe +2.</li>
+      <li><b>Schnitzeljagd, Chat-Spiel, Tafel-Duell:</b> Punkte für jede Person.</li>
+      <li><b>Jeden Tag üben:</b> +${LW.TAGES_BONUS} Punkte für jeden Tag, an dem du übst.</li>
+      <li>Am Monatsende gewinnt die Person mit den meisten Punkten. Dann startet alles neu – alle haben wieder eine Chance!</li></ul></details>`;
+}
+function ichSeite(W){
+  const st=LW.statistik(E), L=st.level, ms=LW.meilensteine(E,{sieger:istSieger()}), th=LW.themenStand(E);
+  const tage=[]; const heute=new Date(LW.jetzt()); for(let i=27;i>=0;i--){ const d=new Date(heute); d.setDate(d.getDate()-i); tage.push(LW.tagVon(d.getTime())); }
+  const proTag={}; E.forEach(e=>{ const t=LW.tagVon(e.ts); proTag[t]=(proTag[t]||0)+1; }); const maxT=Math.max(1,...tage.map(t=>proTag[t]||0));
+  const g=Math.max(1,W.gesamt);
+  return `<section class="held"><div style="position:relative;z-index:1"><div class="small" style="opacity:.8">Mein Bereich</div><h1>${esc(me.name)}</h1>
+      <span class="lvl">${L.icon} Level ${L.nr} · ${esc(L.name)}</span><div class="xp"><i style="width:${Math.round(L.anteil*100)}%"></i></div>
+      <div class="small" style="opacity:.85">${st.xp} XP gesamt${L.bis?` · ${L.bis-st.xp} XP bis Level ${L.nr+1}`:""}</div></div>
+      <div class="zahlen"><div><b>${W.gesamt}</b><span>Punkte im Monat</span></div><div><b>🔥${st.serie}</b><span>Tage in Folge</span></div><div><b>${ms.filter(x=>x.ok).length}</b><span>Abzeichen</span></div></div></section>
+    <div class="sek"><h2>📊 ${esc(LW.monatName(MONAT()))}</h2></div>
+    <div class="card"><div class="aufteilung"><i style="width:${W.uebungen/g*100}%;background:var(--pri)"></i><i style="width:${W.live/g*100}%;background:var(--acc)"></i><i style="width:${W.bonus/g*100}%;background:var(--gold)"></i></div>
+      <div class="legende"><span style="--f:var(--pri)">Übungen ${W.uebungen}</span><span style="--f:var(--acc)">Live, Duelle & Teams ${W.live}</span><span style="--f:var(--gold)">Tages-Bonus ${W.bonus} (${W.tage} Tage)</span></div></div>
+    <div class="kacheln"><div class="kachel"><b>${st.tage}</b><span>Lerntage</span></div><div class="kachel"><b>${st.runden}</b><span>Übungsrunden</span></div><div class="kachel"><b>${st.verschiedene}/${KAT.length}</b><span>verschiedene Übungen</span></div>
+      <div class="kachel"><b>${Math.round(st.quote*100)} %</b><span>im Schnitt richtig</span></div><div class="kachel"><b>${st.voll}</b><span>× volle Punktzahl</span></div><div class="kachel"><b>${st.laengste}</b><span>längste Serie (Tage)</span></div></div>
+    <div class="card" style="margin-top:14px"><h3>📈 Letzte 4 Wochen</h3><div class="balken">${tage.map((t,i)=>`<i class="${proTag[t]?"":"nix"} ${i===27?"heute":""}" style="height:${Math.max(4,(proTag[t]||0)/maxT*100)}%" title="${t}: ${proTag[t]||0}"></i>`).join("")}</div><div class="row small muted" style="justify-content:space-between;margin-top:4px"><span>vor 4 Wochen</span><span>heute</span></div></div>
+    <div class="card"><h3>🧭 Meine Themen</h3><p class="small muted" style="margin:0 0 6px">Wie viel du in jedem Thema schon geschafft hast (beste Ergebnisse).</p>${th.map(t=>`<div class="thema"><span>${esc(t.name)}</span><span class="bar"><i style="width:${Math.round(t.stand*100)}%"></i></span><span class="small muted">${Math.round(t.stand*100)} %</span></div>`).join("")}</div>
+    <div class="sek"><h2>🏅 Meilensteine</h2><span class="muted small">${ms.filter(x=>x.ok).length} von ${ms.length}</span></div>
+    <div class="abz">${ms.map(x=>`<div class="${x.ok?"":"nein"}"><span class="e">${x.icon}</span><b>${esc(x.titel)}</b><span>${esc(x.text)}</span></div>`).join("")}</div>
+    <div class="card" style="margin-top:14px"><h3>🕘 Zuletzt gespielt</h3><div class="verlauf">${E.slice(-12).reverse().map(e=>{ const d=new Date(e.ts); return `<div><span>${esc(e.titel||e.key)}</span><span><b>${e.p}</b>/${e.max} · <span class="muted">${d.getDate()}.${d.getMonth()+1}.</span></span></div>`; }).join("")||`<p class="muted">Noch nichts gespielt. Los geht's im Bereich „Üben“!</p>`}</div></div>
+    <p style="text-align:center;margin-top:20px"><button class="btn ghost sm" id="abmelden">Abmelden</button></p>`;
+}
+function binden(){
+  $$("[data-filter]").forEach(b=>b.onclick=()=>{ filter=b.dataset.filter; jetztMalen(); });
+  $$("[data-filter-link]").forEach(a=>a.addEventListener("click",()=>{ filter=a.dataset.filterLink; }));
+  $$("[data-rmod]").forEach(b=>b.onclick=()=>{ rangModus=b.dataset.rmod; jetztMalen(); });
+  const rm=$("#rmonat"); if(rm) rm.onchange=()=>{ rangMonat=rm.value; jetztMalen(); };
+  $$("[data-pin]").forEach(f=>f.onsubmit=e=>{ e.preventDefault(); const p=f.querySelector("input").value.replace(/\D/g,""); if(p.length===4) location.href="live.html?pin="+p; else toast("Die PIN hat 4 Ziffern."); });
+  const ab=$("#abmelden"); if(ab) ab.onclick=()=>{ if(confirm("Wirklich abmelden?")){ LW.abmelden(); location.reload(); } };
+}
+init();
 </script>
 </body>
 </html>

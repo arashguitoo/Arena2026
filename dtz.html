@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E7490">
+<meta name="robots" content="noindex, nofollow">
+<title>DTZ-Training – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --gold:#F5B82E; --gold-2:#FFF4D6; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --teal:#0E7490; --teal-2:#E0F2F5;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:760px;margin:0 auto;padding:16px 16px 70px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--teal);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.ghost{background:var(--teal-2);color:var(--teal)} .btn.sm{min-height:34px;padding:4px 12px;font-size:15px} .btn.wide{width:100%}
+.kopf{background:linear-gradient(135deg,#0E7490,#14A37F);color:#fff;position:sticky;top:0;z-index:20}
+.kopf .in{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;min-height:56px}
+.kopf a{color:#fff;text-decoration:none;font-weight:700}
+.kopf b{font-family:var(--head);font-size:19px}
+.kopf .r{margin-left:auto;font-weight:700;opacity:.95}
+.aufbau{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.aufbau div{background:var(--teal-2);border-radius:12px;padding:10px 6px;text-align:center;font-size:13px}
+.aufbau b{display:block;font-family:var(--head);font-size:16px;color:var(--teal)}
+@media (max-width:520px){ .aufbau{grid-template-columns:repeat(2,1fr)} }
+.mod{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:14px;box-shadow:var(--schatten);text-decoration:none;color:var(--ink);margin-bottom:8px;border:0;width:100%;text-align:left;cursor:pointer}
+.mod .ic{font-size:26px;width:50px;height:50px;border-radius:14px;background:var(--teal-2);display:flex;align-items:center;justify-content:center;flex:none}
+.mod .tx{flex:1} .mod b{font-family:var(--head);font-size:17px;display:block}
+.mod .st{font-family:var(--head);font-weight:800;text-align:right;min-width:56px}
+.mod .st small{display:block;font-family:var(--body);font-size:11px;color:var(--muted);font-weight:600}
+.teil{margin:20px 2px 8px;display:flex;align-items:center;gap:8px}
+.teil h2{margin:0;font-size:21px}
+.info{background:var(--teal-2);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.item{border:2px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;background:#fff}
+.item.richtig{border-color:var(--ok);background:var(--ok-2)} .item.falsch{border-color:var(--bad);background:var(--bad-2)}
+.item .f{font-weight:700;margin-bottom:8px}
+.opts{display:grid;gap:6px}
+.opt{display:flex;gap:10px;align-items:center;border:2px solid var(--line);background:#fff;border-radius:12px;min-height:46px;padding:6px 12px;cursor:pointer;text-align:left}
+.opt .l{font-family:var(--head);font-weight:800;color:var(--teal);width:20px}
+.opt.gew{border-color:var(--teal);background:var(--teal-2)}
+.opt.loes{border-color:var(--ok)}
+.opt:disabled{cursor:default}
+.hoer{border:0;background:var(--teal);color:#fff;border-radius:999px;min-height:40px;padding:4px 16px;font-weight:700;cursor:pointer}
+.hoer:disabled{opacity:.4}
+.hoer.spielt{background:var(--acc)}
+table.weg{width:100%;border-collapse:collapse;margin:4px 0 8px;border-radius:12px;overflow:hidden}
+table.weg caption{font-family:var(--head);font-weight:800;font-size:18px;padding:6px;background:var(--ink);color:#fff;border-radius:12px 12px 0 0}
+table.weg th{background:#F0EDE5;text-align:left;padding:8px;width:130px;font-size:15px}
+table.weg td{padding:8px;border-bottom:1px solid var(--line);font-size:15px}
+.anz{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-bottom:10px}
+.anz div{background:var(--gold-2);border-radius:12px;padding:10px 12px;font-size:15px;border:1px dashed #E2C77A}
+.anz b{font-family:var(--head);font-size:20px;margin-right:6px}
+.zo{display:flex;gap:10px;align-items:center;justify-content:space-between}
+.zo select{min-height:44px;border:2px solid var(--line);border-radius:10px;padding:4px 10px;font-weight:700;background:#fff}
+.zeile{min-height:52px;border:2px dashed var(--line);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:6px}
+.kacheln{display:flex;flex-wrap:wrap;gap:6px}
+.kachel{border:0;background:var(--teal-2);border-radius:10px;min-height:42px;padding:6px 12px;font-weight:700;cursor:pointer}
+.zeile .kachel{background:var(--teal);color:#fff}
+.kachel.weg{visibility:hidden}
+textarea{width:100%;min-height:220px;border:2px solid var(--line);border-radius:14px;padding:12px;font-size:17px;line-height:1.5}
+.pruef div{padding:6px 0;border-bottom:1px solid var(--line)}
+.karten{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.karten span{background:var(--gold-2);border-radius:10px;padding:8px 12px;font-weight:700;border:1px solid #E2C77A}
+.ergebnis{text-align:center;background:linear-gradient(135deg,#0E7490,#14A37F);color:#fff}
+.ergebnis .z{font-family:var(--head);font-size:56px;font-weight:800;line-height:1}
+.feedback{border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:700;background:var(--ok-2);color:var(--ok)}
+.seg{display:inline-flex;background:#fff;border-radius:12px;padding:4px;gap:4px;box-shadow:0 1px 0 var(--line)}
+.seg button{border:0;background:transparent;border-radius:9px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:14px}
+.seg button.on{background:var(--teal);color:#fff}
+</style>
+</head>
+<body>
+<header class="kopf"><div class="in"><a href="index.html#ueben">‹ Lernwelt</a><b>🎓 DTZ-Training</b><span class="r" id="kopf-name"></span></div></header>
+<main class="wrap" id="main"><div class="card">Einen Moment …</div></main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="katalog.js"></script>
+<script src="lernwelt.js"></script>
+<script src="dtz/start.js"></script>
+<script>
+/* =========================================================
+   DTZ-TRAINING · Engine (Daten: dtz/<stufe>.js, Audios: dtz/audio/<hash>.mp3)
+   ========================================================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=LW.esc;
+function fnv(s){let h=0x811c9dc5;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
+function mische(a, seed){ let x=(parseInt(fnv(String(seed)),36)||1)>>>0; a=a.slice(); for(let i=a.length-1;i>0;i--){ x=(Math.imul(x,1103515245)+12345)>>>0; const j=x%(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const TEILE={hoeren:["🎧","Hören","25 Min."], lesen:["📖","Lesen","45 Min."], schreiben:["✍️","Schreiben","30 Min."], sprechen:["🗣️","Sprechen","ca. 15 Min."]};
+const ST=Object.values(window.DTZ_STUFEN||{});
+const MODULE=ST.flatMap(s=>s.module.map(m=>Object.assign({stufe:s.id},m)));
+let me=null, E=[], mod=null, ant={}, abgegeben=null, pruefModus=false, gehoert={}, aufnahme=null;
+LW.init();
+
+async function init(){
+  me=await LW.pruefen(); $("#kopf-name").textContent=me?me.name:"";
+  if(me){ LW.nachsenden(); LW.ref(`log/${me.pid}`).on("value", s=>{ E=LW.eintraege(s.val()); if(!mod) uebersicht(); }); }
+  window.addEventListener("hashchange", route); route();
+}
+function route(){ const id=location.hash.slice(1); const m=MODULE.find(x=>x.id===id); stopAudio(); if(m){ mod=m; ant={}; abgegeben=null; gehoert={}; modul(); } else { mod=null; uebersicht(); } scrollTo(0,0); }
+
+function uebersicht(){
+  const W=LW.monatsWertung(E, LW.monatVon(LW.jetzt())), best=LW.statistik(E).bestAll;
+  $("#main").innerHTML=`<div class="card"><h1>Deutsch-Test für Zuwanderer</h1><p style="margin:0">Am Ende vom Kurs schreibt ihr den <b>DTZ</b>. Hier lernt ihr die Aufgaben kennen – Schritt für Schritt, mit Wörtern, die ihr schon kennt.</p>
+      <div class="aufbau">${Object.values(TEILE).map(t=>`<div><span style="font-size:24px">${t[0]}</span><b>${t[1]}</b>${t[2]}</div>`).join("")}</div>
+      <p class="small muted" style="margin:10px 0 0">Ergebnis: A2 oder B1. Sprechen macht ihr zu zweit mit zwei Prüfer:innen.</p></div>
+    ${!me?`<div class="card"><b>Nicht angemeldet.</b> Du kannst üben, aber Punkte zählen nur mit deinem Code. <a href="index.html">Zur Anmeldung</a></div>`:""}
+    ${ST.map(s=>`<h2 style="margin:18px 2px 0">${esc(s.titel)}</h2><p class="muted small" style="margin:2px 2px 0">${esc(s.untertitel)}</p>
+      ${Object.keys(TEILE).map(t=>{ const ms=s.module.filter(m=>m.teil===t); if(!ms.length) return "";
+        return `<div class="teil"><span style="font-size:24px">${TEILE[t][0]}</span><h2>${TEILE[t][1]}</h2></div>${ms.map(m=>{ const mb=W.best[m.id], ab=best[m.id];
+          return `<a class="mod" href="#${m.id}"><span class="ic">${m.icon}</span><span class="tx"><b>${esc(TEILE[t][1])} ${m.nr} · ${esc(m.titel)}</b><span class="small muted">${esc(m.zeit)}</span></span>
+            <span class="st">${mb!==undefined?`${mb}<small>von 10</small>`:ab!==undefined?`<span class="muted">–</span><small>diesen Monat</small>`:`<small style="color:var(--acc);font-weight:800">neu</small>`}</span></a>`; }).join("")}`; }).join("")}`).join("")}`;
+}
+
+/* ---------- Audio ---------- */
+let akt=null, aktK=null;
+function stopAudio(){ if(akt){ try{akt.pause();}catch(e){} akt=null; } try{speechSynthesis.cancel();}catch(e){} if(aktK){ aktK.classList.remove("spielt"); aktK=null; } }
+function spiele(stimme, text, knopf){
+  const war=aktK===knopf; stopAudio(); if(war) return;
+  aktK=knopf; knopf.classList.add("spielt"); let fb=false;
+  const tts=()=>{ if(fb) return; fb=true; try{ const u=new SpeechSynthesisUtterance(text); u.lang="de-DE"; u.rate=.85; u.onend=stopAudio; speechSynthesis.speak(u); }catch(e){ stopAudio(); } };
+  const a=new Audio(`dtz/audio/${fnv(stimme+"|"+text)}.mp3`); akt=a; a.onended=stopAudio; a.onerror=tts; const p=a.play(); if(p&&p.catch) p.catch(tts);
+}
+
+/* ---------- Modul ---------- */
+function modul(){
+  const m=mod; const T=TEILE[m.teil]; const hatHoeren=m.bloecke.some(b=>b.typ==="hoeren");
+  let h=`<p><a href="#" class="btn ghost sm">← alle Aufgaben</a></p><div class="card"><div class="small muted">${T[0]} ${T[1]} · Teil ${m.nr}</div><h1>${m.icon} ${esc(m.titel)}</h1><div class="info">${esc(m.info)}</div>
+    ${hatHoeren?`<div class="row" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="small muted">Hören:</span><div class="seg"><button data-modus="0" class="${pruefModus?"":"on"}">Üben – so oft du willst</button><button data-modus="1" class="${pruefModus?"on":""}">Wie in der Prüfung – 2×</button></div></div>`:""}</div>`;
+  m.bloecke.forEach((b,bi)=>{ h+=`<div class="card">${b.titel?`<h3>${esc(b.titel)}</h3>`:""}${block(b,bi)}</div>`; });
+  if(abgegeben) h+=`<div class="card ergebnis"><div class="small">Dein Ergebnis</div><div class="z">${abgegeben.p} / 10</div><div>${abgegeben.p>=9?"Ausgezeichnet! 🌟":abgegeben.p>=6?"Gut gemacht! 👍":"Weiter üben – du schaffst das! 💪"}</div>
+      <div class="small" style="margin-top:8px;opacity:.9">${esc(abgegeben.msg)}</div><p style="margin:12px 0 0"><button class="btn ghost" id="nochmal">Nochmal</button> <a class="btn ghost" href="#">Andere Aufgabe</a></p></div>`;
+  else if(m.bloecke.some(b=>b.typ!=="sprechen")) h+=`<button class="btn wide" id="abgeben" style="min-height:56px;font-size:19px">✓ Abgeben</button>`;
+  $("#main").innerHTML=h; binden();
+}
+const opt=(k,i,o,gew,seed)=>{ const ord=mische(o.map((_,j)=>j), seed); return `<div class="opts">${ord.map((j,n)=>`<button class="opt ${gew===j?"gew":""} ${abgegeben&&j===0?"loes":""}" data-a="${k}" data-v="${j}" ${abgegeben?"disabled":""}><span class="l">${"abc"[n]}</span>${esc(o[j])}</button>`).join("")}</div>`; };
+const klasse = k => !abgegeben ? "" : (abgegeben.r[k]?"richtig":"falsch");
+function block(b,bi){
+  if(b.typ==="hoeren") return b.items.map((it,i)=>{ const k=`${bi}-${i}`; const n=gehoert[k]||0; const zu=pruefModus&&n>=(b.maxHoeren||2);
+    return `<div class="item ${klasse(k)}"><div style="display:flex;gap:10px;align-items:center;margin-bottom:8px"><b style="font-family:var(--head)">${i+1}</b><button class="hoer" data-hoer="${k}" ${zu&&!abgegeben?"disabled":""}>🔊 anhören</button>${pruefModus?`<span class="small muted">${n}/${b.maxHoeren||2}</span>`:""}</div>
+      <div class="f">${esc(it.f)}</div>${opt(k,i,it.o,ant[k],mod.id+k)}${abgegeben?`<div class="small muted" style="margin-top:6px">📝 ${esc(it.t)}</div>`:""}</div>`; }).join("");
+  if(b.typ==="mc") return (b.text||"")+b.items.map((it,i)=>{ const k=`${bi}-${i}`; return `<div class="item ${klasse(k)}"><div class="f">${i+1}. ${esc(it.f)}</div>${opt(k,i,it.o,ant[k],mod.id+k)}</div>`; }).join("");
+  if(b.typ==="zuordnen") return `<div class="anz">${Object.entries(b.anzeigen).map(([l,t])=>`<div><b>${l}</b>${esc(t)}</div>`).join("")}</div>`+
+    b.situationen.map((s,i)=>{ const k=`${bi}-${i}`; return `<div class="item ${klasse(k)}"><div class="zo"><span><b>${i+1}.</b> ${esc(s.f)}</span><select data-zo="${k}" ${abgegeben?"disabled":""}><option value="">?</option>${Object.keys(b.anzeigen).map(l=>`<option ${ant[k]===l?"selected":""}>${l}</option>`).join("")}</select></div>${abgegeben&&!abgegeben.r[k]?`<div class="small" style="margin-top:4px">Richtig: <b>${s.a}</b></div>`:""}</div>`; }).join("");
+  if(b.typ==="satz") return `<p class="small muted" style="margin-top:0">Tippe die Wörter in der richtigen Reihenfolge an.</p>`+b.items.map((it,i)=>{ const k=`${bi}-${i}`; const seq=ant[k]||[]; const ord=mische(it.w.map((_,j)=>j), mod.id+k);
+    return `<div class="item ${klasse(k)}"><div class="zeile">${seq.map(j=>`<button class="kachel" data-raus="${k}" data-j="${j}" ${abgegeben?"disabled":""}>${esc(it.w[j])}</button>`).join("")}<b>.</b></div>
+      <div class="kacheln">${ord.map(j=>`<button class="kachel ${seq.includes(j)?"weg":""}" data-rein="${k}" data-j="${j}" ${abgegeben?"disabled":""}>${esc(it.w[j])}</button>`).join("")}</div>${abgegeben&&!abgegeben.r[k]?`<div class="small" style="margin-top:6px">Richtig: <b>${esc(it.a[0])}.</b></div>`:""}</div>`; }).join("");
+  if(b.typ==="schreiben"){ const k=`${bi}-text`; const t=ant[k]||""; const w=t.trim()?t.trim().split(/\s+/).length:0;
+    return `<div class="info" style="background:var(--gold-2)"><b>Situation:</b> ${esc(b.situation)}</div><ul>${b.punkte.map(p=>`<li>${esc(p)}</li>`).join("")}</ul>
+      <textarea data-text="${k}" ${abgegeben?"readonly":""} placeholder="Liebe Frau Berg, …">${esc(t)}</textarea><div class="small muted" id="wz">${w} Wörter (mindestens ${b.min})</div>
+      ${abgegeben?`<div class="pruef" style="margin-top:10px">${abgegeben.pruef.map(x=>`<div>${x.ok?"✅":"⬜"} ${esc(x.titel)} <span class="small muted">(${x.ok?x.p:0}/${x.p})</span></div>`).join("")}</div>
+        <details style="margin-top:10px"><summary><b>Musterlösung</b></summary><pre style="white-space:pre-wrap;font-family:inherit;background:var(--soft);padding:10px;border-radius:10px">${esc(b.muster)}</pre></details>`:""}`; }
+  if(b.typ==="sprechen"){ const kann=!!(navigator.mediaDevices&&window.MediaRecorder);
+    return `<h3>🗣️ Jetzt sprechen Sie!</h3><p class="small muted" style="margin-top:0">Sprechen Sie zu jeder Karte einen Satz – laut. ${kann?"Nehmen Sie sich auf und hören Sie sich an.":""} (Ohne Punkte – nur Training.)</p>
+      <div class="karten">${b.karten.map(k=>`<span>${esc(k)}</span>`).join("")}</div>
+      ${kann?`<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button class="btn" id="rec">${aufnahme&&aufnahme.laeuft?"⏹ Stopp":"🎙️ Aufnehmen"}</button><span id="rec-out"></span></div>`:""}`; }
+  return "";
+}
+function auswerten(){
+  const r={}; let gut=0, ges=0; let pruef=null, text="";
+  mod.bloecke.forEach((b,bi)=>{
+    if(b.typ==="hoeren"||b.typ==="mc") b.items.forEach((_,i)=>{ const k=`${bi}-${i}`; r[k]=ant[k]===0; ges++; if(r[k]) gut++; });
+    if(b.typ==="zuordnen") b.situationen.forEach((s,i)=>{ const k=`${bi}-${i}`; r[k]=ant[k]===s.a; ges++; if(r[k]) gut++; });
+    if(b.typ==="satz") b.items.forEach((it,i)=>{ const k=`${bi}-${i}`; const s=(ant[k]||[]).map(j=>it.w[j]).join(" ").toLowerCase(); r[k]=it.a.some(a=>a.toLowerCase()===s); ges++; if(r[k]) gut++; });
+    if(b.typ==="schreiben"){ text=ant[`${bi}-text`]||""; const low=text.toLowerCase(); const w=text.trim()?text.trim().split(/\s+/).length:0;
+      pruef=b.pruef.map(x=>({titel:x.titel, p:x.p, ok: x.laenge ? w>=x.laenge : new RegExp(x.re,"i").test(low)}));
+      const sum=pruef.reduce((a,x)=>a+x.p,0); ges+=sum; gut+=pruef.reduce((a,x)=>a+(x.ok?x.p:0),0); }
+  });
+  return {r, p:Math.round(gut/Math.max(1,ges)*10), pruef, text};
+}
+async function abgeben(){
+  const offen=mod.bloecke.some((b,bi)=>(b.typ==="hoeren"||b.typ==="mc")&&b.items.some((_,i)=>ant[`${bi}-${i}`]===undefined) || b.typ==="zuordnen"&&b.situationen.some((_,i)=>!ant[`${bi}-${i}`]));
+  if(offen && !confirm("Noch nicht alles beantwortet. Trotzdem abgeben?")) return;
+  stopAudio(); const a=auswerten(); a.msg = me ? "Speichere …" : "Ohne Anmeldung – die Punkte zählen nicht.";
+  abgegeben=a; modul(); scrollTo(0, document.body.scrollHeight);
+  if(me){ const e={key:mod.id, titel:"DTZ: "+mod.titel, art:"dtz", p:a.p, max:10}; if(a.text) e.text=a.text.slice(0,1500);
+    const res=await LW.speichern(e); abgegeben.msg = res.ok ? "✓ Gespeichert – für den Monat zählt dein bester Versuch." : res.wartet ? "Gerade offline – wird später gesendet." : "Konnte nicht speichern."; modul(); scrollTo(0, document.body.scrollHeight); }
+}
+function binden(){
+  $$("[data-a]").forEach(b=>b.onclick=()=>{ ant[b.dataset.a]=+b.dataset.v; modul(); });
+  $$("[data-zo]").forEach(s=>s.onchange=()=>{ ant[s.dataset.zo]=s.value; });
+  $$("[data-rein]").forEach(b=>b.onclick=()=>{ const k=b.dataset.rein; ant[k]=(ant[k]||[]).concat(+b.dataset.j); modul(); });
+  $$("[data-raus]").forEach(b=>b.onclick=()=>{ const k=b.dataset.raus; ant[k]=(ant[k]||[]).filter(j=>j!==+b.dataset.j); modul(); });
+  $$("[data-text]").forEach(t=>t.oninput=()=>{ ant[t.dataset.text]=t.value; const w=t.value.trim()?t.value.trim().split(/\s+/).length:0; $("#wz").textContent=`${w} Wörter (mindestens ${mod.bloecke.find(b=>b.typ==="schreiben").min})`; });
+  $$("[data-modus]").forEach(b=>b.onclick=()=>{ pruefModus=b.dataset.modus==="1"; modul(); });
+  $$("[data-hoer]").forEach(b=>b.onclick=()=>{ const k=b.dataset.hoer; const [bi,i]=k.split("-").map(Number); const it=mod.bloecke[bi].items[i];
+    if(aktK!==b){ gehoert[k]=(gehoert[k]||0)+1; } spiele(it.stimme, it.t, b); if(pruefModus){ const z=b.parentNode.querySelector(".small"); if(z) z.textContent=`${gehoert[k]}/${mod.bloecke[bi].maxHoeren||2}`; } });
+  const ab=$("#abgeben"); if(ab) ab.onclick=abgeben;
+  const nm=$("#nochmal"); if(nm) nm.onclick=()=>{ ant={}; abgegeben=null; gehoert={}; modul(); scrollTo(0,0); };
+  const rec=$("#rec"); if(rec) rec.onclick=async()=>{
+    if(aufnahme&&aufnahme.laeuft){ aufnahme.r.stop(); return; }
+    try{ const s=await navigator.mediaDevices.getUserMedia({audio:true}); const r=new MediaRecorder(s); const teile=[]; aufnahme={r, laeuft:true};
+      r.ondataavailable=e=>teile.push(e.data); r.onstop=()=>{ s.getTracks().forEach(t=>t.stop()); aufnahme.laeuft=false; rec.textContent="🎙️ Nochmal aufnehmen"; const url=URL.createObjectURL(new Blob(teile)); $("#rec-out").innerHTML=`<audio controls src="${url}"></audio>`; };
+      r.start(); rec.textContent="⏹ Stopp"; $("#rec-out").textContent="🔴 Aufnahme läuft …";
+    }catch(e){ $("#rec-out").textContent="Kein Mikrofon erlaubt."; } };
+}
+init();
+</script>
+</body>
+</html>

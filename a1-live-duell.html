@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14223B">
+<meta name="theme-color" content="#1E2A44">
 <meta name="robots" content="noindex, nofollow">
-<title>Live-Duell – Plöner Liga</title>
+<title>Live-Duell – Lernwelt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
-  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
-  --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
-  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --floor:#F4F1EA; --floor-line:#ECE6DA; --paper:#FFFFFF; --ink:#1E2A44; --muted:#6B7280;
+  --board:#1E2A44; --board-2:#2A3A5E; --led:#F5B82E; --line:#E5E0D5; --ok:#14A37F; --bad:#E2483D;
+  --a:#E2483D; --b:#3B4FD8; --c:#F08A24; --d:#14A37F;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
-  background-color:var(--floor);
-  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+  background-color:var(--floor);}
 button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--board);outline-offset:3px}
 .hidden{display:none!important}
@@ -170,7 +169,7 @@ button{font:inherit;color:inherit}
       <div class="result"><span class="big" id="p-end-platz"></span><div class="plus" id="p-end-pts"></div></div>
       <p id="p-end-team"></p>
       <div class="loesung" id="p-end-liga">Punkte werden an die Liga geschickt …</div>
-      <div style="display:grid;gap:10px;margin-top:14px"><a class="btn" href="index.html">Zur Arena</a></div>
+      <div style="display:grid;gap:10px;margin-top:14px"><a class="btn" href="index.html#ueben">Zur Lernwelt</a></div>
     </section>
   </main>
 </div>

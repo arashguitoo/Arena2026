@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14223B">
+<meta name="theme-color" content="#1E2A44">
 <meta name="robots" content="noindex, nofollow">
-<title>Duell-Arena – Plöner Liga</title>
+<title>Duell-Arena – Lernwelt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
-  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F; --info:#1F6FD1;
-  --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
-  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --floor:#F4F1EA; --floor-line:#ECE6DA; --paper:#FFFFFF; --ink:#1E2A44; --muted:#6B7280;
+  --board:#1E2A44; --board-2:#2A3A5E; --led:#F5B82E; --line:#E5E0D5; --ok:#14A37F; --bad:#E2483D; --info:#3B4FD8;
+  --a:#E2483D; --b:#3B4FD8; --c:#F08A24; --d:#14A37F;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
-  background-color:var(--floor);
-  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+  background-color:var(--floor);}
 button,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--board);outline-offset:3px}
 .hidden{display:none!important}
@@ -156,7 +155,7 @@ h2.t{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;col
 </head>
 <body>
 <header class="bar"><div class="bar-in">
-  <a href="index.html" aria-label="Zur Arena">‹ Arena</a>
+  <a href="index.html#arena" aria-label="Zur Lernwelt">‹ Lernwelt</a>
   <span class="logo">⚔️ Duell-Arena</span>
   <span class="me hidden" id="me"><i id="me-farbe"></i><span id="me-name"></span></span>
 </div></header>
@@ -165,7 +164,7 @@ h2.t{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;col
   <!-- Anmeldung -->
   <section id="s-code" class="hidden"><div class="karte">
     <h2 class="t">Wer bist du?</h2>
-    <p>Gib deinen Liga-Code ein.</p>
+    <p>Gib deinen Code ein.</p>
     <form class="code-form" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn led" type="submit">Los</button></form>
     <div class="err" id="code-err" role="alert"></div>
   </div></section>
@@ -175,7 +174,7 @@ h2.t{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;col
     <div style="font-size:54px" id="block-emo">🔒</div>
     <h2 class="t" id="block-title">Gerade geschlossen</h2>
     <p id="block-text"></p>
-    <a class="btn" href="index.html">Zur Arena</a>
+    <a class="btn" href="index.html">Zur Lernwelt</a>
   </div></section>
 
   <!-- Lobby -->
@@ -188,7 +187,7 @@ h2.t{font-family:var(--display);font-weight:900;font-size:30px;line-height:1;col
     </div></section>
     <section id="sec-online"></section>
     <section><div class="sec-t"><h3>Deine Duelle</h3><span id="anz-duelle"></span></div><ul class="liste" id="liste"></ul></section>
-    <section><div class="sec-t"><h3>🏆 Duell-Könige</h3><span>meiste Siege in dieser Runde</span></div><div class="karte"><ol class="liste best" id="best"></ol></div></section>
+    <section><div class="sec-t"><h3>🏆 Duell-Könige</h3><span>meiste Siege</span></div><div class="karte"><ol class="liste best" id="best"></ol></div></section>
     <section><div class="karte small" id="regeln"></div></section>
   </section>
 
@@ -402,7 +401,7 @@ function nameVon(pid){
   const n=pub&&pub.names&&pub.names[pid]; if(n) return n;
   const t=teamVon(pid); return t ? `jemand aus ${t.name}` : "Spieler:in";
 }
-const spieler = () => pub ? Object.keys(pub.roster||{}).filter(p=>!me||p!==me.pid) : [];
+const spieler = () => pub ? Object.keys(pub.names||{}).filter(p=>!me||p!==me.pid) : [];
 const istOnline = pid => { const l=lobby[pid]; return !!(l && jetzt()-(Number(l.ts)||0) < 3*60*1000); };
 
 /* ---------- Duell-Logik ---------- */
@@ -417,6 +416,7 @@ function rangliste(d){
   g.forEach((x,i)=>{ x.platz = (i>0 && g[i-1].r===x.r && g[i-1].z===x.z) ? g[i-1].platz : i+1; });
   return g;
 }
+function platzVon(d, pid){ const x=rangliste(d).find(y=>y.pid===pid); return x?x.platz:0; }
 function punkteFuer(d, pid){
   const rl=rangliste(d), x=rl.find(y=>y.pid===pid); if(!x) return 0;
   if(rl.length===1) return PUNKTE.allein;
@@ -427,21 +427,10 @@ function meineWertungen(){
   return Object.entries(duelle).map(([id,d])=>({id,d,w:d.wertung&&me?d.wertung[me.pid]:null})).filter(x=>x.w);
 }
 function heuteGezaehlt(){ const h=tagVon(jetzt()); return meineWertungen().filter(x=>x.w.p>0 && tagVon(Number(x.w.ts)||0)===h); }
-function rundenSumme(){ const rid=pub&&pub.round&&pub.round.id; return meineWertungen().filter(x=>x.w.round===rid).reduce((a,x)=>a+(Number(x.w.p)||0),0); }
+function rundenSumme(){ const d=new Date(jetzt()), m=d.getFullYear()*12+d.getMonth(); return meineWertungen().filter(x=>{ const t=new Date(Number(x.w.ts)||0); return t.getFullYear()*12+t.getMonth()===m; }).reduce((a,x)=>a+(Number(x.w.p)||0),0); }
 
 /* Liga-Zugang: Aufgabe offen, Zeitfenster, Zuteilung */
-function ligaStatus(){
-  if(!pub||!pub.round) return {ok:false, txt:"Die Liga startet bald. Sobald die Teams ausgelost sind, zählen Duelle."};
-  const t=pub.tasks&&pub.tasks[LIGA_KEY];
-  if(!t) return {ok:false, txt:"Die Duell-Arena ist noch nicht freigeschaltet."};
-  const n=jetzt();
-  if(!t.open || t.status==="bald") return {ok:false, txt:"Die Duell-Arena ist gerade geschlossen."};
-  if(n<(Number(t.von)||0)) return {ok:false, txt:"Die Duell-Arena öffnet bald."};
-  if(n>(Number(t.bis)||FERN)) return {ok:false, txt:"Die Zeit für Duelle ist vorbei."};
-  const a=t.assign||{}, team=(pub.roster||{})[me.pid];
-  if(!(a.alle || (a.players&&a.players[me.pid]) || (team&&a.teams&&a.teams[team]))) return {ok:false, txt:"Die Duell-Arena ist gerade nicht für dich freigeschaltet."};
-  return {ok:true, task:t};
-}
+function ligaStatus(){ return {ok:true, task:{max:9999}}; }
 
 /* Punkte gutschreiben – erst Liga-Summe, dann Wertung im Duell (doppelt sicher) */
 let bucheLaeuft=false;
@@ -458,13 +447,8 @@ async function buchen(){
       const gegner=teilnehmer(d).filter(x=>x!==me.pid);
       if(heute.length>=TAGES_MAX){ p=0; grund="tageslimit"; }
       else if(gegner.length===1 && heute.filter(x=>teilnehmer(x.d).length===2 && teilnehmer(x.d).includes(gegner[0])).length>=GEGNER_MAX){ p=0; grund="gegnerlimit"; }
-      const summe=Math.min(Number(st.task.max)||50, rundenSumme()+p);
-      const best=(await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${LIGA_KEY}`).once("value")).val();
-      if(p>0 && (best===null || summe>Number(best))){
-        await db.ref(`${BASE}/proof/${pub.round.id}/${me.pid}/${LIGA_KEY}`).set({code:me.code, points:summe, ts:TS()});
-        await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${LIGA_KEY}`).set(summe);
-      }
-      const w={code:me.code, p, ts:TS(), round:pub.round.id}; if(grund) w.grund=grund;
+      await db.ref(`${BASE}/log/${me.pid}/duell-${id}`).set({code:me.code, key:"duell-"+id, titel:"Duell", art:"duell", p, max:3, platz:platzVon(d, me.pid), ts:TS()});
+      const w={code:me.code, p, ts:TS(), round:(pub.round&&pub.round.id)||""}; if(grund) w.grund=grund;
       await db.ref(`${BASE}/duelle/${id}/wertung/${me.pid}`).set(w);
       if(!d.wertung) d.wertung={}; d.wertung[me.pid]={...w, ts:jetzt()};
     }
@@ -479,7 +463,7 @@ function renderLobby(){
   const fertige=meine.filter(x=>istFertig(x.d)&&x.d.teil&&x.d.teil[me.pid]);
   const siege=fertige.filter(x=>{ const r=rangliste(x.d).find(y=>y.pid===me.pid); return r&&r.platz===1&&rangliste(x.d).length>1; }).length;
   const st=ligaStatus();
-  $("#stats").innerHTML=[[meine.length,"Duelle"],[siege,"Siege"],[rundenSumme(),"Liga-Punkte"],[`${heuteGezaehlt().length}/${TAGES_MAX}`,"heute"]]
+  $("#stats").innerHTML=[[meine.length,"Duelle"],[siege,"Siege"],[rundenSumme(),"Punkte im Monat"],[`${heuteGezaehlt().length}/${TAGES_MAX}`,"heute"]]
     .map(([z,l])=>`<div><b>${z}</b><span>${l}</span></div>`).join("");
   $("#limit").innerHTML = st.ok ? `Sieg <b>+${PUNKTE[1]}</b> · Platz 2 in der Gruppe <b>+${PUNKTE[2]}</b> · Mitspielen <b>+${PUNKTE.sonst}</b> – heute zählen noch <b>${Math.max(0,TAGES_MAX-heuteGezaehlt().length)}</b> Duelle.`
     : `⚠️ ${esc(st.txt)} Du kannst trotzdem üben.`;
@@ -502,7 +486,7 @@ function renderLobby(){
   $("#best").innerHTML = top.length ? top.map(([p,w],i)=>`<li class="${me&&p===me.pid?"ich":""}"><span class="r">${i+1}</span><span class="sw" style="background:${esc(farbe(p))}"></span><span class="n">${esc(nameVon(p))}</span><span class="p">${w} ${w===1?"Sieg":"Siege"}</span></li>`).join("")
     : `<li class="small">Noch keine Siege – sei die erste Person!</li>`;
   $("#regeln").innerHTML=`<b>So geht's:</b> Du forderst heraus und spielst sofort ${FRAGEN_PRO_DUELL} Fragen. Deine Gegner bekommen die gleichen Fragen und haben ${STUNDEN_ZEIT} Stunden Zeit.
-    Es gewinnt, wer mehr richtig hat – bei Gleichstand die schnellere Person. Pro Tag zählen ${TAGES_MAX} Duelle für die Liga, gegen dieselbe Person höchstens ${GEGNER_MAX}.`;
+    Es gewinnt, wer mehr richtig hat – bei Gleichstand die schnellere Person. Pro Tag zählen ${TAGES_MAX} Duelle für die Monatswertung, gegen dieselbe Person höchstens ${GEGNER_MAX}.`;
 }
 function duellZeile(id, d){
   const th=THEMEN[d.info.thema]||THEMEN.mix;
@@ -533,7 +517,7 @@ function renderNeu(){
   const max = neu.modus==="1" ? 1 : 3;
   $("#gegner").innerHTML = liste.length ? liste.map(p=>{ const sel=neu.gegner.includes(p);
     return `<button type="button" data-gegner="${esc(p)}" aria-pressed="${sel}" ${!sel&&neu.gegner.length>=max&&max>1?"disabled":""}><span class="sw" style="background:${esc(farbe(p))}"></span>${esc(nameVon(p))}${istOnline(p)?'<span class="on" title="online"></span>':""}</button>`; }).join("")
-    : `<p class="small">Noch niemand sonst in der Liga.</p>`;
+    : `<p class="small">Noch niemand sonst in der Klasse.</p>`;
   if(ohneNamen()) $("#gegner").insertAdjacentHTML("afterbegin", `<p class="small" style="grid-column:1/-1;margin:0">Die Namen sind ausgeblendet – du siehst nur die Teams. Mit 🎲 Zufall geht es am schnellsten.</p>`);
   $("#neu-start").disabled = !neu.gegner.length;
   $("#neu-err").textContent="";
@@ -625,7 +609,7 @@ function renderErgebnis(){
   else if(!ich) kopf=`<div class="e">😴</div><b>Verpasst</b><span>Die 48 Stunden sind um.</span>`;
   else if(rl.length===1) kopf=`<div class="e">🏆</div><b>Sieg kampflos!</b><span>Niemand hat rechtzeitig gespielt.</span>`;
   else kopf=`<div class="e">${ich.platz===1?"🏆":ich.platz===2?"🥈":"💪"}</div><b>${ich.platz===1?"Gewonnen!":ich.platz===2&&alle.length>2?"Platz 2!":"Knapp daneben!"}</b><span>${ich.platz===1?"Stark gespielt.":"Revanche? Du schaffst das!"}</span>`;
-  if(w) kopf+=`<br><span class="punkte">${w.p>0?`+${w.p} Liga-Punkte`:"zählt heute nicht mehr"}</span>`;
+  if(w) kopf+=`<br><span class="punkte">${w.p>0?`+${w.p} Punkte`:"zählt heute nicht mehr"}</span>`;
   $("#erg-kopf").innerHTML=kopf;
   const n=arr(d.info.fragen).length;
   $("#erg-vs").innerHTML=alle.map(p=>{
@@ -710,7 +694,6 @@ function los(){
   $("#me").classList.remove("hidden");
   db.ref(`${BASE}/public`).on("value", s=>{
     pub=s.val()||{};
-    if(!pub.roster || !pub.roster[me.pid]){ if(pub.round) { block("🤔","Nicht in der Liga","Du bist in dieser Runde noch in keinem Team. Frag deine Lehrkraft."); return; } }
     $("#me-name").textContent=(pub.names&&pub.names[me.pid])||"Ich";
     $("#me-farbe").style.background=farbe(me.pid);
     if(!screen || screen==="s-code" || screen==="s-block") { zeige("s-lobby"); }

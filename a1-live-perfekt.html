@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14223B">
+<meta name="theme-color" content="#1E2A44">
 <meta name="robots" content="noindex, nofollow">
-<title>Live-Perfekt – Plöner Liga</title>
+<title>Live-Perfekt – Lernwelt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
-  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
-  --a:#E4412F; --b:#1F6FD1; --c:#E9800E; --d:#1E9E6A;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
-  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --floor:#F4F1EA; --floor-line:#ECE6DA; --paper:#FFFFFF; --ink:#1E2A44; --muted:#6B7280;
+  --board:#1E2A44; --board-2:#2A3A5E; --led:#F5B82E; --line:#E5E0D5; --ok:#14A37F; --bad:#E2483D;
+  --a:#E2483D; --b:#3B4FD8; --c:#F08A24; --d:#14A37F;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
-  background-color:var(--floor);
-  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+  background-color:var(--floor);}
 button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--board);outline-offset:3px}
 .hidden{display:none!important}
@@ -206,8 +205,8 @@ button{font:inherit;color:inherit}
       <h2>Fertig!</h2>
       <div class="result"><span class="big" id="p-end-platz"></span><div class="plus" id="p-end-pts"></div></div>
       <p id="p-end-team"></p>
-      <div class="loesung" id="p-end-liga">Punkte werden an die Liga geschickt …</div>
-      <div style="display:grid;gap:10px;margin-top:14px"><a class="btn" href="index.html">Zur Arena</a></div>
+      <div class="loesung" id="p-end-liga">Punkte werden gespeichert …</div>
+      <div style="display:grid;gap:10px;margin-top:14px"><a class="btn" href="index.html#ueben">Zur Lernwelt</a></div>
     </section>
   </main>
 </div>
@@ -227,7 +226,7 @@ button{font:inherit;color:inherit}
 
   <div id="b-app" class="hidden" style="display:flex;flex-direction:column;flex:1">
     <div class="bm-top">
-      <div class="t" id="b-titel">Live-Perfekt<small id="b-sub">Plöner Liga</small></div>
+      <div class="t" id="b-titel">Live-Perfekt<small id="b-sub">Lernwelt Plön</small></div>
       <div class="mid">
         <span class="pill hidden" id="b-frage-nr">Frage <b id="b-nr">1</b></span>
         <span class="pill" id="b-dabei">Dabei <b id="b-anz">0</b></span>
@@ -619,7 +618,7 @@ function startBeamer(){
   async function init(){
     const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
     teams=arr(pub.teams); roster=pub.roster||{};
-    $("#b-sub").textContent = (pub.liga||"Plöner Liga") + (pub.round?" · "+pub.round.name:"");
+    $("#b-sub").textContent = "Lernwelt Plön";
     db.ref(`${BATTLE}/players`).on("value", s=>{ players=s.val()||{}; malen(); });
     db.ref(`${BATTLE}/answers`).on("value", s=>{ antworten=s.val()||{}; if(phase==="frage") zaehler(); });
     neu(false);
@@ -759,36 +758,32 @@ function startBeamer(){
       .sort((x,y)=>y.schnitt-x.schnitt);
   }
   function stand(body, final){
-    const ts=teamStand(); const max=Math.max(1,...ts.map(t=>t.schnitt));
-    const top=Object.values(ranking).sort((a,b)=>b.p-a.p).slice(0,5);
-    body.innerHTML=`<div style="max-width:1100px;margin:0 auto;width:100%">
+    const top=Object.values(ranking).sort((a,b)=>b.p-a.p).slice(0,8); const max=Math.max(1,...top.map(p=>p.p));
+    body.innerHTML=`<div style="max-width:1000px;margin:0 auto;width:100%">
       <h1 style="font-family:var(--display);font-size:clamp(34px,4.5vw,60px);margin:0 0 14px">${final?"Endstand":"Zwischenstand nach Frage "+(idx+1)}</h1>
-      <div class="teams">${ts.map(t=>`<div class="trow"><span class="nm"><i style="background:${esc(t.color)}"></i>${esc(t.name)}</span>
-        <span class="bar"><span style="width:${t.schnitt/max*100}%;background:${esc(t.color)}"></span></span>
-        <span class="p">${t.schnitt}</span></div>`).join("")}</div>
-      <div class="dist">Punkte pro Kopf – so sind unterschiedlich große Teams fair</div>
-      <div class="rank">${top.map((p,i)=>`<div><b>${i+1}</b><i style="width:10px;height:22px;border-radius:3px;background:${esc(farbe(p.t))};display:inline-block"></i><span>${esc(p.n)}</span><span class="p">${p.p}</span></div>`).join("")}</div>
+      <div class="teams">${top.map((p,i)=>`<div class="trow"><span class="nm">${["🥇","🥈","🥉"][i]||(i+1)+"."} ${esc(p.n)}</span>
+        <span class="bar"><span style="width:${p.p/max*100}%;background:var(--led)"></span></span><span class="p">${p.p}</span></div>`).join("")}</div>
     </div>`;
     $("#b-main").textContent = final ? "Neues Spiel" : "Nächste Frage";
     $("#b-main").disabled=false;
   }
   async function endeStarten(){
     phase="ende";
+    const sortiert=Object.values(ranking).sort((a,b)=>b.p-a.p); sortiert.forEach((e,i)=>{ e.platz = i>0 && sortiert[i-1].p===e.p ? sortiert[i-1].platz : i+1; });
     await db.ref(`${BATTLE}/ranking`).set(ranking);
     await db.ref(`${BATTLE}/state`).update({phase:"ende", gesamt:runde.length});
     malen();
   }
   function ende(body){
     const top=Object.values(ranking).sort((a,b)=>b.p-a.p);
-    const ts=teamStand(); const sieger=ts[0];
+    const sieger=top[0]?{name:top[0].n, schnitt:top[0].p}:null;
     const pod=[top[1],top[0],top[2]], cls=["p2","p1","p3"], med=["🥈","🥇","🥉"];
     body.innerHTML=`<div style="width:100%">
       <h1 style="font-family:var(--display);font-size:clamp(38px,5vw,72px);text-align:center;margin:0 0 6px;color:var(--led)">${sieger?esc(sieger.name)+" gewinnt!":"Fertig!"}</h1>
-      <p style="text-align:center;color:#c9d2e3;margin:0 0 18px">${sieger?`${sieger.schnitt} Punkte pro Kopf`:""}</p>
+      <p style="text-align:center;color:#c9d2e3;margin:0 0 18px">${sieger?`${sieger.schnitt} Punkte`:""}</p>
       <div class="podium">${pod.map((p,i)=>p?`<div class="pod ${cls[i]}"><div class="medal">${med[i]}</div><div class="nm">${esc(p.n)}</div><div class="p">${p.p}</div></div>`:`<div class="pod ${cls[i]}"></div>`).join("")}</div>
-      <div class="teams" style="max-width:900px;margin:0 auto">${ts.map(t=>`<div class="trow"><span class="nm"><i style="background:${esc(t.color)}"></i>${esc(t.name)}</span>
-        <span class="bar"><span style="width:${t.schnitt/Math.max(1,ts[0].schnitt)*100}%;background:${esc(t.color)}"></span></span><span class="p">${t.schnitt}</span></div>`).join("")}</div>
-      <p class="dist">Die Punkte gehen automatisch an die Liga – die Handys müssen kurz offen bleiben.</p></div>`;
+      <div class="teams" style="max-width:900px;margin:0 auto">${top.slice(3,10).map((p,i)=>`<div class="trow"><span class="nm">${i+4}. ${esc(p.n)}</span><span class="bar"><span style="width:${p.p/Math.max(1,top[0].p)*100}%;background:var(--led)"></span></span><span class="p">${p.p}</span></div>`).join("")}</div>
+      <p class="dist">Die Punkte gehen automatisch in die Monatswertung – Platz 1–3 bekommen einen Bonus. Handys kurz offen lassen!</p></div>`;
     $("#b-main").textContent="Neues Spiel"; $("#b-main").disabled=false;
   }
 
@@ -914,25 +909,14 @@ function startSpieler(){
     if(gesendet) return; gesendet=true;
     const ziel=$("#p-end-liga");
     try{
-      const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
-      const KEY=(state&&state.key)||LIGA_KEY;
-      const task=pub.tasks?pub.tasks[KEY]:null;
-      const nun=serverNow(), FERN2=4102444800000;
-      const zeitOk = task && nun>=(Number(task.von)||0) && nun<=(Number(task.bis)||FERN2);
-      if(!pub.round || !task || !task.open || !zeitOk){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }
-      const a=task.assign||{};
-      const mine = a.alle || (a.players&&a.players[me.pid]) || (me.team && a.teams && a.teams[me.team]);
-      if(!mine){ ziel.textContent="Dieses Spiel zählt heute nicht für die Liga."; return; }
-      const max=Number(task.max)||10, gesamt=Number(state.gesamt)||FRAGEN.length;
-      const punkte=Math.max(0, Math.min(max, Math.round(r.p/(MAX_PUNKTE*gesamt)*max)));
-      const best=(await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${KEY}`).once("value")).val();
-      const ts=firebase.database.ServerValue.TIMESTAMP;
-      try{ await db.ref(`${BASE}/tries/${pub.round.id}/${me.pid}/${KEY}`).push({code:me.code, points:punkte, ts}); }catch(e){}
-      if(best!==null && best!==undefined && punkte<=Number(best)){ ziel.textContent=`Dein bestes Ergebnis bleibt ${best} von ${max} Liga-Punkten.`; return; }
-      await db.ref(`${BASE}/proof/${pub.round.id}/${me.pid}/${KEY}`).set({code:me.code, points:punkte, ts});
-      await db.ref(`${BASE}/live/${pub.round.id}/${me.pid}/${KEY}`).set(punkte);
-      ziel.textContent=`✓ ${punkte} von ${max} Liga-Punkten für dich und dein Team gespeichert!`;
-    }catch(e){ console.warn(e); ziel.textContent="Die Liga-Punkte konnten nicht gespeichert werden. Zeig das deiner Lehrkraft."; }
+      const gesamt=Number(state.gesamt)||FRAGEN.length;
+      const platz=Number(r.platz)||0;
+      const punkte=Math.max(0, Math.min(15, Math.round(r.p/(MAX_PUNKTE*gesamt)*15))) + (platz===1?5:platz===2?3:platz===3?1:0);
+      const sid=(state&&state.sid)||Date.now().toString(36);
+      const key=`live-${(state&&state.key)||LIGA_KEY}-${sid}`;
+      await db.ref(`${BASE}/log/${me.pid}/${key}`).set({code:me.code, key, titel:"Live: "+SET.titel, art:"live", p:punkte, max:20, platz, ts:firebase.database.ServerValue.TIMESTAMP});
+      ziel.textContent=`✓ ${punkte} ${punkte===1?"Punkt":"Punkte"} für dich gespeichert${platz&&platz<=3?` (mit Bonus für Platz ${platz})`:""}!`;
+    }catch(e){ console.warn(e); ziel.textContent="Die Punkte konnten nicht gespeichert werden. Zeig das deiner Lehrkraft."; }
   }
 
   /* Spiel-PIN: zuerst die PIN von der Leinwand, dann (falls nötig) der eigene Code */

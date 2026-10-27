@@ -3,25 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#14223B">
-<title>Perfekt-Training – Plöner Liga</title>
+<meta name="theme-color" content="#1E2A44">
+<title>Perfekt-Training – Lernwelt</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --floor:#E3C690; --floor-line:#D5B57A; --paper:#FFFBF3; --ink:#1D1A17; --muted:#6E6358;
-  --board:#14223B; --board-2:#1C2E4D; --led:#FFC53D; --line:#E8DCC6; --ok:#1E9E6A; --bad:#E4412F;
-  --der:#1F6FD1; --die:#E4412F; --das:#1E9E6A;
-  --accent:#14223B;
-  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
-  --body:Calibri,Carlito,"Segoe UI",system-ui,-apple-system,sans-serif;
+  --floor:#F4F1EA; --floor-line:#ECE6DA; --paper:#FFFFFF; --ink:#1E2A44; --muted:#6B7280;
+  --board:#1E2A44; --board-2:#2A3A5E; --led:#F5B82E; --line:#E5E0D5; --ok:#14A37F; --bad:#E2483D;
+  --der:#3B4FD8; --die:#E2483D; --das:#14A37F;
+  --accent:#1E2A44;
+  --display:"Barlow Condensed","Arial Narrow",Impact,sans-serif;
+  --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:var(--body);font-size:18px;line-height:1.45;color:var(--ink);min-height:100vh;
-  background-color:var(--floor);
-  background-image:repeating-linear-gradient(90deg,transparent 0 71px,var(--floor-line) 71px 73px),repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 3px,transparent 3px 11px)}
+  background-color:var(--floor);}
 :focus-visible{outline:3px solid var(--board);outline-offset:3px}
 button{font:inherit;color:inherit}
 .hidden{display:none!important}
@@ -214,7 +213,7 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
 <body>
 
 <header class="bar"><div class="bar-in">
-  <a href="index.html">‹ Arena</a>
+  <a href="index.html#ueben">‹ Lernwelt</a>
   <span class="who hidden" id="who"><i id="who-color"></i><span id="who-name"></span></span>
 </div></header>
 
@@ -233,7 +232,7 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
 
   <section class="card hidden" id="scr-code">
     <h2>Dein Code</h2>
-    <p>Gib deinen Code ein, damit deine Punkte für dich und dein Team zählen.</p>
+    <p>Gib deinen Code ein, damit deine Punkte zählen.</p>
     <form class="codein" id="code-form" autocomplete="off"><input id="code-in" maxlength="8" placeholder="CODE" aria-label="Dein Code" autocapitalize="characters"><button class="btn" type="submit">Los</button></form>
     <div class="err" id="code-err" role="alert"></div>
     <button class="btn ghost wide" type="button" data-practice style="margin-top:6px">Ohne Code üben (keine Punkte)</button>
@@ -245,7 +244,7 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
     <div class="stack">
       <button class="btn led" type="button" data-practice>Trotzdem üben (keine Punkte)</button>
       <button class="btn ghost hidden" id="block-other" type="button">Anderen Code eingeben</button>
-      <a class="btn" href="index.html">Zur Arena</a>
+      <a class="btn" href="index.html#ueben">Zur Lernwelt</a>
     </div>
   </section>
 
@@ -265,7 +264,7 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
     <div class="send" id="send-msg"></div>
     <div class="stack">
       <button class="btn led" id="again" type="button">Nochmal spielen</button>
-      <a class="btn" href="index.html">Zur Arena</a>
+      <a class="btn" href="index.html#ueben">Zur Lernwelt</a>
     </div>
   </section>
 </main>
@@ -397,7 +396,7 @@ const SPIELE = {
 const BEREICH_KURZ = "PT";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
-const MENU_TEXT = "Vier Spiele zum Perfekt: haben oder sein mit allen Formen, Vorsilben trennbar oder nicht trennbar, das richtige Partizip und ein großer Mix. Welche Spiele Punkte bringen, siehst du in der Arena.";
+const MENU_TEXT = "Vier Spiele zum Perfekt: haben oder sein mit allen Formen, Vorsilben trennbar oder nicht trennbar, das richtige Partizip und ein großer Mix. Jedes Spiel bringt Punkte für deine Monatswertung.";
 const HALLE_TITEL = "Perfekt-Training";
 
 /* 44 · Hilfsverb-Profi */
@@ -678,94 +677,71 @@ const Liga = (() => {
   const KURS = String(KURS_CODE).trim().replace(/[.#$\[\]\/\s]+/g,"-").toLowerCase();
   const BASE = `jugendliga/${KURS}`;
   const CODE_KEY = `liga_code_${KURS}`;
+  const WS_KEY = `lw_warteschlange_${KURS}`;
+  const START_MONAT = "2026-11";
+  const MAX = 10;
   const screens = ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"];
-  let db=null, ctx=null, kennung=null, onReady=null, tOffset=0, cdTimer=null;
+  let db=null, ctx=null, kennung=null, onReady=null, tOffset=0;
 
   function show(id){ screens.forEach(s=>{ const el=document.getElementById(s); if(el) el.classList.toggle("hidden", s!==id); }); window.scrollTo(0,0); }
-  function block(title, text, allowOther){ clearInterval(cdTimer); $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.toggle("hidden", !allowOther); show("scr-block"); }
+  function block(title, text){ $("#block-title").textContent=title; $("#block-text").textContent=text; $("#block-other").classList.add("hidden"); show("scr-block"); }
   const jetzt = () => Date.now() + tOffset;
-  const FERN = 4102444800000;
-  function restText(ms){
-    if(ms<=0) return "gleich";
-    const s=Math.floor(ms/1000), t=Math.floor(s/86400), h=Math.floor(s%86400/3600), m=Math.floor(s%3600/60), k=s%60;
-    if(t>0) return `${t} ${t===1?"Tag":"Tagen"} und ${h} ${h===1?"Stunde":"Stunden"}`;
-    if(h>0) return `${h} ${h===1?"Stunde":"Stunden"} und ${m} ${m===1?"Minute":"Minuten"}`;
-    if(m>0) return `${m} ${m===1?"Minute":"Minuten"} und ${k} Sekunden`;
-    return `${k} Sekunden`;
-  }
-  function zeitText(ms){
-    const d=new Date(ms), wd=["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"][d.getDay()];
-    const p2=n=>String(n).padStart(2,"0");
-    return `${wd}, ${p2(d.getDate())}.${p2(d.getMonth()+1)}. um ${p2(d.getHours())}:${p2(d.getMinutes())} Uhr`;
-  }
-  function blockCountdown(title, basis, ziel, danach){
-    clearInterval(cdTimer);
-    $("#block-title").textContent=title;
-    $("#block-other").classList.add("hidden");
-    const el=$("#block-text");
-    const male=()=>{ const rest=ziel-jetzt();
-      if(rest<=0){ clearInterval(cdTimer); el.textContent=danach; return; }
-      el.innerHTML=`${esc(basis)}<br><b class="cdbig">${esc(restText(rest))}</b><br><span class="cdsub">${esc(zeitText(ziel))}</span>`; };
-    male(); cdTimer=setInterval(male, 1000);
-    show("scr-block");
-  }
+  const p2 = n => String(n).padStart(2,"0");
+  const monat = ts => { const d=new Date(ts); const m=`${d.getFullYear()}-${p2(d.getMonth()+1)}`; return m<START_MONAT?START_MONAT:m; };
   function getMe(){ try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); return c&&c.code?c:null; }catch(e){ return null; } }
   const once = path => db.ref(`${BASE}/${path}`).once("value").then(s=>s.val());
-  const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+  const zeitlimit = (pr, ms) => Promise.race([pr, sleep(ms).then(()=>{ throw new Error("timeout"); })]);
+  const titel = () => (typeof SPIEL!=="undefined" && SPIEL && SPIEL.title) || document.title;
 
-  function practice(max){ ctx={practice:true, max:max||10, best:null}; if(onReady) onReady(ctx); }
+  function practice(){ ctx={practice:true, max:MAX, best:null}; if(onReady) onReady(ctx); }
+
+  async function nachsenden(){
+    let w=[]; try{ w=JSON.parse(localStorage.getItem(WS_KEY)||"[]"); }catch(e){}
+    if(!w.length) return; const rest=[];
+    for(const x of w){ try{ await zeitlimit(db.ref(`${BASE}/log/${x.pid}`).push(Object.assign({}, x.e, {ts:firebase.database.ServerValue.TIMESTAMP})), 8000); }catch(e){ rest.push(x); } }
+    try{ localStorage.setItem(WS_KEY, JSON.stringify(rest)); }catch(e){}
+  }
 
   async function check(){
     show("scr-loading");
-    if(!db){ block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); return; }
+    if(!db){ block("Keine Verbindung", "Die Lernwelt ist gerade nicht erreichbar. Du kannst aber üben."); return; }
     const me=getMe();
     if(!me){ show("scr-code"); return; }
     try{
-      const [c, pub] = await Promise.all([once(`codes/${me.code}`), once("public")]);
+      const c = await zeitlimit(once(`codes/${me.code}`), 9000);
       if(!c || !c.pid){ localStorage.removeItem(CODE_KEY); $("#code-err").textContent="Dein gespeicherter Code gilt nicht mehr."; show("scr-code"); return; }
-      const me2={code:me.code, pid:c.pid, name:c.name||""};
+      const name = (await once(`public/names/${c.pid}`).catch(()=>null)) || c.name || me.name || "";
+      const me2={code:me.code, pid:c.pid, name};
       localStorage.setItem(CODE_KEY, JSON.stringify(me2));
-      const team = pub && pub.roster ? arr(pub.teams).find(t=>t.id===pub.roster[c.pid]) || null : null;
-      if(team||me2.name){ $("#who").classList.remove("hidden"); $("#who-name").textContent=[me2.name, team&&team.name].filter(Boolean).join(" – "); $("#who-color").style.background=team?team.color:"transparent"; }
-      const task = pub && pub.tasks ? pub.tasks[kennung] : null;
-      if(!pub || !pub.round){ block("Gerade keine Runde", "Die Liga macht gerade Pause. Du kannst trotzdem üben.", false); return; }
-      if(!task){ block("Noch nicht in der Liga", "Dieses Spiel bringt gerade keine Punkte. Du kannst trotzdem üben.", false); return; }
-      if(!task.open){ block(task.status==="fertig"?"Aufgabe beendet":"Noch gesperrt", task.status==="fertig"?"Diese Aufgabe ist schon abgeschlossen. Üben geht aber immer.":"Diese Aufgabe ist noch nicht freigeschaltet. Üben geht aber schon.", false); return; }
-      const von=Number(task.von)||0, bis=Number(task.bis)||FERN;
-      if(jetzt()<von){ blockCountdown("Noch geschlossen 🔒", "Diese Aufgabe öffnet in", von, "Jetzt geht es los – lade die Seite neu!"); return; }
-      if(jetzt()>bis){ block("Zeit abgelaufen ⏱️", `Diese Aufgabe war bis ${zeitText(bis)} offen. Üben kannst du trotzdem noch – aber ohne Punkte.`, false); return; }
-      const a=task.assign||{};
-      const mine = a.alle || (a.players&&a.players[c.pid]) || (team && a.teams && a.teams[team.id]);
-      if(!mine){ block("Nicht für dich", "Dieses Spiel bringt gerade nur einem anderen Team Punkte. Schau in der Arena nach deinen Aufgaben – üben kannst du hier trotzdem.", true); return; }
-      const best = await once(`live/${pub.round.id}/${c.pid}/${kennung}`);
-      ctx={practice:false, me:me2, round:pub.round.id, max:Number(task.max)||10, bis:bis<FERN?bis:0, best:(best===null||best===undefined)?null:Number(best)};
+      if(name){ $("#who").classList.remove("hidden"); $("#who-name").textContent=name; $("#who-color").style.background="var(--led)"; }
+      nachsenden();
+      let best=null;
+      try{ const log=(await zeitlimit(once(`log/${c.pid}`), 8000))||{}; const m=monat(jetzt());
+        Object.values(log).forEach(e=>{ if(e && e.key===kennung && monat(Number(e.ts)||0)===m && (best===null || Number(e.p)>best)) best=Number(e.p); }); }catch(e){}
+      ctx={practice:false, me:me2, max:MAX, best};
       if(onReady) onReady(ctx);
-    }catch(e){ console.warn(e); block("Keine Verbindung", "Die Liga ist gerade nicht erreichbar. Du kannst aber üben.", false); }
+    }catch(e){ console.warn(e); block("Keine Verbindung", "Die Lernwelt ist gerade nicht erreichbar. Du kannst aber üben – ohne Punkte."); }
   }
 
   async function senden(points){
     if(!ctx || ctx.practice) return {ok:true, practice:true};
-    if(ctx.bis && jetzt()>ctx.bis) return {ok:true, spaet:true};
     const p=Math.max(0, Math.min(ctx.max, Math.round(Number(points)||0)));
-    const k=kennung, pid=ctx.me.pid, r=ctx.round;
-    const ts=firebase.database.ServerValue.TIMESTAMP;
-    const work=(async()=>{
-      try{ await db.ref(`${BASE}/tries/${r}/${pid}/${k}`).push({code:ctx.me.code, points:p, ts}); }catch(e){ console.warn("Versuch", e); }
-      if(ctx.best!==null && p<=ctx.best) return {ok:true, better:false, points:p, best:ctx.best};
-      await db.ref(`${BASE}/proof/${r}/${pid}/${k}`).set({code:ctx.me.code, points:p, ts});
-      await db.ref(`${BASE}/live/${r}/${pid}/${k}`).set(p);
-      ctx.best=p;
-      return {ok:true, better:true, points:p, best:p};
-    })().catch(e=>{ console.warn(e); return {ok:false}; });
-    const res=await Promise.race([work, sleep(9000).then(()=>"slow")]);
-    return res==="slow" ? {ok:false, slow:true, later:work} : res;
+    const e={code:ctx.me.code, key:kennung, titel:titel(), p, max:ctx.max, t0:Date.now()};
+    const vorher=ctx.best; const besser = vorher===null || p>vorher; if(besser) ctx.best=p;
+    try{
+      await zeitlimit(db.ref(`${BASE}/log/${ctx.me.pid}`).push(Object.assign({}, e, {ts:firebase.database.ServerValue.TIMESTAMP})), 9000);
+      return {ok:true, better:besser, points:p, best:ctx.best};
+    }catch(err){
+      let w=[]; try{ w=JSON.parse(localStorage.getItem(WS_KEY)||"[]"); }catch(x){}
+      w.push({pid:ctx.me.pid, e}); try{ localStorage.setItem(WS_KEY, JSON.stringify(w.slice(-50))); }catch(x){}
+      return {ok:false, wartet:true, points:p};
+    }
   }
   function nachricht(res){
-    if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht für die Liga."};
-    if(res.spaet) return {cls:"bad", text:"Die Zeit für diese Aufgabe ist abgelaufen – diese Punkte zählen leider nicht mehr."};
-    if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte für dich und dein Team gespeichert!`};
-    if(res.ok) return {cls:"", text:`Dein bestes Ergebnis bleibt ${res.best} Punkte. Versuch es nochmal!`};
-    if(res.slow) return {cls:"", text:"Du bist gerade offline. Lass die Seite offen – die Punkte werden gesendet, sobald Internet da ist."};
+    if(res.practice) return {cls:"", text:"Übungsmodus – diese Punkte zählen nicht."};
+    if(res.ok && res.better) return {cls:"ok", text:`✓ ${res.points} Punkte gespeichert – dein Bestwert in diesem Monat!`};
+    if(res.ok) return {cls:"ok", text:`✓ Gespeichert. Für den Monat zählt dein Bestwert: ${res.best} Punkte.`};
+    if(res.wartet) return {cls:"", text:"Gerade keine Verbindung – die Punkte sind auf deinem Handy gemerkt und werden später gesendet."};
     return {cls:"bad", text:"Die Punkte konnten nicht gespeichert werden. Zeig diese Seite deiner Lehrkraft."};
   }
   function start(key, cb){
@@ -783,7 +759,7 @@ const Liga = (() => {
         $("#code-err").textContent=""; check();
       }catch(err){ $("#code-err").textContent="Keine Verbindung."; }
     });
-    document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", ()=>practice(10)));
+    document.querySelectorAll("[data-practice]").forEach(b=>b.addEventListener("click", practice));
     $("#block-other").addEventListener("click", ()=>{ localStorage.removeItem(CODE_KEY); $("#who").classList.add("hidden"); $("#code-in").value=""; show("scr-code"); });
     try{ if(window.firebase){ firebase.initializeApp(cfg); db=firebase.database();
       db.ref(".info/serverTimeOffset").on("value", s=>{ tOffset=Number(s.val())||0; }); } }catch(e){ db=null; }
@@ -798,15 +774,15 @@ const Liga = (() => {
 function kopf(g){
   document.documentElement.style.setProperty("--accent", g?g.color:"#14223B");
   $("#head-ic").textContent=g?g.icon:"🎮";
-  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Plöner Liga · Deutsch A1 · Perfekt";
+  $("#head-sub").textContent=g?`${BEREICH_KURZ}.${g.nr} · ${g.thema}`:"Lernwelt · Deutsch A1 · Perfekt";
   $("#head-title").textContent=g?g.title:HALLE_TITEL;
-  document.title=`${g?g.title:HALLE_TITEL} – Plöner Liga`;
+  document.title=`${g?g.title:HALLE_TITEL} – Lernwelt`;
 }
 function startScreen(){
   const c=Liga.ctx;
   $("#start-rules").innerHTML=SPIEL.rules.map(r=>`<li>${esc(r)}</li>`).join("");
   $("#start-best").textContent = c.practice ? "Übungsmodus – ohne Punkte."
-    : c.best===null ? `Du kannst bis zu ${c.max} Punkte holen.` : `Dein bestes Ergebnis: ${c.best} von ${c.max}. Nur ein besseres Ergebnis zählt.`;
+    : c.best===null ? `Du kannst bis zu ${c.max} Punkte holen.` : `Dein Bestwert in diesem Monat: ${c.best} von ${c.max}. Für die Monatswertung zählt dein bester Versuch.`;
   Liga.show("scr-start");
 }
 function spielen(){
