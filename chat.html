@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Chat-Spiel – Plön</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --gold:#F5B82E; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --wa:#0B7A68; --wa-bg:#EFE7DC; --wa-me:#D9FDD3;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;min-height:100vh}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px}
+h2{font-size:26px} h3{font-size:20px}
+.wrap{max-width:680px;margin:0 auto;padding:14px 14px 60px}
+.wrap.weit{max-width:1180px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:0 1px 0 var(--line),0 6px 20px rgba(30,42,68,.06);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:transparent;color:var(--pri);box-shadow:inset 0 0 0 2px var(--pri-2)}
+.btn.acc{background:var(--acc)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.muted{color:var(--muted)} .small{font-size:14px}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+input[type=text],input[type=number],input[type=email],input[type=password],select{font:inherit;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:#fff;color:var(--ink)}
+.pin-in{font-family:var(--head);font-size:34px;letter-spacing:.3em;text-align:center;width:100%}
+.topbar{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff}
+.topbar .in{max-width:680px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;gap:10px;min-height:56px}
+.topbar b{font-family:var(--head);font-size:19px}
+.topbar .sp{margin-left:auto;display:flex;gap:14px;align-items:center;font-family:var(--head);font-weight:800}
+.topbar .pts{color:var(--gold);font-size:22px}
+.notice{background:var(--pri-2);border-radius:12px;padding:10px 14px;margin:10px 0}
+.nachricht{background:var(--gold);color:var(--ink);border-radius:12px;padding:10px 14px;margin:10px 0;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.chip{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:2px 10px;font-size:14px;font-weight:700;background:var(--line)}
+.chip.dran{background:var(--gold)} .chip.off{opacity:.45}
+table{border-collapse:collapse;width:100%}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+td input[type=number]{width:80px;min-height:38px}
+.namen{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px}
+.nm{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:4px 8px}
+.nm span{flex:1;font-weight:600}
+.nm select{min-height:34px;padding:2px 6px;font-size:14px}
+.lgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+/* WhatsApp */
+.wa{border-radius:18px;overflow:hidden;box-shadow:0 6px 20px rgba(30,42,68,.08);background:var(--wa-bg);margin-bottom:12px}
+.wa-kopf{background:var(--wa);color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px}
+.wa-kopf .av{width:40px;height:40px;border-radius:50%;background:#fff3;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}
+.wa-kopf b{display:block;font-size:17px} .wa-kopf small{opacity:.85;font-size:13px}
+.wa-body{padding:12px 10px;display:flex;flex-direction:column;gap:6px;min-height:120px;max-height:52vh;overflow-y:auto;
+  background-image:radial-gradient(rgba(0,0,0,.035) 1px,transparent 1px);background-size:14px 14px}
+.sys{align-self:center;background:#FFF6D6;color:#5b4a14;font-size:13px;border-radius:8px;padding:4px 10px;text-align:center;max-width:90%}
+.bl{max-width:82%;background:#fff;border-radius:4px 12px 12px 12px;padding:6px 10px 4px;box-shadow:0 1px 0 rgba(0,0,0,.08);align-self:flex-start}
+.bl.ich{align-self:flex-end;background:var(--wa-me);border-radius:12px 4px 12px 12px}
+.bl .wer{font-size:13px;font-weight:800}
+.bl .zt{font-size:11px;color:#667;text-align:right}
+.tippt{align-self:flex-start;font-size:14px;color:#556;font-style:italic;padding:2px 6px}
+/* Composer */
+.komp{background:#fff;border-radius:18px;padding:14px;box-shadow:0 6px 20px rgba(30,42,68,.08)}
+.dran-titel{font-family:var(--head);font-weight:800;font-size:20px;color:var(--acc)}
+.ideen{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.idee{background:var(--pri-2);border-radius:999px;padding:4px 12px;font-weight:700;font-size:15px}
+.eingabe{display:flex;gap:8px;align-items:center;margin:8px 0}
+.zeile{flex:1;min-height:54px;border:2px solid var(--line);border-radius:27px;padding:6px 10px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;background:#fff}
+.zeile .leer{color:#aab;font-size:15px}
+.senden{width:54px;height:54px;border-radius:50%;border:0;background:var(--wa);color:#fff;font-size:22px;cursor:pointer;flex:none}
+.senden:disabled{opacity:.4}
+.kacheln{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.kachel{border:0;background:var(--pri-2);color:var(--ink);border-radius:10px;min-height:42px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:16px}
+.zeile .kachel{background:var(--pri);color:#fff;min-height:36px;padding:4px 10px}
+.kachel.weg{visibility:hidden}
+.feedback{border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:700;background:var(--bad-2);color:var(--bad)}
+.punkte-leiste{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+/* Leinwand */
+body.lw{background:var(--ink);color:#fff}
+.lw .card{background:#26365A;color:#fff;box-shadow:none}
+.lwpin{font-family:var(--head);font-weight:800;font-size:min(22vw,180px);letter-spacing:.1em;color:var(--gold);line-height:1}
+.lw .wa-body{max-height:none;min-height:240px}
+.lw .bl,.lw .sys{color:var(--ink)}
+#qr img,#qr canvas{background:#fff;padding:10px;border-radius:12px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="chat/index.js"></script>
+<script>
+/* =========================================================
+   CHAT-SPIEL (WhatsApp)  ·  mehrere Tische gleichzeitig
+   ?leitung=1   Lehrkraft · ?rolle=leinwand&pin=   Beamer · ?pin=   Teilnehmende
+   Themen: chat/<id>.js · Liste: chat/index.js
+   ========================================================= */
+const KURS = "ploen-jik";
+const firebaseConfig = {
+  apiKey: "AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",
+  authDomain: "lern-deutsch-arash.firebaseapp.com",
+  databaseURL: "https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "lern-deutsch-arash",
+  storageBucket: "lern-deutsch-arash.firebasestorage.app",
+  messagingSenderId: "845503292114",
+  appId: "1:845503292114:web:f76ab5fcde1e978d00c30b"
+};
+const BASE = `jugendliga/${KURS}`, CODE_KEY = `liga_code_${KURS}`, CROOT = `ligachat/${KURS}`;
+const P = new URLSearchParams(location.search);
+const MODUS = P.get("leitung") ? "leitung" : (P.get("rolle")==="leinwand" ? "leinwand" : "spieler");
+const $ = (s,r=document)=>r.querySelector(s), $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr = v => Array.isArray(v) ? v.filter(Boolean) : (v && typeof v==="object" ? Object.values(v) : []);
+function fnv(s){let h=0x811c9dc5;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
+function mische(a, seed){ let x=(parseInt(fnv(String(seed)),36)||1)>>>0; a=a.slice(); for(let i=a.length-1;i>0;i--){ x=(Math.imul(x,1103515245)+12345)>>>0; const j=x%(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const BASIS_URL = location.href.replace(/[?#].*$/,"");
+const LIVE_URL = BASIS_URL.replace(/[^\/]*$/,"")+"live.html";
+const TISCHE = [["Pizza","🍕"],["Kuchen","🎂"],["Ballon","🎈"],["Geschenk","🎁"],["Musik","🎶"],["Konfetti","🎊"],["Kerze","🕯️"]];
+const NAMEFARBEN = ["#C2410C","#7C3AED","#0E7490","#BE185D","#4D7C0F","#B45309"];
+const ART = {frage:["❓","Frage"], vorschlag:["💡","Vorschlag"], ja:["👍","Ja"], nein:["👎","Nein"], info:["ℹ️","Info"]};
+const PUNKTE = [10,6,3];
+const FUELL = ["nicht","auch","heute","sehr","gern","der","den","dem","bin","bist","hast","sind","mit","für","um","am","in","noch","schon","oft"];
+
+let db=null, auth=null, offset=0;
+try{ firebase.initializeApp(firebaseConfig); db=firebase.database(); auth=firebase.auth();
+  db.ref(".info/serverTimeOffset").on("value", s=>{ offset=Number(s.val())||0; }); }catch(e){ console.warn(e); }
+const jetzt = () => Date.now()+offset;
+const TS = () => firebase.database.ServerValue.TIMESTAMP;
+let PIN = (P.get("pin")||"").replace(/\D/g,"");
+const C = p => db.ref(`${CROOT}/${PIN}${p?"/"+p:""}`);
+
+function ladeThema(id){
+  window.CHAT_THEMEN = window.CHAT_THEMEN || {};
+  if(window.CHAT_THEMEN[id]) return Promise.resolve(window.CHAT_THEMEN[id]);
+  return new Promise((ok,no)=>{ const s=document.createElement("script"); s.src=`chat/${id}.js`;
+    s.onload=()=>window.CHAT_THEMEN[id]?ok(window.CHAT_THEMEN[id]):no(new Error("Thema fehlt")); s.onerror=()=>no(new Error("Thema nicht gefunden")); document.head.appendChild(s); });
+}
+
+/* ---------- Engine (rein) ---------- */
+const woerter = t => String(t).replace(/[,.!?;:]/g," ").split(/\s+/).filter(Boolean);
+const gross = t => String(t).replace(/(^|[.!?:]\s+)([a-zäöü])/g,(m,a,b)=>a+b.toUpperCase());
+const anzeige = o => gross(o.t) + (o.e ? " "+o.e : "");
+function salat(K, seed, stufe){
+  const max={}; K.optionen.forEach(o=>{ const c={}; woerter(o.t).forEach(w=>c[w]=(c[w]||0)+1); for(const w in c) max[w]=Math.max(max[w]||0,c[w]); });
+  const pool=[]; for(const w in max) for(let i=0;i<max[w];i++) pool.push(w);
+  const ziel = stufe==="schwer" ? pool.length+8 : pool.length+3;
+  const extra = mische((K.extra||[]).concat(stufe==="schwer"?FUELL:[]).filter(w=>!max[w]), seed+"x");
+  for(const w of extra){ if(pool.length>=ziel) break; pool.push(w); }
+  return mische(pool, seed);
+}
+const bag = ws => { const c={}; ws.forEach(w=>c[w]=(c[w]||0)+1); return c; };
+function abstand(a,b){ const A=bag(a), B=bag(b); let d=0; new Set([...Object.keys(A),...Object.keys(B)]).forEach(w=>d+=Math.abs((A[w]||0)-(B[w]||0))); return d; }
+function pruefe(K, ws){
+  for(let i=0;i<K.optionen.length;i++){ const o=K.optionen[i];
+    if([o.t].concat(o.alt||[]).some(t=>woerter(t).join(" ")===ws.join(" "))) return {ok:true, i}; }
+  let best=null, bd=1e9; K.optionen.forEach((o,i)=>{ const d=abstand(woerter(o.t),ws); if(d<bd){ bd=d; best=i; } });
+  if(bd===0) return {ok:false, art:"reihenfolge", i:best};
+  return {ok:false, art: bd<=2?"fast":"nein", i:best};
+}
+function mitglieder(S, t){ return Object.entries(S.spieler||{}).filter(([,x])=>x.tisch===t).sort((a,b)=>String(a[1].name).localeCompare(b[1].name)).map(([p])=>p); }
+function naechster(S, t, zug){ const l=mitglieder(S,t); return l.length ? l[zug % l.length] : null; }
+function neueRunde(S, t, nr, punkte, anz){ return {knoten:"__start", zug:nr||0, nr:nr||0, akteur:naechster(S,t,nr||0), versuche:0, verlauf:[], punkte:punkte||{}, anz:anz||{}}; }
+const farbeVon = (S,t,pid) => NAMEFARBEN[Math.max(0,mitglieder(S,t).indexOf(pid)) % NAMEFARBEN.length];
+const uhr = ts => { const d=new Date(ts||Date.now()); return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); };
+
+function chatHtml(S, TH, t, me, opt={}){
+  const R=(S.runde||{})[t]||{}; const T=(S.tische||{})[t]||{}; const sp=S.spieler||{};
+  const ver=arr(R.verlauf); let h="";
+  const st=TH.knoten[TH.start]; if(st.info) h+=`<div class="sys">${esc(st.info)}</div>`;
+  ver.forEach(v=>{ const K=TH.knoten[v.k]; const o=K&&K.optionen[v.o]; if(!o) return; const ich=v.p===me;
+    h+=`<div class="bl ${ich?"ich":""}">${ich?"":`<div class="wer" style="color:${farbeVon(S,t,v.p)}">${esc((sp[v.p]||{}).name||"?")}</div>`}<div>${esc(anzeige(o))}</div><div class="zt">${uhr(v.ts)}${ich?" ✓✓":""}</div></div>`;
+    const Z=TH.knoten[o.weiter]; if(Z&&Z.info&&!Z.ende) h+=`<div class="sys">${esc(Z.info)}</div>`; });
+  const K=TH.knoten[R.knoten===`__start`?TH.start:R.knoten];
+  if(K&&K.ende) h+=`<div class="sys" style="font-size:15px">${esc(K.info)}</div>`;
+  else if(R.akteur && R.akteur!==me && !opt.ohneTippt) h+=`<div class="tippt">✍️ ${esc((sp[R.akteur]||{}).name||"…")} schreibt …</div>`;
+  const namen=mitglieder(S,t).map(p=>(sp[p]||{}).name).join(", ");
+  return `<div class="wa"><div class="wa-kopf"><div class="av">${T.emoji||"💬"}</div><div><b>${esc(TH.gruppe)}</b><small>${esc(namen||"…")}</small></div></div><div class="wa-body" data-scroll="${t}">${h}</div></div>`;
+}
+
+/* =========================================================
+   TEILNEHMENDE
+   ========================================================= */
+function spieler(){
+  const app=$("#app"); let me=null, S=null, TH=null, gebaut=[], gebautFuer="", tipps=0, meldung="", gescrollt="";
+  try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+  function pinScreen(f){
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">💬</div><h2>Chat-Spiel</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
+      <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" autocomplete="off" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefePin(); }; setTimeout(()=>$("#pin").focus(),50);
+  }
+  async function pruefePin(){
+    if(PIN.length!==4) return pinScreen(PIN?"Die PIN hat 4 Ziffern.":"");
+    try{ const info=(await C("info").once("value")).val(); if(!info) return pinScreen("Diese PIN gibt es nicht.");
+      try{ sessionStorage.setItem("chat_pin",PIN); }catch(e){} history.replaceState(null,"","?pin="+PIN);
+      TH=await ladeThema(info.thema); me ? anmelden() : codeScreen();
+    }catch(e){ pinScreen("Keine Verbindung."); }
+  }
+  function codeScreen(f){
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🔑</div><h2>Dein Code</h2><p class="muted">Dein persönlicher Code (wie in der Liga).</p>
+      <form id="cf"><input id="code" class="pin-in" autocomplete="off" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn wide" style="margin-top:10px">Los geht's</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#cf").onsubmit=async e=>{ e.preventDefault(); const code=$("#code").value.toUpperCase().replace(/[^A-Z0-9]/g,""); if(code.length<4) return codeScreen("Der Code hat mindestens 4 Zeichen.");
+      try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val(); if(!c||!c.pid) return codeScreen("Diesen Code gibt es nicht. Frag deine Lehrkraft.");
+        const n=(await db.ref(`${BASE}/public/names/${c.pid}`).once("value")).val();
+        me={code,pid:c.pid,name:c.name||n||"?"}; localStorage.setItem(CODE_KEY, JSON.stringify(me)); anmelden(); }catch(err){ codeScreen("Keine Verbindung."); } };
+    setTimeout(()=>$("#code").focus(),50);
+  }
+  async function anmelden(){
+    const ref=C(`spieler/${me.pid}`); await ref.update({name:me.name, ts:TS(), online:true, da:true});
+    try{ ref.child("online").onDisconnect().set(false); }catch(e){}
+    db.ref(".info/connected").on("value", s=>{ if(s.val()) ref.child("online").set(true); });
+    C().on("value", s=>{ S=s.val()||{}; neu(); });
+  }
+  const meinTisch = () => ((S.spieler||{})[me.pid]||{}).tisch;
+  function neu(){
+    if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
+    const t=meinTisch();
+    if(S.info.phase==="lobby" || !t || !(S.tische||{})[t] || !(S.runde||{})[t]) return warten(t);
+    zeichne();
+  }
+  function warten(t){
+    const T=t&&(S.tische||{})[t];
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:6vh;text-align:center"><div style="font-size:60px">${TH.icon}</div><h2>${esc(TH.titel)}</h2><p>Hallo <b>${esc(me.name)}</b>!</p>
+      ${T?`<p class="notice">Dein Tisch: <b>${T.emoji} ${esc(T.name)}</b><br>${mitglieder(S,t).map(p=>esc(S.spieler[p].name)).join(", ")}</p><p class="muted">Gleich geht es los!</p>`:`<p class="muted">Deine Lehrkraft verteilt gerade die Tische. Warte kurz …</p>`}
+      <p class="muted small">${esc(TH.beschreibung)}</p><p class="small muted">Nicht ${esc(me.name)}? <a href="#" id="anders">Code ändern</a></p></div></div>`;
+    $("#anders").onclick=e=>{ e.preventDefault(); C(`spieler/${me.pid}/online`).set(false); localStorage.removeItem(CODE_KEY); me=null; codeScreen(); };
+  }
+  function zeichne(){
+    const t=meinTisch(), R=S.runde[t], T=S.tische[t];
+    const kid = R.knoten==="__start" ? TH.start : R.knoten; const K=TH.knoten[kid];
+    const stamp=t+"|"+kid+"|"+R.zug+"|"+(R.nr||0); if(stamp!==gebautFuer){ gebaut=[]; tipps=0; meldung=""; gebautFuer=stamp; }
+    const sp=S.spieler||{}; const pk=R.punkte||{};
+    const msg = S.nachricht && S.nachricht.ts>jetzt()-5*60000 ? `<div class="nachricht">📣 ${esc(S.nachricht.text)}</div>` : "";
+    let unten="";
+    if(K.ende){
+      unten=`<div class="komp" style="text-align:center"><div style="font-size:44px">🎉</div><h3>Chat fertig!</h3><p class="muted">Lest euren Chat noch einmal laut vor – jede Person ihre Nachrichten.</p>
+        ${S.info.phase==="ende"?"":`<button class="btn" id="nochmal">🔁 Noch ein Chat – andere Wege ausprobieren</button>`}</div>`;
+    } else if(S.info.phase==="ende"){
+      unten=`<div class="komp"><b>Das Spiel ist beendet.</b></div>`;
+    } else if(R.akteur===me.pid){
+      const pool=salat(K, PIN+t+kid+R.zug+(R.nr||0), S.info.stufe);
+      const zeigK = S.info.stufe!=="schwer" || tipps>0;
+      unten=`<div class="komp"><div class="dran-titel">✍️ Du bist dran!</div><div>${esc(K.aufgabe)}</div>
+        <div class="ideen">${K.optionen.map(o=>`<span class="idee">${ART[o.art][0]} ${ART[o.art][1]}${zeigK?": "+esc(o.k):""}</span>`).join("")}</div>
+        <div class="eingabe"><div class="zeile">${gebaut.length?gebaut.map((pi,j)=>`<button class="kachel" data-raus="${j}">${esc(pool[pi])}</button>`).join(""):`<span class="leer">Tippe Wörter an …</span>`}</div>
+          <button class="senden" id="senden" ${gebaut.length?"":"disabled"} aria-label="senden">➤</button></div>
+        ${meldung?`<div class="feedback">${esc(meldung)}</div>`:""}
+        <div class="kacheln">${pool.map((w,i)=>`<button class="kachel ${gebaut.includes(i)?"weg":""}" data-rein="${i}">${esc(w)}</button>`).join("")}</div>
+        <div class="row"><button class="btn sm ghost" id="zurueck">↺ alles zurück</button><button class="btn sm ghost" id="tipp">💡 Tipp</button>
+          <span class="small muted">Versuche: ${R.versuche||0} · jetzt ${PUNKTE[Math.min(R.versuche||0,2)]} Punkte</span></div></div>`;
+    } else {
+      const ak=sp[R.akteur]||{};
+      unten=`<div class="komp"><b>${esc(ak.name||"…")}</b> ist dran und schreibt. Helft ruhig mit – aber nur auf Deutsch! 😉
+        ${ak.online===false?`<div style="margin-top:8px"><button class="btn sm gold" id="uebernehmen">${esc(ak.name)} ist offline – ich schreibe</button></div>`:""}</div>`;
+    }
+    const sc=$(".wa-body")?$(".wa-body").scrollTop:null;
+    app.innerHTML=`<div class="topbar"><div class="in"><b>${T.emoji} ${esc(T.name)}</b><span class="sp"><span class="pts">${pk[me.pid]||0} P</span></span></div></div>
+      <div class="wrap">${msg}${chatHtml(S,TH,t,me.pid)}${unten}
+      <div class="punkte-leiste">${mitglieder(S,t).map(p=>`<span class="chip ${p===R.akteur?"dran":""} ${sp[p].online===false?"off":""}">${esc(sp[p].name)} · ${pk[p]||0} P</span>`).join("")}</div></div>`;
+    const wb=$(".wa-body"); if(wb) wb.scrollTop=wb.scrollHeight;
+    if(R.akteur===me.pid && gescrollt!==stamp){ gescrollt=stamp; const k=$(".komp"); if(k&&k.scrollIntoView) setTimeout(()=>k.scrollIntoView({behavior:"smooth",block:"start"}),80); }
+    binden(pool_(K,t,kid,R));
+  }
+  const pool_ = (K,t,kid,R) => K.ende?[]:salat(K, PIN+t+kid+R.zug+(R.nr||0), S.info.stufe);
+  function binden(pool){
+    const t=meinTisch(), R=S.runde[t]; const kid=R.knoten==="__start"?TH.start:R.knoten; const K=TH.knoten[kid];
+    $$("[data-rein]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.rein; if(!gebaut.includes(i)){ gebaut.push(i); meldung=""; zeichne(); } });
+    $$("[data-raus]").forEach(b=>b.onclick=()=>{ gebaut.splice(+b.dataset.raus,1); zeichne(); });
+    const z=$("#zurueck"); if(z) z.onclick=()=>{ gebaut=[]; meldung=""; zeichne(); };
+    const tp=$("#tipp"); if(tp) tp.onclick=()=>{
+      if(S.info.stufe==="schwer" && tipps===0){ tipps=1; zeichne(); return; }
+      tipps++;
+      const ws=gebaut.map(i=>pool[i]);
+      let best=K.optionen[0], bl=-1; K.optionen.forEach(o=>{ const ow=woerter(o.t); let l=0; while(l<ws.length&&l<ow.length&&ws[l]===ow[l]) l++; if(l>bl){ bl=l; best=o; } });
+      const ow=woerter(best.t); gebaut=gebaut.slice(0,bl);
+      if(bl<ow.length){ const frei=pool.findIndex((w,i)=>w===ow[bl]&&!gebaut.includes(i)); if(frei>=0) gebaut.push(frei); }
+      meldung=""; C(`runde/${t}/versuche`).transaction(v=>(v||0)+1); zeichne();
+    };
+    const sd=$("#senden"); if(sd) sd.onclick=()=>{
+      const ws=gebaut.map(i=>pool[i]); const r=pruefe(K, ws);
+      if(!r.ok){ meldung = r.art==="reihenfolge" ? "🔄 Alle Wörter stimmen – nur die Reihenfolge noch nicht." : r.art==="fast" ? "🤏 Fast! Ein oder zwei Wörter passen noch nicht." : "✋ Diese Nachricht passt hier nicht. Schau dir die Ideen oben an.";
+        C(`runde/${t}/versuche`).transaction(v=>(v||0)+1); zeichne(); return; }
+      const o=K.optionen[r.i]; const zug=R.zug;
+      C(`runde/${t}`).transaction(cur=>{ if(!cur || cur.zug!==zug || (cur.knoten==="__start"?TH.start:cur.knoten)!==kid) return;
+        const v=arr(cur.verlauf); v.push({p:me.pid, k:kid, o:r.i, ts:Date.now()}); cur.verlauf=v;
+        cur.punkte=cur.punkte||{}; cur.punkte[me.pid]=(cur.punkte[me.pid]||0)+PUNKTE[Math.min(cur.versuche||0,2)]; cur.anz=cur.anz||{}; cur.anz[me.pid]=(cur.anz[me.pid]||0)+1;
+        cur.knoten=o.weiter; cur.zug=zug+1; cur.versuche=0; cur.akteur = TH.knoten[o.weiter].ende ? null : naechster(S,t,zug+1); return cur; });
+      gebaut=[];
+    };
+    const nm=$("#nochmal"); if(nm) nm.onclick=()=>{ const nr=(R.nr||0)+1; C(`runde/${t}`).transaction(cur=>{ if(!cur||(cur.nr||0)!==nr-1) return; return neueRunde(S,t,nr,cur.punkte,cur.anz); }); };
+    const ub=$("#uebernehmen"); if(ub) ub.onclick=()=>C(`runde/${t}/akteur`).set(me.pid);
+  }
+  if(!db){ app.innerHTML="Keine Verbindung."; return; }
+  if(!PIN){ try{ PIN=sessionStorage.getItem("chat_pin")||""; }catch(e){} }
+  PIN ? pruefePin() : pinScreen();
+}
+
+/* =========================================================
+   LEINWAND
+   ========================================================= */
+function leinwand(){
+  document.body.classList.add("lw"); const app=$("#app"); let S=null, TH=null, qr=false;
+  if(!PIN){ app.innerHTML="Öffne die Leinwand über die Leitung."; return; }
+  C().on("value", async s=>{ S=s.val(); if(!S||!S.info){ app.innerHTML=`<div class="wrap">Kein Spiel mit PIN ${esc(PIN)}.</div>`; return; } if(!TH) TH=await ladeThema(S.info.thema); male(); });
+  function male(){
+    const url=BASIS_URL+"?pin="+PIN, sp=S.spieler||{};
+    if(S.info.phase==="lobby"){
+      if(!$("#lw-lobby")){ qr=false; app.innerHTML=`<div class="wrap weit" id="lw-lobby"><div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-top:3vh">
+        <div><h1 style="font-size:52px">${TH.icon} ${esc(TH.titel)}</h1><p style="font-size:22px;opacity:.85">${esc(TH.beschreibung)}</p></div>
+        <div class="card" style="text-align:center"><div style="font-size:22px">Handy: <b>${esc(LIVE_URL.replace(/^https?:\/\//,""))}</b></div><div id="qr" style="display:flex;justify-content:center;margin:12px 0"></div><div>PIN</div><div class="lwpin">${PIN}</div></div></div><div id="lw-t"></div></div>`; }
+      if(!qr){ qr=true; try{ new QRCode($("#qr"),{text:url,width:220,height:220}); }catch(e){} }
+      $("#lw-t").innerHTML=`<div class="lgrid" style="margin-top:16px">${Object.entries(S.tische||{}).map(([t,T])=>`<div class="card"><h3>${T.emoji} Tisch ${esc(T.name)}</h3>${mitglieder(S,t).map(p=>`<div style="font-size:20px">${esc(sp[p].name)}</div>`).join("")}</div>`).join("")}</div>
+        <p style="opacity:.7;font-size:20px">Angemeldet: ${Object.values(sp).filter(x=>x.ts).map(x=>esc(x.name)).join(", ")||"–"}</p>`;
+      return;
+    }
+    if(S.info.phase==="ende"){
+      const alle=[]; Object.entries(sp).forEach(([p,x])=>{ if(x.tisch&&(S.runde||{})[x.tisch]) alle.push([x.name,((S.runde[x.tisch].punkte)||{})[p]||0]); }); alle.sort((a,b)=>b[1]-a[1]);
+      app.innerHTML=`<div class="wrap weit"><h1 style="font-size:52px;text-align:center;margin-top:3vh">🏆 Die besten Chatter</h1><div class="lgrid">${alle.slice(0,12).map((x,i)=>`<div class="card" style="font-size:24px"><b>${["🥇","🥈","🥉"][i]||(i+1)+"."} ${esc(x[0])}</b> <span style="float:right;color:var(--gold)">${x[1]} P</span></div>`).join("")}</div></div>`;
+      return;
+    }
+    app.innerHTML=`<div class="wrap weit"><h1 style="font-size:40px;margin-top:2vh">${TH.icon} ${esc(TH.titel)} <span style="font-size:22px;opacity:.7">· PIN ${PIN}</span></h1>
+      ${S.nachricht&&S.nachricht.ts>jetzt()-5*60000?`<div class="nachricht" style="font-size:24px">📣 ${esc(S.nachricht.text)}</div>`:""}
+      <div class="lgrid">${Object.keys(S.tische||{}).map(t=>chatHtml(S,TH,t,null)).join("")}</div></div>`;
+    $$(".wa-body").forEach(b=>b.scrollTop=b.scrollHeight);
+  }
+}
+
+/* =========================================================
+   LEITUNG
+   ========================================================= */
+function leitung(){
+  const app=$("#app"); let S=null, TH=null, pub={}, warte=false;
+  if(!auth){ app.innerHTML="Keine Verbindung."; return; }
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>💬 Chat-Spiel leiten</h2><p class="muted">Anmeldung wie in der Konsole.</p>
+      <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="width:100%;margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="width:100%;margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(), $("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); };
+  }
+  async function start(){
+    pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+    if(!PIN){ try{ PIN=localStorage.getItem("chat_leitung_pin")||""; }catch(e){} }
+    if(PIN){ const i=(await C("info").once("value")).val(); if(i && (i.phase!=="ende" || P.get("pin"))){ verbinden(); return; } PIN=""; }
+    menue();
+  }
+  function menue(){
+    app.innerHTML=`<div class="wrap"><h2 style="margin-top:20px">💬 Neues Chat-Spiel</h2>${arr(window.CHAT_LISTE).map(f=>`<div class="card"><h3>${f.icon} ${esc(f.titel)}</h3><p class="muted">${esc(f.kurz)}<br><span class="small">${esc(f.niveau)} · ${esc(f.dauer)}</span></p><button class="btn" data-neu="${f.id}">Dieses Thema vorbereiten</button></div>`).join("")}</div>`;
+    $$("[data-neu]").forEach(b=>b.onclick=()=>neu(b.dataset.neu));
+  }
+  async function neu(id){
+    const T0=await ladeThema(id);
+    for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${CROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
+    await C().set({info:{thema:id, phase:"lobby", stufe:"leicht", erstellt:TS(), pin:PIN, titel:T0.titel}});
+    verbinden();
+  }
+  function verbinden(){
+    try{ localStorage.setItem("chat_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
+    C().on("value", async s=>{ S=s.val()||{}; if(!S.info){ menue(); return; } if(!TH) TH=await ladeThema(S.info.thema); male(); });
+  }
+  const namen=()=>pub.names||{};
+  const ligaTeam = pid => { const t=arr(pub.teams).find(x=>(pub.roster||{})[pid]===x.id); return t?t.name:""; };
+  function male(){
+    const ae=document.activeElement; if(ae && /INPUT|SELECT/.test(ae.tagName) && ae.closest("#app")){ warte=true; return; }
+    const ph=S.info.phase, lw=BASIS_URL+"?rolle=leinwand&pin="+PIN;
+    app.innerHTML=`<div class="topbar"><div class="in" style="max-width:1180px"><b>${TH.icon} ${esc(TH.titel)}</b><span class="chip" style="background:var(--gold)">PIN ${PIN}</span>
+      <span class="sp"><a class="btn sm gold" href="${lw}" target="_blank">🖥️ Leinwand öffnen</a></span></div></div><div class="wrap weit">${ph==="lobby"?lobby():ph==="spiel"?spiel():ende()}</div>`;
+    binden();
+  }
+  const tischSel=(p,cur)=>`<select data-tisch="${p}"><option value="">–</option>${Object.entries(S.tische||{}).map(([t,T])=>`<option value="${t}" ${cur===t?"selected":""}>${T.emoji} ${esc(T.name)}</option>`).join("")}</select>`;
+  function namenListe(mitDa){ const sp=S.spieler||{};
+    return `<div class="namen">${Object.keys(namen()).sort((a,b)=>String(namen()[a]).localeCompare(namen()[b])).map(p=>{ const x=sp[p]||{};
+      return `<label class="nm">${mitDa?`<input type="checkbox" data-da="${p}" ${x.da?"checked":""}>`:""}<span>${esc(namen()[p])} ${x.ts?(x.online===false?"📴":"📱"):""}</span><span class="small muted">${esc(ligaTeam(p))}</span>${tischSel(p,x.tisch)}</label>`; }).join("")}</div>`; }
+  function stufeKnopf(){ return `<span class="row"><b>Stufe:</b><button class="btn sm ${S.info.stufe!=="schwer"?"":"ghost"}" data-stufe="leicht">leicht (Ideen sichtbar, wenig Extra-Wörter)</button><button class="btn sm ${S.info.stufe==="schwer"?"":"ghost"}" data-stufe="schwer">schwer</button></span>`; }
+  function lobby(){
+    const sp=S.spieler||{}; const da=Object.values(sp).filter(x=>x.da).length;
+    return `<div class="card"><h2>1 · Wer ist heute da?</h2><p class="muted">Die Jugendlichen öffnen <b>${esc(LIVE_URL.replace(/^https?:\/\//,""))}</b>, geben PIN <b>${PIN}</b> und ihren Code ein (oder QR auf der Leinwand). Ohne Handy: Haken setzen und mit einem Tisch-Handy mitspielen lassen.</p>${namenListe(true)}<p class="small muted">${da} Personen da.</p></div>
+      <div class="card"><h2>2 · Tische (je 3–4 Personen)</h2><div class="row"><label>Personen pro Tisch <select id="gr"><option>3</option><option selected>4</option></select></label><button class="btn" id="auslosen">🎲 Tische bilden</button><button class="btn ghost" id="plus">+ Tisch</button></div>
+        <div class="lgrid" style="margin-top:10px">${Object.entries(S.tische||{}).map(([t,T])=>`<div class="card" style="margin:0"><h3>${T.emoji} ${esc(T.name)} <button class="btn sm ghost" data-weg="${t}" style="float:right">✕</button></h3>${mitglieder(S,t).map(p=>`<span class="chip">${esc(sp[p].name)}</span>`).join(" ")||"<span class='muted'>leer</span>"}</div>`).join("")}</div></div>
+      <div class="card"><h2>3 · Los geht's</h2><p>${stufeKnopf()}</p><div class="row"><button class="btn acc" id="start" ${Object.keys(S.tische||{}).length?"":"disabled"}>▶ Alle Chats starten</button><button class="btn ghost sm" id="anderes">Anderes Thema</button></div></div>`;
+  }
+  function spiel(){
+    const sp=S.spieler||{};
+    return `<div class="card"><div class="row">${stufeKnopf()}<input type="text" id="msg" placeholder="Nachricht an alle …" style="flex:1;min-width:180px"><button class="btn sm" id="senden">📣 senden</button><button class="btn sm acc" id="beenden">🏁 Spiel beenden</button></div>
+        <div class="row small" style="margin-top:6px">${["Noch 5 Minuten!","Lest euren Chat laut vor!","Bitte nur Deutsch sprechen 🙂"].map(t=>`<button class="btn sm ghost" data-schnell="${esc(t)}">${esc(t)}</button>`).join("")}</div></div>
+      <div class="lgrid">${Object.entries(S.tische||{}).map(([t,T])=>{ const R=(S.runde||{})[t]; if(!R) return `<div class="card"><h3>${T.emoji} ${esc(T.name)}</h3><p class="muted">noch nicht gestartet</p><button class="btn sm" data-starte="${t}">▶ starten</button></div>`;
+        const kid=R.knoten==="__start"?TH.start:R.knoten; const fertig=TH.knoten[kid].ende; const pk=R.punkte||{};
+        return `<div class="card" style="margin:0;padding:12px"><h3>${T.emoji} ${esc(T.name)} <span class="small muted">· ${arr(R.verlauf).length} Nachrichten${R.nr?` · Chat ${R.nr+1}`:""}${fertig?" · ✅ fertig":""}</span></h3>
+          <div class="chips">${mitglieder(S,t).map(p=>`<span class="chip ${p===R.akteur?"dran":""} ${sp[p].online===false||!sp[p].ts?"off":""}">${esc(sp[p].name)} ${pk[p]||0}</span>`).join("")}</div>
+          ${chatHtml(S,TH,t,null)}
+          ${fertig?"":`<div class="row"><select data-dran="${t}"><option value="">Dran ist …</option>${mitglieder(S,t).map(p=>`<option value="${p}" ${p===R.akteur?"selected":""}>${esc(sp[p].name)}</option>`).join("")}</select><button class="btn sm ghost" data-skip="${t}">⏭ Spiel schreibt (0 P)</button></div>`}
+          ${R.versuche?`<div class="small muted">Fehlversuche gerade: ${R.versuche}</div>`:""}</div>`; }).join("")}</div>
+      <details class="card" style="margin-top:14px"><summary><b>Tische ändern</b> (Zuspätkommende, Wechsel)</summary><div style="margin-top:10px">${namenListe(false)}</div></details>`;
+  }
+  function ende(){
+    const sp=S.spieler||{}, max=Number(S.ligaMax)||15, ub=S.uebertragen||{};
+    const rows=[]; Object.entries(sp).forEach(([p,x])=>{ const R=x.tisch&&(S.runde||{})[x.tisch]; if(!R) return; rows.push({p, name:x.name, tisch:(S.tische[x.tisch]||{}), cp:(R.punkte||{})[p]||0, n:(R.anz||{})[p]||0}); });
+    const best=Math.max(1,...rows.map(r=>r.cp)); rows.sort((a,b)=>b.cp-a.cp);
+    return `<div class="card"><h2>🏁 Ergebnis</h2><p class="row"><button class="btn sm ghost" id="weiter">↩ weiterspielen lassen</button></p>
+      <p class="muted">Vorschlag: Die beste Person bekommt <input type="number" id="ligamax" value="${max}" style="width:70px"> Punkte, alle anderen im Verhältnis. Du kannst jede Zahl ändern.</p>
+      <table><tr><th>Name</th><th>Tisch</th><th>Nachrichten</th><th>Chat-Punkte</th><th>Punkte</th><th></th></tr>${rows.map(r=>`<tr><td>${esc(r.name)}</td><td>${r.tisch.emoji||""} ${esc(r.tisch.name||"")}</td><td>${r.n}</td><td>${r.cp}</td><td><input type="number" min="0" max="100" data-lp="${r.p}" value="${ub[r.p]!==undefined?ub[r.p]:Math.round(r.cp/best*max)}"></td><td>${ub[r.p]!==undefined?"✓ gespeichert":""}</td></tr>`).join("")}</table>
+      <p style="margin-top:12px"><button class="btn ok" id="uebertragen">⬆ Punkte speichern</button> <span id="ue-msg" class="muted"></span></p></div>
+      <div class="lgrid">${Object.keys(S.tische||{}).map(t=>chatHtml(S,TH,t,null,{ohneTippt:true})).join("")}</div>`;
+  }
+  function binden(){
+    const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+    $$("[data-da]").forEach(c=>c.onchange=()=>{ const p=c.dataset.da; C(`spieler/${p}`).update({da:c.checked, name:namen()[p]||"?"}); if(!c.checked) C(`spieler/${p}/tisch`).remove(); });
+    $$("[data-tisch]").forEach(c=>c.onchange=()=>{ const p=c.dataset.tisch; C(`spieler/${p}`).update({tisch:c.value||null, da:true, name:namen()[p]||"?"}); });
+    on("auslosen", ()=>{ const gr=Number($("#gr").value)||4, sp=S.spieler||{}; let da=Object.keys(sp).filter(p=>sp[p].da);
+      if(da.length<2){ alert("Zuerst müssen Personen „da“ sein."); return; }
+      if(Object.keys(S.tische||{}).length && !confirm("Die bisherigen Tische werden ersetzt. Weiter?")) return;
+      da=mische(da, Date.now()).sort((a,b)=>ligaTeam(a).localeCompare(ligaTeam(b)));
+      const n=Math.max(1,Math.ceil(da.length/gr)); const ti={}; for(let i=0;i<n;i++){ const v=TISCHE[i%TISCHE.length]; ti["t"+(i+1)]={name:v[0],emoji:v[1]}; }
+      C("tische").set(ti).then(()=>{ const u={}; da.forEach((p,i)=>u[`spieler/${p}/tisch`]="t"+((i%n)+1)); return C().update(u); }); });
+    on("plus", ()=>{ const n=Object.keys(S.tische||{}).length; const v=TISCHE[n%TISCHE.length]; C(`tische/t${Date.now().toString(36)}`).set({name:v[0]+" "+(n+1),emoji:v[1]}); });
+    $$("[data-weg]").forEach(b=>b.onclick=()=>{ const t=b.dataset.weg; const up={[`tische/${t}`]:null}; Object.entries(S.spieler||{}).forEach(([p,x])=>{ if(x.tisch===t) up[`spieler/${p}/tisch`]=null; }); C().update(up); });
+    $$("[data-stufe]").forEach(b=>b.onclick=()=>C("info/stufe").set(b.dataset.stufe));
+    on("start", ()=>{ const up={"info/phase":"spiel"}; Object.keys(S.tische||{}).forEach(t=>{ if(mitglieder(S,t).length) up[`runde/${t}`]=neueRunde(S,t,0); }); C().update(up); });
+    $$("[data-starte]").forEach(b=>b.onclick=()=>C(`runde/${b.dataset.starte}`).set(neueRunde(S,b.dataset.starte,0)));
+    on("anderes", ()=>{ if(confirm("Dieses Spiel verlassen?")){ C().off(); try{localStorage.removeItem("chat_leitung_pin");}catch(e){} PIN=""; TH=null; history.replaceState(null,"","?leitung=1"); menue(); } });
+    on("senden", ()=>{ const t=$("#msg").value.trim(); if(t){ C("nachricht").set({text:t, ts:jetzt()}); $("#msg").value=""; } });
+    $$("[data-schnell]").forEach(b=>b.onclick=()=>C("nachricht").set({text:b.dataset.schnell, ts:jetzt()}));
+    on("beenden", ()=>{ if(confirm("Spiel beenden? Danach vergibst du die Punkte.")) C("info/phase").set("ende"); });
+    on("weiter", ()=>C("info/phase").set("spiel"));
+    $$("[data-dran]").forEach(s=>s.onchange=()=>{ if(s.value) C(`runde/${s.dataset.dran}/akteur`).set(s.value); });
+    $$("[data-skip]").forEach(b=>b.onclick=()=>{ const t=b.dataset.skip; C(`runde/${t}`).transaction(cur=>{ if(!cur) return; const kid=cur.knoten==="__start"?TH.start:cur.knoten; const K=TH.knoten[kid]; if(K.ende) return;
+      const i=Math.floor(Math.random()*K.optionen.length), o=K.optionen[i]; const v=arr(cur.verlauf); v.push({p:cur.akteur, k:kid, o:i, ts:Date.now(), auto:true}); cur.verlauf=v;
+      cur.knoten=o.weiter; cur.zug=(cur.zug||0)+1; cur.versuche=0; cur.akteur=TH.knoten[o.weiter].ende?null:naechster(S,t,cur.zug); return cur; }); });
+    const lm=$("#ligamax"); if(lm) lm.onchange=()=>C("ligaMax").set(Math.max(1,Math.min(100,Number(lm.value)||15)));
+    on("uebertragen", uebertragen);
+    $$("#app input, #app select").forEach(el=>el.addEventListener("blur", ()=>{ if(warte){ warte=false; setTimeout(male,50); } }));
+    $$(".wa-body").forEach(b=>b.scrollTop=b.scrollHeight);
+  }
+  async function uebertragen(){
+    const msg=$("#ue-msg"); msg.textContent="Speichere …";
+    try{ const pub2=(await db.ref(`${BASE}/public`).once("value")).val()||{}; const runde=pub2.round&&pub2.round.id; const key="live-chat-"+TH.id;
+      const werte={}; $$("[data-lp]").forEach(i=>werte[i.dataset.lp]=Math.max(0,Math.min(100,Math.round(Number(i.value)||0))));
+      const up={}, ts=TS();
+      Object.entries(werte).forEach(([pid,p])=>{ if(runde){ up[`live/${runde}/${pid}/${key}`]=p; up[`proof/${runde}/${pid}/${key}`]={code:"lehrkraft",points:p,ts}; }
+        up[`log/${pid}/chat-${PIN}`]={key:"chat-"+TH.id, titel:"Chat-Spiel: "+TH.titel, art:"chat", p, max:Number(S.ligaMax)||15, ts, pin:PIN}; });
+      await db.ref(BASE).update(up); await C("uebertragen").set(werte);
+      msg.textContent=`✓ Gespeichert für ${Object.keys(werte).length} Personen.`;
+    }catch(e){ console.warn(e); msg.textContent="Fehler beim Speichern: "+(e.message||e); }
+  }
+}
+
+MODUS==="leitung" ? leitung() : MODUS==="leinwand" ? leinwand() : spieler();
+</script>
+</body>
+</html>
