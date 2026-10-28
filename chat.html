@@ -82,6 +82,9 @@ td input[type=number]{width:80px;min-height:38px}
 .kachel{border:0;background:var(--pri-2);color:var(--ink);border-radius:10px;min-height:42px;padding:6px 12px;font-weight:700;cursor:pointer;font-size:16px}
 .zeile .kachel{background:var(--pri);color:#fff;min-height:36px;padding:4px 10px}
 .kachel.weg{visibility:hidden}
+.kachel.falsch{background:var(--bad);color:#fff;animation:wackeln .35s}
+@keyframes wackeln{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.slot{display:inline-block;width:34px;height:30px;border-bottom:3px solid var(--line);margin:0 2px}
 .feedback{border-radius:12px;padding:10px 14px;margin:8px 0;font-weight:700;background:var(--bad-2);color:var(--bad)}
 .punkte-leiste{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 /* Leinwand */
@@ -130,6 +133,7 @@ const TISCHE = [["Pizza","🍕"],["Kuchen","🎂"],["Ballon","🎈"],["Geschenk"
 const NAMEFARBEN = ["#C2410C","#7C3AED","#0E7490","#BE185D","#4D7C0F","#B45309"];
 const ART = {frage:["❓","Frage"], vorschlag:["💡","Vorschlag"], ja:["👍","Ja"], nein:["👎","Nein"], info:["ℹ️","Info"]};
 const PUNKTE = [10,6,3];
+const punkteBei = v => Math.max(3, 10 - 2*(Number(v)||0));
 const FUELL = ["nicht","auch","heute","sehr","gern","der","den","dem","bin","bist","hast","sind","mit","für","um","am","in","noch","schon","oft"];
 
 let db=null, auth=null, offset=0;
@@ -159,6 +163,13 @@ function salat(K, seed, stufe){
   for(const w of extra){ if(pool.length>=ziel) break; pool.push(w); }
   return mische(pool, seed);
 }
+function salatEinzel(o, extra, seed, stufe){
+  const pool=woerter(o.t).slice();
+  if(stufe==="mittel"){ const ex=mische((extra||[]).concat(FUELL).filter(w=>!pool.includes(w)), seed+"x").slice(0,3); pool.push(...ex); }
+  return mische(pool, seed);
+}
+const varianten = o => [o.t].concat(o.alt||[]).map(woerter);
+function naechsteWoerter(o, ws){ return [...new Set(varianten(o).filter(v=>ws.every((w,i)=>v[i]===w)).map(v=>v[ws.length]).filter(Boolean))]; }
 const bag = ws => { const c={}; ws.forEach(w=>c[w]=(c[w]||0)+1); return c; };
 function abstand(a,b){ const A=bag(a), B=bag(b); let d=0; new Set([...Object.keys(A),...Object.keys(B)]).forEach(w=>d+=Math.abs((A[w]||0)-(B[w]||0))); return d; }
 function pruefe(K, ws){
@@ -192,7 +203,7 @@ function chatHtml(S, TH, t, me, opt={}){
    TEILNEHMENDE
    ========================================================= */
 function spieler(){
-  const app=$("#app"); let me=null, S=null, TH=null, gebaut=[], gebautFuer="", tipps=0, meldung="", gescrollt="";
+  const app=$("#app"); let me=null, S=null, TH=null, gebaut=[], gebautFuer="", tipps=0, meldung="", gescrollt="", wahl=null, falschKachel=null;
   try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
   function pinScreen(f){
     app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">💬</div><h2>Chat-Spiel</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
@@ -238,7 +249,7 @@ function spieler(){
   function zeichne(){
     const t=meinTisch(), R=S.runde[t], T=S.tische[t];
     const kid = R.knoten==="__start" ? TH.start : R.knoten; const K=TH.knoten[kid];
-    const stamp=t+"|"+kid+"|"+R.zug+"|"+(R.nr||0); if(stamp!==gebautFuer){ gebaut=[]; tipps=0; meldung=""; gebautFuer=stamp; }
+    const stamp=t+"|"+kid+"|"+R.zug+"|"+(R.nr||0); if(stamp!==gebautFuer){ gebaut=[]; tipps=0; meldung=""; gebautFuer=stamp; wahl=null; }
     const sp=S.spieler||{}; const pk=R.punkte||{};
     const msg = S.nachricht && S.nachricht.ts>jetzt()-5*60000 ? `<div class="nachricht">📣 ${esc(S.nachricht.text)}</div>` : "";
     let unten="";
@@ -248,16 +259,27 @@ function spieler(){
     } else if(S.info.phase==="ende"){
       unten=`<div class="komp"><b>Das Spiel ist beendet.</b></div>`;
     } else if(R.akteur===me.pid){
-      const pool=salat(K, PIN+t+kid+R.zug+(R.nr||0), S.info.stufe);
-      const zeigK = S.info.stufe!=="schwer" || tipps>0;
-      unten=`<div class="komp"><div class="dran-titel">✍️ Du bist dran!</div><div>${esc(K.aufgabe)}</div>
-        <div class="ideen">${K.optionen.map(o=>`<span class="idee">${ART[o.art][0]} ${ART[o.art][1]}${zeigK?": "+esc(o.k):""}</span>`).join("")}</div>
-        <div class="eingabe"><div class="zeile">${gebaut.length?gebaut.map((pi,j)=>`<button class="kachel" data-raus="${j}">${esc(pool[pi])}</button>`).join(""):`<span class="leer">Tippe Wörter an …</span>`}</div>
-          <button class="senden" id="senden" ${gebaut.length?"":"disabled"} aria-label="senden">➤</button></div>
-        ${meldung?`<div class="feedback">${esc(meldung)}</div>`:""}
-        <div class="kacheln">${pool.map((w,i)=>`<button class="kachel ${gebaut.includes(i)?"weg":""}" data-rein="${i}">${esc(w)}</button>`).join("")}</div>
-        <div class="row"><button class="btn sm ghost" id="zurueck">↺ alles zurück</button><button class="btn sm ghost" id="tipp">💡 Tipp</button>
-          <span class="small muted">Versuche: ${R.versuche||0} · jetzt ${PUNKTE[Math.min(R.versuche||0,2)]} Punkte</span></div></div>`;
+      const stufe=S.info.stufe||"leicht";
+      if(stufe!=="schwer" && wahl===null){
+        unten=`<div class="komp"><div class="dran-titel">✍️ Du bist dran!</div><div>${esc(K.aufgabe)}</div>
+          <p class="small muted" style="margin:10px 0 6px"><b>1.</b> Was möchtest du schreiben? Wähle eine Idee:</p>
+          <div style="display:grid;gap:8px">${K.optionen.map((o,i)=>`<button class="btn ghost" style="justify-content:flex-start;text-align:left" data-wahl="${i}">${ART[o.art][0]} ${ART[o.art][1]}: ${esc(o.k)}</button>`).join("")}</div></div>`;
+      } else {
+        const o = wahl!==null ? K.optionen[wahl] : null;
+        const pool=pool_(K,t,kid,R);
+        const n = o ? woerter(o.t).length : 0;
+        const zeigK = stufe!=="schwer" || tipps>0;
+        unten=`<div class="komp"><div class="dran-titel">✍️ Du bist dran!</div><div>${esc(K.aufgabe)}</div>
+          ${o?`<div class="row" style="margin:8px 0"><span class="idee">${ART[o.art][0]} ${ART[o.art][1]}: ${esc(o.k)}</span><button class="btn sm ghost" id="andere">↩ andere Idee</button></div>
+            <p class="small muted" style="margin:0 0 4px"><b>2.</b> ${stufe==="leicht"?`Tippe die Wörter in der richtigen Reihenfolge an (${n} Wörter). Falsche Wörter springen zurück.`:`Bau den Satz (${n} Wörter). Achtung: Es gibt auch Wörter, die nicht passen.`}</p>`
+            :`<div class="ideen">${K.optionen.map(x=>`<span class="idee">${ART[x.art][0]} ${ART[x.art][1]}${zeigK?": "+esc(x.k):""}</span>`).join("")}</div>`}
+          <div class="eingabe"><div class="zeile">${gebaut.length?gebaut.map((pi,j)=>`<button class="kachel" data-raus="${j}">${esc(pool[pi])}</button>`).join(""):`<span class="leer">Tippe Wörter an …</span>`}${o&&stufe==="leicht"?Array.from({length:Math.max(0,n-gebaut.length)},()=>`<span class="slot"></span>`).join(""):""}</div>
+            <button class="senden" id="senden" ${gebaut.length?"":"disabled"} aria-label="senden">➤</button></div>
+          ${meldung?`<div class="feedback">${esc(meldung)}</div>`:""}
+          <div class="kacheln">${pool.map((w,i)=>`<button class="kachel ${gebaut.includes(i)?"weg":""} ${falschKachel===i?"falsch":""}" data-rein="${i}">${esc(w)}</button>`).join("")}</div>
+          <div class="row"><button class="btn sm ghost" id="zurueck">↺ alles zurück</button><button class="btn sm ghost" id="tipp">💡 Tipp (nächstes Wort)</button>
+            <span class="small muted">Versuche: ${R.versuche||0} · jetzt ${punkteBei(R.versuche)} Punkte</span></div></div>`;
+      }
     } else {
       const ak=sp[R.akteur]||{};
       unten=`<div class="komp"><b>${esc(ak.name||"…")}</b> ist dran und schreibt. Helft ruhig mit – aber nur auf Deutsch! 😉
@@ -271,30 +293,44 @@ function spieler(){
     if(R.akteur===me.pid && gescrollt!==stamp){ gescrollt=stamp; const k=$(".komp"); if(k&&k.scrollIntoView) setTimeout(()=>k.scrollIntoView({behavior:"smooth",block:"start"}),80); }
     binden(pool_(K,t,kid,R));
   }
-  const pool_ = (K,t,kid,R) => K.ende?[]:salat(K, PIN+t+kid+R.zug+(R.nr||0), S.info.stufe);
+  const pool_ = (K,t,kid,R) => { if(K.ende) return []; const seed=PIN+t+kid+R.zug+(R.nr||0); const st=S.info.stufe||"leicht";
+    return (st!=="schwer" && wahl!==null) ? salatEinzel(K.optionen[wahl], K.extra, seed+"w"+wahl, st) : salat(K, seed, st); };
   function binden(pool){
     const t=meinTisch(), R=S.runde[t]; const kid=R.knoten==="__start"?TH.start:R.knoten; const K=TH.knoten[kid];
-    $$("[data-rein]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.rein; if(!gebaut.includes(i)){ gebaut.push(i); meldung=""; zeichne(); } });
+    const stufe=S.info.stufe||"leicht"; const o = wahl!==null ? K.optionen[wahl] : null;
+    $$("[data-wahl]").forEach(b=>b.onclick=()=>{ wahl=+b.dataset.wahl; gebaut=[]; meldung=""; zeichne(); });
+    const an=$("#andere"); if(an) an.onclick=()=>{ wahl=null; gebaut=[]; meldung=""; zeichne(); };
+    $$("[data-rein]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.rein; if(gebaut.includes(i)) return;
+      if(o && stufe==="leicht"){ const erlaubt=naechsteWoerter(o, gebaut.map(j=>pool[j]));
+        if(!erlaubt.includes(pool[i])){ meldung="✋ Nicht dieses Wort – welches Wort kommt jetzt?"; falschKachel=i; C(`runde/${t}/versuche`).transaction(v=>(v||0)+1); zeichne(); setTimeout(()=>{ falschKachel=null; },700); return; }
+        gebaut.push(i); meldung=""; falschKachel=null;
+        if(gebaut.length===woerter(o.t).length){ zeichne(); const sd=$("#senden"); if(sd) setTimeout(()=>sd.click(),350); return; }
+        zeichne(); return; }
+      gebaut.push(i); meldung=""; zeichne(); });
     $$("[data-raus]").forEach(b=>b.onclick=()=>{ gebaut.splice(+b.dataset.raus,1); zeichne(); });
     const z=$("#zurueck"); if(z) z.onclick=()=>{ gebaut=[]; meldung=""; zeichne(); };
     const tp=$("#tipp"); if(tp) tp.onclick=()=>{
-      if(S.info.stufe==="schwer" && tipps===0){ tipps=1; zeichne(); return; }
+      if(stufe==="schwer" && tipps===0){ tipps=1; zeichne(); return; }
       tipps++;
       const ws=gebaut.map(i=>pool[i]);
-      let best=K.optionen[0], bl=-1; K.optionen.forEach(o=>{ const ow=woerter(o.t); let l=0; while(l<ws.length&&l<ow.length&&ws[l]===ow[l]) l++; if(l>bl){ bl=l; best=o; } });
+      let best=o||K.optionen[0], bl=-1; (o?[o]:K.optionen).forEach(x=>{ const ow=woerter(x.t); let l=0; while(l<ws.length&&l<ow.length&&ws[l]===ow[l]) l++; if(l>bl){ bl=l; best=x; } });
       const ow=woerter(best.t); gebaut=gebaut.slice(0,bl);
       if(bl<ow.length){ const frei=pool.findIndex((w,i)=>w===ow[bl]&&!gebaut.includes(i)); if(frei>=0) gebaut.push(frei); }
       meldung=""; C(`runde/${t}/versuche`).transaction(v=>(v||0)+1); zeichne();
     };
     const sd=$("#senden"); if(sd) sd.onclick=()=>{
-      const ws=gebaut.map(i=>pool[i]); const r=pruefe(K, ws);
-      if(!r.ok){ meldung = r.art==="reihenfolge" ? "🔄 Alle Wörter stimmen – nur die Reihenfolge noch nicht." : r.art==="fast" ? "🤏 Fast! Ein oder zwei Wörter passen noch nicht." : "✋ Diese Nachricht passt hier nicht. Schau dir die Ideen oben an.";
+      const ws=gebaut.map(i=>pool[i]); let r;
+      if(o){ const ok=varianten(o).some(v=>v.join(" ")===ws.join(" ")); r = ok ? {ok:true, i:wahl} : {ok:false, art: abstand(woerter(o.t),ws)===0?"reihenfolge":"fast"}; }
+      else r=pruefe(K, ws);
+      if(!r.ok){ let richtig=0; if(o){ const v=woerter(o.t); while(richtig<ws.length && ws[richtig]===v[richtig]) richtig++; }
+        meldung = r.art==="reihenfolge" ? "🔄 Alle Wörter stimmen – nur die Reihenfolge noch nicht." + (o&&richtig?` Die ersten ${richtig} Wörter sind schon richtig.`:"") : r.art==="fast" ? (o?`🤏 Noch nicht ganz.${richtig?` Die ersten ${richtig} Wörter stimmen.`:""} Prüf die anderen Wörter.`:"🤏 Fast! Ein oder zwei Wörter passen noch nicht.") : "✋ Diese Nachricht passt hier nicht. Schau dir die Ideen oben an.";
+        if(o) gebaut=gebaut.slice(0,richtig);
         C(`runde/${t}/versuche`).transaction(v=>(v||0)+1); zeichne(); return; }
-      const o=K.optionen[r.i]; const zug=R.zug;
+      const ziel=K.optionen[r.i]; const zug=R.zug;
       C(`runde/${t}`).transaction(cur=>{ if(!cur || cur.zug!==zug || (cur.knoten==="__start"?TH.start:cur.knoten)!==kid) return;
         const v=arr(cur.verlauf); v.push({p:me.pid, k:kid, o:r.i, ts:Date.now()}); cur.verlauf=v;
-        cur.punkte=cur.punkte||{}; cur.punkte[me.pid]=(cur.punkte[me.pid]||0)+PUNKTE[Math.min(cur.versuche||0,2)]; cur.anz=cur.anz||{}; cur.anz[me.pid]=(cur.anz[me.pid]||0)+1;
-        cur.knoten=o.weiter; cur.zug=zug+1; cur.versuche=0; cur.akteur = TH.knoten[o.weiter].ende ? null : naechster(S,t,zug+1); return cur; });
+        cur.punkte=cur.punkte||{}; cur.punkte[me.pid]=(cur.punkte[me.pid]||0)+punkteBei(cur.versuche); cur.anz=cur.anz||{}; cur.anz[me.pid]=(cur.anz[me.pid]||0)+1;
+        cur.knoten=ziel.weiter; cur.zug=zug+1; cur.versuche=0; cur.akteur = TH.knoten[ziel.weiter].ende ? null : naechster(S,t,zug+1); return cur; });
       gebaut=[];
     };
     const nm=$("#nochmal"); if(nm) nm.onclick=()=>{ const nr=(R.nr||0)+1; C(`runde/${t}`).transaction(cur=>{ if(!cur||(cur.nr||0)!==nr-1) return; return neueRunde(S,t,nr,cur.punkte,cur.anz); }); };
@@ -380,7 +416,7 @@ function leitung(){
   function namenListe(mitDa){ const sp=S.spieler||{};
     return `<div class="namen">${Object.keys(namen()).sort((a,b)=>String(namen()[a]).localeCompare(namen()[b])).map(p=>{ const x=sp[p]||{};
       return `<label class="nm">${mitDa?`<input type="checkbox" data-da="${p}" ${x.da?"checked":""}>`:""}<span>${esc(namen()[p])} ${x.ts?(x.online===false?"📴":"📱"):""}</span><span class="small muted">${esc(ligaTeam(p))}</span>${tischSel(p,x.tisch)}</label>`; }).join("")}</div>`; }
-  function stufeKnopf(){ return `<span class="row"><b>Stufe:</b><button class="btn sm ${S.info.stufe!=="schwer"?"":"ghost"}" data-stufe="leicht">leicht (Ideen sichtbar, wenig Extra-Wörter)</button><button class="btn sm ${S.info.stufe==="schwer"?"":"ghost"}" data-stufe="schwer">schwer</button></span>`; }
+  function stufeKnopf(){ const st=S.info.stufe||"leicht"; return `<span class="row"><b>Stufe:</b>${[["leicht","leicht – Idee wählen, Wort für Wort mit Hilfe"],["mittel","mittel – Idee wählen, Satz selbst bauen"],["schwer","schwer – alle Wörter gemischt"]].map(([k,t])=>`<button class="btn sm ${st===k?"":"ghost"}" data-stufe="${k}">${t}</button>`).join("")}</span>`; }
   function lobby(){
     const sp=S.spieler||{}; const da=Object.values(sp).filter(x=>x.da).length;
     return `<div class="card"><h2>1 · Wer ist heute da?</h2><p class="muted">Die Jugendlichen öffnen <b>${esc(LIVE_URL.replace(/^https?:\/\//,""))}</b>, geben PIN <b>${PIN}</b> und ihren Code ein (oder QR auf der Leinwand). Ohne Handy: Haken setzen und mit einem Tisch-Handy mitspielen lassen.</p>${namenListe(true)}<p class="small muted">${da} Personen da.</p></div>
