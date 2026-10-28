@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Abstimmung – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --gold:#F5B82E; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45;min-height:100vh}
+button,input,textarea,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:680px;margin:0 auto;padding:16px 16px 60px}
+.wrap.weit{max-width:1180px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:36px;padding:6px 12px;font-size:15px}
+.btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.acc{background:var(--acc)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+input[type=text],input[type=email],input[type=password],textarea{width:100%;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:#fff}
+textarea{min-height:130px}
+.pin-in{font-family:var(--head);font-size:34px;letter-spacing:.3em;text-align:center}
+.topbar{background:var(--ink);color:#fff;position:sticky;top:0;z-index:10}
+.topbar .in{max-width:1180px;margin:0 auto;padding:8px 16px;display:flex;gap:10px;align-items:center;min-height:56px;flex-wrap:wrap}
+.topbar b{font-family:var(--head);font-size:19px}
+.chip{display:inline-flex;border-radius:999px;padding:3px 10px;font-weight:700;font-size:14px;background:var(--line)}
+.vorlagen{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
+.schalter{display:flex;gap:10px;align-items:center;margin:6px 0}
+.schalter input{width:20px;height:20px}
+/* Abstimmen */
+.wahl{display:grid;gap:10px}
+.wahl button{border:2px solid var(--line);background:#fff;border-radius:16px;min-height:62px;padding:10px 16px;font-size:19px;font-weight:700;text-align:left;cursor:pointer;display:flex;gap:12px;align-items:center}
+.wahl button .b{width:34px;height:34px;border-radius:10px;background:var(--pri-2);color:var(--pri);display:flex;align-items:center;justify-content:center;font-family:var(--head);flex:none}
+.wahl button.an{border-color:var(--pri);background:var(--pri-2)}
+.wahl button.an .b{background:var(--pri);color:#fff}
+/* Ergebnis */
+.balken{display:grid;gap:10px}
+.bz{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+.bz .t{font-weight:700}
+.bz .z{font-family:var(--head);font-weight:800}
+.bz .s{grid-column:1/3;height:16px;background:var(--line);border-radius:8px;overflow:hidden}
+.bz .s i{display:block;height:100%;border-radius:8px;background:var(--pri);transition:width .4s}
+.bz.top .s i{background:var(--acc)}
+.namen{grid-column:1/3;font-size:13px;color:var(--muted)}
+/* Leinwand */
+body.lw{background:var(--ink);color:#fff}
+.lw .card{background:#26365A;color:#fff;box-shadow:none}
+.lw .bz .s{height:46px;border-radius:12px;background:rgba(255,255,255,.1)}
+.lw .bz .s i{border-radius:12px}
+.lw .bz .t{font-size:30px} .lw .bz .z{font-size:34px;color:var(--gold)}
+.lwpin{font-family:var(--head);font-weight:800;font-size:min(18vw,96px);letter-spacing:.1em;color:var(--gold);line-height:1}
+#qr img,#qr canvas{background:#fff;padding:10px;border-radius:12px}
+.verlauf details{border-bottom:1px solid var(--line);padding:8px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* =========================================================
+   ABSTIMMUNG · ?leitung=1 (Lehrkraft) · ?rolle=leinwand&pin= · ?pin= (Jugendliche)
+   Daten: ligavote/ploen-jik/{pin}: info, frage, stimmen/{frageId}/{pid}, verlauf/{frageId}
+   ========================================================= */
+const KURS="ploen-jik", BASE=`jugendliga/${KURS}`, CODE_KEY=`liga_code_${KURS}`, VROOT=`ligavote/${KURS}`;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash",storageBucket:"lern-deutsch-arash.firebasestorage.app",messagingSenderId:"845503292114",appId:"1:845503292114:web:f76ab5fcde1e978d00c30b"};
+const P=new URLSearchParams(location.search);
+const MODUS=P.get("leitung")?"leitung":(P.get("rolle")==="leinwand"?"leinwand":"spieler");
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const BUCH="ABCDEFGHIJ";
+const BASIS_URL=location.href.replace(/[?#].*$/,""), LIVE_URL=BASIS_URL.replace(/[^\/]*$/,"")+"live.html";
+let db=null, auth=null; try{ firebase.initializeApp(cfg); db=firebase.database(); auth=firebase.auth(); }catch(e){}
+const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+let PIN=(P.get("pin")||"").replace(/\D/g,"");
+const V=p=>db.ref(`${VROOT}/${PIN}${p?"/"+p:""}`);
+const VORLAGEN=[["Ja / Nein","Ja\nNein"],["Ja / Nein / Weiß nicht","Ja\nNein\nWeiß nicht"],["😀 😐 🙁","😀 gut\n😐 geht so\n🙁 nicht gut"],["A B C D","A\nB\nC\nD"],["1–5","1\n2\n3\n4\n5"]];
+
+/* Auswertung einer Frage */
+function zaehlen(F, stimmen){
+  const n=(F.optionen||[]).map(()=>0), wer=(F.optionen||[]).map(()=>[]); let personen=0;
+  Object.values(stimmen||{}).forEach(s=>{ const o=Array.isArray(s.o)?s.o:Object.values(s.o||{}); if(!o.length) return; personen++; o.forEach(i=>{ if(n[i]!==undefined){ n[i]++; wer[i].push(s.name||"?"); } }); });
+  return {n, wer, personen, max:Math.max(1,...n)};
+}
+function balkenHtml(F, stimmen, mitNamen){
+  const z=zaehlen(F, stimmen); const top=Math.max(...z.n);
+  return `<div class="balken">${F.optionen.map((t,i)=>{ const pz=z.personen?Math.round(z.n[i]/z.personen*100):0;
+    return `<div class="bz ${z.n[i]&&z.n[i]===top?"top":""}"><span class="t">${BUCH[i]} · ${esc(t)}</span><span class="z">${z.n[i]} <span class="small" style="opacity:.7">(${pz} %)</span></span><span class="s"><i style="width:${z.n[i]/z.max*100}%"></i></span>${mitNamen&&z.wer[i].length?`<span class="namen">${z.wer[i].map(esc).join(", ")}</span>`:""}</div>`; }).join("")}</div>
+    <p class="small" style="opacity:.75;margin:10px 0 0">${z.personen} ${z.personen===1?"Stimme":"Stimmen"}</p>`;
+}
+
+/* =========================================================
+   JUGENDLICHE
+   ========================================================= */
+function spieler(){
+  const app=$("#app"); let me=null, S=null, wahl=[], fuer="";
+  try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+  function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🗳️</div><h2>Abstimmung</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
+    <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefe(); }; }
+  async function pruefe(){ if(PIN.length!==4) return pinScreen(PIN?"Die PIN hat 4 Ziffern.":"");
+    try{ const i=(await V("info").once("value")).val(); if(!i) return pinScreen("Diese PIN gibt es nicht."); history.replaceState(null,"","?pin="+PIN); me?los():codeScreen(); }catch(e){ pinScreen("Keine Verbindung."); } }
+  function codeScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🔑</div><h2>Dein Code</h2><p class="muted">Damit jede Person nur einmal abstimmt.</p>
+    <form id="cf"><input id="code" class="pin-in" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn wide" style="margin-top:10px">Los</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#cf").onsubmit=async e=>{ e.preventDefault(); const code=$("#code").value.toUpperCase().replace(/[^A-Z0-9]/g,""); if(code.length<4) return codeScreen("Der Code hat mindestens 4 Zeichen.");
+      try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val(); if(!c||!c.pid) return codeScreen("Diesen Code gibt es nicht.");
+        const n=(await db.ref(`${BASE}/public/names/${c.pid}`).once("value")).val(); me={code,pid:c.pid,name:n||c.name||"?"}; localStorage.setItem(CODE_KEY,JSON.stringify(me)); los(); }catch(err){ codeScreen("Keine Verbindung."); } }; }
+  function los(){ V(`dabei/${me.pid}`).set({name:me.name, ts:TS()}); V().on("value", s=>{ S=s.val()||{}; male(); }); }
+  function male(){
+    const F=S.frage; const kopf=`<div class="topbar"><div class="in" style="max-width:680px"><b>🗳️ Abstimmung</b><span class="chip" style="margin-left:auto;background:rgba(255,255,255,.12);color:#fff">${esc(me.name)}</span></div></div>`;
+    if(!F||!F.id){ app.innerHTML=kopf+`<div class="wrap"><div class="card" style="text-align:center"><div style="font-size:50px">⏳</div><h2>Gleich geht es los</h2><p class="muted">Warte auf die Frage von deiner Lehrkraft.</p></div></div>`; return; }
+    if(fuer!==F.id){ fuer=F.id; wahl=[]; }
+    const st=(S.stimmen||{})[F.id]||{}; const meine=st[me.pid]; const offen=S.info&&S.info.phase==="offen";
+    const zeigen = F.zeigen==="sofort" || (F.zeigen==="ende" && !offen);
+    let h=`<div class="card"><h2 style="font-size:26px">${esc(F.text)}</h2>${F.mehrfach?`<p class="small muted" style="margin:0 0 8px">Du kannst mehrere Antworten wählen.</p>`:""}`;
+    if(meine && !(offen && meine.aendern)){
+      h+=`<div style="background:var(--ok-2);color:var(--ok);border-radius:12px;padding:12px 14px;font-weight:700">✓ Deine Stimme: ${(Array.isArray(meine.o)?meine.o:Object.values(meine.o||{})).map(i=>esc(F.optionen[i])).join(", ")}</div>
+        ${offen?`<p style="margin:10px 0 0"><button class="btn sm ghost" id="aendern">Stimme ändern</button></p>`:""}`;
+    } else if(!offen){
+      h+=`<p class="muted">Die Abstimmung ist beendet.</p>`;
+    } else {
+      h+=`<div class="wahl">${F.optionen.map((t,i)=>`<button class="${wahl.includes(i)?"an":""}" data-o="${i}"><span class="b">${BUCH[i]}</span>${esc(t)}</button>`).join("")}</div>
+        <button class="btn wide acc" id="abgeben" style="margin-top:12px;min-height:54px" ${wahl.length?"":"disabled"}>Abstimmen ✓</button>`;
+    }
+    h+=`</div>`;
+    if(zeigen) h+=`<div class="card"><h3>Ergebnis</h3>${balkenHtml(F, st, false)}</div>`;
+    else h+=`<p class="small muted" style="text-align:center">Das Ergebnis siehst du auf der Leinwand.</p>`;
+    app.innerHTML=kopf+`<div class="wrap">${h}</div>`;
+    $$("[data-o]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.o; if(F.mehrfach){ wahl=wahl.includes(i)?wahl.filter(x=>x!==i):wahl.concat(i); } else wahl=[i]; male(); });
+    const ab=$("#abgeben"); if(ab) ab.onclick=()=>V(`stimmen/${F.id}/${me.pid}`).set({o:wahl.slice().sort(), name:me.name, ts:TS()});
+    const ae=$("#aendern"); if(ae) ae.onclick=()=>{ wahl=(Array.isArray(meine.o)?meine.o:Object.values(meine.o||{})).slice(); V(`stimmen/${F.id}/${me.pid}/aendern`).set(true); };
+  }
+  if(!db){ app.innerHTML="Keine Verbindung."; return; }
+  PIN?pruefe():pinScreen();
+}
+
+/* =========================================================
+   LEINWAND
+   ========================================================= */
+function leinwand(){
+  document.body.classList.add("lw"); const app=$("#app"); let qr=false;
+  if(!PIN){ app.innerHTML="Öffne die Leinwand über die Leitung."; return; }
+  V().on("value", s=>{ const S=s.val(); if(!S||!S.info){ app.innerHTML=`<div class="wrap">Keine Abstimmung mit PIN ${esc(PIN)}.</div>`; return; } male(S); });
+  function male(S){
+    const F=S.frage, dabei=Object.keys(S.dabei||{}).length;
+    const seite=`<div class="card" style="text-align:center"><div style="font-size:20px">Handy: <b>${esc(LIVE_URL.replace(/^https?:\/\//,""))}</b></div><div id="qr" style="display:flex;justify-content:center;margin:12px 0"></div><div>PIN</div><div class="lwpin">${PIN}</div><div style="margin-top:8px;opacity:.8">${dabei} dabei</div></div>`;
+    if(!F||!F.id){ app.innerHTML=`<div class="wrap weit"><h1 style="font-size:52px;margin-top:4vh">🗳️ Abstimmung</h1><div style="max-width:460px">${seite}</div></div>`; qr=false; }
+    else { const st=(S.stimmen||{})[F.id]||{}; const offen=S.info.phase==="offen"; const z=zaehlen(F,st);
+      const zeigen = F.zeigen!=="nie" || !offen || S.info.aufdecken;
+      app.innerHTML=`<div class="wrap weit"><div style="display:grid;grid-template-columns:1fr 340px;gap:24px;margin-top:2vh;align-items:start">
+        <div><h1 style="font-size:46px">${esc(F.text)}</h1><p style="font-size:20px;opacity:.8">${offen?`🟢 Abstimmung läuft · ${z.personen} von ${dabei} haben abgestimmt`:`🔒 Abstimmung beendet · ${z.personen} Stimmen`}</p>
+        ${zeigen?balkenHtml(F,st,false):`<div class="card" style="font-size:26px;text-align:center">🙈 Das Ergebnis kommt am Ende!</div>`}</div>${seite}</div></div>`; qr=false; }
+    if(!qr){ qr=true; try{ new QRCode($("#qr"),{text:BASIS_URL+"?pin="+PIN,width:180,height:180}); }catch(e){} }
+  }
+}
+
+/* =========================================================
+   LEITUNG
+   ========================================================= */
+function leitung(){
+  const app=$("#app"); let S=null, entwurf={text:"", optionen:"Ja\nNein", mehrfach:false, zeigen:"ende", namen:false};
+  if(!auth){ app.innerHTML="Keine Verbindung."; return; }
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>🗳️ Abstimmung leiten</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  async function start(){
+    if(!PIN){ try{ PIN=localStorage.getItem("vote_leitung_pin")||""; }catch(e){} }
+    if(PIN){ const i=(await V("info").once("value")).val(); if(!i) PIN=""; }
+    if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${VROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
+      await V().set({info:{phase:"warten", erstellt:TS(), pin:PIN}}); }
+    try{ localStorage.setItem("vote_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
+    V().on("value", s=>{ S=s.val()||{}; male(); });
+  }
+  function male(){
+    const ae=document.activeElement; if(ae && /INPUT|TEXTAREA/.test(ae.tagName) && app.contains(ae)) return;
+    const F=S.frage, offen=S.info&&S.info.phase==="offen", dabei=Object.keys(S.dabei||{}).length;
+    const lw=BASIS_URL+"?rolle=leinwand&pin="+PIN;
+    let h=`<div class="topbar"><div class="in"><b>🗳️ Abstimmung</b><span class="chip" style="background:var(--gold)">PIN ${PIN}</span><span class="chip" style="background:rgba(255,255,255,.12);color:#fff">${dabei} dabei</span>
+      <span style="margin-left:auto" class="row"><a class="btn sm gold" href="${lw}" target="_blank">🖥️ Leinwand öffnen</a><button class="btn sm ghost" id="neu-sitzung">Neue PIN</button></span></div></div><div class="wrap weit"><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;align-items:start">`;
+    if(F&&F.id){ const st=(S.stimmen||{})[F.id]||{};
+      h+=`<div class="card"><div class="small muted">${offen?"🟢 läuft":"🔒 beendet"}</div><h2>${esc(F.text)}</h2>${balkenHtml(F, st, !!F.namen)}
+        <div class="row" style="margin-top:14px">${offen?`<button class="btn acc" id="schliessen">🔒 Abstimmung beenden</button>`:`<button class="btn ghost" id="oeffnen">🔓 wieder öffnen</button>`}
+        ${F.zeigen==="nie"&&!S.info.aufdecken?`<button class="btn gold" id="aufdecken">👀 Ergebnis auf der Leinwand zeigen</button>`:""}</div></div>`; }
+    h+=`<div class="card"><h2>${F&&F.id?"Neue Frage":"Frage stellen"}</h2>
+      <label class="small muted">Frage</label><input type="text" id="text" value="${esc(entwurf.text)}" placeholder="z. B. Welches Spiel machen wir am Freitag?">
+      <label class="small muted" style="display:block;margin-top:10px">Antworten – eine pro Zeile (2 bis 10)</label>
+      <div class="vorlagen">${VORLAGEN.map(([t],i)=>`<button class="btn sm ghost" data-vorlage="${i}">${esc(t)}</button>`).join("")}</div>
+      <textarea id="optionen">${esc(entwurf.optionen)}</textarea>
+      <label class="schalter"><input type="checkbox" id="mehrfach" ${entwurf.mehrfach?"checked":""}> Mehrere Antworten erlaubt</label>
+      <label class="schalter"><input type="checkbox" id="namen" ${entwurf.namen?"checked":""}> Namen bei den Antworten zeigen (nur hier für dich)</label>
+      <div class="small muted" style="margin:8px 0 4px">Ergebnis für die Jugendlichen:</div>
+      <div class="row">${[["sofort","sofort live"],["ende","erst am Ende"],["nie","nur auf der Leinwand, wenn ich es zeige"]].map(([k,t])=>`<label class="schalter" style="margin:0 10px 0 0"><input type="radio" name="zeigen" value="${k}" ${entwurf.zeigen===k?"checked":""}> ${t}</label>`).join("")}</div>
+      <button class="btn ok wide" id="starten" style="margin-top:12px;min-height:54px">▶ Abstimmung starten</button><div class="err" id="ferr"></div></div>`;
+    const verlauf=Object.values(S.verlauf||{}).sort((a,b)=>b.ts-a.ts);
+    if(verlauf.length) h+=`<div class="card verlauf"><h3>Frühere Fragen</h3>${verlauf.map(v=>`<details><summary><b>${esc(v.frage.text)}</b></summary><div style="margin-top:8px">${balkenHtml(v.frage, (S.stimmen||{})[v.frage.id], !!v.frage.namen)}</div></details>`).join("")}</div>`;
+    app.innerHTML=h+`</div></div>`; binden();
+  }
+  function lesen(){ entwurf.text=$("#text").value; entwurf.optionen=$("#optionen").value; entwurf.mehrfach=$("#mehrfach").checked; entwurf.namen=$("#namen").checked; const z=$('input[name="zeigen"]:checked'); entwurf.zeigen=z?z.value:"ende"; }
+  function binden(){
+    const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+    $$("[data-vorlage]").forEach(b=>b.onclick=()=>{ lesen(); entwurf.optionen=VORLAGEN[+b.dataset.vorlage][1]; male(); });
+    $$("#app input, #app textarea").forEach(el=>{ el.addEventListener("change", lesen); el.addEventListener("blur", ()=>setTimeout(()=>{ if(!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"")) male(); },50)); });
+    on("starten", async ()=>{ lesen(); const text=entwurf.text.trim(); const optionen=entwurf.optionen.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,10);
+      if(!text){ $("#ferr").textContent="Bitte eine Frage eingeben."; return; } if(optionen.length<2){ $("#ferr").textContent="Mindestens zwei Antworten."; return; }
+      const up={}; if(S.frage&&S.frage.id) up[`verlauf/${S.frage.id}`]={frage:S.frage, ts:Date.now()};
+      up.frage={id:"f"+Date.now().toString(36), text, optionen, mehrfach:entwurf.mehrfach, zeigen:entwurf.zeigen, namen:entwurf.namen};
+      up["info/phase"]="offen"; up["info/aufdecken"]=null; await V().update(up); entwurf.text=""; document.activeElement&&document.activeElement.blur(); male(); });
+    on("schliessen", ()=>V("info/phase").set("zu"));
+    on("oeffnen", ()=>V("info/phase").set("offen"));
+    on("aufdecken", ()=>V("info/aufdecken").set(true));
+    on("neu-sitzung", async ()=>{ if(!confirm("Neue PIN erzeugen? Die Jugendlichen müssen dann neu beitreten.")) return; V().off(); try{ localStorage.removeItem("vote_leitung_pin"); }catch(e){} PIN=""; start(); });
+  }
+}
+MODUS==="leitung"?leitung():MODUS==="leinwand"?leinwand():spieler();
+</script>
+</body>
+</html>

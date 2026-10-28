@@ -28,13 +28,15 @@ let db=null; try{ firebase.initializeApp(cfg); db=firebase.database(); }catch(e)
 const $=s=>document.querySelector(s);
 const SPIELE=[
   {pfad:p=>`ligajagd/${KURS}/${p}/info`, ziel:p=>`jagd.html?pin=${p}`},
-  {pfad:p=>`ligachat/${KURS}/${p}/info`, ziel:p=>`chat.html?pin=${p}`}
+  {pfad:p=>`ligachat/${KURS}/${p}/info`, ziel:p=>`chat.html?pin=${p}`},
+  {pfad:p=>`ligavote/${KURS}/${p}/info`, ziel:p=>`abstimmung.html?pin=${p}`}
 ];
 async function suche(pin){
   $("#err").textContent="Suche …";
   try{
-    const treffer=await Promise.all(SPIELE.map(s=>db.ref(s.pfad(pin)).once("value").then(x=>x.val()?s:null)));
-    const s=treffer.find(x=>x); if(s){ location.replace(s.ziel(pin)); return; }
+    const treffer=(await Promise.all(SPIELE.map(s=>db.ref(s.pfad(pin)).once("value").then(x=>{ const v=x.val(); return v?{s, aktiv:v.phase!=="ende", t:Number(v.erstellt)||0}:null; })))).filter(Boolean);
+    treffer.sort((a,b)=>(b.aktiv-a.aktiv)||(b.t-a.t));
+    if(treffer.length){ location.replace(treffer[0].s.ziel(pin)); return; }
     const st=(await db.ref(`jugendliga/${KURS}/battle/state`).once("value")).val();
     if(st && String(st.pin)===pin){ location.replace("a1-live-perfekt.html?pin="+pin); return; }
     $("#err").textContent="Diese PIN gibt es nicht. Schau noch einmal auf die Leinwand.";
