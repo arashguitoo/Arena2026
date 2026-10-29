@@ -221,7 +221,7 @@ let me=null, E=[], logs={}, pub={}, ansicht="start", filter="alle", rangModus="m
 
 const ARENA=[
   {gruppe:"Live im Unterricht", icon:"🎮", farbe:"#FFE9E3", titel:"Live-Quiz", text:"Alle spielen gleichzeitig – wer ist am schnellsten? Platz 1–3 bekommen Bonus-Punkte.", tags:["live","ganze Klasse","bis 20 Punkte"], pin:true},
-  {gruppe:"Live im Unterricht", icon:"⚔️", farbe:"#E8EBFF", titel:"Tafel-Duell", text:"Team gegen Team an der Leinwand – Sätze ordnen, Lücken füllen, klauen! Deine Lehrkraft leitet.", tags:["live","Teams","unter Aufsicht"]},
+  {gruppe:"Live im Unterricht", icon:"⚔️", farbe:"#E8EBFF", titel:"Tafel-Duell", text:"Team gegen Team an der Leinwand – Sätze ordnen, Lücken füllen, klauen! Deine Lehrkraft leitet. Handy bleibt in der Tasche.", tags:["live","Teams","ohne Handy"], ohneHandy:true},
   {gruppe:"Live im Unterricht", icon:"🗳️", farbe:"#EDE7FF", titel:"Abstimmung", text:"Deine Lehrkraft fragt – alle stimmen am Handy ab. Das Ergebnis erscheint auf der Leinwand.", tags:["live","ganze Klasse"], pin:true},
   {gruppe:"Zusammen", icon:"🕵️", farbe:"#FFF4D6", titel:"Schnitzeljagd", text:"Im Team einen Fall lösen: Hör-Aufgaben, Hinweise, Zahlenschloss. Punkte bekommt jede Person.", tags:["live","Team","90 Minuten"], pin:true},
   {gruppe:"Zusammen", icon:"💬", farbe:"#E2F6EF", titel:"Chat-Spiel", text:"Eine WhatsApp-Gruppe, 3–4 Leute an einem Tisch: Nachrichten aus Wort-Kacheln bauen.", tags:["live","Tisch","3–4 Personen"], pin:true},
@@ -340,7 +340,7 @@ function arena(){
     ${pinKarte()}
     ${gruppen.map(g=>`<div class="sek"><h2>${esc(g)}</h2></div><div class="grid2">${ARENA.filter(a=>a.gruppe===g).map(a=>`<div class="card ak"><div class="kopfzeile"><span class="ic" style="background:${a.farbe}">${a.icon}</span><div><h3>${esc(a.titel)}</h3></div></div>
       <p>${esc(a.text)}</p><div class="tags">${a.tags.map(t=>`<span class="${t==="live"?"live":""}">${t==="live"?"LIVE":esc(t)}</span>`).join("")}</div>
-      ${a.link?`<a class="btn wide" href="${a.link}">⚔️ Duell-Arena öffnen</a>`:a.pin?`<div class="small muted">Mitmachen: PIN von der Leinwand oben eingeben.</div>`:`<div class="small muted">Startet deine Lehrkraft im Unterricht.</div>`}</div>`).join("")}</div>`).join("")}
+      ${a.link?`<a class="btn wide" href="${a.link}">⚔️ Duell-Arena öffnen</a>`:a.pin?`<div class="small muted">Mitmachen: PIN von der Leinwand oben eingeben.</div>`:`<div class="small muted">${a.ohneHandy?"📵 Kein Handy nötig – alles passiert an der Leinwand.":"Startet deine Lehrkraft im Unterricht."}</div>`}</div>`).join("")}</div>`).join("")}
     <div class="sek"><h2>⏱️ Allein gegen die Uhr</h2><a href="#ueben" data-filter-link="zeit">Alle ›</a></div>
     <p class="small muted" style="margin:0 2px 8px">Schlag deinen eigenen Rekord – jede Verbesserung bringt Punkte.</p>
     <div class="liste">${solo.map(u=>ueKarte(u,W,alle)).join("")}</div>`;

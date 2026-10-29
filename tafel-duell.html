@@ -171,7 +171,7 @@ button,input{font:inherit;color:inherit}
 <section id="setup"><div class="setup-in">
   <a href="lehrer.html" style="color:#c9d2e3;text-decoration:none;font-weight:700">‹ Zur Lehrer-Seite</a>
   <h1>⚔️ Tafel-Duell</h1>
-  <p class="lead">Team gegen Team an der Leinwand – ohne Handys. Das Team, das dran ist, tippt seine Antwort an der Tafel. Richtig? Punkte gibt es automatisch. Falsch? Das nächste Team darf klauen.</p>
+  <p class="lead">Team gegen Team an der Leinwand – <b>ohne Handys</b>, niemand muss eine Seite öffnen. Das Team, das dran ist, tippt seine Antwort an der Tafel. Richtig? Punkte gibt es automatisch. Falsch? Das nächste Team darf klauen.</p>
 
   <div class="box"><h2>1. Teams</h2>
     <div class="seg" style="margin-bottom:12px"><button data-quelle="frei" aria-pressed="true">Eigene Teams</button><button data-quelle="liga" aria-pressed="false">Teams aus der Klasse</button></div>
@@ -461,7 +461,7 @@ function renderSetup(){
 }
 document.addEventListener("click", e=>{
   if(!$("#setup").classList.contains("hidden")){
-    const q=e.target.closest("[data-quelle]"); if(q){ cfg.quelle=q.dataset.quelle; renderSetup(); return; }
+    const q=e.target.closest("[data-quelle]"); if(q){ cfg.quelle=q.dataset.quelle; cfg.gewechselt=true; renderSetup(); return; }
     const z=e.target.closest("[data-thn]"); if(z){ const c=cfg.themen[z.dataset.thn]; c.n=Math.max(1,Math.min(verfuegbar(z.dataset.thn), c.n+Number(z.dataset.d))); renderSetup(); return; }
   }
 });
@@ -492,7 +492,7 @@ $("#login-form").addEventListener("submit", e=>{
     .catch(err=>{ $("#l-err").textContent=/invalid|wrong|not-found/.test(err.code||"")?"E-Mail oder Passwort stimmt nicht.":"Anmeldung fehlgeschlagen."; });
 });
 if(auth) auth.onAuthStateChanged(async u=>{
-  user=u; $("#l-err").textContent="";
+  user=u; $("#l-err").textContent=""; if(u && cfg.quelle==="frei" && !cfg.gewechselt) cfg.quelle="liga";
   if(u && db){ try{ const pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
       cfg.namen=pub.names||{}; cfg.da={}; cfg.liga=[]; }catch(e){ cfg.liga=[]; } }
   renderSetup();
