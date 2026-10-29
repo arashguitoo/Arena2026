@@ -67,3 +67,62 @@ window.INSEL = {
   ],
   punkte: { versorgt: 5, hunger: -2, boot: 20, mitfahren: 12, aufgabe: 3, handelMax: 10, muschelnPro: 3, fieber: -5 }
 };
+
+/* =========================================================
+   SPRACHRÄTSEL (Arbeitszeit): Jede richtige Antwort bringt der Gruppe etwas aus ihrem Ort.
+   luecke: s mit ___, o[0] richtig · satz: w = Wörter, a = richtige Sätze
+   ========================================================= */
+window.INSEL.ernte = { strand: ["fisch", "muscheln", "fisch", "bananen"], wald: ["holz", "bananen", "holz", "seil"], berg: ["wasser", "wasser", "holz", "medizin"], wrack: ["muscheln", "seil", "medizin", "fisch"] };
+window.INSEL.arbeitMax = 6;   // so viele Sachen kann eine Gruppe pro Tag „erarbeiten“, danach gibt es 1 Muschel pro Rätsel
+window.INSEL.raetsel = [
+  { th: "Akkusativ", s: "Wir brauchen ___ Hammer.", o: ["einen", "ein", "eine"] },
+  { th: "Akkusativ", s: "Habt ihr ___ Seil für uns?", o: ["ein", "einen", "eine"] },
+  { th: "Akkusativ", s: "Ich suche ___ Flasche Wasser.", o: ["eine", "einen", "ein"] },
+  { th: "Akkusativ", s: "Wir bauen ___ Boot.", o: ["ein", "einen", "eine"] },
+  { th: "Akkusativ", s: "Kannst du ___ Fisch fangen?", o: ["einen", "ein", "eine"] },
+  { th: "Akkusativ", s: "Wir haben ___ Medikamente mehr.", o: ["keine", "kein", "keinen"] },
+  { th: "Akkusativ", s: "Ich sehe ___ Hai im Wasser!", o: ["einen", "ein", "einem"] },
+  { th: "Akkusativ", s: "Wir haben ___ Hammer. Wir brauchen einen!", o: ["keinen", "kein", "keine"] },
+  { th: "Dativ", s: "Wir geben ___ Gruppe Wald zwei Fische.", o: ["der", "die", "den"] },
+  { th: "Dativ", s: "Kannst du ___ helfen? Ich bin krank.", o: ["mir", "mich", "ich"] },
+  { th: "Dativ", s: "Das Boot gehört ___.", o: ["uns", "wir", "unser"] },
+  { th: "Dativ", s: "Wir fahren mit ___ Boot nach Hause.", o: ["dem", "den", "das"] },
+  { th: "Dativ", s: "Gib ___ bitte das Seil!", o: ["mir", "mich", "meine"] },
+  { th: "Perfekt", s: "Gestern ___ wir viele Fische gefangen.", o: ["haben", "sind", "hat"] },
+  { th: "Perfekt", s: "Der Sturm ___ in der Nacht gekommen.", o: ["ist", "hat", "sind"] },
+  { th: "Perfekt", s: "Wir sind zur Insel ___.", o: ["geschwommen", "geschwimmt", "schwimmen"] },
+  { th: "Perfekt", s: "Ich habe eine Flasche im Meer ___.", o: ["gefunden", "gefindet", "findet"] },
+  { th: "Perfekt", s: "Die Affen haben die Bananen ___.", o: ["geklaut", "klaut", "geklauen"] },
+  { th: "Perfekt", s: "Wir ___ um sechs Uhr aufgestanden.", o: ["sind", "haben", "ist"] },
+  { th: "Perfekt", s: "Hast du das Holz schon ___?", o: ["gesammelt", "gesammeln", "sammelt"] },
+  { th: "Perfekt", s: "Was ___ ihr heute gegessen?", o: ["habt", "seid", "hat"] },
+  { th: "Modalverben", s: "Wir ___ heute ein Boot bauen.", o: ["müssen", "muss", "müsst"] },
+  { th: "Modalverben", s: "___ ihr uns Wasser geben?", o: ["Könnt", "Kann", "Können"] },
+  { th: "Modalverben", s: "Hier ___ man nicht schwimmen. Hier ist ein Hai!", o: ["darf", "dürfen", "darfst"] },
+  { th: "Modalverben", s: "Ich ___ nach Hause!", o: ["will", "wollen", "willst"] },
+  { th: "Modalverben", s: "Du ___ nicht so viel Wasser trinken. Es ist wenig da!", o: ["darfst", "darf", "dürft"] },
+  { th: "Komparativ", s: "Unser Holz ist ___ als euer Holz.", o: ["besser", "gut", "guter"] },
+  { th: "Komparativ", s: "Der Berg ist ___ als der Strand.", o: ["höher", "hoch", "hocher"] },
+  { th: "Komparativ", s: "Fisch ist ___ als Bananen.", o: ["teurer", "teuer", "teurerer"] },
+  { th: "Komparativ", s: "Heute ist das Meer ___ als gestern.", o: ["ruhiger", "ruhig", "mehr ruhig"] },
+  { th: "Präpositionen", s: "Das Wasser ist ___ der Flasche.", o: ["in", "auf", "unter"] },
+  { th: "Präpositionen", s: "Wir gehen ___ Strand.", o: ["zum", "zur", "zu die"] },
+  { th: "Präpositionen", s: "Wir gehen ___ Wald.", o: ["in den", "im", "in die"] },
+  { th: "Präpositionen", s: "Das Seil liegt ___ dem Tisch.", o: ["auf", "über", "aus"] },
+  { th: "Possessiv", s: "Das ist ___ Boot! (wir)", o: ["unser", "unsere", "unseren"] },
+  { th: "Possessiv", s: "Habt ihr ___ Hammer gesehen? (ich)", o: ["meinen", "mein", "meine"] },
+  { th: "Possessiv", s: "Ist das ___ Seil? (ihr)", o: ["euer", "eure", "euren"] },
+  { th: "Possessiv", s: "Die Gruppe Wald gibt uns ___ Bananen. (sie)", o: ["ihre", "ihr", "ihren"] },
+  { th: "weil", s: "Wir brauchen Fisch, ___", o: ["weil wir Hunger haben.", "weil wir haben Hunger.", "weil haben wir Hunger."] },
+  { th: "Satzbau", s: "Heute ___", o: ["bauen wir ein Boot.", "wir bauen ein Boot.", "ein Boot wir bauen."] },
+  { th: "Satzbau", s: "Am Abend ___", o: ["essen wir zusammen.", "wir essen zusammen.", "zusammen wir essen."] },
+  { th: "Zahlen", s: "Das Schiff kommt am ___ Tag.", o: ["dritten", "drei", "dritte"] },
+  { th: "Zahlen", s: "17 Fische + 4 Fische = ___ Fische", o: ["einundzwanzig", "zwölf", "siebenundzwanzig"] },
+  { th: "Satzbau", w: ["wir", "brauchen", "dringend", "Wasser"], a: ["wir brauchen dringend Wasser"] },
+  { th: "Satzbau", w: ["morgen", "bauen", "wir", "ein", "Boot"], a: ["morgen bauen wir ein Boot", "wir bauen morgen ein Boot"] },
+  { th: "Satzbau", w: ["habt", "ihr", "ein", "Seil", "für", "uns"], a: ["habt ihr ein Seil für uns"] },
+  { th: "Perfekt", w: ["wir", "haben", "gestern", "Fische", "gefangen"], a: ["wir haben gestern Fische gefangen", "gestern haben wir Fische gefangen"] },
+  { th: "Modalverben", w: ["ich", "kann", "leider", "nicht", "schwimmen"], a: ["ich kann leider nicht schwimmen", "leider kann ich nicht schwimmen"] },
+  { th: "weil", w: ["wir", "bleiben", "hier", "weil", "es", "regnet"], a: ["wir bleiben hier weil es regnet"] },
+  { th: "Satzbau", w: ["was", "wollt", "ihr", "dafür"], a: ["was wollt ihr dafür"] }
+];

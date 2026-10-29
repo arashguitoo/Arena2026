@@ -20,6 +20,8 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
 button,input,select{font:inherit;color:inherit}
+input,select,textarea{color:#1E2A44;background-color:#fff}
+input::placeholder,textarea::placeholder{color:#8A8F9C}
 .hidden{display:none!important}
 h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px}
 .muted{color:var(--muted)} .small{font-size:14px}
@@ -143,13 +145,15 @@ function punkte(S,g){
 }
 const rest=S=>S.markt&&S.markt.ende?Math.max(0,Math.ceil((S.markt.ende-jetzt())/1000)):0;
 const mmss=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
-const SCHRITT={geschichte:"Die Geschichte", ereignis:"Ereignis", markt:"Markt", abend:"Abend", bau:"Bautag"};
+const SCHRITT={geschichte:"Die Geschichte", ereignis:"Ereignis", arbeit:"Arbeitszeit", markt:"Markt", abend:"Abend", bau:"Bautag"};
+const RZ=D.raetsel||[];
+const satzW=t=>String(t).toLowerCase().replace(/[.,!?]/g,"").trim();
 
 /* =========================================================
    JUGENDLICHE
    ========================================================= */
 function spieler(){
-  const app=$("#app"); let me=null, S=null, form={an:null, gibt:{}, will:{}}, msg="";
+  const app=$("#app"); let me=null, S=null, form={an:null, gibt:{}, will:{}}, msg="", rz=null, rzSeq=[], rzFb=null, gesehen=new Set(), funkAn="alle";
   try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
   function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🏝️</div><h2>Gestrandet – Die Insel</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
     <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
@@ -164,7 +168,7 @@ function spieler(){
   function los(){ const ref=I(`spieler/${me.pid}`); ref.update({name:me.name, ts:TS(), online:true, da:true}); try{ ref.child("online").onDisconnect().set(false); }catch(e){}
     I().on("value", s=>{ S=s.val()||{}; male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500); }
   function male(){
-    const ae=document.activeElement; if(ae && ae.tagName==="SELECT") return;
+    const ae=document.activeElement; if(ae && (ae.tagName==="SELECT" || ae.id==="funktext")) return;
     if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
     const ich=(S.spieler||{})[me.pid]||{}, g=ich.gruppe, GR=g&&G(g);
     if(S.info.phase==="lobby"||!GR){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:6vh;text-align:center"><div style="font-size:60px">🏝️</div><h2>Hallo ${esc(me.name)}!</h2>
@@ -184,11 +188,43 @@ function spieler(){
       <div class="small muted" style="margin-top:8px"><b>Für das Boot braucht ihr:</b></div><div class="brauch">${Object.entries(D.boot).map(([r,n])=>`<span class="${(lager[r]||0)>=n?"ja":"nein"}">${name1(r,n)} ${R[r][0]}</span>`).join("")}</div>
       ${(m.boote||{})[g]?`<p style="color:var(--ok);font-weight:800;margin:10px 0 0">⛵ ${m.boote[g]==="eigen"?"Euer Boot ist fertig!":"Ihr fahrt bei einer anderen Gruppe mit."}</p>`:""}</div>`;
     if(S.schritt==="abend"){ const v=((m.versorgt||{})[S.tag]||{})[g]; h+=`<div class="card" style="text-align:center"><div style="font-size:44px">🌙</div><h3>Abend auf der Insel</h3>${v?(v.ok?`<p>Alle haben gegessen und getrunken. 😊 +${PK.versorgt} Punkte</p>`:`<p style="color:var(--bad)"><b>Ihr habt Hunger und Durst!</b> Es fehlen ${v.fehlt} Sachen. ${v.fehlt*PK.hunger} Punkte</p>`):"<p>Gleich wird gegessen …</p>"}</div>`; }
+    if(S.schritt==="arbeit"||S.schritt==="markt") h+=raetselHtml(S,g);
     if(S.schritt==="markt"||S.schritt==="bau") h+=marktHtml(S,g,lager);
+    if(["arbeit","markt","bau"].includes(S.schritt)) h+=funkHtml(S,g);
     if(S.schritt==="bau" && !(m.boote||{})[g]){ const kann=Object.entries(D.boot).every(([r,n])=>(lager[r]||0)>=n);
       h+=`<div class="card" style="text-align:center"><div style="font-size:50px">🛠️</div><h3>Bautag!</h3><p class="muted">${kann?"Ihr habt alles – baut euer Boot!":"Euch fehlt noch etwas. Handelt mit den anderen Gruppen!"}</p><button class="btn ok wide" id="bauen" ${kann?"":"disabled"} style="min-height:56px">⛵ Boot bauen</button></div>`; }
     h+=`<details class="card"><summary><b>💬 So verhandelt ihr</b></summary><ul style="margin:8px 0 0;padding-left:20px">${D.redemittel.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></details>`;
     app.innerHTML=h+`</div>`; binden(g,lager);
+  }
+  function neuesRaetsel(){ let frei=RZ.map((_,i)=>i).filter(i=>!gesehen.has(i)); if(!frei.length){ gesehen=new Set(); frei=RZ.map((_,i)=>i); }
+    rz=frei[Math.floor(Math.random()*frei.length)]; gesehen.add(rz); rzSeq=[]; const q=RZ[rz]; rzOrd = q.w ? mische(q.w.map((_,i)=>i)) : mische(q.o.map((_,i)=>i)); }
+  let rzOrd=[];
+  function raetselHtml(S,g){
+    if(rz===null) neuesRaetsel(); const q=RZ[rz]; const n=Number(((S.arbeit||{})[S.tag]||{})[g])||0; const ich=(S.leistung||{})[me.pid]||{}; const ernte=D.ernte[g]||[]; const naechst=ernte[n%ernte.length];
+    let h=`<div class="card" style="border:3px solid #F5B82E"><div class="row" style="justify-content:space-between"><h3 style="margin:0">🧩 Arbeit: Sprachrätsel</h3>${S.schritt==="arbeit"&&S.markt&&S.markt.ende?`<b style="font-family:var(--head);font-size:22px;color:var(--acc)" id="uhr">${mmss(rest(S))}</b>`:""}</div>
+      <p class="small muted" style="margin:4px 0 8px">${n<D.arbeitMax?`Jede richtige Antwort bringt eurer Gruppe etwas. Als Nächstes: <b>${R[naechst][0]} ${R[naechst][1]}</b> (${n}/${D.arbeitMax} heute)`:`Heute habt ihr schon ${D.arbeitMax} Sachen erarbeitet. Jetzt gibt es <b>1 Muschel 🐚</b> pro richtiger Antwort.`}</p>
+      <div class="small muted">${esc(q.th)}</div>`;
+    if(q.w){ h+=`<div style="min-height:50px;border:2px dashed var(--line);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0">${rzSeq.map(i=>`<button class="btn sm" data-rzraus="${i}">${esc(q.w[i])}</button>`).join("")}</div>
+      <div class="row">${rzOrd.map(i=>`<button class="btn sm ghost" data-rzrein="${i}" ${rzSeq.includes(i)?"style='visibility:hidden'":""}>${esc(q.w[i])}</button>`).join("")}</div>
+      <button class="btn wide" id="rz-pruefen" style="margin-top:8px" ${rzSeq.length===q.w.length?"":"disabled"}>✓ Prüfen</button>`; }
+    else { const teile=q.s.split("___"); h+=`<h2 style="font-size:22px;margin:6px 0">${esc(teile[0])}<span style="color:var(--pri)">____</span>${esc(teile[1]||"")}</h2><div class="opts">${rzOrd.map(i=>`<button class="opt" style="color:var(--ink);background:#fff;border-color:var(--line)" data-rz="${i}">${esc(q.o[i])}</button>`).join("")}</div>`; }
+    if(rzFb) h+=`<div style="margin-top:8px;font-weight:800;color:${rzFb.ok?"var(--ok)":"var(--bad)"}">${esc(rzFb.text)}</div>`;
+    return h+`<p class="small muted" style="margin:8px 0 0">Du hast heute schon ${ich.r||0} Rätsel richtig gelöst. 💪</p></div>`;
+  }
+  function loesen(g, ok, richtig){
+    const tag=S.tag; I(`leistung/${me.pid}`).transaction(x=>{ x=x||{r:0,f:0}; if(ok) x.r=(x.r||0)+1; else x.f=(x.f||0)+1; x.name=me.name; return x; });
+    if(!ok){ rzFb={ok:false, text:`✗ Leider falsch. Richtig ist: ${richtig}`}; neuesRaetsel(); male(); return; }
+    let bekommen=null;
+    I().transaction(st=>{ if(!st) return st; st.arbeit=st.arbeit||{}; st.arbeit[tag]=st.arbeit[tag]||{}; const n=Number(st.arbeit[tag][g])||0; st.m=st.m||{}; st.m.lager=st.m.lager||{}; const l=st.m.lager[g]=st.m.lager[g]||{};
+      if(n<D.arbeitMax){ const ernte=D.ernte[g]; bekommen=ernte[n%ernte.length]; st.arbeit[tag][g]=n+1; } else bekommen="muscheln";
+      l[bekommen]=(l[bekommen]||0)+1; return st; }).then(()=>{ rzFb={ok:true, text:`✓ Richtig! Eure Gruppe bekommt 1 ${R[bekommen][1]} ${R[bekommen][0]}`}; neuesRaetsel(); male(); });
+  }
+  function funkHtml(S,g){
+    const alle=arr(S.funk).filter(f=>f.von===g||f.an===g||f.an==="alle").slice(-12);
+    return `<div class="card"><h3>📻 Funk – Nachrichten an andere Gruppen</h3><p class="small muted" style="margin:0 0 6px">Schreibt auf Deutsch! Fragt, was die anderen haben, und macht Angebote.</p>
+      <div style="max-height:220px;overflow:auto;background:var(--soft);border-radius:12px;padding:8px;margin-bottom:8px" id="funkliste">${alle.map(f=>{ const V=G(f.von)||{}; const mein=f.von===g; return `<div style="margin:4px 0;text-align:${mein?"right":"left"}"><span style="display:inline-block;background:${mein?"#DCF8C6":"#fff"};border-radius:10px;padding:5px 9px;max-width:85%;box-shadow:0 1px 0 rgba(0,0,0,.06)"><b style="color:${V.farbe}">${V.emoji} ${esc(f.name||V.name)}</b> → ${f.an==="alle"?"alle":esc((G(f.an)||{}).name||"")}<br>${esc(f.text)}</span></div>`; }).join("")||`<p class="small muted" style="margin:0">Noch keine Nachrichten.</p>`}</div>
+      <div class="ziel" style="margin-bottom:6px"><button class="${funkAn==="alle"?"an":""}" data-funkan="alle">📢 alle</button>${gruppen(S).filter(x=>x!==g).map(x=>`<button class="${funkAn===x?"an":""}" data-funkan="${x}">${G(x).emoji} ${G(x).name}</button>`).join("")}</div>
+      <form id="funkform" class="row"><input id="funktext" type="text" maxlength="160" placeholder="z. B. Habt ihr ein Seil für uns?" style="flex:1;min-width:0;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 10px" autocomplete="off"><button class="btn sm">Senden</button></form></div>`;
   }
   function marktHtml(S,g,lager){
     const m=S.m||{}, an=arr(m.angebote&&Object.entries(m.angebote).map(([id,a])=>Object.assign({id},a)));
@@ -208,6 +244,13 @@ function spieler(){
     return h;
   }
   function binden(g,lager){
+    const fl=$("#funkliste"); if(fl) fl.scrollTop=fl.scrollHeight;
+    $$("[data-rz]").forEach(b=>b.onclick=()=>{ const q=RZ[rz]; const i=+b.dataset.rz; loesen(g, i===0, q.o[0]); });
+    $$("[data-rzrein]").forEach(b=>b.onclick=()=>{ rzSeq.push(+b.dataset.rzrein); rzFb=null; male(); });
+    $$("[data-rzraus]").forEach(b=>b.onclick=()=>{ rzSeq=rzSeq.filter(i=>i!==+b.dataset.rzraus); male(); });
+    const rp=$("#rz-pruefen"); if(rp) rp.onclick=()=>{ const q=RZ[rz]; const satz=rzSeq.map(i=>q.w[i]).join(" "); loesen(g, q.a.some(a=>satzW(a)===satzW(satz)), q.a[0].charAt(0).toUpperCase()+q.a[0].slice(1)+"."); };
+    $$("[data-funkan]").forEach(b=>b.onclick=()=>{ funkAn=b.dataset.funkan; male(); });
+    const ff=$("#funkform"); if(ff) ff.onsubmit=e=>{ e.preventDefault(); const t=$("#funktext").value.trim(); if(!t) return; I("funk").push({von:g, an:funkAn, text:t.slice(0,160), name:me.name, ts:TS()}); $("#funktext").value=""; $("#funktext").blur(); };
     $$("[data-antwort]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.antwort; const E=D.ereignisse.find(e=>e.id===S.ereignis.id);
       I(`antworten/${E.id}/${g}`).transaction(cur=>cur?undefined:{i, ok:i===0, ts:Date.now(), name:me.name}).then(r=>{
         if(r&&r.committed!==false && i===0 && E.schnellste){ I("schnellste/"+E.id).transaction(c=>c?undefined:g).then(x=>{ if(x&&x.committed!==false){ I("m").transaction(m=>{ if(!m) return m; m.lager=m.lager||{}; m.lager[g]=m.lager[g]||{}; for(const [r,n] of Object.entries(E.schnellste)) m.lager[g][r]=(m.lager[g][r]||0)+n; return m; }); I(`antworten/${E.id}/${g}/bonus`).set(true); I("ticker").push({text:`${E.icon} ${G(g).emoji} ${G(g).name} war am schnellsten und bekommt: ${liste(E.schnellste)}!`, ts:TS()}); } }); } }); });
@@ -288,10 +331,16 @@ function leitung(){
       main=`<div class="card"><div style="opacity:.8">Tag ${S.tag}</div><h1 style="font-size:52px;color:var(--gold)">${E.icon} ${esc(E.titel)}</h1><p class="gross">${esc(E.text)}</p>
         <p style="font-size:24px;margin:10px 0 0">❓ ${esc(E.frage)} <span style="opacity:.75">– Späher:innen antworten am Handy</span></p>
         <div class="row" style="margin-top:10px">${gruppen(S).map(g=>`<span class="chip">${G(g).emoji} ${an[g]?(an[g].ok?"✓":"✗"):"…"}</span>`).join("")}</div></div>`;
-      knoepfe=`<label class="chip">Markt <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn acc" id="markt">🤝 Markt starten</button>`; }
+      knoepfe=`<label class="chip">Zeit <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn gold" id="arbeit">🧩 Arbeitszeit: Sprachrätsel</button><button class="btn acc" id="markt">🤝 gleich zum Markt</button>`; }
+    else if(S.schritt==="arbeit"){ const a=(S.arbeit||{})[S.tag]||{};
+      main=`<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px"><div class="card" style="text-align:center"><div style="opacity:.8">🧩 Arbeitszeit · Tag ${S.tag}</div><div class="uhr" id="uhr">${mmss(rest(S))}</div><p style="opacity:.85">Löst Sprachrätsel am Handy – jede richtige Antwort bringt eurer Gruppe etwas!</p></div>
+        <div class="card"><h2>Erarbeitet heute</h2>${gruppen(S).map(g=>{ const n=Number(a[g])||0; return `<div style="margin:10px 0"><div class="row" style="justify-content:space-between"><b>${G(g).emoji} ${G(g).name}</b><span>${n}/${D.arbeitMax}</span></div><div style="height:16px;background:rgba(255,255,255,.12);border-radius:8px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100,n/D.arbeitMax*100)}%;background:${G(g).farbe}"></i></div></div>`; }).join("")}
+          <p class="small" style="opacity:.75">Beste Rätsel-Löser:innen: ${Object.values(S.leistung||{}).sort((x,y)=>(y.r||0)-(x.r||0)).slice(0,5).map(x=>`${esc(x.name)} (${x.r||0})`).join(", ")||"–"}</p></div></div>`;
+      knoepfe=`<button class="btn hell" id="plus2">+2 Min.</button><label class="chip">Markt <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn acc" id="markt">🤝 Markt starten</button>`; }
     else if(S.schritt==="markt"){ main=`<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px"><div class="card" style="text-align:center"><div style="opacity:.8">Markt · Tag ${S.tag}</div><div class="uhr" id="uhr">${mmss(rest(S))}</div><p style="opacity:.8">Erst sprechen – dann am Handy schicken!</p>
         ${E?`<p class="small" style="opacity:.75">Ereignis heute: ${E.icon} ${esc(E.titel)}</p>`:""}</div>
-        <div class="card"><h2>📜 Neue Geschäfte</h2><div class="ticker">${ticker.map(t=>`<div>${esc(t.text)}</div>`).join("")||`<p style="opacity:.6">Noch keine Geschäfte …</p>`}</div></div></div>`;
+        <div class="card"><h2>📜 Neue Geschäfte</h2><div class="ticker" style="max-height:24vh">${ticker.map(t=>`<div>${esc(t.text)}</div>`).join("")||`<p style="opacity:.6">Noch keine Geschäfte …</p>`}</div>
+        <h2 style="margin-top:12px">📻 Funk</h2><div class="ticker" style="max-height:24vh">${arr(S.funk).slice(-8).reverse().map(f=>`<div><b>${G(f.von).emoji} ${esc(f.name||"")}</b> → ${f.an==="alle"?"alle":G(f.an).emoji+" "+G(f.an).name}: ${esc(f.text)}</div>`).join("")||`<p style="opacity:.6">Noch keine Nachrichten …</p>`}</div></div></div>`;
       knoepfe=`<button class="btn hell" id="plus2">+2 Min.</button><button class="btn gold" id="abend">🌙 Abend: essen und trinken</button>`; }
     else if(S.schritt==="abend"){ const v=((S.m||{}).versorgt||{})[S.tag]||{};
       main=`<div class="card"><h1 style="font-size:46px">🌙 Abend – Tag ${S.tag}</h1><p class="gross" style="font-weight:600">Jede Gruppe braucht ${D.proAbend.essen} Essen und ${D.proAbend.wasser} Wasser.</p>
@@ -308,12 +357,12 @@ function leitung(){
   }
   function ende(){
     const sp=S.spieler||{}, ub=S.uebertragen||{}; const rang=gruppen(S).map(g=>({g,...punkte(S,g)})).sort((a,b)=>b.p-a.p);
-    const zeilen=[]; rang.forEach(r=>mitglieder(S,r.g).forEach(p=>zeilen.push({p, name:sp[p].name, g:r.g, wert:ub[p]!==undefined?ub[p]:Math.max(0,Math.min(20,Math.round(r.p/3)))})));
+    const zeilen=[]; rang.forEach(r=>mitglieder(S,r.g).forEach(p=>{ const L=(S.leistung||{})[p]||{}; zeilen.push({p, name:sp[p].name, g:r.g, rz:L.r||0, wert:ub[p]!==undefined?ub[p]:Math.max(0,Math.min(20,Math.round(Math.max(0,r.p)/5+(L.r||0)/2)))}); }));
     const T={versorgt:"satt",hunger:"Hunger",boot:"Boot",aufgaben:"Fragen",handel:"Handel",muscheln:"Muscheln",fieber:"Fieber",korr:"Korrektur"};
     return `<div class="bwrap"><h1 style="font-size:54px;text-align:center">⛵ ${rang[0]?`${G(rang[0].g).emoji} ${G(rang[0].g).name} gewinnt!`:"Gerettet!"}</h1>
       <div class="card"><table><tr><th>Gruppe</th>${Object.values(T).map(t=>`<th>${t}</th>`).join("")}<th>Gesamt</th></tr>${rang.map(r=>`<tr><td><b>${G(r.g).emoji} ${G(r.g).name}</b></td>${Object.keys(T).map(k=>`<td>${r.teile[k]||0}</td>`).join("")}<td><b style="color:var(--gold);font-size:22px">${r.p}</b></td></tr>`).join("")}</table></div>
-      <div class="card"><h2>Punkte für jede Person</h2><p class="small" style="opacity:.8;margin-top:0">Vorschlag: Gruppenpunkte ÷ 3 (höchstens 20). Du kannst jede Zahl ändern.</p>
-      <table><tr><th>Name</th><th>Gruppe</th><th>Punkte</th><th></th></tr>${zeilen.map(z=>`<tr><td>${esc(z.name)}</td><td>${G(z.g).emoji} ${G(z.g).name}</td><td><input type="number" min="0" max="100" data-lp="${z.p}" value="${z.wert}"></td><td>${ub[z.p]!==undefined?"✓ gespeichert":""}</td></tr>`).join("")}</table>
+      <div class="card"><h2>Punkte für jede Person</h2><p class="small" style="opacity:.8;margin-top:0">Vorschlag: Gruppenpunkte ÷ 5 + gelöste Rätsel ÷ 2 (höchstens 20). Du kannst jede Zahl ändern.</p>
+      <table><tr><th>Name</th><th>Gruppe</th><th>🧩 Rätsel richtig</th><th>Punkte</th><th></th></tr>${zeilen.map(z=>`<tr><td>${esc(z.name)}</td><td>${G(z.g).emoji} ${G(z.g).name}</td><td>${z.rz}</td><td><input type="number" min="0" max="100" data-lp="${z.p}" value="${z.wert}"></td><td>${ub[z.p]!==undefined?"✓ gespeichert":""}</td></tr>`).join("")}</table>
       <p class="row" style="margin-top:12px"><button class="btn ok" id="speichern">⬆ Punkte speichern</button><button class="btn hell" id="weiter">↩ weiterspielen</button><span id="sp-msg"></span></p></div></div>`;
   }
   /* Spiellogik der Lehrkraft */
@@ -347,10 +396,11 @@ function leitung(){
     on("auslosen", ()=>{ anzahl=Number(($("#anz")||{}).value)||4; const gs=anzahl===3?["strand","wald","wrack"]:["strand","wald","berg","wrack"]; const sp=S.spieler||{}; const da=mische(Object.keys(sp).filter(p=>sp[p].da));
       if(da.length<gs.length){ alert("Zu wenige Personen sind „da“."); return; } const up={aktiv:Object.fromEntries(Object.keys(D.gruppen).map(g=>[g,gs.includes(g)]))}; Object.keys(sp).forEach(p=>up[`spieler/${p}/gruppe`]=null); da.forEach((p,i)=>up[`spieler/${p}/gruppe`]=gs[i%gs.length]); I().update(up); });
     on("start", ()=>{ const gs=gruppen(S); const lager={}; gs.forEach(g=>lager[g]=Object.assign({},G(g).lager)); if(gs.length===3){ /* ohne Berg: Wasser verteilen */ lager.strand.wasser+=4; lager.wald.wasser+=3; lager.wrack.wasser+=3; }
-      I().update({"info/phase":"spiel", tag:1, schritt:"geschichte", m:{lager}, antworten:null, ereignis:null, benutzt:null, korr:null, ticker:null, schnellste:null, markt:null, uebertragen:null}); });
+      I().update({"info/phase":"spiel", tag:1, schritt:"geschichte", m:{lager}, antworten:null, ereignis:null, benutzt:null, korr:null, ticker:null, schnellste:null, markt:null, uebertragen:null, arbeit:null, leistung:null, funk:null}); });
     const evs=$("#ev"); if(evs) evs.onchange=()=>{ ev=evs.value; };
     const mi=$("#min"); if(mi) mi.onchange=()=>{ marktMin=Math.max(2,Math.min(30,Number(mi.value)||10)); };
     on("ereignis", ()=>ereignisZeigen(S.tag||1));
+    on("arbeit", ()=>{ marktMin=Math.max(2,Math.min(30,Number(($("#min")||{}).value)||marktMin)); I().update({schritt:"arbeit", markt:{ende:jetzt()+marktMin*60000}}); });
     on("markt", ()=>{ marktMin=Math.max(2,Math.min(30,Number(($("#min")||{}).value)||marktMin)); I().update({schritt:"markt", markt:{ende:jetzt()+marktMin*60000}}); });
     on("plus2", ()=>I("markt/ende").set(Math.max(jetzt(),(S.markt&&S.markt.ende)||jetzt())+120000));
     on("abend", abend);
