@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Wort-Party – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --ink-2:#26365A; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --gold:#F5B82E; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:640px;margin:0 auto;padding:14px 14px 50px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:rgba(255,255,255,.12);color:#fff} .btn.hell{background:var(--pri-2);color:var(--pri)}
+.btn.acc{background:var(--acc)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.rot{background:var(--bad)}
+.btn.wide{width:100%} .btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+input[type=text],input[type=email],input[type=password],input[type=number],select{min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:#fff}
+.pin-in{width:100%;font-family:var(--head);font-size:34px;letter-spacing:.3em;text-align:center}
+/* Handy */
+.kopf{background:var(--ink);color:#fff;position:sticky;top:0;z-index:5}
+.kopf .in{max-width:640px;margin:0 auto;padding:8px 14px;display:flex;gap:10px;align-items:center;min-height:54px}
+.kopf b{font-family:var(--head);font-size:18px} .kopf .r{margin-left:auto;display:flex;gap:10px;align-items:center;font-family:var(--head);font-weight:800}
+.dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+.wortkarte{background:var(--ink);color:#fff;border-radius:22px;padding:22px;text-align:center}
+.wortkarte .wort{font-family:var(--head);font-weight:800;font-size:clamp(34px,11vw,56px);color:var(--gold);line-height:1.05;margin:8px 0}
+.tabu{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.tabu span{background:var(--bad);color:#fff;border-radius:999px;padding:3px 12px;font-weight:700;text-decoration:line-through}
+.gross{font-size:60px;text-align:center}
+.zeit{font-family:var(--head);font-weight:800;font-size:44px;text-align:center}
+.zeit.knapp{color:var(--bad)}
+.leinwand{width:100%;aspect-ratio:4/3;background:#fff;border-radius:16px;touch-action:none;border:2px solid var(--line);display:block}
+.farben{display:flex;gap:8px;margin:8px 0;flex-wrap:wrap;align-items:center}
+.farben button.f{width:38px;height:38px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line);cursor:pointer;padding:0}
+.farben button.f.an{box-shadow:0 0 0 3px var(--ink)}
+/* Leitung / Leinwand */
+body.board{background:var(--ink);color:#fff}
+.board .card{background:var(--ink-2);color:#fff;box-shadow:none}
+.top{display:flex;gap:10px;align-items:center;padding:10px 20px;background:#16213A;flex-wrap:wrap}
+.top b{font-family:var(--head);font-size:22px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-weight:700;background:rgba(255,255,255,.12)}
+.chip.gold{background:var(--gold);color:var(--ink)}
+.bwrap{max-width:1280px;margin:0 auto;padding:18px 20px 40px}
+.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.tm{background:var(--ink-2);border-radius:18px;padding:14px 16px;border-top:8px solid var(--f);position:relative}
+.tm.dran{box-shadow:0 0 0 4px var(--gold)}
+.tm b{font-family:var(--head);font-size:22px;display:block}
+.tm .p{font-family:var(--head);font-weight:800;font-size:54px;color:var(--gold);line-height:1}
+.tm .m{font-size:14px;opacity:.75}
+.tm .korr{position:absolute;right:10px;top:10px;display:flex;gap:4px}
+.tm .korr button{width:30px;height:30px;border-radius:8px;border:0;background:rgba(255,255,255,.12);color:#fff;font-weight:800;cursor:pointer}
+.buehne{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start}
+@media (max-width:900px){ .buehne{grid-template-columns:1fr} }
+.modus{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.modus button{border:3px solid transparent;background:rgba(255,255,255,.08);color:#fff;border-radius:16px;padding:12px 18px;font-size:20px;font-weight:700;cursor:pointer}
+.modus button.an{border-color:var(--gold);background:rgba(245,184,46,.15)}
+.riesig{font-family:var(--head);font-weight:800;font-size:clamp(60px,9vw,140px);color:var(--gold);line-height:1;text-align:center}
+.wl{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.wl span{border-radius:999px;padding:4px 12px;font-weight:700}
+.wl .j{background:var(--ok);color:#fff} .wl .n{background:rgba(255,255,255,.12);color:#cfd6e6;text-decoration:line-through}
+.namen{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.nm{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border-radius:10px;padding:4px 8px}
+.nm span{flex:1;font-weight:600}
+.nm select{min-height:32px;padding:2px 6px;font-size:14px;border-radius:8px}
+.lwpin{font-family:var(--head);font-weight:800;font-size:96px;letter-spacing:.1em;color:var(--gold);line-height:1}
+#qr img,#qr canvas{background:#fff;padding:10px;border-radius:12px}
+table{border-collapse:collapse;width:100%} td,th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+td input{width:80px;min-height:36px}
+.board canvas.leinwand{border:0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="activity/woerter-a2.js"></script>
+<script>
+/* =========================================================
+   WORT-PARTY · Pantomime 🎭 · Malen ✏️ · Erklären 💬 – in Teams
+   ?leitung=1 → Lehrkraft (Bildschirm = Leinwand, das Wort ist dort NICHT zu sehen)
+   ?pin=1234  → Jugendliche (die Person, die dran ist, sieht das Wort auf dem Handy)
+   Daten: ligaactivity/ploen-jik/{pin}
+   ========================================================= */
+const KURS="ploen-jik", BASE=`jugendliga/${KURS}`, CODE_KEY=`liga_code_${KURS}`, AROOT=`ligaactivity/${KURS}`;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash",storageBucket:"lern-deutsch-arash.firebasestorage.app",messagingSenderId:"845503292114",appId:"1:845503292114:web:f76ab5fcde1e978d00c30b"};
+const P=new URLSearchParams(location.search);
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr=v=>Array.isArray(v)?v.filter(x=>x!==null&&x!==undefined):(v&&typeof v==="object"?Object.values(v):[]);
+function mische(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const BASIS_URL=location.href.replace(/[?#].*$/,""), LIVE_URL=BASIS_URL.replace(/[^\/]*$/,"")+"live.html";
+const MODI={p:["🎭","Pantomime","Zeig das Wort nur mit dem Körper – ohne Sprechen, ohne Geräusche!"], m:["✏️","Malen","Mal das Wort auf deinem Handy – die anderen sehen es auf der Leinwand. Keine Buchstaben, keine Zahlen!"], e:["💬","Erklären","Erklär das Wort auf Deutsch – ohne das Wort selbst und ohne die roten Wörter!"]};
+const TEAMS=[["Rot","#E2483D"],["Blau","#3B4FD8"],["Grün","#14A37F"],["Orange","#F08A24"]];
+const LISTE=window.WORT_LISTEN.a2; const W=LISTE.woerter;
+let db=null, auth=null, offset=0; try{ firebase.initializeApp(cfg); db=firebase.database(); auth=firebase.auth(); db.ref(".info/serverTimeOffset").on("value",s=>offset=Number(s.val())||0); }catch(e){}
+const jetzt=()=>Date.now()+offset; const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+let PIN=(P.get("pin")||"").replace(/\D/g,"");
+const A=p=>db.ref(`${AROOT}/${PIN}${p?"/"+p:""}`);
+const rest = Z => Z&&Z.ende ? Math.max(0, Math.ceil((Z.ende-jetzt())/1000)) : 0;
+const mitglieder=(S,t)=>Object.entries(S.spieler||{}).filter(([,x])=>x.team===t).sort((a,b)=>String(a[1].name).localeCompare(b[1].name)).map(([p])=>p);
+
+/* ---------- Zeichnen (gemeinsam für Handy und Leinwand) ---------- */
+function zeichneStriche(cv, striche){
+  const c=cv.getContext && cv.getContext("2d"); if(!c) return; const w=cv.width, h=cv.height; c.clearRect(0,0,w,h); c.fillStyle="#fff"; c.fillRect(0,0,w,h);
+  c.lineCap="round"; c.lineJoin="round";
+  arr(striche).forEach(s=>{ const pts=String(s.p||"").split(";").map(x=>x.split(",").map(Number)).filter(x=>x.length===2&&!isNaN(x[0])); if(!pts.length) return;
+    c.strokeStyle=s.c||"#1E2A44"; c.lineWidth=(s.w||6)*w/600; c.beginPath(); c.moveTo(pts[0][0]*w/1000, pts[0][1]*h/750);
+    pts.slice(1).forEach(q=>c.lineTo(q[0]*w/1000, q[1]*h/750)); if(pts.length===1) c.lineTo(pts[0][0]*w/1000+.1, pts[0][1]*h/750); c.stroke(); });
+}
+function passeAn(cv){ const r=cv.getBoundingClientRect(); const d=window.devicePixelRatio||1; if(r.width){ cv.width=Math.round(r.width*d); cv.height=Math.round(r.width*.75*d); } }
+
+/* =========================================================
+   JUGENDLICHE
+   ========================================================= */
+function spieler(){
+  const app=$("#app"); let me=null, S=null, tick=null, malStand=null, farbe="#1E2A44", dicke=6;
+  try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+  function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🎭</div><h2>Wort-Party</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
+    <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefe(); }; }
+  async function pruefe(){ if(PIN.length!==4) return pinScreen(PIN?"Die PIN hat 4 Ziffern.":"");
+    try{ const i=(await A("info").once("value")).val(); if(!i) return pinScreen("Diese PIN gibt es nicht."); history.replaceState(null,"","?pin="+PIN); me?los():codeScreen(); }catch(e){ pinScreen("Keine Verbindung."); } }
+  function codeScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🔑</div><h2>Dein Code</h2>
+    <form id="cf"><input id="code" class="pin-in" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn wide" style="margin-top:10px">Los</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#cf").onsubmit=async e=>{ e.preventDefault(); const code=$("#code").value.toUpperCase().replace(/[^A-Z0-9]/g,""); if(code.length<4) return codeScreen("Der Code hat mindestens 4 Zeichen.");
+      try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val(); if(!c||!c.pid) return codeScreen("Diesen Code gibt es nicht.");
+        const n=(await db.ref(`${BASE}/public/names/${c.pid}`).once("value")).val(); me={code,pid:c.pid,name:n||c.name||"?"}; localStorage.setItem(CODE_KEY,JSON.stringify(me)); los(); }catch(err){ codeScreen("Keine Verbindung."); } }; }
+  function los(){ const ref=A(`spieler/${me.pid}`); ref.update({name:me.name, ts:TS(), online:true, da:true}); try{ ref.child("online").onDisconnect().set(false); }catch(e){}
+    A().on("value", s=>{ S=s.val()||{}; male(); }); tick=setInterval(()=>{ const z=$("#zeit"); if(z&&S&&S.zug){ const r=rest(S.zug); z.textContent=r; z.classList.toggle("knapp", r<=10); } },250); }
+  function male(){
+    if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
+    const ich=(S.spieler||{})[me.pid]||{}, T=(S.teams||{})[ich.team];
+    const kopf=`<div class="kopf"><div class="in"><b>🎭 Wort-Party</b><span class="r">${T?`<span class="dot" style="background:${T.farbe}"></span> ${esc(T.name)} · <span style="color:var(--gold)">${T.p||0} P</span>`:esc(me.name)}</span></div></div>`;
+    if(S.info.phase==="lobby"||!T){ app.innerHTML=kopf+`<div class="wrap"><div class="card" style="text-align:center"><div class="gross">⏳</div><h2>Hallo ${esc(me.name)}!</h2><p class="muted">${T?`Du bist im Team <b style="color:${T.farbe}">${esc(T.name)}</b>: ${mitglieder(S,ich.team).map(p=>esc(S.spieler[p].name)).join(", ")}`:"Deine Lehrkraft macht gerade die Teams."}</p><p class="small muted">Schau gleich auf die Leinwand.</p></div></div>`; return; }
+    if(S.info.phase==="ende"){ const ub=(S.uebertragen||{})[me.pid]; app.innerHTML=kopf+`<div class="wrap"><div class="card" style="text-align:center"><div class="gross">🏁</div><h2>Spiel vorbei!</h2><p>Team ${esc(T.name)}: <b>${T.p||0} ${(T.p||0)===1?"Punkt":"Punkte"}</b></p>${ub!==undefined?`<p style="color:var(--ok);font-weight:700">✓ Für dich gespeichert: ${ub} ${ub===1?"Punkt":"Punkte"}</p>`:""}</div></div>`; return; }
+    const Z=S.zug||{}; const ZT=(S.teams||{})[Z.team]||{}; const binDran=Z.erklaerer===me.pid; const meinTeam=Z.team===ich.team;
+    const M=MODI[Z.modus]||MODI.e; const wort=W[Z.wort];
+    let h="";
+    if(Z.status==="laeuft" && binDran){
+      h=`<div class="zeit" id="zeit">${rest(Z)}</div><div class="wortkarte" id="wk">${wortKarte(Z)}</div>`;
+      if(Z.modus==="m") h+=`<div class="card" style="margin-top:12px;padding:12px"><canvas class="leinwand" id="cv"></canvas>
+        <div class="farben">${["#1E2A44","#E2483D","#3B4FD8","#14A37F","#F08A24","#8B5CF6"].map(c=>`<button style="background:${c}" class="f ${farbe===c?"an":""}" data-farbe="${c}"></button>`).join("")}<button class="btn sm hell" id="dick">${dicke>6?"dünn":"dick"}</button><button class="btn sm rot" id="leeren" style="margin-left:auto">🗑 leeren</button></div></div>`;
+      h+=`<p class="small muted" style="text-align:center">Deine Lehrkraft gibt die Punkte, wenn dein Team richtig rät – dann kommt automatisch das nächste Wort.</p>`;
+    } else if(Z.status==="laeuft"){
+      h=`<div class="zeit" id="zeit">${rest(Z)}</div><div class="card" style="text-align:center"><div class="gross">${M[0]}</div>
+        <h2>${meinTeam?"Ratet! Ruft die Lösung laut!":`Team ${esc(ZT.name)} rät …`}</h2><p class="muted">${esc((S.spieler[Z.erklaerer]||{}).name||"")} macht ${M[1]}.${meinTeam?"":" Psst – nicht vorsagen! 🤫"}</p></div>`;
+    } else if(Z.status==="bereit"){
+      h=`<div class="card" style="text-align:center"><div class="gross">${binDran?"🫵":"👀"}</div><h2>${binDran?"Gleich bist DU dran!":`Gleich ist Team ${esc(ZT.name)} dran`}</h2>
+        <p class="muted">${binDran?`Komm nach vorne. Du siehst das Wort hier auf deinem Handy, wenn die Zeit startet.${Z.modus?` Modus: <b>${MODI[Z.modus][0]} ${MODI[Z.modus][1]}</b>`:""}`:`${esc((S.spieler[Z.erklaerer]||{}).name||"")} ist dran.`}</p></div>`;
+    } else if(Z.status==="vorbei"){
+      const g=arr(Z.geraten), u=arr(Z.weg);
+      h=`<div class="card" style="text-align:center"><div class="gross">⏰</div><h2>Zeit ist um!</h2><p>Team ${esc(ZT.name)} hat <b>${g.length}</b> ${g.length===1?"Wort":"Wörter"} erraten.</p>
+        <div class="row" style="justify-content:center">${g.map(i=>`<span class="chip" style="background:var(--ok-2);color:var(--ok)">✓ ${esc(W[i][0])}</span>`).join("")}${u.map(i=>`<span class="chip" style="background:var(--line)">${esc(W[i][0])}</span>`).join("")}</div></div>`;
+    } else h=`<div class="card" style="text-align:center"><div class="gross">👀</div><h2>Schau auf die Leinwand!</h2></div>`;
+    h+=`<div class="row" style="justify-content:center">${Object.entries(S.teams||{}).map(([t,x])=>`<span class="chip" style="background:#fff;box-shadow:inset 0 -4px 0 ${x.farbe}">${esc(x.name)} ${x.p||0}</span>`).join("")}</div>`;
+    const alteCv=$("#cv");
+    if(alteCv && Z.status==="laeuft" && binDran && Z.modus==="m" && malStand===Z.id){ /* Leinwand nicht neu bauen – nur das Wort aktualisieren */ const wk=$("#wk"); if(wk) wk.innerHTML=wortKarte(Z); return; }
+    app.innerHTML=kopf+`<div class="wrap">${h}</div>`;
+    if(Z.status==="laeuft" && binDran && Z.modus==="m"){ malStand=Z.id; malen(Z); } else malStand=null;
+  }
+  function wortKarte(Z){ const M=MODI[Z.modus]||MODI.e, wort=W[Z.wort];
+    return `<div style="font-size:28px">${M[0]} ${M[1]}</div><div class="wort">${esc(wort?wort[0]:"…")}</div>
+      ${Z.modus==="e"&&wort?`<div class="small" style="opacity:.8">Diese Wörter darfst du NICHT sagen:</div><div class="tabu">${wort[2].map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}
+      <p class="small" style="opacity:.8;margin:12px 0 0">${esc(M[2])}</p>`; }
+  function malen(Z){
+    const cv=$("#cv"); passeAn(cv); let striche=[], aktuell=null, letzt=0;
+    A(`malen/${Z.id}`).on("value", s=>{ striche=arr(s.val()); zeichneStriche(cv, striche); });
+    const pos=e=>{ const r=cv.getBoundingClientRect(); return [Math.round((e.clientX-r.left)/r.width*1000), Math.round((e.clientY-r.top)/r.height*750)]; };
+    const senden=()=>{ if(aktuell&&aktuell.pts.length){ A(`malen/${Z.id}`).push({c:aktuell.c, w:aktuell.w, p:aktuell.pts.map(q=>q.join(",")).join(";")}); } };
+    cv.onpointerdown=e=>{ e.preventDefault(); cv.setPointerCapture&&cv.setPointerCapture(e.pointerId); aktuell={c:farbe, w:dicke, pts:[pos(e)]}; };
+    cv.onpointermove=e=>{ if(!aktuell) return; aktuell.pts.push(pos(e)); zeichneStriche(cv, striche.concat([{c:aktuell.c,w:aktuell.w,p:aktuell.pts.map(q=>q.join(",")).join(";")}]));
+      if(Date.now()-letzt>250 && aktuell.pts.length>2){ letzt=Date.now(); senden(); const l=aktuell.pts[aktuell.pts.length-1]; aktuell={c:aktuell.c, w:aktuell.w, pts:[l]}; } };
+    cv.onpointerup=cv.onpointercancel=()=>{ senden(); aktuell=null; };
+    $$("[data-farbe]").forEach(b=>b.onclick=()=>{ farbe=b.dataset.farbe; $$("[data-farbe]").forEach(x=>x.classList.toggle("an", x===b)); });
+    $("#dick").onclick=()=>{ dicke=dicke>6?6:16; $("#dick").textContent=dicke>6?"dünn":"dick"; };
+    $("#leeren").onclick=()=>A(`malen/${Z.id}`).remove();
+  }
+  if(!db){ app.innerHTML="Keine Verbindung."; return; }
+  PIN?pruefe():pinScreen();
+}
+
+/* =========================================================
+   LEITUNG = LEINWAND
+   ========================================================= */
+function leitung(){
+  document.body.classList.add("board");
+  const app=$("#app"); let S=null, pub={}, tick=null, malId=null, qrFertig=false, warte=false;
+  const einst={dauer:60, modi:{p:true,m:true,e:true}, kat:{}};
+  [...new Set(W.map(w=>w[3]))].forEach(k=>einst.kat[k]=true);
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){ document.body.classList.remove("board"); app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>🎭 Wort-Party leiten</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="width:100%;margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="width:100%;margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  async function start(){
+    document.body.classList.add("board");
+    pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+    if(!PIN){ try{ PIN=localStorage.getItem("activity_leitung_pin")||""; }catch(e){} }
+    if(PIN){ const i=(await A("info").once("value")).val(); if(!i||i.phase==="ende"&&!P.get("pin")) PIN=""; }
+    if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${AROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
+      await A().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}}); }
+    try{ localStorage.setItem("activity_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
+    A().on("value", s=>{ S=s.val()||{}; male(); });
+    tick=setInterval(uhr, 250);
+  }
+  function uhr(){ if(!S||!S.zug) return; const Z=S.zug; const r=rest(Z); const z=$("#zeit"); if(z){ z.textContent=r; z.style.color=r<=10?"var(--bad)":""; }
+    if(Z.status==="laeuft" && Z.ende && jetzt()>=Z.ende) zeitUm(); }
+  const namen=()=>pub.names||{};
+  function male(){
+    const ae=document.activeElement; if(ae && /INPUT|SELECT/.test(ae.tagName) && app.contains(ae)){ warte=true; return; }
+    const ph=S.info.phase; const dabei=Object.values(S.spieler||{}).filter(x=>x.ts).length;
+    const kopf=`<div class="top"><b>🎭 Wort-Party</b><span class="chip gold">PIN ${PIN}</span><span class="chip">${dabei} dabei</span><span class="small" style="opacity:.7">Handy: ${esc(LIVE_URL.replace(/^https?:\/\//,""))}</span>
+      <span style="margin-left:auto" class="row">${ph==="spiel"?`<button class="btn sm ghost" id="beenden">🏁 Spiel beenden</button>`:""}<button class="btn sm ghost" id="neu">Neues Spiel</button></span></div>`;
+    if(ph==="lobby") app.innerHTML=kopf+lobby(); else if(ph==="spiel") app.innerHTML=kopf+spiel(); else app.innerHTML=kopf+ende();
+    if(ph==="lobby" && !qrFertig){ qrFertig=true; } if(ph==="lobby"){ try{ new QRCode($("#qr"),{text:BASIS_URL+"?pin="+PIN,width:170,height:170}); }catch(e){} }
+    binden(); malBeamer(); uhr();
+  }
+  const teamSel=(p,cur)=>`<select data-team="${p}"><option value="">–</option>${Object.entries(S.teams||{}).map(([t,T])=>`<option value="${t}" ${cur===t?"selected":""}>${esc(T.name)}</option>`).join("")}</select>`;
+  function lobby(){
+    const sp=S.spieler||{}; const ids=Object.keys(namen()).sort((a,b)=>String(namen()[a]).localeCompare(namen()[b]));
+    const kats=Object.keys(einst.kat);
+    return `<div class="bwrap"><div style="display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start">
+      <div class="card" style="text-align:center"><div id="qr" style="display:flex;justify-content:center;margin-bottom:10px"></div><div>PIN</div><div class="lwpin">${PIN}</div><p class="small" style="opacity:.8">${esc(LIVE_URL.replace(/^https?:\/\//,""))}</p></div>
+      <div>
+        <div class="card"><h2>1 · Wer ist da?</h2><p class="small" style="opacity:.8;margin-top:0">Wer sich mit PIN und Code anmeldet, ist automatisch da (📱). Ohne Handy: Haken setzen.</p>
+          <div class="namen">${ids.map(p=>{ const x=sp[p]||{}; return `<label class="nm"><input type="checkbox" data-da="${p}" ${x.da?"checked":""}><span>${esc(namen()[p])} ${x.ts?"📱":""}</span>${teamSel(p,x.team)}</label>`; }).join("")}</div></div>
+        <div class="card"><h2>2 · Teams</h2><div class="row"><select id="anz">${[2,3,4].map(n=>`<option value="${n}">${n} Teams</option>`).join("")}</select><button class="btn gold" id="auslosen">🎲 Teams auslosen</button></div>
+          <div class="score" style="margin-top:12px">${Object.entries(S.teams||{}).map(([t,T])=>`<div class="tm" style="--f:${T.farbe}"><b>${esc(T.name)}</b><span class="m">${mitglieder(S,t).map(p=>esc(sp[p].name)).join(", ")||"leer"}</span></div>`).join("")}</div></div>
+        <div class="card"><h2>3 · Einstellungen</h2>
+          <div class="row">Zeit pro Runde <input type="number" id="dauer" value="${einst.dauer}" min="20" max="180" style="width:90px"> Sekunden</div>
+          <div class="row" style="margin-top:8px">${Object.entries(MODI).map(([k,m])=>`<label class="chip"><input type="checkbox" data-modus-an="${k}" ${einst.modi[k]?"checked":""}> ${m[0]} ${m[1]}</label>`).join("")}</div>
+          <div class="row" style="margin-top:8px">${kats.map(k=>`<label class="chip"><input type="checkbox" data-kat="${esc(k)}" ${einst.kat[k]?"checked":""}> ${esc(k)}</label>`).join("")}</div>
+          <button class="btn acc" id="start" style="margin-top:14px;min-height:58px;font-size:20px" ${Object.keys(S.teams||{}).length>=2?"":"disabled"}>▶ Spiel starten</button></div>
+      </div></div></div>`;
+  }
+  function scoreHtml(){ const Z=S.zug||{};
+    return `<div class="score">${Object.entries(S.teams||{}).map(([t,T])=>`<div class="tm ${Z.team===t?"dran":""}" style="--f:${T.farbe}"><span class="korr"><button data-korr="${t}" data-w="-1">−</button><button data-korr="${t}" data-w="1">+</button></span>
+      <b>${esc(T.name)}</b><div class="p">${T.p||0}</div><span class="m">${mitglieder(S,t).map(p=>esc(S.spieler[p].name)).join(", ")}</span></div>`).join("")}</div>`; }
+  function spiel(){
+    const Z=S.zug||{}, T=(S.teams||{})[Z.team]||{}, er=(S.spieler||{})[Z.erklaerer]||{}; const M=MODI[Z.modus];
+    let b="";
+    if(Z.status==="bereit"){
+      const erlaubt=Object.keys(MODI).filter(k=>einstModi()[k]);
+      b=`<div class="card" style="text-align:center"><h1 style="font-size:46px;color:${T.farbe}">Team ${esc(T.name)} ist dran!</h1>
+        <p style="font-size:28px;margin:6px 0 14px">${esc(er.name||"?")} kommt nach vorne. 📱</p>
+        <div class="modus" style="justify-content:center">${erlaubt.map(k=>`<button class="${Z.modus===k?"an":""}" data-modus="${k}">${MODI[k][0]} ${MODI[k][1]}</button>`).join("")}<button data-wuerfel>🎲 würfeln</button></div>
+        <div class="row" style="justify-content:center;margin-top:10px"><select id="erkl">${mitglieder(S,Z.team).map(p=>`<option value="${p}" ${p===Z.erklaerer?"selected":""}>${esc(S.spieler[p].name)}</option>`).join("")}</select>
+          <button class="btn acc" id="los" style="min-height:62px;font-size:24px;padding:10px 40px" ${Z.modus?"":"disabled"}>▶ Los! (${Number(S.dauer)||60} s)</button></div></div>`;
+    } else if(Z.status==="laeuft"){
+      b=`<div class="buehne"><div class="card" style="text-align:center">${Z.modus==="m"?`<canvas class="leinwand" id="beamer-cv"></canvas>`:`<div style="font-size:120px;line-height:1.2">${M[0]}</div><h1 style="font-size:44px">${esc(er.name||"")} – ${M[1]}</h1><p style="opacity:.8;font-size:20px">Team ${esc(T.name)}, ratet!</p>`}</div>
+        <div class="card" style="text-align:center"><div class="riesig" id="zeit">${rest(Z)}</div><p style="opacity:.8">Sekunden</p><h2>${arr(Z.geraten).length} erraten</h2>
+          <button class="btn ok wide" id="richtig" style="min-height:70px;font-size:24px;margin-top:10px">✓ Erraten! +1</button>
+          <button class="btn ghost wide" id="weiter" style="margin-top:8px">⏭ nächstes Wort (0)</button>
+          <button class="btn ghost wide" id="stopp" style="margin-top:8px">⏹ Runde beenden</button>
+          <p class="small" style="opacity:.6;margin-bottom:0">Das Wort steht nur auf dem Handy von ${esc(er.name||"")}.</p></div></div>`;
+    } else if(Z.status==="vorbei"){
+      const g=arr(Z.geraten), u=arr(Z.weg).concat(Z.wort!==undefined&&Z.wort!==null?[Z.wort]:[]);
+      b=`<div class="card" style="text-align:center"><h1 style="font-size:46px">⏰ Zeit ist um!</h1><p style="font-size:24px">Team ${esc(T.name)}: <b style="color:var(--gold)">${g.length}</b> ${g.length===1?"Wort":"Wörter"}</p>
+        <div class="wl" style="justify-content:center;font-size:22px">${g.map(i=>`<span class="j">✓ ${esc(W[i][0])}</span>`).join("")}${u.map(i=>`<span class="n">${esc(W[i][0])}</span>`).join("")}</div>
+        ${Z.modus==="m"?`<canvas class="leinwand" id="beamer-cv" style="max-width:520px;margin:14px auto 0"></canvas>`:""}
+        <button class="btn gold" id="naechstes" style="min-height:62px;font-size:22px;margin-top:16px">Nächstes Team ›</button></div>`;
+    }
+    return `<div class="bwrap">${scoreHtml()}${b}</div>`;
+  }
+  function ende(){
+    const sp=S.spieler||{}, ub=S.uebertragen||{};
+    const rang=Object.entries(S.teams||{}).sort((a,b)=>(b[1].p||0)-(a[1].p||0));
+    const zeilen=[]; rang.forEach(([t,T])=>mitglieder(S,t).forEach(p=>zeilen.push({p, name:sp[p].name, T, wert:ub[p]!==undefined?ub[p]:Math.min(20,T.p||0)})));
+    return `<div class="bwrap"><h1 style="font-size:56px;text-align:center">🏆 ${rang[0]?esc(rang[0][1].name)+" gewinnt!":"Fertig!"}</h1>${scoreHtml()}
+      <div class="card"><h2>Punkte für jede Person</h2><p class="small" style="opacity:.8;margin-top:0">Vorschlag: die Punkte des Teams (höchstens 20). Du kannst jede Zahl ändern.</p>
+      <table><tr><th>Name</th><th>Team</th><th>Punkte</th><th></th></tr>${zeilen.map(z=>`<tr><td>${esc(z.name)}</td><td><span class="dot" style="background:${z.T.farbe}"></span> ${esc(z.T.name)}</td><td><input type="number" min="0" max="100" data-lp="${z.p}" value="${z.wert}"></td><td>${ub[z.p]!==undefined?"✓ gespeichert":""}</td></tr>`).join("")}</table>
+      <p class="row" style="margin-top:12px"><button class="btn ok" id="speichern">⬆ Punkte speichern</button><button class="btn ghost" id="weiterspielen">↩ weiterspielen</button><span id="sp-msg"></span></p></div></div>`;
+  }
+  const einstModi=()=>S.modi||einst.modi;
+  /* Spiellogik */
+  function naechsterZug(){
+    const ts=Object.keys(S.teams||{}); if(!ts.length) return;
+    const nr=(S.zugNr||0); const t=ts[nr%ts.length]; const runde=Math.floor(nr/ts.length);
+    const m=mitglieder(S,t); const erkl=m.length?m[runde%m.length]:null;
+    const erlaubt=Object.keys(MODI).filter(k=>einstModi()[k]);
+    A().update({zug:{id:"z"+Date.now().toString(36), team:t, erklaerer:erkl, status:"bereit", modus:erlaubt.length===1?erlaubt[0]:null}, zugNr:nr+1});
+  }
+  function neuesWort(modus, extraBenutzt){
+    const ben=Object.assign({}, S.benutzt||{}, extraBenutzt||{}); const liste=arr(S.woerter);
+    let idx=liste.find(i=>!ben[i] && W[i] && W[i][1].includes(modus));
+    if(idx===undefined){ idx=mische(W.map((_,i)=>i).filter(i=>W[i][1].includes(modus)))[0]; }
+    return idx;
+  }
+  function zeitUm(){ if(S.zug.status!=="laeuft") return; A("zug").update({status:"vorbei", ende:null}); }
+  function binden(){
+    const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+    $$("[data-da]").forEach(c=>c.onchange=()=>{ const p=c.dataset.da; A(`spieler/${p}`).update({da:c.checked, name:namen()[p]||"?"}); if(!c.checked) A(`spieler/${p}/team`).remove(); });
+    $$("[data-team]").forEach(c=>c.onchange=()=>{ const p=c.dataset.team; A(`spieler/${p}`).update({team:c.value||null, da:true, name:namen()[p]||"?"}); });
+    on("auslosen", ()=>{ const n=Number($("#anz").value)||2; const sp=S.spieler||{}; const da=mische(Object.keys(sp).filter(p=>sp[p].da)); if(da.length<n){ alert("Zu wenige Personen sind „da“."); return; }
+      const teams={}; for(let i=0;i<n;i++) teams["t"+i]={name:TEAMS[i][0], farbe:TEAMS[i][1], p:0};
+      const up={teams}; Object.keys(sp).forEach(p=>up[`spieler/${p}/team`]=null); da.forEach((p,i)=>up[`spieler/${p}/team`]="t"+(i%n)); A().update(up); });
+    const du=$("#dauer"); if(du) du.onchange=()=>{ einst.dauer=Math.max(20,Math.min(180,Number(du.value)||60)); };
+    $$("[data-modus-an]").forEach(c=>c.onchange=()=>{ einst.modi[c.dataset.modusAn]=c.checked; });
+    $$("[data-kat]").forEach(c=>c.onchange=()=>{ einst.kat[c.dataset.kat]=c.checked; });
+    on("start", ()=>{ if(!Object.values(einst.modi).some(Boolean)){ alert("Mindestens ein Modus."); return; }
+      const woerter=mische(W.map((_,i)=>i).filter(i=>einst.kat[W[i][3]]));
+      const up={"info/phase":"spiel", dauer:einst.dauer, modi:einst.modi, woerter, benutzt:null, zugNr:0, zug:null};
+      Object.keys(S.teams||{}).forEach(t=>up[`teams/${t}/p`]=0);
+      A().update(up).then(()=>naechsterZug()); });
+    $$("[data-modus]").forEach(b=>b.onclick=()=>A("zug/modus").set(b.dataset.modus));
+    $$("[data-wuerfel]").forEach(b=>b.onclick=()=>{ const erlaubt=Object.keys(MODI).filter(k=>einstModi()[k]); let n=0; const iv=setInterval(()=>{ A("zug/modus").set(erlaubt[Math.floor(Math.random()*erlaubt.length)]); if(++n>=6) clearInterval(iv); },140); });
+    const ek=$("#erkl"); if(ek) ek.onchange=()=>A("zug/erklaerer").set(ek.value);
+    on("los", ()=>{ const Z=S.zug; const w=neuesWort(Z.modus); A().update({"zug/status":"laeuft", "zug/wort":w, "zug/ende":jetzt()+(Number(S.dauer)||60)*1000, "zug/geraten":null, "zug/weg":null, [`benutzt/${w}`]:true}); });
+    on("richtig", ()=>{ const Z=S.zug; if(Z.status!=="laeuft") return; const g=arr(Z.geraten).concat(Z.wort); const w=neuesWort(Z.modus,{[Z.wort]:true});
+      A().update({"zug/geraten":g, "zug/wort":w, [`benutzt/${w}`]:true, [`teams/${Z.team}/p`]:((S.teams[Z.team]||{}).p||0)+1}); if(Z.modus==="m") A(`malen/${Z.id}`).remove(); });
+    on("weiter", ()=>{ const Z=S.zug; if(Z.status!=="laeuft") return; const u=arr(Z.weg).concat(Z.wort); const w=neuesWort(Z.modus,{[Z.wort]:true});
+      A().update({"zug/weg":u, "zug/wort":w, [`benutzt/${w}`]:true}); if(Z.modus==="m") A(`malen/${Z.id}`).remove(); });
+    on("stopp", zeitUm);
+    on("naechstes", naechsterZug);
+    $$("[data-korr]").forEach(b=>b.onclick=()=>{ const t=b.dataset.korr; A(`teams/${t}/p`).set(Math.max(0,((S.teams[t]||{}).p||0)+Number(b.dataset.w))); });
+    on("beenden", ()=>{ if(confirm("Spiel beenden? Danach vergibst du die Punkte.")) A("info/phase").set("ende"); });
+    on("weiterspielen", ()=>A("info/phase").set("spiel"));
+    on("neu", async ()=>{ if(!confirm("Ein neues Spiel mit neuer PIN starten?")) return; A().off(); try{ localStorage.removeItem("activity_leitung_pin"); }catch(e){} PIN=""; qrFertig=false; start(); });
+    on("speichern", async ()=>{ const msg=$("#sp-msg"); msg.textContent="Speichere …";
+      try{ const werte={}; $$("[data-lp]").forEach(i=>werte[i.dataset.lp]=Math.max(0,Math.min(100,Math.round(Number(i.value)||0))));
+        const up={}; const ts=TS(); Object.entries(werte).forEach(([p,v])=>up[`log/${p}/activity-${PIN}`]={code:"lehrkraft", key:"activity-"+PIN, titel:"Wort-Party", art:"team", p:v, max:20, ts});
+        await db.ref(BASE).update(up); await A("uebertragen").set(werte); }catch(e){ msg.textContent="Fehler: "+(e.message||e); } });
+    $$("#app input, #app select").forEach(el=>el.addEventListener("blur", ()=>{ if(warte){ warte=false; setTimeout(male,50); } }));
+  }
+  function malBeamer(){
+    const cv=$("#beamer-cv"); const Z=S.zug||{};
+    if(malId && malId!==Z.id){ A(`malen/${malId}`).off(); malId=null; }
+    if(!cv) return; passeAn(cv);
+    if(malId!==Z.id){ malId=Z.id; A(`malen/${Z.id}`).on("value", s=>{ const c=$("#beamer-cv"); if(c) zeichneStriche(c, s.val()); }); }
+    else A(`malen/${Z.id}`).once("value").then(s=>{ const c=$("#beamer-cv"); if(c) zeichneStriche(c, s.val()); });
+  }
+}
+if(!db){ document.getElementById("app").innerHTML="Keine Verbindung."; }
+else P.get("leitung") ? leitung() : spieler();
+</script>
+</body>
+</html>
