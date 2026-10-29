@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1E2A44">
 <meta name="robots" content="noindex, nofollow">
@@ -320,6 +321,7 @@ function ueben(W){
       return `<button class="pfadk" data-filter="${b.id}"><span class="ic">${b.icon}</span><span class="tx"><b>${esc(b.titel)}</b><span class="small muted">${esc(b.text)}</span>
         <span class="bar"><i style="width:${f/us.length*100}%"></i></span><span class="small muted">${f} von ${us.length} diesen Monat${nie?` · <span style="color:var(--acc);font-weight:800">${nie} neu</span>`:""}</span></span><span class="pf">›</span></button>`; }).join("");
     return `<a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training · Prüfungsvorbereitung</h3><span>Hören · Lesen · Schreiben · Sprechen – im Format der Prüfung.</span></span></a>
+    <a class="card dtz" href="schreiben.html" style="background:linear-gradient(135deg,#5B21B6,#7C3AED)"><span class="gross">✍️</span><span><h3>Schreibwerkstatt B1</h3><span>E-Mails und Briefe wie im DTZ – deine Lehrkraft korrigiert persönlich. Bis 20 Punkte pro Text.</span></span></a>
       <div class="chips">${chips.map(([id,t])=>`<button class="chip ${filter===id?"on":""}" data-filter="${id}">${esc(t)}</button>`).join("")}</div>
       <div class="sek" style="margin-top:8px"><h2>📚 Lernpfad</h2></div><div class="pfad">${pfad}</div>`;
   }
@@ -330,6 +332,7 @@ function ueben(W){
     return `<div class="bereich"><span class="ic">${b.icon}</span><div style="flex:1"><h2 style="margin:0">${esc(b.titel)}</h2><div class="small muted">${esc(b.text)}</div></div><div class="small muted" style="text-align:right">${fertig}/${alleB.length}<div class="bar"><i style="width:${fertig/alleB.length*100}%"></i></div></div></div>
       <div class="liste">${us.map(u=>ueKarte(u,W,alle)).join("")}</div>`; }).join("");
   return `<a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training · Prüfungsvorbereitung</h3><span>Hören · Lesen · Schreiben · Sprechen – im Format der Prüfung.</span></span></a>
+    <a class="card dtz" href="schreiben.html" style="background:linear-gradient(135deg,#5B21B6,#7C3AED)"><span class="gross">✍️</span><span><h3>Schreibwerkstatt B1</h3><span>E-Mails und Briefe wie im DTZ – deine Lehrkraft korrigiert persönlich. Bis 20 Punkte pro Text.</span></span></a>
     <div class="chips">${chips.map(([id,t])=>`<button class="chip ${filter===id?"on":""}" data-filter="${id}">${esc(t)}</button>`).join("")}</div>
     <p class="small muted" style="margin:4px 2px">Für die Monatswertung zählt bei jeder Übung dein <b>bester Versuch</b> in diesem Monat. Rechts siehst du deinen Monats-Bestwert.</p>
     ${teile||`<div class="leer">Hier ist nichts mehr offen – super! 🎉</div>`}`;

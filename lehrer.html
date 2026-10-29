@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" translate="no" class="notranslate">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1E2A44">
 <meta name="robots" content="noindex, nofollow">
@@ -143,6 +144,7 @@ function heute(){
         <select id="set">${LIVE_SETS.map(([k,t])=>`<option value="${k}">${esc(t)}</option>`).join("")}</select><button class="btn acc" id="quiz">Leinwand öffnen</button></div>
       <div class="st" style="--f:var(--pri)"><span class="e">⚔️</span><h3>Tafel-Duell</h3><p>Team gegen Team an der Leinwand, ohne Handys. Teams aus den Anwesenden, Punkte für jede Person.</p><a class="btn" href="tafel-duell.html" target="_blank">Öffnen</a></div>
       <div class="st" style="--f:var(--gold)"><span class="e">🕵️</span><h3>Schnitzeljagd</h3><p>Teams zu 3–4, ca. 90 Minuten, Hör-Aufgaben und Zahlenschloss. Du stellst die Teams zusammen.</p><a class="btn gold" href="jagd.html?leitung=1" target="_blank">Leiten</a></div>
+      <div class="st" style="--f:#7C3AED"><span class="e">✍️</span><h3>Schreibwerkstatt B1</h3><p>DTZ-Schreiben üben: Aufgaben freigeben, Texte der Jugendlichen korrigieren und bewerten (bis 20 Punkte).</p><a class="btn" style="background:#7C3AED" href="schreiben.html?leitung=1" target="_blank">Öffnen</a></div>
       <div class="st" style="--f:#DB2777"><span class="e">🎭</span><h3>Wort-Party</h3><p>Pantomime, Malen oder Erklären in Teams (A2). 1 Minute pro Runde – du gibst die Punkte.</p><a class="btn" style="background:#DB2777" href="activity.html?leitung=1" target="_blank">Starten</a></div>
       <div class="st" style="--f:#8B5CF6"><span class="e">🗳️</span><h3>Abstimmung</h3><p>Frage und Antworten eingeben, alle stimmen am Handy ab – Ergebnis live auf der Leinwand.</p><a class="btn" style="background:#8B5CF6" href="abstimmung.html?leitung=1" target="_blank">Starten</a></div>
       <div class="st" style="--f:var(--ok)"><span class="e">💬</span><h3>Chat-Spiel</h3><p>WhatsApp-Gruppen an mehreren Tischen (3–4 Personen) – Nachrichten aus Wort-Kacheln bauen.</p><a class="btn ok" href="chat.html?leitung=1" target="_blank">Leiten</a></div>
@@ -216,6 +218,10 @@ function regeln(){
       log:{ ".read":true, "$pid":{ "$e":{
         ".write":`!data.exists() && newData.hasChildren(['code', 'key', 'p', 'ts']) && ${codeOk} && newData.child('p').isNumber() && newData.child('p').val() >= 0 && newData.child('p').val() <= 100 && newData.child('ts').val() <= now && newData.child('ts').val() > now - 600000`
       }}},
+      schreiben:{ "$pid":{ ".read":true, "$auf":{
+        ".write":`${codeOk} && newData.hasChildren(['code', 'text', 'status']) && (newData.child('status').val() === 'entwurf' || newData.child('status').val() === 'abgegeben') && (!data.exists() || data.child('status').val() === 'entwurf' || data.child('status').val() === 'zurueck') && newData.child('text').isString() && newData.child('text').val().length <= 6000`
+      }}},
+      schreibenfb:{ "$pid":{ ".read":true }},
       live:{ ".read":true, "$round":{ "$pid":{ "$task":{
         ".write":`newData.isNumber() && root.child(${K} + '/proof/' + $round + '/' + $pid + '/' + $task + '/points').val() === newData.val() && (!data.exists() || newData.val() > data.val())`
       }}}},
@@ -245,7 +251,7 @@ function einst(){
     <div class="card"><h2>1 · Firebase-Regeln (einmalig)</h2>
       <ol><li>Öffne die <a href="https://console.firebase.google.com/project/lern-deutsch-arash/database/lern-deutsch-arash-default-rtdb/rules" target="_blank">Regeln in der Firebase-Konsole</a>.</li>
       <li>Alles markieren und löschen, dann diese Regeln einfügen (Knopf „Kopieren“).</li><li>Auf <b>Veröffentlichen</b> klicken. Fertig.</li></ol>
-      <p class="small muted">Neu darin: Die Jugendlichen dürfen ihre eigenen Ergebnisse speichern (nur mit gültigem Code, nur 0–100 Punkte, nur mit aktueller Uhrzeit). Alles andere bleibt wie bisher geschützt.</p>
+      <p class="small muted">Darin: Die Jugendlichen dürfen ihre eigenen Ergebnisse speichern (nur mit gültigem Code, nur 0–100 Punkte, nur mit aktueller Uhrzeit) und ihre Texte in der Schreibwerkstatt (nur solange sie noch nicht abgegeben sind). Alles andere bleibt geschützt. <b>Nach jeder Erweiterung bitte neu einfügen.</b></p>
       <button class="btn" id="kopieren">📋 Regeln kopieren</button> <span id="kop-msg" class="small muted"></span><pre id="regeln">${esc(regeln())}</pre></div>
     <div class="card"><h2>2 · Sicherung</h2><p class="small muted">Lädt alle Ergebnisse, Namen und Codes als Datei herunter.</p><button class="btn ghost" id="sicherung">⬇ Sicherung herunterladen</button></div>
     <div class="card"><h2>Archiv</h2><p class="small muted">Die alte Liga mit Teams ist abgeschaltet. Bitte nicht mehr benutzen – sie kann Namen und Codes überschreiben.</p><a class="btn ghost sm" href="konsole.html" target="_blank">Alte Liga-Konsole</a> <a class="btn ghost sm" href="liga.html" target="_blank">Alte Arena</a></div>`;

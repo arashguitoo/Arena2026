@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Schreibwerkstatt B1 – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#3B4FD8; --pri-2:#E8EBFF; --acc:#FF6B4A; --gold:#F5B82E; --gold-2:#FFF4D6; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --lila:#7C3AED; --lila-2:#F1EAFE;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+button,input,textarea,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:780px;margin:0 auto;padding:16px 16px 60px} .wrap.weit{max-width:1200px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--lila);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px} .btn.ghost{background:var(--lila-2);color:var(--lila)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kopf{background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff;position:sticky;top:0;z-index:10}
+.kopf .in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;min-height:56px;flex-wrap:wrap}
+.kopf a{color:#fff;text-decoration:none;font-weight:700} .kopf b{font-family:var(--head);font-size:19px} .kopf .r{margin-left:auto}
+.auf{display:flex;gap:12px;align-items:center;background:#fff;border-radius:16px;padding:14px;box-shadow:var(--schatten);margin-bottom:8px;text-decoration:none;color:var(--ink)}
+.auf .ic{font-size:26px;width:50px;height:50px;border-radius:14px;background:var(--lila-2);display:flex;align-items:center;justify-content:center;flex:none}
+.auf .tx{flex:1} .auf b{font-family:var(--head);font-size:17px;display:block}
+.status{font-size:13px;font-weight:800;border-radius:999px;padding:3px 10px;white-space:nowrap}
+.s-neu{background:var(--gold-2);color:#8A5A00} .s-entwurf{background:var(--pri-2);color:var(--pri)} .s-abgegeben{background:var(--lila-2);color:var(--lila)} .s-korrigiert{background:var(--ok-2);color:var(--ok)} .s-zurueck{background:var(--bad-2);color:var(--bad)}
+.zu{opacity:.55}
+.situation{background:var(--gold-2);border-radius:14px;padding:14px;margin-bottom:12px}
+.lp label{display:flex;gap:10px;align-items:flex-start;padding:6px 0;cursor:pointer}
+.lp input{width:20px;height:20px;margin-top:3px;flex:none}
+textarea{width:100%;min-height:300px;border:2px solid var(--line);border-radius:14px;padding:14px;font-size:18px;line-height:1.6;background:#fff}
+textarea:focus{outline:none;border-color:var(--lila)}
+.zaehler{display:flex;justify-content:space-between;font-size:14px;margin:6px 2px}
+.balken{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:4px} .balken i{display:block;height:100%;background:var(--lila)}
+details.rm summary{cursor:pointer;font-weight:700}
+.rm ul{margin:8px 0 0;padding-left:20px} .rm li{margin:3px 0;cursor:pointer} .rm li:hover{color:var(--lila)}
+.lesen{user-select:none;-webkit-user-select:none}
+.text{white-space:pre-wrap;background:var(--soft);border-radius:12px;padding:12px;line-height:1.7}
+.diff del{background:var(--bad-2);color:var(--bad);text-decoration:line-through} .diff ins{background:var(--ok-2);color:var(--ok);text-decoration:none;font-weight:700}
+.krit{display:grid;gap:10px}
+.krit .k{background:var(--soft);border-radius:12px;padding:10px 12px}
+.stufen{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.stufen button{width:38px;height:38px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:800;cursor:pointer}
+.stufen button.an{background:var(--lila);border-color:var(--lila);color:#fff}
+.gesamt{font-family:var(--head);font-weight:800;font-size:44px;color:var(--lila);line-height:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0} .chips button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 10px;font-size:14px;cursor:pointer}
+.zwei{display:grid;grid-template-columns:1fr 1fr;gap:14px} @media (max-width:900px){ .zwei{grid-template-columns:1fr} }
+table{border-collapse:collapse;width:100%} th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}
+.tab{border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:10px;padding:7px 12px;font-weight:700;cursor:pointer} .tab.an{background:#fff;color:var(--lila)}
+.schalter{position:relative;width:52px;height:30px;flex:none} .schalter input{opacity:0;width:0;height:0}
+.schalter span{position:absolute;inset:0;background:var(--line);border-radius:15px;cursor:pointer;transition:.2s} .schalter span:before{content:"";position:absolute;width:24px;height:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.schalter input:checked+span{background:var(--ok)} .schalter input:checked+span:before{transform:translateX(22px)}
+.err{color:var(--bad);font-weight:700;min-height:20px}
+input[type=email],input[type=password],input[type=text]{width:100%;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:8px 12px}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><div class="card">Einen Moment …</div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="katalog.js"></script>
+<script src="lernwelt.js"></script>
+<script src="schreiben/b1.js"></script>
+<script>
+/* =========================================================
+   SCHREIBWERKSTATT B1
+   Jugendliche: schreiben.html · Lehrkraft: schreiben.html?leitung=1
+   Daten: schreiben/{pid}/{aufgabe} (Text der Jugendlichen) · schreibenfb/{pid}/{aufgabe} (Korrektur der Lehrkraft)
+          public/schreiben/{aufgabe} = true/false (Freigabe)
+   ========================================================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=LW.esc, AUF=window.SCHREIB_AUFGABEN, KRIT=window.SCHREIB_KRITERIEN;
+const P=new URLSearchParams(location.search);
+const app=$("#app");
+const woerter=t=>String(t||"").trim()?String(t).trim().split(/\s+/).length:0;
+const ZIEL=80;
+const STATUS={neu:["neu","s-neu"], entwurf:["Entwurf","s-entwurf"], abgegeben:["abgegeben – wartet auf Korrektur","s-abgegeben"], korrigiert:["korrigiert","s-korrigiert"], zurueck:["bitte überarbeiten","s-zurueck"]};
+const istFrei=(a,frei)=>frei&&frei[a.id]!==undefined ? !!frei[a.id] : !!a.standardFrei;
+const datum=ts=>{ if(!ts) return ""; const d=new Date(ts); return `${d.getDate()}.${d.getMonth()+1}. ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
+/* Wort-Diff: was hat die Lehrkraft geändert? */
+function diff(a,b){ const A=String(a).split(/(\s+)/), B=String(b).split(/(\s+)/); const n=A.length, m=B.length;
+  if(n*m>400000) return esc(b);
+  const L=Array.from({length:n+1},()=>new Uint16Array(m+1)); for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=A[i]===B[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  let i=0,j=0,o=""; while(i<n&&j<m){ if(A[i]===B[j]){ o+=esc(A[i]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]){ o+=/^\s+$/.test(A[i])?esc(A[i]):`<del>${esc(A[i])}</del>`; i++; } else { o+=/^\s+$/.test(B[j])?esc(B[j]):`<ins>${esc(B[j])}</ins>`; j++; } }
+  while(i<n){ o+=/^\s+$/.test(A[i])?"":`<del>${esc(A[i])}</del>`; i++; } while(j<m){ o+=/^\s+$/.test(B[j])?esc(B[j]):`<ins>${esc(B[j])}</ins>`; j++; } return o; }
+
+/* =========================================================
+   JUGENDLICHE
+   ========================================================= */
+function jugendliche(){
+  LW.init(); let me=null, meine={}, fb={}, frei={}, offen=null, speicherT=null, lokal={}, versuche={};
+  (async()=>{
+    me=await LW.pruefen();
+    if(!me){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:50px">✍️</div><h2>Schreibwerkstatt</h2><p class="muted">Bitte melde dich zuerst in der Lernwelt mit deinem Code an.</p><a class="btn" href="index.html">Zur Anmeldung</a></div></div>`; return; }
+    LW.ref(`schreiben/${me.pid}`).on("value", s=>{ meine=s.val()||{}; male(); });
+    LW.ref(`schreibenfb/${me.pid}`).on("value", s=>{ fb=s.val()||{}; male(); });
+    LW.ref("public/schreiben").on("value", s=>{ frei=s.val()||{}; male(); });
+    window.addEventListener("hashchange", ()=>{ offen=location.hash.slice(1)||null; male(true); scrollTo(0,0); });
+    offen=location.hash.slice(1)||null; male(true);
+  })();
+  const kopf=()=>`<div class="kopf"><div class="in" style="max-width:780px"><a href="${offen?"#":"index.html#ueben"}">‹ ${offen?"Alle Aufgaben":"Lernwelt"}</a><b>✍️ Schreibwerkstatt B1</b><span class="r small">${esc(me.name)}</span></div></div>`;
+  function male(hart){
+    const ae=document.activeElement; if(!hart && ae && ae.tagName==="TEXTAREA") return;
+    if(!offen) return liste();
+    const a=AUF.find(x=>x.id===offen); if(!a || !istFrei(a,frei)){ offen=null; return liste(); }
+    aufgabe(a);
+  }
+  function liste(){
+    const freie=AUF.filter(a=>istFrei(a,frei)), zu=AUF.length-freie.length;
+    app.innerHTML=kopf()+`<div class="wrap"><div class="card"><h1>Schreibwerkstatt B1</h1><p style="margin:0">Im DTZ schreibst du eine E-Mail oder einen Brief: etwa <b>80 Wörter</b>, zu <b>vier Punkten</b>, in <b>30 Minuten</b>. Hier übst du das – und deine Lehrkraft korrigiert deinen Text persönlich. Für jeden korrigierten Text gibt es bis zu <b>20 Punkte</b>.</p></div>
+      ${freie.map(a=>{ const m=meine[a.id]; const st=m?m.status:"neu"; const f=fb[a.id];
+        return `<a class="auf" href="#${a.id}"><span class="ic">${a.icon}</span><span class="tx"><b>${esc(a.titel)}</b><span class="small muted">${a.art==="formell"?"formell (Sie)":"informell (du)"}${m&&m.text?` · ${woerter(m.text)} Wörter`:""}</span></span>
+          <span class="status ${STATUS[st][1]}">${st==="korrigiert"&&f?`✓ ${f.gesamt}/20`:STATUS[st][0]}</span></a>`; }).join("")||`<div class="card muted">Noch keine Aufgabe freigegeben.</div>`}
+      ${zu?`<p class="muted small" style="text-align:center">🔒 ${zu} weitere ${zu===1?"Aufgabe kommt":"Aufgaben kommen"} bald.</p>`:""}</div>`;
+  }
+  function aufgabe(a){
+    const m=meine[a.id]||{}, st=m.status||"neu", f=fb[a.id]; const bearbeitbar=["neu","entwurf","zurueck"].includes(st);
+    const text = lokal[a.id]!==undefined ? lokal[a.id] : (m.text||"");
+    let h=kopf()+`<div class="wrap"><div class="card"><div class="row" style="justify-content:space-between"><span class="small muted">${a.art==="formell"?"📨 formell – Sie":"💬 informell – du"}</span><span class="status ${STATUS[st][1]}">${STATUS[st][0]}</span></div>
+      <h1>${a.icon} ${esc(a.titel)}</h1><div class="situation lesen">${esc(a.situation)}</div>
+      <div class="lp lesen"><b>Schreiben Sie etwas zu allen vier Punkten:</b>${a.punkte.map((p,i)=>`<label><input type="checkbox" ${bearbeitbar?"":"disabled"}> ${esc(p)}</label>`).join("")}</div>
+      <p class="small muted" style="margin:6px 0 0">Denken Sie an Anrede und Gruß. Ca. ${ZIEL} Wörter.</p></div>`;
+    if(st==="zurueck" && f && f.kommentar) h+=`<div class="card" style="border-left:6px solid var(--bad)"><b>💬 Deine Lehrkraft:</b><p style="margin:6px 0 0;white-space:pre-wrap">${esc(f.kommentar)}</p></div>`;
+    if(bearbeitbar){
+      const w=woerter(text);
+      h+=`<div class="card"><textarea id="t" placeholder="${a.art==="formell"?"Sehr geehrte …":"Liebe/Lieber …"}" spellcheck="false" autocomplete="off">${esc(text)}</textarea>
+        <div class="zaehler"><span id="wz">${w} Wörter</span><span id="gs" class="muted">${m.ts?"gespeichert "+datum(m.ts):""}</span></div><div class="balken"><i id="wb" style="width:${Math.min(100,w/ZIEL*100)}%"></i></div>
+        <details class="rm" style="margin-top:12px"><summary>🧰 Hilfe: Redemittel (antippen = einfügen)</summary><ul>${a.redemittel.map(r=>`<li data-rm="${esc(r)}">${esc(r)}</li>`).join("")}</ul></details>
+        <button class="btn wide" id="abgeben" style="margin-top:14px;min-height:54px">📨 Abgeben</button><p class="small muted" style="text-align:center;margin:6px 0 0">Dein Text wird automatisch gespeichert. Kopieren und Einfügen sind ausgeschaltet. Nach dem Abgeben kannst du ihn nicht mehr ändern.</p></div>`;
+    } else if(st==="abgegeben"){
+      h+=`<div class="card"><h3>Dein Text</h3><div class="text">${esc(m.text)}</div><p class="small muted">${woerter(m.text)} Wörter · abgegeben ${datum(m.abgegeben||m.ts)}</p><p style="margin:0">⏳ Deine Lehrkraft korrigiert deinen Text bald.</p></div>`;
+    } else if(st==="korrigiert" && f){
+      h+=`<div class="card" style="text-align:center;background:linear-gradient(135deg,#5B21B6,#7C3AED);color:#fff"><div class="small">Deine Punkte</div><div style="font-family:var(--head);font-weight:800;font-size:56px;line-height:1">${f.gesamt} / 20</div>
+          <div class="row" style="justify-content:center;margin-top:8px">${KRIT.map(k=>`<span class="status" style="background:rgba(255,255,255,.18);color:#fff">${esc(k.titel)}: ${(f.punkte||{})[k.id]||0}/${k.max}</span>`).join("")}</div></div>
+        ${f.kommentar?`<div class="card"><b>💬 Deine Lehrkraft:</b><p style="margin:6px 0 0;white-space:pre-wrap">${esc(f.kommentar)}</p></div>`:""}
+        <div class="card"><h3>Korrektur</h3><p class="small muted" style="margin-top:0"><del style="background:var(--bad-2);color:var(--bad)">rot</del> = falsch · <ins style="background:var(--ok-2);color:var(--ok);text-decoration:none;font-weight:700">grün</ins> = so ist es richtig</p><div class="text diff">${diff(m.text, f.korrektur||m.text)}</div></div>
+        <details class="card"><summary><b>📝 Musterlösung ansehen</b></summary><div class="text" style="margin-top:10px">${esc(a.muster)}</div></details>`;
+    }
+    app.innerHTML=h;
+    const t=$("#t"); if(t){
+      const sperre=e=>{ e.preventDefault(); versuche[a.id]=(versuche[a.id]||0)+1; hinweis("✋ Einfügen ist hier nicht erlaubt – schreib selbst! 💪"); };
+      ["paste","drop","cut","copy"].forEach(ev=>t.addEventListener(ev, e=>{ if(ev==="copy"||ev==="cut"){ e.preventDefault(); hinweis("Kopieren ist hier nicht möglich."); } else sperre(e); }));
+      t.addEventListener("contextmenu", e=>e.preventDefault());
+      t.addEventListener("beforeinput", e=>{ if(/^insertFrom(Paste|Drop|Yank)/.test(e.inputType||"")) sperre(e); });
+      t.addEventListener("keydown", e=>{ if((e.ctrlKey||e.metaKey) && /^[vxc]$/i.test(e.key)) sperre(e); });
+      t.oninput=()=>{ lokal[a.id]=t.value; const w=woerter(t.value); $("#wz").textContent=`${w} Wörter`; $("#wb").style.width=Math.min(100,w/ZIEL*100)+"%"; $("#gs").textContent="…"; clearTimeout(speicherT); speicherT=setTimeout(()=>speichern(a,"entwurf"),1500); };
+      t.onblur=()=>{ if(lokal[a.id]!==undefined) speichern(a,"entwurf"); };
+    }
+    $$("[data-rm]").forEach(li=>li.onclick=()=>{ const t=$("#t"); const p=t.selectionStart??t.value.length; t.value=t.value.slice(0,p)+li.dataset.rm+" "+t.value.slice(p); t.focus(); t.selectionStart=t.selectionEnd=p+li.dataset.rm.length+1; t.oninput(); });
+    const ab=$("#abgeben"); if(ab) ab.onclick=async()=>{ const txt=lokal[a.id]!==undefined?lokal[a.id]:(m.text||""); const w=woerter(txt);
+      if(w<20){ alert("Dein Text ist noch sehr kurz. Schreib bitte mindestens 20 Wörter."); return; }
+      if(!confirm(w<ZIEL?`Dein Text hat erst ${w} Wörter (Ziel: ca. ${ZIEL}). Trotzdem abgeben?`:"Text jetzt abgeben? Danach kannst du ihn nicht mehr ändern.")) return;
+      clearTimeout(speicherT); await speichern(a,"abgegeben"); delete lokal[a.id]; male(true); };
+  }
+  function hinweis(txt){ let d=$("#hinweis"); if(!d){ d=document.createElement("div"); d.id="hinweis"; d.style.cssText="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1E2A44;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.25)"; document.body.appendChild(d); } d.textContent=txt; clearTimeout(d._t); d._t=setTimeout(()=>d.remove(),2600); }
+  async function speichern(a, status){
+    const txt=lokal[a.id]!==undefined?lokal[a.id]:((meine[a.id]||{}).text||"");
+    const e={code:me.code, name:me.name, text:txt.slice(0,6000), status, ts:firebase.database.ServerValue.TIMESTAMP};
+    const alt=Number((meine[a.id]||{}).einfuegen)||0; if(alt||versuche[a.id]) e.einfuegen=alt+(versuche[a.id]||0); versuche[a.id]=0; if(status==="abgegeben") e.abgegeben=firebase.database.ServerValue.TIMESTAMP;
+    try{ await LW.mitTimeout(LW.ref(`schreiben/${me.pid}/${a.id}`).set(e), 9000); const g=$("#gs"); if(g) g.textContent="✓ gespeichert"; }
+    catch(err){ const g=$("#gs"); if(g) g.textContent="⚠️ nicht gespeichert – bitte Internet prüfen"; try{ localStorage.setItem(`schreiben_${a.id}`, txt); }catch(x){} }
+  }
+}
+
+/* =========================================================
+   LEHRKRAFT
+   ========================================================= */
+function lehrkraft(){
+  LW.init(true); const auth=LW.auth; let alle={}, fbs={}, frei={}, namen={}, tab="abgaben", offen=null, bew=null;
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>✍️ Schreibwerkstatt – Lehrkraft</h2><form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  function start(){
+    LW.ref("schreiben").on("value", s=>{ alle=s.val()||{}; male(); });
+    LW.ref("schreibenfb").on("value", s=>{ fbs=s.val()||{}; male(); });
+    LW.ref("public/schreiben").on("value", s=>{ frei=s.val()||{}; male(); });
+    LW.ref("public/names").on("value", s=>{ namen=s.val()||{}; male(); });
+  }
+  const abgaben=()=>{ const r=[]; Object.entries(alle).forEach(([pid,x])=>Object.entries(x||{}).forEach(([aid,e])=>r.push({pid,aid,e,a:AUF.find(y=>y.id===aid),f:(fbs[pid]||{})[aid]}))); return r.filter(x=>x.a); };
+  function male(){
+    const ae=document.activeElement; if(ae && /TEXTAREA|INPUT/.test(ae.tagName) && app.contains(ae)) return;
+    const neu=abgaben().filter(x=>x.e.status==="abgegeben").length;
+    let h=`<div class="kopf"><div class="in"><a href="lehrer.html">‹ Lehrer-Seite</a><b>✍️ Schreibwerkstatt B1</b>
+      <span class="row">${[["abgaben",`📥 Korrigieren${neu?` (${neu})`:""}`],["freigabe","🔓 Aufgaben freigeben"],["uebersicht","👥 Übersicht"]].map(([k,t])=>`<button class="tab ${tab===k&&!offen?"an":""}" data-tab="${k}">${t}</button>`).join("")}</span></div></div><div class="wrap weit">`;
+    if(offen) h+=korrektur(); else if(tab==="freigabe") h+=freigabe(); else if(tab==="uebersicht") h+=uebersicht(); else h+=eingang();
+    app.innerHTML=h+`</div>`; binden();
+  }
+  function eingang(){
+    const r=abgaben(); const warten=r.filter(x=>x.e.status==="abgegeben").sort((a,b)=>(a.e.abgegeben||0)-(b.e.abgegeben||0));
+    const fertig=r.filter(x=>x.e.status==="korrigiert").sort((a,b)=>((b.f||{}).ts||0)-((a.f||{}).ts||0)).slice(0,15);
+    const arbeit=r.filter(x=>x.e.status==="entwurf"||x.e.status==="zurueck");
+    const zeile=x=>`<tr><td><b>${esc(namen[x.pid]||x.e.name||"?")}</b></td><td>${x.a.icon} ${esc(x.a.titel)}</td><td>${woerter(x.e.text)} Wörter</td><td class="small muted">${datum(x.e.abgegeben||x.e.ts)}</td><td>${x.f&&x.e.status==="korrigiert"?`<b>${x.f.gesamt}/20</b>`:""}</td><td><button class="btn sm ${x.e.status==="abgegeben"?"":"ghost"}" data-oeffne="${x.pid}|${x.aid}">${x.e.status==="abgegeben"?"Korrigieren":"Ansehen"}</button></td></tr>`;
+    return `<div class="card"><h2>📥 Neue Abgaben (${warten.length})</h2>${warten.length?`<table>${warten.map(zeile).join("")}</table>`:`<p class="muted">Keine neuen Texte. 🎉</p>`}</div>
+      ${arbeit.length?`<div class="card"><h3>✏️ Wird gerade geschrieben (${arbeit.length})</h3><p class="small muted">${arbeit.map(x=>`${esc(namen[x.pid]||"?")} – ${esc(x.a.titel)} (${woerter(x.e.text)} W.${x.e.status==="zurueck"?", überarbeitet":""})`).join(" · ")}</p></div>`:""}
+      ${fertig.length?`<div class="card"><h3>✓ Zuletzt korrigiert</h3><table>${fertig.map(zeile).join("")}</table></div>`:""}`;
+  }
+  function freigabe(){
+    return `<div class="card"><h2>🔓 Aufgaben freigeben</h2><p class="muted" style="margin-top:0">Nur freigegebene Aufgaben sehen die Jugendlichen. Die anderen erscheinen als „🔒 kommt bald“.</p>
+      ${AUF.map(a=>{ const n=abgaben().filter(x=>x.aid===a.id&&x.e.status!=="entwurf").length;
+        return `<div class="auf"><span class="ic">${a.icon}</span><span class="tx"><b>${esc(a.titel)}</b><span class="small muted">${a.art} · ${esc(a.situation.slice(0,90))}…${n?` · ${n} Texte`:""}</span></span><label class="schalter"><input type="checkbox" data-frei="${a.id}" ${istFrei(a,frei)?"checked":""}><span></span></label></div>`; }).join("")}</div>`;
+  }
+  function uebersicht(){
+    const ids=Object.keys(namen).sort((a,b)=>String(namen[a]).localeCompare(namen[b])); const fa=AUF.filter(a=>istFrei(a,frei)||abgaben().some(x=>x.aid===a.id));
+    return `<div class="card" style="overflow:auto"><h2>👥 Übersicht</h2><table><tr><th>Name</th>${fa.map(a=>`<th title="${esc(a.titel)}">${a.icon}</th>`).join("")}</tr>
+      ${ids.map(p=>`<tr><td><b>${esc(namen[p])}</b></td>${fa.map(a=>{ const e=(alle[p]||{})[a.id], f=(fbs[p]||{})[a.id];
+        const z=!e?"–":e.status==="korrigiert"&&f?`<b style="color:var(--ok)">${f.gesamt}</b>`:e.status==="abgegeben"?`<button class="btn sm" data-oeffne="${p}|${a.id}">📥</button>`:e.status==="zurueck"?"↩":"✏️";
+        return `<td>${z}</td>`; }).join("")}</tr>`).join("")}</table><p class="small muted">– nicht angefangen · ✏️ schreibt gerade · 📥 wartet auf dich · ↩ überarbeitet · Zahl = Punkte</p></div>`;
+  }
+  function korrektur(){
+    const [pid,aid]=offen.split("|"); const e=(alle[pid]||{})[aid], a=AUF.find(x=>x.id===aid), f=(fbs[pid]||{})[aid]||{};
+    if(!e||!a){ offen=null; return eingang(); }
+    if(!bew||bew.key!==offen) bew={key:offen, punkte:Object.assign({}, f.punkte||{}), korrektur:f.korrektur||e.text, kommentar:f.kommentar||""};
+    const ges=KRIT.reduce((s,k)=>s+(Number(bew.punkte[k.id])||0),0);
+    const SCHNELL=["Super Anrede und Gruß! 👍","Ein Leitpunkt fehlt.","Achte auf die Verbposition (Verb auf Platz 2).","Nach „weil“ steht das Verb am Ende.","Formell: immer „Sie“ und „Ihnen“.","Nomen schreibt man groß.","Sehr schön verbunden (deshalb, dann, aber)!","Bitte etwas ausführlicher schreiben."];
+    return `<p><button class="btn ghost sm" id="zurueck">← zurück</button></p>
+      <div class="zwei"><div>
+        <div class="card"><div class="small muted">${esc(namen[pid]||e.name||"?")} · abgegeben ${datum(e.abgegeben||e.ts)} · ${woerter(e.text)} Wörter${e.einfuegen?` · <b style="color:var(--bad)">⚠️ ${e.einfuegen}× versucht, Text einzufügen</b>`:""}</div><h2>${a.icon} ${esc(a.titel)}</h2>
+          <div class="situation small">${esc(a.situation)}<ol style="margin:6px 0 0;padding-left:20px">${a.punkte.map(p=>`<li>${esc(p)}</li>`).join("")}</ol></div>
+          <h3>Originaltext</h3><div class="text">${esc(e.text)}</div></div>
+        <div class="card"><h3>So sieht die Korrektur aus</h3><div class="text diff" id="vorschau">${diff(e.text,bew.korrektur)}</div></div>
+      </div><div>
+        <div class="card"><h3>✏️ Korrigierte Fassung</h3><p class="small muted" style="margin-top:0">Verbessere direkt im Text – die Änderungen werden automatisch rot/grün markiert.</p><textarea id="korr" style="min-height:240px">${esc(bew.korrektur)}</textarea></div>
+        <div class="card"><h3>Bewertung</h3><div class="krit">${KRIT.map(k=>`<div class="k"><b>${esc(k.titel)}</b> <span class="small muted">– ${esc(k.text)}</span><div class="stufen">${Array.from({length:k.max+1},(_,i)=>`<button class="${Number(bew.punkte[k.id])===i&&bew.punkte[k.id]!==undefined?"an":""}" data-krit="${k.id}" data-w="${i}">${i}</button>`).join("")}</div></div>`).join("")}</div>
+          <div class="row" style="justify-content:space-between;margin-top:12px"><span class="muted">Gesamt</span><span class="gesamt">${ges} / 20</span></div></div>
+        <div class="card"><h3>💬 Kommentar</h3><div class="chips">${SCHNELL.map(t=>`<button data-schnell="${esc(t)}">${esc(t)}</button>`).join("")}</div><textarea id="kom" style="min-height:110px">${esc(bew.kommentar)}</textarea>
+          <div class="row" style="margin-top:12px"><button class="btn ok" id="fertig" ${KRIT.every(k=>bew.punkte[k.id]!==undefined)?"":"disabled"}>✓ Bewertung speichern (${ges} P)</button><button class="btn ghost" id="zurueckgeben">↩ zum Überarbeiten zurückgeben</button></div><div id="msg" class="small muted"></div></div>
+      </div></div>`;
+  }
+  function binden(){
+    $$("[data-tab]").forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; offen=null; male(); });
+    $$("[data-oeffne]").forEach(b=>b.onclick=()=>{ offen=b.dataset.oeffne; bew=null; male(); scrollTo(0,0); });
+    $$("[data-frei]").forEach(c=>c.onchange=()=>LW.ref(`public/schreiben/${c.dataset.frei}`).set(c.checked));
+    const z=$("#zurueck"); if(z) z.onclick=()=>{ offen=null; male(); };
+    const k=$("#korr"); if(k) k.oninput=()=>{ bew.korrektur=k.value; const [pid,aid]=offen.split("|"); $("#vorschau").innerHTML=diff(alle[pid][aid].text, k.value); };
+    const km=$("#kom"); if(km) km.oninput=()=>{ bew.kommentar=km.value; };
+    $$("[data-krit]").forEach(b=>b.onclick=()=>{ bew.punkte[b.dataset.krit]=Number(b.dataset.w); male(); });
+    $$("[data-schnell]").forEach(b=>b.onclick=()=>{ bew.kommentar=(bew.kommentar?bew.kommentar.trim()+"\n":"")+b.dataset.schnell; male(); });
+    const fe=$("#fertig"); if(fe) fe.onclick=async()=>{ const [pid,aid]=offen.split("|"); const a=AUF.find(x=>x.id===aid); const ges=KRIT.reduce((s,k)=>s+(Number(bew.punkte[k.id])||0),0); const ts=firebase.database.ServerValue.TIMESTAMP;
+      const up={}; up[`schreibenfb/${pid}/${aid}`]={korrektur:bew.korrektur, kommentar:bew.kommentar, punkte:bew.punkte, gesamt:ges, ts};
+      up[`schreiben/${pid}/${aid}/status`]="korrigiert";
+      up[`log/${pid}/schreiben-${aid}`]={code:"lehrkraft", key:"schreiben-"+aid, titel:"Schreiben: "+a.titel, art:"schreiben", p:ges, max:20, ts};
+      try{ await LW.db.ref(LW.BASE).update(up); offen=null; bew=null; male(); }catch(e){ $("#msg").textContent="Fehler: "+(e.message||e); } };
+    const zg=$("#zurueckgeben"); if(zg) zg.onclick=async()=>{ const [pid,aid]=offen.split("|"); if(!bew.kommentar.trim()){ alert("Bitte schreib einen Kommentar: Was soll verbessert werden?"); return; }
+      const up={}; up[`schreibenfb/${pid}/${aid}`]={kommentar:bew.kommentar, ts:firebase.database.ServerValue.TIMESTAMP}; up[`schreiben/${pid}/${aid}/status`]="zurueck";
+      try{ await LW.db.ref(LW.BASE).update(up); offen=null; bew=null; male(); }catch(e){ $("#msg").textContent="Fehler: "+(e.message||e); } };
+  }
+}
+P.get("leitung") ? lehrkraft() : jugendliche();
+</script>
+</body>
+</html>
