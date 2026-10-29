@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E3B4A">
+<meta name="robots" content="noindex, nofollow">
+<title>Gestrandet – Die Insel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --meer:#0E3B4A; --meer-2:#155366; --sand:#F6E7C8; --pri:#0E7490; --pri-2:#E0F2F5; --acc:#FF6B4A; --gold:#F5B82E; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:640px;margin:0 auto;padding:12px 12px 50px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--schatten);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.hell{background:rgba(255,255,255,.14);color:#fff}
+.btn.acc{background:var(--acc)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.rot{background:var(--bad)}
+.btn.wide{width:100%} .btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+input[type=text],input[type=email],input[type=password],input[type=number],select{min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:#fff}
+.pin-in{width:100%;font-family:var(--head);font-size:34px;letter-spacing:.3em;text-align:center}
+/* Handy */
+.kopf{color:#fff;position:sticky;top:0;z-index:5;background:var(--meer)}
+.kopf .in{max-width:640px;margin:0 auto;padding:8px 12px;display:flex;gap:10px;align-items:center;min-height:56px}
+.kopf b{font-family:var(--head);font-size:19px} .kopf .r{margin-left:auto;font-family:var(--head);font-weight:800;color:var(--gold)}
+.rolle{display:flex;gap:12px;align-items:center;background:var(--sand);border-radius:16px;padding:12px 14px;margin-bottom:12px}
+.rolle .e{font-size:34px}
+.lager{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lager div{background:var(--soft);border-radius:12px;padding:8px;text-align:center;border:1px solid var(--line)}
+.lager b{display:block;font-family:var(--head);font-size:24px}
+.lager span{font-size:12px;color:var(--muted)}
+.lager .null{opacity:.4}
+.brauch{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.brauch span{border-radius:999px;padding:3px 10px;font-size:14px;font-weight:700}
+.brauch .ja{background:var(--ok-2);color:var(--ok)} .brauch .nein{background:var(--bad-2);color:var(--bad)}
+.ereignis{background:var(--meer);color:#fff;border-radius:18px;padding:16px;margin-bottom:12px}
+.ereignis h2{color:var(--gold)}
+.opts{display:grid;gap:6px;margin-top:8px}
+.opt{border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:12px;min-height:46px;padding:6px 12px;text-align:left;cursor:pointer;font-weight:600}
+.opt.ok{background:var(--ok);border-color:var(--ok)} .opt.falsch{background:var(--bad);border-color:var(--bad)}
+.ziel{display:flex;gap:6px;flex-wrap:wrap}
+.ziel button{border:2px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
+.ziel button.an{border-color:var(--pri);background:var(--pri-2)}
+.stepper{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:6px 0}
+.st{display:flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:4px 6px}
+.st span{flex:1;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.st button{width:32px;height:32px;border-radius:9px;border:0;background:var(--pri-2);color:var(--pri);font-weight:800;cursor:pointer}
+.st b{min-width:20px;text-align:center;font-family:var(--head);font-size:18px}
+.st.an{border-color:var(--pri);background:var(--pri-2)}
+.ang{border:2px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0;background:#fff}
+.ang.neu{border-color:var(--acc);background:#FFF5F2}
+.tausch{font-size:16px;line-height:1.6}
+/* Leinwand */
+body.board{background:var(--meer);color:#fff}
+.board .card{background:var(--meer-2);color:#fff;box-shadow:none}
+.top{display:flex;gap:10px;align-items:center;padding:10px 20px;background:#0A2E3A;flex-wrap:wrap}
+.top b{font-family:var(--head);font-size:22px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-weight:700;background:rgba(255,255,255,.12)}
+.chip.gold{background:var(--gold);color:var(--ink)}
+.bwrap{max-width:1300px;margin:0 auto;padding:16px 20px 40px}
+.gruppen{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-bottom:14px}
+.gr{background:var(--meer-2);border-radius:18px;padding:14px 16px;border-top:8px solid var(--f)}
+.gr b{font-family:var(--head);font-size:24px}
+.gr .p{font-family:var(--head);font-weight:800;font-size:46px;color:var(--gold);line-height:1}
+.gr .m{font-size:14px;opacity:.75}
+.gr .ic{font-size:22px;letter-spacing:2px}
+.gross{font-family:var(--head);font-weight:800;font-size:clamp(28px,3.2vw,46px);line-height:1.15}
+.uhr{font-family:var(--head);font-weight:800;font-size:clamp(60px,9vw,130px);color:var(--gold);line-height:1;text-align:center}
+.ticker{max-height:46vh;overflow:auto}
+.ticker div{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:20px}
+.steuer{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.namen{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.nm{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border-radius:10px;padding:4px 8px}
+.nm span{flex:1;font-weight:600}
+.nm select{min-height:32px;padding:2px 6px;font-size:14px;border-radius:8px}
+.lwpin{font-family:var(--head);font-weight:800;font-size:96px;letter-spacing:.1em;color:var(--gold);line-height:1}
+#qr img,#qr canvas{background:#fff;padding:10px;border-radius:12px}
+table{border-collapse:collapse;width:100%} td,th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.12);text-align:left}
+td input{width:80px;min-height:36px}
+.welle{height:10px;background:repeating-linear-gradient(90deg,transparent 0 22px,rgba(255,255,255,.08) 22px 44px)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="insel/daten.js"></script>
+<script>
+/* =========================================================
+   GESTRANDET – DIE INSEL  ·  ?leitung=1 (Lehrkraft = Leinwand) · ?pin= (Jugendliche)
+   Daten: ligainsel/ploen-jik/{pin}
+   ========================================================= */
+const KURS="ploen-jik", BASE=`jugendliga/${KURS}`, CODE_KEY=`liga_code_${KURS}`, IROOT=`ligainsel/${KURS}`;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash",storageBucket:"lern-deutsch-arash.firebasestorage.app",messagingSenderId:"845503292114",appId:"1:845503292114:web:f76ab5fcde1e978d00c30b"};
+const D=window.INSEL, R=D.res, RES=Object.keys(R), PK=D.punkte;
+const P=new URLSearchParams(location.search);
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr=v=>Array.isArray(v)?v.filter(x=>x!==null&&x!==undefined):(v&&typeof v==="object"?Object.values(v):[]);
+function mische(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const BASIS_URL=location.href.replace(/[?#].*$/,""), LIVE_URL=BASIS_URL.replace(/[^\/]*$/,"")+"live.html";
+let db=null, auth=null, offset=0; try{ firebase.initializeApp(cfg); db=firebase.database(); auth=firebase.auth(); db.ref(".info/serverTimeOffset").on("value",s=>offset=Number(s.val())||0); }catch(e){}
+const jetzt=()=>Date.now()+offset; const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+let PIN=(P.get("pin")||"").replace(/\D/g,"");
+const I=p=>db.ref(`${IROOT}/${PIN}${p?"/"+p:""}`);
+
+/* ---------- Hilfen ---------- */
+const name1=(r,n)=>`${n} ${n===1?R[r][1]:R[r][2]}`;
+const liste=o=>Object.entries(o||{}).filter(([,n])=>n>0).map(([r,n])=>`${name1(r,n)} ${R[r][0]}`).join(", ")||"nichts";
+const gruppen=S=>Object.keys(S.aktiv||{}).filter(g=>S.aktiv[g]);
+const G=g=>D.gruppen[g];
+const mitglieder=(S,g)=>Object.entries(S.spieler||{}).filter(([,x])=>x.gruppe===g).sort((a,b)=>String(a[1].name).localeCompare(b[1].name)).map(([p])=>p);
+function rolleVon(S,pid){ const x=(S.spieler||{})[pid]; if(!x||!x.gruppe) return null; const m=mitglieder(S,x.gruppe); const i=m.indexOf(pid); return D.rollen[(i+(S.tag||1)-1)%D.rollen.length]; }
+const essenVon=l=>D.essen.reduce((s,r)=>s+(Number((l||{})[r])||0),0);
+function punkte(S,g){
+  const m=S.m||{}; let p=0, teile={};
+  const vers=Object.values(m.versorgt||{}).map(t=>t[g]).filter(Boolean);
+  teile.versorgt=vers.filter(v=>v.ok).length*PK.versorgt; teile.hunger=vers.reduce((s,v)=>s+(v.fehlt||0),0)*PK.hunger;
+  const b=(m.boote||{})[g]; teile.boot = b==="eigen"?PK.boot : b?PK.mitfahren : 0;
+  teile.aufgaben=Object.values(S.antworten||{}).filter(a=>a[g]&&a[g].ok).length*PK.aufgabe;
+  teile.handel=Math.min(PK.handelMax, Number((m.handel||{})[g])||0);
+  teile.muscheln=Math.floor((Number(((m.lager||{})[g]||{}).muscheln)||0)/PK.muschelnPro);
+  teile.fieber=(Number((m.fieber||{})[g])||0)*PK.fieber;
+  teile.korr=Number((S.korr||{})[g])||0;
+  p=Object.values(teile).reduce((a,b)=>a+b,0); return {p, teile};
+}
+const rest=S=>S.markt&&S.markt.ende?Math.max(0,Math.ceil((S.markt.ende-jetzt())/1000)):0;
+const mmss=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+const SCHRITT={geschichte:"Die Geschichte", ereignis:"Ereignis", markt:"Markt", abend:"Abend", bau:"Bautag"};
+
+/* =========================================================
+   JUGENDLICHE
+   ========================================================= */
+function spieler(){
+  const app=$("#app"); let me=null, S=null, form={an:null, gibt:{}, will:{}}, msg="";
+  try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+  function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🏝️</div><h2>Gestrandet – Die Insel</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
+    <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefe(); }; }
+  async function pruefe(){ if(PIN.length!==4) return pinScreen(PIN?"Die PIN hat 4 Ziffern.":"");
+    try{ const i=(await I("info").once("value")).val(); if(!i) return pinScreen("Diese PIN gibt es nicht."); history.replaceState(null,"","?pin="+PIN); me?los():codeScreen(); }catch(e){ pinScreen("Keine Verbindung."); } }
+  function codeScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🔑</div><h2>Dein Code</h2>
+    <form id="cf"><input id="code" class="pin-in" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn wide" style="margin-top:10px">Los</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#cf").onsubmit=async e=>{ e.preventDefault(); const code=$("#code").value.toUpperCase().replace(/[^A-Z0-9]/g,""); if(code.length<4) return codeScreen("Der Code hat mindestens 4 Zeichen.");
+      try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val(); if(!c||!c.pid) return codeScreen("Diesen Code gibt es nicht.");
+        const n=(await db.ref(`${BASE}/public/names/${c.pid}`).once("value")).val(); me={code,pid:c.pid,name:n||c.name||"?"}; localStorage.setItem(CODE_KEY,JSON.stringify(me)); los(); }catch(err){ codeScreen("Keine Verbindung."); } }; }
+  function los(){ const ref=I(`spieler/${me.pid}`); ref.update({name:me.name, ts:TS(), online:true, da:true}); try{ ref.child("online").onDisconnect().set(false); }catch(e){}
+    I().on("value", s=>{ S=s.val()||{}; male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500); }
+  function male(){
+    const ae=document.activeElement; if(ae && ae.tagName==="SELECT") return;
+    if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
+    const ich=(S.spieler||{})[me.pid]||{}, g=ich.gruppe, GR=g&&G(g);
+    if(S.info.phase==="lobby"||!GR){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:6vh;text-align:center"><div style="font-size:60px">🏝️</div><h2>Hallo ${esc(me.name)}!</h2>
+      ${GR?`<p>Du bist in der Gruppe <b style="color:${GR.farbe}">${GR.emoji} ${GR.name}</b>:<br>${mitglieder(S,g).map(p=>esc(S.spieler[p].name)).join(", ")}</p>`:`<p class="muted">Deine Lehrkraft macht gerade die Gruppen.</p>`}<p class="small muted">Schau gleich auf die Leinwand.</p></div></div>`; return; }
+    const m=S.m||{}, lager=(m.lager||{})[g]||{}, pk=punkte(S,g).p, ro=rolleVon(S,me.pid);
+    let h=`<div class="kopf" style="background:${GR.farbe}"><div class="in"><b>${GR.emoji} Gruppe ${GR.name}</b><span class="r">${pk} P</span></div></div><div class="wrap">`;
+    if(S.info.phase==="ende"){ const ub=(S.uebertragen||{})[me.pid]; app.innerHTML=h+`<div class="card" style="text-align:center"><div style="font-size:60px">${(m.boote||{})[g]?"⛵":"🏝️"}</div><h2>${(m.boote||{})[g]?"Ihr seid gerettet!":"Spiel vorbei!"}</h2><p>Gruppe ${GR.name}: <b>${pk} Punkte</b></p>${ub!==undefined?`<p style="color:var(--ok);font-weight:700">✓ Für dich gespeichert: ${ub} Punkte</p>`:""}</div></div>`; return; }
+    if(ro) h+=`<div class="rolle"><span class="e">${ro[0]}</span><div><div class="small muted">Tag ${S.tag||1} · deine Rolle</div><b style="font-family:var(--head);font-size:19px">${ro[1]}</b><div class="small">${esc(ro[2])}</div></div></div>`;
+    if(S.schritt==="geschichte") h+=`<div class="ereignis"><h2>🌊 Gestrandet!</h2><p style="margin:0">${esc(D.geschichte)}</p></div>`;
+    const E=S.ereignis&&D.ereignisse.find(e=>e.id===S.ereignis.id);
+    if(E && S.schritt!=="geschichte" && S.schritt!=="bau"){ const a=((S.antworten||{})[E.id]||{})[g]; const ord=S.ereignis.ord||[0,1,2];
+      h+=`<div class="ereignis"><div class="small" style="opacity:.8">Tag ${S.tag} · Ereignis</div><h2>${E.icon} ${esc(E.titel)}</h2><p style="margin:0 0 8px">${esc(E.text)}</p><b>${esc(E.frage)}</b>
+        <div class="opts">${ord.map(i=>`<button class="opt ${a?(i===0?"ok":(a.i===i?"falsch":"")):""}" data-antwort="${i}" ${a?"disabled":""}>${esc(E.o[i])}</button>`).join("")}</div>
+        <div class="small" style="margin-top:6px;opacity:.85">${a?(a.ok?`✓ Richtig! +${PK.aufgabe} Punkte${a.bonus?" – und ihr wart am schnellsten: "+esc(liste(E.schnellste))+"!":""}`:"✗ Leider falsch."):(ro&&ro[1]==="Späher:in"?"Du antwortest für deine Gruppe – besprecht euch zuerst!":"Die Späherin oder der Späher antwortet für die Gruppe.")}</div></div>`; }
+    h+=`<div class="card"><h3>📦 Euer Lager</h3><div class="lager">${RES.map(r=>`<div class="${(lager[r]||0)?"":"null"}"><b>${lager[r]||0}</b><span>${R[r][0]} ${R[r][2]}</span></div>`).join("")}</div>
+      <div class="small muted" style="margin-top:10px"><b>Heute Abend braucht ihr:</b></div><div class="brauch"><span class="${essenVon(lager)>=D.proAbend.essen?"ja":"nein"}">${D.proAbend.essen} Essen 🐟/🍌</span><span class="${(lager.wasser||0)>=D.proAbend.wasser?"ja":"nein"}">${D.proAbend.wasser} Wasser 💧</span></div>
+      <div class="small muted" style="margin-top:8px"><b>Für das Boot braucht ihr:</b></div><div class="brauch">${Object.entries(D.boot).map(([r,n])=>`<span class="${(lager[r]||0)>=n?"ja":"nein"}">${name1(r,n)} ${R[r][0]}</span>`).join("")}</div>
+      ${(m.boote||{})[g]?`<p style="color:var(--ok);font-weight:800;margin:10px 0 0">⛵ ${m.boote[g]==="eigen"?"Euer Boot ist fertig!":"Ihr fahrt bei einer anderen Gruppe mit."}</p>`:""}</div>`;
+    if(S.schritt==="abend"){ const v=((m.versorgt||{})[S.tag]||{})[g]; h+=`<div class="card" style="text-align:center"><div style="font-size:44px">🌙</div><h3>Abend auf der Insel</h3>${v?(v.ok?`<p>Alle haben gegessen und getrunken. 😊 +${PK.versorgt} Punkte</p>`:`<p style="color:var(--bad)"><b>Ihr habt Hunger und Durst!</b> Es fehlen ${v.fehlt} Sachen. ${v.fehlt*PK.hunger} Punkte</p>`):"<p>Gleich wird gegessen …</p>"}</div>`; }
+    if(S.schritt==="markt"||S.schritt==="bau") h+=marktHtml(S,g,lager);
+    if(S.schritt==="bau" && !(m.boote||{})[g]){ const kann=Object.entries(D.boot).every(([r,n])=>(lager[r]||0)>=n);
+      h+=`<div class="card" style="text-align:center"><div style="font-size:50px">🛠️</div><h3>Bautag!</h3><p class="muted">${kann?"Ihr habt alles – baut euer Boot!":"Euch fehlt noch etwas. Handelt mit den anderen Gruppen!"}</p><button class="btn ok wide" id="bauen" ${kann?"":"disabled"} style="min-height:56px">⛵ Boot bauen</button></div>`; }
+    h+=`<details class="card"><summary><b>💬 So verhandelt ihr</b></summary><ul style="margin:8px 0 0;padding-left:20px">${D.redemittel.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></details>`;
+    app.innerHTML=h+`</div>`; binden(g,lager);
+  }
+  function marktHtml(S,g,lager){
+    const m=S.m||{}, an=arr(m.angebote&&Object.entries(m.angebote).map(([id,a])=>Object.assign({id},a)));
+    const rein=an.filter(a=>a.an===g&&a.status==="offen"), raus=an.filter(a=>a.von===g&&a.status==="offen");
+    const andere=gruppen(S).filter(x=>x!==g);
+    let h=`<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">🤝 Markt</h3>${S.markt&&S.markt.ende?`<b style="font-family:var(--head);font-size:24px;color:var(--acc)" id="uhr">${mmss(rest(S))}</b>`:""}</div>`;
+    if(rein.length) h+=`<p class="small" style="margin:8px 0 0"><b>Angebote an euch:</b></p>`+rein.map(a=>{ const V=G(a.von), kann=Object.entries(a.will||{}).every(([r,n])=>(lager[r]||0)>=n);
+      return `<div class="ang neu"><div class="tausch"><b>${V.emoji} ${V.name}</b>${a.name?` (${esc(a.name)})`:""} gibt euch: <b>${esc(liste(a.gibt))}</b><br>und will dafür: <b>${esc(liste(a.will))}</b></div>
+        <div class="row" style="margin-top:6px"><button class="btn ok sm" data-annehmen="${a.id}" ${kann?"":"disabled"}>✓ Annehmen</button><button class="btn ghost sm" data-ablehnen="${a.id}">✗ Nein, danke</button>${kann?"":`<span class="small" style="color:var(--bad)">Ihr habt nicht genug.</span>`}</div></div>`; }).join("");
+    if(raus.length) h+=`<p class="small" style="margin:8px 0 0"><b>Eure Angebote (warten):</b></p>`+raus.map(a=>`<div class="ang"><div class="tausch">an <b>${G(a.an).emoji} ${G(a.an).name}</b>: ihr gebt <b>${esc(liste(a.gibt))}</b> – ihr wollt <b>${esc(liste(a.will))}</b></div><button class="btn ghost sm" data-zurueck="${a.id}" style="margin-top:6px">zurückziehen</button></div>`).join("");
+    const f=form; const sum=o=>Object.values(o).reduce((s,n)=>s+n,0);
+    h+=`<p class="small" style="margin:12px 0 4px"><b>Neues Angebot – erst sprechen, dann schicken!</b></p>
+      <div class="ziel">${andere.map(x=>`<button class="${f.an===x?"an":""}" data-an="${x}">${G(x).emoji} ${G(x).name}</button>`).join("")}</div>
+      <div class="small muted" style="margin-top:8px">Wir geben:</div><div class="stepper">${RES.filter(r=>(lager[r]||0)>0).map(r=>`<div class="st ${f.gibt[r]?"an":""}"><span>${R[r][0]} ${R[r][2]}</span><button data-g="${r}" data-d="-1">−</button><b>${f.gibt[r]||0}</b><button data-g="${r}" data-d="1">+</button></div>`).join("")}</div>
+      <div class="small muted">Wir wollen:</div><div class="stepper">${RES.map(r=>`<div class="st ${f.will[r]?"an":""}"><span>${R[r][0]} ${R[r][2]}</span><button data-w="${r}" data-d="-1">−</button><b>${f.will[r]||0}</b><button data-w="${r}" data-d="1">+</button></div>`).join("")}</div>
+      <button class="btn acc wide" id="schicken" ${f.an&&(sum(f.gibt)||sum(f.will))?"":"disabled"}>📨 Angebot schicken</button>${msg?`<div class="small" style="margin-top:6px;color:var(--bad);font-weight:700">${esc(msg)}</div>`:""}</div>`;
+    return h;
+  }
+  function binden(g,lager){
+    $$("[data-antwort]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.antwort; const E=D.ereignisse.find(e=>e.id===S.ereignis.id);
+      I(`antworten/${E.id}/${g}`).transaction(cur=>cur?undefined:{i, ok:i===0, ts:Date.now(), name:me.name}).then(r=>{
+        if(r&&r.committed!==false && i===0 && E.schnellste){ I("schnellste/"+E.id).transaction(c=>c?undefined:g).then(x=>{ if(x&&x.committed!==false){ I("m").transaction(m=>{ if(!m) return m; m.lager=m.lager||{}; m.lager[g]=m.lager[g]||{}; for(const [r,n] of Object.entries(E.schnellste)) m.lager[g][r]=(m.lager[g][r]||0)+n; return m; }); I(`antworten/${E.id}/${g}/bonus`).set(true); I("ticker").push({text:`${E.icon} ${G(g).emoji} ${G(g).name} war am schnellsten und bekommt: ${liste(E.schnellste)}!`, ts:TS()}); } }); } }); });
+    $$("[data-an]").forEach(b=>b.onclick=()=>{ form.an=b.dataset.an; msg=""; male(); });
+    $$("[data-g]").forEach(b=>b.onclick=()=>{ const r=b.dataset.g; form.gibt[r]=Math.max(0,Math.min(lager[r]||0,(form.gibt[r]||0)+Number(b.dataset.d))); if(!form.gibt[r]) delete form.gibt[r]; msg=""; male(); });
+    $$("[data-w]").forEach(b=>b.onclick=()=>{ const r=b.dataset.w; form.will[r]=Math.max(0,Math.min(20,(form.will[r]||0)+Number(b.dataset.d))); if(!form.will[r]) delete form.will[r]; msg=""; male(); });
+    const sc=$("#schicken"); if(sc) sc.onclick=()=>{ for(const [r,n] of Object.entries(form.gibt)) if((lager[r]||0)<n){ msg="So viel habt ihr nicht."; return male(); }
+      I("m/angebote").push({von:g, an:form.an, gibt:form.gibt, will:form.will, status:"offen", name:me.name, ts:TS()}); form={an:null,gibt:{},will:{}}; msg=""; };
+    $$("[data-annehmen]").forEach(b=>b.onclick=()=>{ const id=b.dataset.annehmen; let info=null;
+      I("m").transaction(m=>{ if(!m) return m; const a=(m.angebote||{})[id]; if(!a||a.status!=="offen") return; const L=m.lager||{}; const lv=L[a.von]||{}, la=L[a.an]||{};
+        for(const [r,n] of Object.entries(a.gibt||{})) if((lv[r]||0)<n){ a.status="nein"; a.grund="fehlt"; return m; }
+        for(const [r,n] of Object.entries(a.will||{})) if((la[r]||0)<n) return;
+        for(const [r,n] of Object.entries(a.gibt||{})){ lv[r]-=n; la[r]=(la[r]||0)+n; }
+        for(const [r,n] of Object.entries(a.will||{})){ la[r]-=n; lv[r]=(lv[r]||0)+n; }
+        L[a.von]=lv; L[a.an]=la; m.lager=L; a.status="ok"; a.fertig=Date.now(); m.handel=m.handel||{}; m.handel[a.von]=(m.handel[a.von]||0)+1; m.handel[a.an]=(m.handel[a.an]||0)+1; info=a; return m;
+      }).then(()=>{ if(info&&info.status==="ok") I("ticker").push({text:`${G(info.von).emoji} ${G(info.von).name} ↔ ${G(info.an).emoji} ${G(info.an).name}: ${liste(info.gibt)} gegen ${liste(info.will)}`, ts:TS()}); }); });
+    $$("[data-ablehnen]").forEach(b=>b.onclick=()=>I(`m/angebote/${b.dataset.ablehnen}/status`).set("nein"));
+    $$("[data-zurueck]").forEach(b=>b.onclick=()=>I(`m/angebote/${b.dataset.zurueck}/status`).set("zurueck"));
+    const bau=$("#bauen"); if(bau) bau.onclick=()=>{ I("m").transaction(m=>{ if(!m) return m; const l=(m.lager||{})[g]||{}; if((m.boote||{})[g]) return; if(!Object.entries(D.boot).every(([r,n])=>(l[r]||0)>=n)) return;
+      for(const [r,n] of Object.entries(D.boot)) l[r]-=n; m.boote=m.boote||{}; m.boote[g]="eigen"; return m; }).then(()=>I("ticker").push({text:`⛵ Gruppe ${G(g).emoji} ${G(g).name} hat ein Boot gebaut!`, ts:TS()})); };
+  }
+  if(!db){ app.innerHTML="Keine Verbindung."; return; }
+  PIN?pruefe():pinScreen();
+}
+
+/* =========================================================
+   LEITUNG = LEINWAND
+   ========================================================= */
+function leitung(){
+  document.body.classList.add("board");
+  const app=$("#app"); let S=null, pub={}, warte=false, ev="zufall", marktMin=10, anzahl=4;
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){ document.body.classList.remove("board"); app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>🏝️ Die Insel leiten</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="width:100%;margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="width:100%;margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  async function start(){
+    document.body.classList.add("board"); pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+    if(!PIN){ try{ PIN=localStorage.getItem("insel_leitung_pin")||""; }catch(e){} }
+    if(PIN){ const i=(await I("info").once("value")).val(); if(!i||(i.phase==="ende"&&!P.get("pin"))) PIN=""; }
+    if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${IROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
+      await I().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}}); }
+    try{ localStorage.setItem("insel_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
+    I().on("value", s=>{ S=s.val()||{}; male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500);
+  }
+  const namen=()=>pub.names||{};
+  function male(){
+    const ae=document.activeElement; if(ae && /INPUT|SELECT/.test(ae.tagName) && app.contains(ae)){ warte=true; return; }
+    const ph=S.info.phase, dabei=Object.values(S.spieler||{}).filter(x=>x.ts).length;
+    const kopf=`<div class="top"><b>🏝️ Gestrandet – Die Insel</b><span class="chip gold">PIN ${PIN}</span><span class="chip">${dabei} dabei</span>${ph==="spiel"?`<span class="chip">Tag ${S.tag} · ${SCHRITT[S.schritt]||""}</span>`:""}<span class="small" style="opacity:.7">Handy: ${esc(LIVE_URL.replace(/^https?:\/\//,""))}</span>
+      <span style="margin-left:auto" class="row">${ph==="spiel"?`<button class="btn sm hell" id="beenden">🏁 Spiel beenden</button>`:""}<button class="btn sm hell" id="neu">Neues Spiel</button></span></div>`;
+    app.innerHTML=kopf+(ph==="lobby"?lobby():ph==="spiel"?spiel():ende());
+    if(ph==="lobby"){ try{ new QRCode($("#qr"),{text:BASIS_URL+"?pin="+PIN,width:170,height:170}); }catch(e){} }
+    binden();
+  }
+  const grSel=(p,cur)=>`<select data-gruppe="${p}"><option value="">–</option>${gruppen(S).map(g=>`<option value="${g}" ${cur===g?"selected":""}>${G(g).emoji} ${G(g).name}</option>`).join("")}</select>`;
+  function lobby(){
+    const sp=S.spieler||{}; const ids=Object.keys(namen()).sort((a,b)=>String(namen()[a]).localeCompare(namen()[b]));
+    return `<div class="bwrap"><div style="display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start">
+      <div class="card" style="text-align:center"><div id="qr" style="display:flex;justify-content:center;margin-bottom:10px"></div><div>PIN</div><div class="lwpin">${PIN}</div></div>
+      <div><div class="card"><h2>🌊 ${esc(D.titel)}</h2><p class="gross" style="font-size:24px;font-weight:600;margin:0">${esc(D.geschichte)}</p></div>
+        <div class="card"><h2>1 · Wer ist da?</h2><div class="namen">${ids.map(p=>{ const x=sp[p]||{}; return `<label class="nm"><input type="checkbox" data-da="${p}" ${x.da?"checked":""}><span>${esc(namen()[p])} ${x.ts?"📱":""}</span>${grSel(p,x.gruppe)}</label>`; }).join("")}</div></div>
+        <div class="card"><h2>2 · Gruppen</h2><div class="row"><select id="anz"><option value="4" ${anzahl===4?"selected":""}>4 Gruppen</option><option value="3" ${anzahl===3?"selected":""}>3 Gruppen (ohne Berg)</option></select><button class="btn gold" id="auslosen">🎲 Gruppen auslosen</button></div>
+          <div class="gruppen" style="margin-top:12px">${gruppen(S).map(g=>`<div class="gr" style="--f:${G(g).farbe}"><b>${G(g).emoji} ${G(g).name}</b><div class="m">${mitglieder(S,g).map(p=>esc(sp[p].name)).join(", ")||"leer"}</div><div class="small" style="margin-top:6px;opacity:.8">Start: ${esc(liste(G(g).lager))}</div></div>`).join("")}</div>
+          <button class="btn acc" id="start" style="margin-top:12px;min-height:58px;font-size:20px" ${gruppen(S).length>=3?"":"disabled"}>▶ Spiel starten</button></div></div></div></div>`;
+  }
+  function gruppenKarten(mitLager){ const m=S.m||{};
+    return `<div class="gruppen">${gruppen(S).map(g=>{ const pk=punkte(S,g), l=(m.lager||{})[g]||{}, b=(m.boote||{})[g];
+      return `<div class="gr" style="--f:${G(g).farbe}"><div class="row" style="justify-content:space-between"><b>${G(g).emoji} ${G(g).name}</b><span class="ic">${b?"⛵":""}</span></div><div class="p">${pk.p}</div>
+        <div class="m">🐚 ${l.muscheln||0} · 🤝 ${(m.handel||{})[g]||0} Geschäfte</div>${mitLager?`<div class="small" style="margin-top:6px;opacity:.85">${esc(liste(l))}</div>`:""}
+        <div class="row" style="margin-top:6px"><button class="btn sm hell" data-korr="${g}" data-w="-1">−1</button><button class="btn sm hell" data-korr="${g}" data-w="1">+1</button></div></div>`; }).join("")}</div>`; }
+  function spiel(){
+    const E=S.ereignis&&D.ereignisse.find(e=>e.id===S.ereignis.id); const ticker=arr(S.ticker).slice(-12).reverse();
+    let main="", knoepfe="";
+    const benutzt=Object.keys(S.benutzt||{});
+    const evWahl=`<select id="ev"><option value="zufall">🎲 zufälliges Ereignis</option>${D.ereignisse.map(e=>`<option value="${e.id}" ${ev===e.id?"selected":""}>${e.icon} ${esc(e.titel)}${benutzt.includes(e.id)?" (schon gewesen)":""}</option>`).join("")}</select>`;
+    if(S.schritt==="geschichte"){ main=`<div class="card"><h1 style="font-size:46px">🌊 Gestrandet!</h1><p class="gross" style="font-weight:600">${esc(D.geschichte)}</p></div>`; knoepfe=`${evWahl}<button class="btn gold" id="ereignis">☀️ Tag ${S.tag} beginnen: Ereignis zeigen</button>`; }
+    else if(S.schritt==="ereignis"&&E){ const an=(S.antworten||{})[E.id]||{};
+      main=`<div class="card"><div style="opacity:.8">Tag ${S.tag}</div><h1 style="font-size:52px;color:var(--gold)">${E.icon} ${esc(E.titel)}</h1><p class="gross">${esc(E.text)}</p>
+        <p style="font-size:24px;margin:10px 0 0">❓ ${esc(E.frage)} <span style="opacity:.75">– Späher:innen antworten am Handy</span></p>
+        <div class="row" style="margin-top:10px">${gruppen(S).map(g=>`<span class="chip">${G(g).emoji} ${an[g]?(an[g].ok?"✓":"✗"):"…"}</span>`).join("")}</div></div>`;
+      knoepfe=`<label class="chip">Markt <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn acc" id="markt">🤝 Markt starten</button>`; }
+    else if(S.schritt==="markt"){ main=`<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px"><div class="card" style="text-align:center"><div style="opacity:.8">Markt · Tag ${S.tag}</div><div class="uhr" id="uhr">${mmss(rest(S))}</div><p style="opacity:.8">Erst sprechen – dann am Handy schicken!</p>
+        ${E?`<p class="small" style="opacity:.75">Ereignis heute: ${E.icon} ${esc(E.titel)}</p>`:""}</div>
+        <div class="card"><h2>📜 Neue Geschäfte</h2><div class="ticker">${ticker.map(t=>`<div>${esc(t.text)}</div>`).join("")||`<p style="opacity:.6">Noch keine Geschäfte …</p>`}</div></div></div>`;
+      knoepfe=`<button class="btn hell" id="plus2">+2 Min.</button><button class="btn gold" id="abend">🌙 Abend: essen und trinken</button>`; }
+    else if(S.schritt==="abend"){ const v=((S.m||{}).versorgt||{})[S.tag]||{};
+      main=`<div class="card"><h1 style="font-size:46px">🌙 Abend – Tag ${S.tag}</h1><p class="gross" style="font-weight:600">Jede Gruppe braucht ${D.proAbend.essen} Essen und ${D.proAbend.wasser} Wasser.</p>
+        <div class="row" style="font-size:24px;margin-top:10px">${gruppen(S).map(g=>`<span class="chip" style="font-size:22px;padding:8px 16px">${G(g).emoji} ${G(g).name}: ${v[g]?(v[g].ok?"😊 satt":`😫 Hunger (−${v[g].fehlt*-PK.hunger})`):"…"}</span>`).join("")}</div>
+        ${(S.fieberTag===S.tag)?`<p style="margin-top:12px">🤒 Fieber: ${gruppen(S).map(g=>`${G(g).emoji} ${(S.m.fieberHeute||{})[g]?"ohne Medikament (−5)":"✓"}`).join(" · ")}</p>`:""}</div>`;
+      knoepfe = S.tag<3 ? `${evWahl}<button class="btn gold" id="naechster">☀️ Tag ${S.tag+1}: Ereignis zeigen</button>` : `<label class="chip">Bauzeit <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn gold" id="bautag">🛠️ Bautag starten</button>`; }
+    else if(S.schritt==="bau"){ const b=(S.m||{}).boote||{}; const ohne=gruppen(S).filter(g=>!b[g]), mit=gruppen(S).filter(g=>b[g]==="eigen");
+      main=`<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px"><div class="card" style="text-align:center"><h1 style="font-size:46px">🛠️ Bautag!</h1><div class="uhr" id="uhr">${mmss(rest(S))}</div>
+        <p class="gross" style="font-size:22px">Ein Boot braucht: ${esc(liste(D.boot))}</p><div style="font-size:60px">${gruppen(S).map(g=>b[g]?"⛵":"🏝️").join(" ")}</div></div>
+        <div class="card"><h2>📜 Neues</h2><div class="ticker">${ticker.map(t=>`<div>${esc(t.text)}</div>`).join("")}</div>
+          ${ohne.length&&mit.length?`<div class="row" style="margin-top:10px"><span>Mitfahren:</span><select id="mit-wer">${ohne.map(g=>`<option value="${g}">${G(g).emoji} ${G(g).name}</option>`).join("")}</select> fährt mit <select id="mit-bei">${mit.map(g=>`<option value="${g}">${G(g).emoji} ${G(g).name}</option>`).join("")}</select><button class="btn sm gold" id="mitfahren">⛵ eintragen</button></div>`:""}</div></div>`;
+      knoepfe=`<button class="btn hell" id="plus2">+2 Min.</button><button class="btn acc" id="beenden2">🏁 Rettung! Spiel beenden</button>`; }
+    return `<div class="bwrap">${gruppenKarten(S.schritt==="abend"||S.schritt==="bau")}${main}<div class="steuer">${knoepfe}</div></div>`;
+  }
+  function ende(){
+    const sp=S.spieler||{}, ub=S.uebertragen||{}; const rang=gruppen(S).map(g=>({g,...punkte(S,g)})).sort((a,b)=>b.p-a.p);
+    const zeilen=[]; rang.forEach(r=>mitglieder(S,r.g).forEach(p=>zeilen.push({p, name:sp[p].name, g:r.g, wert:ub[p]!==undefined?ub[p]:Math.max(0,Math.min(20,Math.round(r.p/3)))})));
+    const T={versorgt:"satt",hunger:"Hunger",boot:"Boot",aufgaben:"Fragen",handel:"Handel",muscheln:"Muscheln",fieber:"Fieber",korr:"Korrektur"};
+    return `<div class="bwrap"><h1 style="font-size:54px;text-align:center">⛵ ${rang[0]?`${G(rang[0].g).emoji} ${G(rang[0].g).name} gewinnt!`:"Gerettet!"}</h1>
+      <div class="card"><table><tr><th>Gruppe</th>${Object.values(T).map(t=>`<th>${t}</th>`).join("")}<th>Gesamt</th></tr>${rang.map(r=>`<tr><td><b>${G(r.g).emoji} ${G(r.g).name}</b></td>${Object.keys(T).map(k=>`<td>${r.teile[k]||0}</td>`).join("")}<td><b style="color:var(--gold);font-size:22px">${r.p}</b></td></tr>`).join("")}</table></div>
+      <div class="card"><h2>Punkte für jede Person</h2><p class="small" style="opacity:.8;margin-top:0">Vorschlag: Gruppenpunkte ÷ 3 (höchstens 20). Du kannst jede Zahl ändern.</p>
+      <table><tr><th>Name</th><th>Gruppe</th><th>Punkte</th><th></th></tr>${zeilen.map(z=>`<tr><td>${esc(z.name)}</td><td>${G(z.g).emoji} ${G(z.g).name}</td><td><input type="number" min="0" max="100" data-lp="${z.p}" value="${z.wert}"></td><td>${ub[z.p]!==undefined?"✓ gespeichert":""}</td></tr>`).join("")}</table>
+      <p class="row" style="margin-top:12px"><button class="btn ok" id="speichern">⬆ Punkte speichern</button><button class="btn hell" id="weiter">↩ weiterspielen</button><span id="sp-msg"></span></p></div></div>`;
+  }
+  /* Spiellogik der Lehrkraft */
+  function anwenden(m, wirkung, gs){ m.lager=m.lager||{}; for(const [wer,w] of Object.entries(wirkung||{})){ const ziele = wer==="alle"?gs:(gs.includes(wer)?[wer]:[]);
+      ziele.forEach(g=>{ m.lager[g]=m.lager[g]||{}; for(const [r,n] of Object.entries(w)) m.lager[g][r]=Math.max(0,(m.lager[g][r]||0)+n); }); } }
+  async function ereignisZeigen(tag){
+    const gs=gruppen(S); const benutzt=Object.keys(S.benutzt||{});
+    let id=ev==="zufall" ? (mische(D.ereignisse.filter(e=>!benutzt.includes(e.id)&&(gs.includes("berg")||e.id!=="schatz")&&!(tag===1&&e.fieber)))[0]||D.ereignisse[0]).id : ev;
+    const E=D.ereignisse.find(e=>e.id===id); ev="zufall";
+    let fieberHeute={};
+    await I("m").transaction(m=>{ m=m||{}; anwenden(m,E.wirkung,gs);
+      if(E.fieber){ fieberHeute={}; gs.forEach(g=>{ const l=m.lager[g]=m.lager[g]||{}; if((l.medizin||0)>0) l.medizin--; else { m.fieber=m.fieber||{}; m.fieber[g]=(m.fieber[g]||0)+1; fieberHeute[g]=true; } }); m.fieberHeute=fieberHeute; }
+      return m; });
+    await I().update({tag, schritt:"ereignis", ereignis:{id, ord:mische([0,1,2])}, [`benutzt/${id}`]:true, fieberTag:E.fieber?tag:null, markt:null});
+    I("ticker").push({text:`${E.icon} Tag ${tag}: ${E.titel}`, ts:TS()});
+  }
+  async function abend(){
+    const gs=gruppen(S); const tag=S.tag; let erg={};
+    await I("m").transaction(m=>{ m=m||{}; m.lager=m.lager||{}; m.versorgt=m.versorgt||{}; if(m.versorgt[tag]) return m; erg={};
+      gs.forEach(g=>{ const l=m.lager[g]=m.lager[g]||{}; let fehlt=0; let e=D.proAbend.essen;
+        D.essen.slice().sort((a,b)=>(l[b]||0)-(l[a]||0)).forEach(r=>{ const n=Math.min(e,l[r]||0); l[r]=(l[r]||0)-n; e-=n; }); fehlt+=e;
+        const w=Math.min(D.proAbend.wasser,l.wasser||0); l.wasser=(l.wasser||0)-w; fehlt+=D.proAbend.wasser-w; erg[g]={ok:fehlt===0, fehlt}; });
+      m.versorgt[tag]=erg; return m; });
+    await I().update({schritt:"abend", markt:null});
+  }
+  function binden(){
+    const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+    $$("[data-da]").forEach(c=>c.onchange=()=>{ const p=c.dataset.da; I(`spieler/${p}`).update({da:c.checked, name:namen()[p]||"?"}); if(!c.checked) I(`spieler/${p}/gruppe`).remove(); });
+    $$("[data-gruppe]").forEach(c=>c.onchange=()=>{ const p=c.dataset.gruppe; I(`spieler/${p}`).update({gruppe:c.value||null, da:true, name:namen()[p]||"?"}); });
+    const an=$("#anz"); if(an) an.onchange=()=>{ anzahl=Number(an.value)||4; };
+    on("auslosen", ()=>{ anzahl=Number(($("#anz")||{}).value)||4; const gs=anzahl===3?["strand","wald","wrack"]:["strand","wald","berg","wrack"]; const sp=S.spieler||{}; const da=mische(Object.keys(sp).filter(p=>sp[p].da));
+      if(da.length<gs.length){ alert("Zu wenige Personen sind „da“."); return; } const up={aktiv:Object.fromEntries(Object.keys(D.gruppen).map(g=>[g,gs.includes(g)]))}; Object.keys(sp).forEach(p=>up[`spieler/${p}/gruppe`]=null); da.forEach((p,i)=>up[`spieler/${p}/gruppe`]=gs[i%gs.length]); I().update(up); });
+    on("start", ()=>{ const gs=gruppen(S); const lager={}; gs.forEach(g=>lager[g]=Object.assign({},G(g).lager)); if(gs.length===3){ /* ohne Berg: Wasser verteilen */ lager.strand.wasser+=4; lager.wald.wasser+=3; lager.wrack.wasser+=3; }
+      I().update({"info/phase":"spiel", tag:1, schritt:"geschichte", m:{lager}, antworten:null, ereignis:null, benutzt:null, korr:null, ticker:null, schnellste:null, markt:null, uebertragen:null}); });
+    const evs=$("#ev"); if(evs) evs.onchange=()=>{ ev=evs.value; };
+    const mi=$("#min"); if(mi) mi.onchange=()=>{ marktMin=Math.max(2,Math.min(30,Number(mi.value)||10)); };
+    on("ereignis", ()=>ereignisZeigen(S.tag||1));
+    on("markt", ()=>{ marktMin=Math.max(2,Math.min(30,Number(($("#min")||{}).value)||marktMin)); I().update({schritt:"markt", markt:{ende:jetzt()+marktMin*60000}}); });
+    on("plus2", ()=>I("markt/ende").set(Math.max(jetzt(),(S.markt&&S.markt.ende)||jetzt())+120000));
+    on("abend", abend);
+    on("naechster", ()=>ereignisZeigen((S.tag||1)+1));
+    on("bautag", ()=>{ marktMin=Math.max(2,Math.min(30,Number(($("#min")||{}).value)||marktMin)); I().update({schritt:"bau", markt:{ende:jetzt()+marktMin*60000}}); I("ticker").push({text:"🛠️ Bautag! Wer hat alles für ein Boot?", ts:TS()}); });
+    on("mitfahren", ()=>{ const wer=$("#mit-wer").value, bei=$("#mit-bei").value; I(`m/boote/${wer}`).set("mit:"+bei); I("ticker").push({text:`⛵ ${G(wer).emoji} ${G(wer).name} fährt im Boot von ${G(bei).emoji} ${G(bei).name} mit!`, ts:TS()}); });
+    $$("[data-korr]").forEach(b=>b.onclick=()=>{ const g=b.dataset.korr; I(`korr/${g}`).set((Number((S.korr||{})[g])||0)+Number(b.dataset.w)); });
+    const beenden=()=>{ if(confirm("Spiel beenden? Danach vergibst du die Punkte.")) I("info/phase").set("ende"); }; on("beenden", beenden); on("beenden2", beenden);
+    on("weiter", ()=>I("info/phase").set("spiel"));
+    on("neu", ()=>{ if(!confirm("Ein neues Spiel mit neuer PIN starten?")) return; I().off(); try{ localStorage.removeItem("insel_leitung_pin"); }catch(e){} PIN=""; start(); });
+    on("speichern", async ()=>{ const msg=$("#sp-msg"); msg.textContent="Speichere …";
+      try{ const werte={}; $$("[data-lp]").forEach(i=>werte[i.dataset.lp]=Math.max(0,Math.min(100,Math.round(Number(i.value)||0))));
+        const up={}; const ts=TS(); Object.entries(werte).forEach(([p,v])=>up[`log/${p}/insel-${PIN}`]={code:"lehrkraft", key:"insel-"+PIN, titel:"Gestrandet – Die Insel", art:"team", p:v, max:20, ts});
+        await db.ref(BASE).update(up); await I("uebertragen").set(werte); }catch(e){ msg.textContent="Fehler: "+(e.message||e); } });
+    $$("#app input, #app select").forEach(el=>el.addEventListener("blur", ()=>{ if(warte){ warte=false; setTimeout(male,50); } }));
+  }
+}
+if(!db){ document.getElementById("app").innerHTML="Keine Verbindung."; }
+else P.get("leitung") ? leitung() : spieler();
+</script>
+</body>
+</html>
