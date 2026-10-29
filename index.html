@@ -225,6 +225,7 @@ const ARENA=[
   {gruppe:"Live im Unterricht", icon:"⚔️", farbe:"#E8EBFF", titel:"Tafel-Duell", text:"Team gegen Team an der Leinwand – Sätze ordnen, Lücken füllen, klauen! Deine Lehrkraft leitet. Handy bleibt in der Tasche.", tags:["live","Teams","ohne Handy"], ohneHandy:true},
   {gruppe:"Live im Unterricht", icon:"🗳️", farbe:"#EDE7FF", titel:"Abstimmung", text:"Deine Lehrkraft fragt – alle stimmen am Handy ab. Das Ergebnis erscheint auf der Leinwand.", tags:["live","ganze Klasse"], pin:true},
   {gruppe:"Zusammen", icon:"🏝️", farbe:"#E0F2F5", titel:"Gestrandet – Die Insel", text:"Eure Gruppe ist auf einer Insel gestrandet. Handelt mit den anderen Gruppen, überlebt drei Tage und baut ein Boot!", tags:["live","Gruppen","Handeln"], pin:true},
+  {gruppe:"Zusammen", icon:"🎲", farbe:"#DCFCE7", titel:"Plön-Opoly", text:"Kauft die besten Orte in Plön! Kaufen dürft ihr nur mit der richtigen Antwort. Wer bei anderen landet, zahlt Miete.", tags:["live","Teams","Brettspiel"], pin:true},
   {gruppe:"Zusammen", icon:"🎭", farbe:"#FCE7F3", titel:"Wort-Party", text:"Pantomime, Malen oder Erklären – dein Team rät in einer Minute so viele Wörter wie möglich. Wer dran ist, sieht das Wort auf dem Handy.", tags:["live","Teams","1 Minute"], pin:true},
   {gruppe:"Zusammen", icon:"🕵️", farbe:"#FFF4D6", titel:"Schnitzeljagd", text:"Im Team einen Fall lösen: Hör-Aufgaben, Hinweise, Zahlenschloss. Punkte bekommt jede Person.", tags:["live","Team","90 Minuten"], pin:true},
   {gruppe:"Zusammen", icon:"💬", farbe:"#E2F6EF", titel:"Chat-Spiel", text:"Eine WhatsApp-Gruppe, 3–4 Leute an einem Tisch: Nachrichten aus Wort-Kacheln bauen.", tags:["live","Tisch","3–4 Personen"], pin:true},
@@ -271,7 +272,7 @@ function ueKarte(u, W, alle){
   return `<a class="ue ${mb!==undefined?"fertig":""} ${mb>=u.max?"voll":""}" href="${esc(u.datei)}"><span class="ic">${u.icon}</span><span class="tx"><b>${esc(u.titel)}</b><span class="t">${u.zeit?'<span class="tag">⏱️ Zeit</span>':""}${esc(u.text)}</span></span><span class="st">${status}</span></a>`;
 }
 function pinKarte(){
-  return `<div class="card livekarte"><h3>🎮 Live im Unterricht</h3><p style="margin:0 0 10px;opacity:.95">PIN von der Leinwand eingeben – für Quiz, Abstimmung, Wort-Party, Schnitzeljagd und Chat-Spiel.</p>
+  return `<div class="card livekarte"><h3>🎮 Live im Unterricht</h3><p style="margin:0 0 10px;opacity:.95">PIN von der Leinwand eingeben – für alle Live-Spiele im Unterricht.</p>
     <form class="pin" data-pin><input inputmode="numeric" maxlength="4" placeholder="PIN" aria-label="PIN"><button class="btn navy">Los</button></form></div>`;
 }
 

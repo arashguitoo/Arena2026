@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14532D">
+<meta name="robots" content="noindex, nofollow">
+<title>Plön-Opoly</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --brett:#E7F0E4; --gruen:#14532D; --gruen-2:#1C6B3B; --pri:#15803D; --pri-2:#DCFCE7; --acc:#FF6B4A; --gold:#F5B82E; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:640px;margin:0 auto;padding:12px 12px 50px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--schatten);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.hell{background:rgba(255,255,255,.16);color:#fff}
+.btn.acc{background:var(--acc)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.rot{background:var(--bad)}
+.btn.wide{width:100%} .btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+input[type=email],input[type=password],input[type=number],select{min-height:42px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:#fff}
+.pin-in{width:100%;font-family:var(--head);font-size:34px;letter-spacing:.3em;text-align:center;min-height:56px;border:2px solid var(--line);border-radius:12px}
+.kopf{color:#fff;position:sticky;top:0;z-index:5}
+.kopf .in{max-width:640px;margin:0 auto;padding:8px 12px;display:flex;gap:10px;align-items:center;min-height:56px}
+.kopf b{font-family:var(--head);font-size:19px} .kopf .r{margin-left:auto;font-family:var(--head);font-weight:800;font-size:22px}
+.opts{display:grid;gap:8px;margin-top:8px}
+.opt{border:2px solid var(--line);background:#fff;border-radius:12px;min-height:50px;padding:8px 12px;text-align:left;cursor:pointer;font-weight:600}
+.besitz{display:flex;gap:6px;flex-wrap:wrap}
+.besitz span{border-radius:10px;padding:4px 10px;font-weight:700;font-size:14px;color:#fff}
+/* Brett */
+body.board{background:var(--gruen);color:#fff}
+.top{display:flex;gap:10px;align-items:center;padding:8px 16px;background:#0F3D21;flex-wrap:wrap}
+.top b{font-family:var(--head);font-size:22px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-weight:700;background:rgba(255,255,255,.14)}
+.chip.gold{background:var(--gold);color:var(--ink)}
+.spiel{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;padding:12px 16px;max-width:1500px;margin:0 auto}
+@media (max-width:1100px){ .spiel{grid-template-columns:1fr} }
+.brett{display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:repeat(7,1fr);gap:4px;aspect-ratio:1/1;max-height:calc(100vh - 90px);background:#0F3D21;padding:4px;border-radius:14px}
+.feld{background:var(--brett);color:var(--ink);border-radius:8px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3px;overflow:hidden;border-top:8px solid var(--fc,transparent)}
+.feld .i{font-size:clamp(16px,2.3vw,32px);line-height:1}
+.feld .n{font-size:clamp(9px,.85vw,13px);font-weight:800;line-height:1.1}
+.feld .pr{font-size:clamp(8px,.75vw,12px);color:var(--muted)}
+.feld.besetzt{box-shadow:inset 0 0 0 4px var(--bc)}
+.feld.hier{outline:4px solid var(--gold);outline-offset:-2px}
+.feld .fig{position:absolute;bottom:2px;left:0;right:0;display:flex;justify-content:center;gap:1px;font-size:clamp(12px,1.4vw,20px)}
+.mitte{grid-column:2/7;grid-row:2/7;background:#16613A;border-radius:12px;padding:clamp(10px,2vw,26px);display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:10px;color:#fff}
+.mitte h1{font-size:clamp(24px,3vw,46px);color:var(--gold)}
+.mitte .gross{font-size:clamp(17px,1.8vw,28px);font-weight:600;line-height:1.3}
+.wuerfel{font-size:clamp(60px,8vw,120px);line-height:1}
+.mopts{display:grid;gap:8px;width:100%;max-width:640px}
+.mopts div{background:rgba(255,255,255,.12);border-radius:12px;padding:10px 14px;font-size:clamp(16px,1.5vw,22px);text-align:left}
+.mopts div.richtig{background:var(--ok)} .mopts div.falsch{background:var(--bad)}
+.tm{background:#16613A;border-radius:16px;padding:12px 14px;margin-bottom:10px;border-left:8px solid var(--f)}
+.tm.dran{box-shadow:0 0 0 3px var(--gold)}
+.tm b{font-family:var(--head);font-size:20px} .tm .g{font-family:var(--head);font-weight:800;font-size:30px;color:var(--gold)}
+.tm .k{display:flex;gap:4px;margin-top:6px}
+.tm .k button{border:0;border-radius:8px;background:rgba(255,255,255,.14);color:#fff;font-weight:800;padding:4px 8px;cursor:pointer}
+.ticker div{font-size:14px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.board .card{background:#16613A;color:#fff;box-shadow:none}
+.namen{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.nm{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.08);border-radius:10px;padding:4px 8px}
+.nm span{flex:1;font-weight:600} .nm select{min-height:32px;padding:2px 6px;font-size:14px;border-radius:8px}
+.lwpin{font-family:var(--head);font-weight:800;font-size:96px;letter-spacing:.1em;color:var(--gold);line-height:1}
+#qr img,#qr canvas{background:#fff;padding:10px;border-radius:12px}
+table{border-collapse:collapse;width:100%} td,th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.14);text-align:left}
+td input{width:80px;min-height:36px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="opoly/ploen.js"></script>
+<script>
+/* =========================================================
+   PLÖN-OPOLY · ?leitung=1 (Lehrkraft = Spielbrett auf der Leinwand) · ?pin= (Teams am Handy)
+   Daten: ligaopoly/ploen-jik/{pin}
+   ========================================================= */
+const KURS="ploen-jik", BASE=`jugendliga/${KURS}`, CODE_KEY=`liga_code_${KURS}`, OROOT=`ligaopoly/${KURS}`;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash",storageBucket:"lern-deutsch-arash.firebasestorage.app",messagingSenderId:"845503292114",appId:"1:845503292114:web:f76ab5fcde1e978d00c30b"};
+const D=window.OPOLY, F=D.felder, N=F.length;
+const P=new URLSearchParams(location.search);
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const arr=v=>Array.isArray(v)?v.filter(x=>x!==null&&x!==undefined):(v&&typeof v==="object"?Object.values(v):[]);
+function mische(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const zufall=n=>Math.floor(Math.random()*n);
+const BASIS_URL=location.href.replace(/[?#].*$/,""), LIVE_URL=BASIS_URL.replace(/[^\/]*$/,"")+"live.html";
+const TEAMS=[["Rot","🔴","#DC2626"],["Blau","🔵","#2563EB"],["Grün","🟢","#16A34A"],["Gelb","🟡","#CA8A04"]];
+const WUERFEL=["","⚀","⚁","⚂","⚃","⚄","⚅"];
+let db=null, auth=null; try{ firebase.initializeApp(cfg); db=firebase.database(); auth=firebase.auth(); }catch(e){}
+const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+let PIN=(P.get("pin")||"").replace(/\D/g,"");
+const O=p=>db.ref(`${OROOT}/${PIN}${p?"/"+p:""}`);
+const teams=S=>arr(S.order).filter(t=>(S.teams||{})[t]);
+const mitglieder=(S,t)=>Object.entries(S.spieler||{}).filter(([,x])=>x.team===t).sort((a,b)=>String(a[1].name).localeCompare(b[1].name)).map(([p])=>p);
+function miete(S,i){ const f=F[i], b=S.besitz||{}, own=b[i]; if(own===undefined||own===null) return 0;
+  if(f.typ==="bahn") return f.miete*F.filter((x,k)=>x.typ==="bahn"&&b[k]===own).length;
+  const alle=F.map((x,k)=>k).filter(k=>F[k].farbe===f.farbe); return f.miete*(alle.every(k=>b[k]===own)?2:1); }
+function vermoegen(S,t){ const T=(S.teams||{})[t]||{}; return (Number(T.geld)||0)+Object.entries(S.besitz||{}).filter(([,o])=>o===t).reduce((s,[i])=>s+F[i].preis,0); }
+/* Position auf dem 7×7-Brett */
+function zelle(i){ if(i<=6) return [1,i+1]; if(i<=11) return [i-5,7]; if(i<=18) return [7,7-(i-12)]; return [7-(i-18),1]; }
+
+/* =========================================================
+   TEAMS AM HANDY
+   ========================================================= */
+function spieler(){
+  const app=$("#app"); let me=null, S=null;
+  try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
+  function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🎲</div><h2>Plön-Opoly</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
+    <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefe(); }; }
+  async function pruefe(){ if(PIN.length!==4) return pinScreen(PIN?"Die PIN hat 4 Ziffern.":"");
+    try{ const i=(await O("info").once("value")).val(); if(!i) return pinScreen("Diese PIN gibt es nicht."); history.replaceState(null,"","?pin="+PIN); me?los():codeScreen(); }catch(e){ pinScreen("Keine Verbindung."); } }
+  function codeScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🔑</div><h2>Dein Code</h2>
+    <form id="cf"><input id="code" class="pin-in" style="text-transform:uppercase;letter-spacing:.15em"><button class="btn wide" style="margin-top:10px">Los</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#cf").onsubmit=async e=>{ e.preventDefault(); const code=$("#code").value.toUpperCase().replace(/[^A-Z0-9]/g,""); if(code.length<4) return codeScreen("Der Code hat mindestens 4 Zeichen.");
+      try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val(); if(!c||!c.pid) return codeScreen("Diesen Code gibt es nicht.");
+        const n=(await db.ref(`${BASE}/public/names/${c.pid}`).once("value")).val(); me={code,pid:c.pid,name:n||c.name||"?"}; localStorage.setItem(CODE_KEY,JSON.stringify(me)); los(); }catch(err){ codeScreen("Keine Verbindung."); } }; }
+  function los(){ const ref=O(`spieler/${me.pid}`); ref.update({name:me.name, ts:TS(), online:true, da:true}); try{ ref.child("online").onDisconnect().set(false); }catch(e){}
+    O().on("value", s=>{ S=s.val()||{}; male(); }); }
+  function male(){
+    if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
+    const t=((S.spieler||{})[me.pid]||{}).team, T=t&&(S.teams||{})[t];
+    if(S.info.phase==="lobby"||!T){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:6vh;text-align:center"><div style="font-size:60px">🎲</div><h2>Hallo ${esc(me.name)}!</h2>${T?`<p>Dein Team: <b style="color:${T.farbe}">${T.emoji} ${T.name}</b><br>${mitglieder(S,t).map(p=>esc(S.spieler[p].name)).join(", ")}</p>`:`<p class="muted">Deine Lehrkraft macht gerade die Teams.</p>`}</div></div>`; return; }
+    let h=`<div class="kopf" style="background:${T.farbe}"><div class="in"><b>${T.emoji} Team ${T.name}</b><span class="r">${T.geld} €</span></div></div><div class="wrap">`;
+    if(S.info.phase==="ende"){ const ub=(S.uebertragen||{})[me.pid]; app.innerHTML=h+`<div class="card" style="text-align:center"><div style="font-size:60px">🏁</div><h2>Spiel vorbei!</h2><p>Euer Vermögen: <b>${vermoegen(S,t)} €</b></p>${ub!==undefined?`<p style="color:var(--ok);font-weight:700">✓ Für dich gespeichert: ${ub} Punkte</p>`:""}</div></div>`; return; }
+    const Z=S.zug||{}, ZT=(S.teams||{})[Z.team]||{}, binDran=Z.team===t, f=F[Z.nach];
+    if(binDran && Z.phase==="frage"){ const q=f.fragen[Z.frage];
+      h+=`<div class="card" style="border:3px solid ${T.farbe}"><div class="small muted">Ihr seid auf: ${f.icon} <b>${esc(f.name)}</b> (${f.preis} €)</div><h2 style="margin-top:6px">${esc(q.f)}</h2><p class="small muted" style="margin:0">Richtig = ihr dürft kaufen. Besprecht euch – nur ein Versuch!</p>
+        <div class="opts">${Z.ord.map(i=>`<button class="opt" data-antwort="${i}">${esc(q.o[i])}</button>`).join("")}</div></div>`; }
+    else if(binDran && Z.phase==="kaufen"){ h+=`<div class="card" style="text-align:center;border:3px solid ${T.farbe}"><div style="font-size:50px">${f.icon}</div><h2>${esc(f.name)} kaufen?</h2><p>Preis: <b>${f.preis} €</b> · Miete: ${f.miete} €</p>
+        <div class="row" style="justify-content:center"><button class="btn" id="kaufen" ${T.geld>=f.preis?"":"disabled"}>✓ Kaufen</button><button class="btn ghost" id="nicht">Nein, danke</button></div>${T.geld<f.preis?`<p class="small" style="color:var(--bad)">Ihr habt nicht genug Geld.</p>`:""}</div>`; }
+    else h+=`<div class="card" style="text-align:center"><div style="font-size:44px">${binDran?"🎲":"👀"}</div><h3>${binDran?"Ihr seid dran!":`Team ${esc(ZT.name||"")} ist dran`}</h3><p class="muted" style="margin:0">${esc(Z.text||"Schaut auf die Leinwand.")}</p></div>`;
+    const meins=Object.entries(S.besitz||{}).filter(([,o])=>o===t).map(([i])=>F[i]);
+    h+=`<div class="card"><h3>🏠 Euer Besitz</h3>${meins.length?`<div class="besitz">${meins.map(x=>`<span style="background:${D.farben[x.farbe]}">${x.icon} ${esc(x.name)}</span>`).join("")}</div>`:`<p class="muted" style="margin:0">Noch nichts. Kauft Orte in Plön!</p>`}
+      <p class="small muted" style="margin:10px 0 0">Gehört eine ganze Farbe euch, bekommt ihr doppelte Miete. Ihr könnt auch mit anderen Teams handeln – sprecht mit ihnen und sagt es der Lehrkraft.</p></div>
+      <div class="card"><h3>💰 Alle Teams</h3>${teams(S).map(x=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${S.teams[x].emoji} ${esc(S.teams[x].name)}</span><b>${S.teams[x].geld} €</b></div>`).join("")}</div>`;
+    app.innerHTML=h+`</div>`;
+    $$("[data-antwort]").forEach(b=>b.onclick=()=>antworten(S,+b.dataset.antwort));
+    const k=$("#kaufen"); if(k) k.onclick=()=>kaufen(S,true); const n=$("#nicht"); if(n) n.onclick=()=>kaufen(S,false);
+  }
+  if(!db){ app.innerHTML="Keine Verbindung."; return; }
+  PIN?pruefe():pinScreen();
+}
+/* gemeinsam: Antwort und Kauf (Handy oder Leinwand) */
+function antworten(S,i){ O("zug").transaction(z=>{ if(!z||z.phase!=="frage") return; z.antwort=i; const ok=i===0; const T=S.teams[z.team], f=F[z.nach];
+  if(ok){ z.phase="kaufen"; z.text=`Richtig! ${T.name} darf ${f.name} kaufen.`; } else { z.phase="fertig"; z.text=`Leider falsch. ${T.name} darf ${f.name} jetzt nicht kaufen.`; } return z; }); }
+function kaufen(S,ja){ const Z=S.zug; if(!Z||Z.phase!=="kaufen") return; const f=F[Z.nach], T=S.teams[Z.team];
+  if(ja && T.geld>=f.preis && !(S.besitz||{})[Z.nach]){ O().update({[`teams/${Z.team}/geld`]:T.geld-f.preis, [`besitz/${Z.nach}`]:Z.team, "zug/phase":"fertig", "zug/text":`${T.name} hat ${f.name} gekauft! 🎉`});
+    O("ticker").push({text:`${T.emoji} ${T.name} kauft ${f.icon} ${f.name} für ${f.preis} €`, ts:TS()}); }
+  else O("zug").update({phase:"fertig", text:`${T.name} kauft ${f.name} nicht.`}); }
+
+/* =========================================================
+   LEITUNG = SPIELBRETT
+   ========================================================= */
+function leitung(){
+  document.body.classList.add("board");
+  const app=$("#app"); let S=null, pub={}, warte=false, anzahl=4, rollt=false;
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){ document.body.classList.remove("board"); app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>🎲 Plön-Opoly leiten</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="width:100%;margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="width:100%;margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  async function start(){
+    document.body.classList.add("board"); pub=(await db.ref(`${BASE}/public`).once("value")).val()||{};
+    if(!PIN){ try{ PIN=localStorage.getItem("opoly_leitung_pin")||""; }catch(e){} }
+    if(PIN){ const i=(await O("info").once("value")).val(); if(!i||(i.phase==="ende"&&!P.get("pin"))) PIN=""; }
+    if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${OROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
+      await O().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}}); }
+    try{ localStorage.setItem("opoly_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
+    O().on("value", s=>{ S=s.val()||{}; if(!rollt) male(); });
+  }
+  const namen=()=>pub.names||{};
+  function male(){
+    const ae=document.activeElement; if(ae && /INPUT|SELECT/.test(ae.tagName) && app.contains(ae)){ warte=true; return; }
+    const ph=S.info.phase, dabei=Object.values(S.spieler||{}).filter(x=>x.ts).length;
+    app.innerHTML=`<div class="top"><b>🎲 Plön-Opoly</b><span class="chip gold">PIN ${PIN}</span><span class="chip">${dabei} dabei</span>${ph==="spiel"?`<span class="chip">Runde ${S.runde||1}</span>`:""}<span class="small" style="opacity:.7">Handy: ${esc(LIVE_URL.replace(/^https?:\/\//,""))}</span>
+      <span style="margin-left:auto" class="row">${ph==="spiel"?`<button class="btn sm hell" id="beenden">🏁 Spiel beenden</button>`:""}<button class="btn sm hell" id="neu">Neues Spiel</button></span></div>`+(ph==="lobby"?lobby():ph==="spiel"?spiel():ende());
+    if(ph==="lobby"){ try{ new QRCode($("#qr"),{text:BASIS_URL+"?pin="+PIN,width:170,height:170}); }catch(e){} }
+    binden();
+  }
+  const tSel=(p,cur)=>`<select data-team="${p}"><option value="">–</option>${teams(S).map(t=>`<option value="${t}" ${cur===t?"selected":""}>${S.teams[t].emoji} ${S.teams[t].name}</option>`).join("")}</select>`;
+  function lobby(){ const sp=S.spieler||{}; const ids=Object.keys(namen()).sort((a,b)=>String(namen()[a]).localeCompare(namen()[b]));
+    return `<div style="max-width:1200px;margin:0 auto;padding:16px"><div style="display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start">
+      <div class="card" style="text-align:center"><div id="qr" style="display:flex;justify-content:center;margin-bottom:10px"></div><div>PIN</div><div class="lwpin">${PIN}</div></div>
+      <div><div class="card"><h2>🎲 Plön-Opoly</h2><p style="font-size:20px;margin:0">Kauft die besten Orte in Plön! Aber Achtung: Kaufen dürft ihr nur, wenn ihr eine Frage richtig beantwortet. Wer bei einem anderen Team landet, zahlt Miete. Am Ende gewinnt das Team mit dem meisten Vermögen.</p></div>
+        <div class="card"><h2>1 · Wer ist da?</h2><div class="namen">${ids.map(p=>{ const x=sp[p]||{}; return `<label class="nm"><input type="checkbox" data-da="${p}" ${x.da?"checked":""}><span>${esc(namen()[p])} ${x.ts?"📱":""}</span>${tSel(p,x.team)}</label>`; }).join("")}</div></div>
+        <div class="card"><h2>2 · Teams</h2><div class="row"><select id="anz">${[2,3,4].map(n=>`<option value="${n}" ${anzahl===n?"selected":""}>${n} Teams</option>`).join("")}</select><button class="btn gold" id="auslosen">🎲 Teams auslosen</button></div>
+          <div class="row" style="margin-top:10px">${teams(S).map(t=>`<div class="tm" style="--f:${S.teams[t].farbe};flex:1;min-width:200px"><b>${S.teams[t].emoji} ${S.teams[t].name}</b><div class="small">${mitglieder(S,t).map(p=>esc(sp[p].name)).join(", ")||"leer"}</div></div>`).join("")}</div>
+          <button class="btn acc" id="start" style="margin-top:12px;min-height:56px;font-size:20px" ${teams(S).length>=2?"":"disabled"}>▶ Spiel starten (je ${D.startGeld} €)</button></div></div></div></div>`; }
+  function brett(){ const b=S.besitz||{}, Z=S.zug||{};
+    let h=""; F.forEach((f,i)=>{ const [r,c]=zelle(i); const own=b[i]; const fig=teams(S).filter(t=>S.teams[t].pos===i).map(t=>S.teams[t].emoji).join("");
+      h+=`<div class="feld ${own?"besetzt":""} ${Z.nach===i&&Z.phase!=="wuerfeln"?"hier":""}" style="grid-row:${r};grid-column:${c};--fc:${f.farbe?D.farben[f.farbe]:"transparent"};${own?`--bc:${S.teams[own].farbe}`:""}"><span class="i">${f.icon}</span><span class="n">${esc(f.name)}</span>${f.preis?`<span class="pr">${own?`${S.teams[own].emoji} ${miete(S,i)} €`:f.preis+" €"}</span>`:""}<span class="fig">${fig}</span></div>`; });
+    return h; }
+  function mitte(){ const Z=S.zug||{}, T=(S.teams||{})[Z.team]||{}, f=F[Z.nach];
+    if(!Z.team) return `<h1>🎲 Los geht's!</h1>`;
+    const kopf=`<div class="gross">${T.emoji} Team ${esc(T.name)} ist dran</div>`;
+    if(Z.phase==="wuerfeln") return `${kopf}<div class="wuerfel" id="wuerfel">🎲</div><button class="btn gold" id="wuerfeln" style="min-height:64px;font-size:24px;padding:10px 40px">🎲 Würfeln</button>`;
+    let h=`${kopf}<div class="row" style="justify-content:center"><span class="wuerfel" style="font-size:clamp(40px,5vw,70px)">${WUERFEL[Z.wurf]||""}</span><span class="gross">→ ${f.icon} ${esc(f.name)}</span></div>`;
+    if(Z.phase==="frage"){ const q=f.fragen[Z.frage]; h+=`<div class="gross" style="color:var(--gold)">${esc(q.f)}</div><div class="mopts">${Z.ord.map((i,k)=>`<div data-lw-antwort="${i}" style="cursor:pointer">${"ABC"[k]} · ${esc(q.o[i])}</div>`).join("")}</div><div class="small" style="opacity:.75">Team ${esc(T.name)} antwortet am Handy (oder du tippst hier).</div>`; }
+    else if(Z.phase==="kaufen") h+=`<div class="gross">✓ Richtig! Kauft ihr ${esc(f.name)} für ${f.preis} €?</div><div class="row"><button class="btn gold" id="lw-kaufen">Kaufen</button><button class="btn hell" id="lw-nicht">Nein</button></div>`;
+    else if(Z.phase==="sprechen") h+=`<div class="gross" style="color:var(--gold)">🗣️ ${esc(Z.aufgabe)}</div><div class="row"><button class="btn hell" data-sp="0">0 €</button><button class="btn" data-sp="50">+50 €</button><button class="btn gold" data-sp="100">+100 €</button></div>`;
+    else h+=`<div class="gross">${esc(Z.text||"")}</div>${Z.karte?`<div style="font-size:60px">${Z.karte}</div>`:""}`;
+    if(Z.phase==="fertig") h+=`<button class="btn acc" id="weiter" style="min-height:56px;font-size:20px">▶ Nächstes Team</button>`;
+    return h; }
+  function spiel(){ const Z=S.zug||{};
+    return `<div class="spiel"><div class="brett">${brett()}<div class="mitte">${mitte()}</div></div>
+      <div>${teams(S).map(t=>{ const T=S.teams[t]; return `<div class="tm ${Z.team===t?"dran":""}" style="--f:${T.farbe}"><div class="row" style="justify-content:space-between"><b>${T.emoji} ${T.name}</b><span class="g">${T.geld} €</span></div>
+        <div class="small" style="opacity:.8">${mitglieder(S,t).map(p=>esc(S.spieler[p].name)).join(", ")}</div><div class="small" style="opacity:.8">Vermögen: ${vermoegen(S,t)} €</div>
+        <div class="k">${[-50,-10,10,50].map(w=>`<button data-geld="${t}" data-w="${w}">${w>0?"+":""}${w}</button>`).join("")}</div></div>`; }).join("")}
+        <details class="card"><summary><b>🤝 Handel eintragen</b></summary><div style="display:grid;gap:6px;margin-top:8px">
+          <select id="h-ort">${Object.entries(S.besitz||{}).map(([i,o])=>`<option value="${i}">${F[i].icon} ${esc(F[i].name)} (${S.teams[o].emoji})</option>`).join("")}</select>
+          <select id="h-an">${teams(S).map(t=>`<option value="${t}">an ${S.teams[t].emoji} ${S.teams[t].name}</option>`).join("")}</select>
+          <label class="row">für <input type="number" id="h-preis" value="100" style="width:100px"> €</label><button class="btn sm gold" id="handeln">✓ Handel ausführen</button></div></details>
+        <div class="card"><h3>📜 Was passiert ist</h3><div class="ticker">${arr(S.ticker).slice(-8).reverse().map(x=>`<div>${esc(x.text)}</div>`).join("")}</div></div></div></div>`; }
+  function ende(){ const sp=S.spieler||{}, ub=S.uebertragen||{}; const rang=teams(S).map(t=>({t, v:vermoegen(S,t)})).sort((a,b)=>b.v-a.v); const BON=[20,15,12,10];
+    const zeilen=[]; rang.forEach((r,k)=>mitglieder(S,r.t).forEach(p=>zeilen.push({p, name:sp[p].name, t:r.t, wert:ub[p]!==undefined?ub[p]:BON[k]})));
+    return `<div style="max-width:1100px;margin:0 auto;padding:16px"><h1 style="font-size:54px;text-align:center">🏆 ${rang[0]?`${S.teams[rang[0].t].emoji} Team ${S.teams[rang[0].t].name} gewinnt!`:""}</h1>
+      <div class="card"><table><tr><th>#</th><th>Team</th><th>Geld</th><th>Orte</th><th>Vermögen</th></tr>${rang.map((r,k)=>`<tr><td>${["🥇","🥈","🥉"][k]||k+1}</td><td>${S.teams[r.t].emoji} ${S.teams[r.t].name}</td><td>${S.teams[r.t].geld} €</td><td>${Object.values(S.besitz||{}).filter(o=>o===r.t).length}</td><td><b style="color:var(--gold);font-size:22px">${r.v} €</b></td></tr>`).join("")}</table></div>
+      <div class="card"><h2>Punkte für jede Person</h2><p class="small" style="opacity:.8;margin-top:0">Vorschlag nach Platz: 20 / 15 / 12 / 10. Du kannst jede Zahl ändern.</p>
+      <table><tr><th>Name</th><th>Team</th><th>Punkte</th><th></th></tr>${zeilen.map(z=>`<tr><td>${esc(z.name)}</td><td>${S.teams[z.t].emoji} ${S.teams[z.t].name}</td><td><input type="number" min="0" max="100" data-lp="${z.p}" value="${z.wert}"></td><td>${ub[z.p]!==undefined?"✓ gespeichert":""}</td></tr>`).join("")}</table>
+      <p class="row" style="margin-top:12px"><button class="btn gold" id="speichern">⬆ Punkte speichern</button><button class="btn hell" id="weiterspielen">↩ weiterspielen</button><span id="sp-msg"></span></p></div></div>`; }
+  /* Spielzüge */
+  async function wuerfeln(){
+    const Z=S.zug; if(!Z||Z.phase!=="wuerfeln") return; rollt=true;
+    const el=$("#wuerfel"); let n=0; await new Promise(res=>{ const iv=setInterval(()=>{ if(el) el.textContent=WUERFEL[1+zufall(6)]; if(++n>=10){ clearInterval(iv); res(); } },80); });
+    rollt=false;
+    const w=1+zufall(6), t=Z.team, T=S.teams[t]; const von=T.pos||0; const nach=(von+w)%N; let geld=T.geld; const tick=[];
+    if(von+w>=N){ geld+=D.ueberStart; tick.push(`${T.emoji} ${T.name} geht über Start: +${D.ueberStart} €`); }
+    const up={}; const z={team:t, wurf:w, von, nach, phase:"fertig", text:""}; const f=F[nach]; const own=(S.besitz||{})[nach];
+    if(f.typ==="ort"||f.typ==="bahn"){
+      if(own===undefined||own===null){ z.phase="frage"; z.frage=zufall(f.fragen.length); z.ord=mische([0,1,2]); }
+      else if(own===t){ z.text=`${f.name} gehört euch schon. 😎`; }
+      else { const m=miete(S,nach); const zahlt=Math.min(m, Math.max(0,geld)); geld-=m; up[`teams/${own}/geld`]=(S.teams[own].geld||0)+m; z.text=`${f.name} gehört Team ${S.teams[own].name}. Miete: ${m} €.`; tick.push(`${T.emoji} ${T.name} zahlt ${m} € Miete an ${S.teams[own].emoji} ${S.teams[own].name}`); }
+    } else if(f.typ==="ereignis"){ const k=D.ereignisse[zufall(D.ereignisse.length)]; z.karte=k.icon; z.text=k.text;
+      if(k.geld){ geld+=k.geld; }
+      if(k.geschenkVonAllen){ teams(S).filter(x=>x!==t).forEach(x=>{ up[`teams/${x}/geld`]=(S.teams[x].geld||0)-k.geschenkVonAllen; geld+=k.geschenkVonAllen; }); }
+      if(k.gehe!==undefined){ if(k.gehe<nach){ geld+=D.ueberStart; } z.nach=k.gehe; if(k.gehe===0) geld+=0; }
+      tick.push(`${k.icon} ${T.emoji} ${T.name}: ${k.text}`);
+    } else if(f.typ==="sprechen"){ z.phase="sprechen"; z.aufgabe=D.sprechen[zufall(D.sprechen.length)]; }
+    else if(f.typ==="polizei"){ geld-=D.polizei; z.text=f.text; tick.push(`🚓 ${T.emoji} ${T.name} zahlt ${D.polizei} € Strafe`); }
+    else z.text=f.text||"";
+    up[`teams/${t}/geld`]=geld; up[`teams/${t}/pos`]=z.nach; up.zug=z;
+    await O().update(up); tick.forEach(x=>O("ticker").push({text:x, ts:TS()}));
+  }
+  function naechstes(){ const ts=teams(S); const i=ts.indexOf(S.zug.team); const n=(i+1)%ts.length; O().update({zug:{team:ts[n], phase:"wuerfeln"}, runde:(S.runde||1)+(n===0?1:0)}); }
+  function binden(){
+    const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+    $$("[data-da]").forEach(c=>c.onchange=()=>{ const p=c.dataset.da; O(`spieler/${p}`).update({da:c.checked, name:namen()[p]||"?"}); if(!c.checked) O(`spieler/${p}/team`).remove(); });
+    $$("[data-team]").forEach(c=>c.onchange=()=>{ const p=c.dataset.team; O(`spieler/${p}`).update({team:c.value||null, da:true, name:namen()[p]||"?"}); });
+    const an=$("#anz"); if(an) an.onchange=()=>{ anzahl=Number(an.value)||4; };
+    on("auslosen", ()=>{ anzahl=Number(($("#anz")||{}).value)||4; const sp=S.spieler||{}; const da=mische(Object.keys(sp).filter(p=>sp[p].da)); if(da.length<anzahl){ alert("Zu wenige Personen sind „da“."); return; }
+      const tm={}, order=[]; for(let i=0;i<anzahl;i++){ tm["t"+i]={name:TEAMS[i][0], emoji:TEAMS[i][1], farbe:TEAMS[i][2], geld:D.startGeld, pos:0}; order.push("t"+i); }
+      const up={teams:tm, order}; Object.keys(sp).forEach(p=>up[`spieler/${p}/team`]=null); da.forEach((p,i)=>up[`spieler/${p}/team`]="t"+(i%anzahl)); O().update(up); });
+    on("start", ()=>{ const up={"info/phase":"spiel", besitz:null, ticker:null, runde:1, uebertragen:null}; teams(S).forEach(t=>{ up[`teams/${t}/geld`]=D.startGeld; up[`teams/${t}/pos`]=0; }); up.zug={team:teams(S)[0], phase:"wuerfeln"}; O().update(up); });
+    on("wuerfeln", wuerfeln); on("weiter", naechstes);
+    $$("[data-lw-antwort]").forEach(d=>d.onclick=()=>antworten(S,+d.dataset.lwAntwort));
+    on("lw-kaufen", ()=>kaufen(S,true)); on("lw-nicht", ()=>kaufen(S,false));
+    $$("[data-sp]").forEach(b=>b.onclick=()=>{ const t=S.zug.team, w=Number(b.dataset.sp); O().update({[`teams/${t}/geld`]:S.teams[t].geld+w, "zug/phase":"fertig", "zug/text":w?`Super gesprochen! +${w} €`:"Leider keine Punkte."}); if(w) O("ticker").push({text:`🗣️ ${S.teams[t].emoji} ${S.teams[t].name} spricht und bekommt ${w} €`, ts:TS()}); });
+    $$("[data-geld]").forEach(b=>b.onclick=()=>{ const t=b.dataset.geld; O(`teams/${t}/geld`).set(S.teams[t].geld+Number(b.dataset.w)); });
+    on("handeln", ()=>{ const i=$("#h-ort").value, an=$("#h-an").value, pr=Math.max(0,Number($("#h-preis").value)||0); if(i===""||!an) return; const von=S.besitz[i]; if(von===an){ alert("Das gehört diesem Team schon."); return; }
+      O().update({[`besitz/${i}`]:an, [`teams/${an}/geld`]:S.teams[an].geld-pr, [`teams/${von}/geld`]:S.teams[von].geld+pr});
+      O("ticker").push({text:`🤝 ${S.teams[von].emoji} ${S.teams[von].name} verkauft ${F[i].icon} ${F[i].name} an ${S.teams[an].emoji} ${S.teams[an].name} für ${pr} €`, ts:TS()}); });
+    on("beenden", ()=>{ if(confirm("Spiel beenden? Danach vergibst du die Punkte.")) O("info/phase").set("ende"); });
+    on("weiterspielen", ()=>O("info/phase").set("spiel"));
+    on("neu", ()=>{ if(!confirm("Ein neues Spiel mit neuer PIN starten?")) return; O().off(); try{ localStorage.removeItem("opoly_leitung_pin"); }catch(e){} PIN=""; start(); });
+    on("speichern", async ()=>{ const msg=$("#sp-msg"); msg.textContent="Speichere …";
+      try{ const werte={}; $$("[data-lp]").forEach(i=>werte[i.dataset.lp]=Math.max(0,Math.min(100,Math.round(Number(i.value)||0))));
+        const up={}; const ts=TS(); Object.entries(werte).forEach(([p,v])=>up[`log/${p}/opoly-${PIN}`]={code:"lehrkraft", key:"opoly-"+PIN, titel:"Plön-Opoly", art:"team", p:v, max:20, ts});
+        await db.ref(BASE).update(up); await O("uebertragen").set(werte); }catch(e){ msg.textContent="Fehler: "+(e.message||e); } });
+    $$("#app input, #app select").forEach(el=>el.addEventListener("blur", ()=>{ if(warte){ warte=false; setTimeout(male,50); } }));
+  }
+}
+if(!db){ document.getElementById("app").innerHTML="Keine Verbindung."; }
+else P.get("leitung") ? leitung() : spieler();
+</script>
+</body>
+</html>
