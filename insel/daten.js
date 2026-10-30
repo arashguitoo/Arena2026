@@ -126,3 +126,45 @@ window.INSEL.raetsel = [
   { th: "weil", w: ["wir", "bleiben", "hier", "weil", "es", "regnet"], a: ["wir bleiben hier weil es regnet"] },
   { th: "Satzbau", w: ["was", "wollt", "ihr", "dafür"], a: ["was wollt ihr dafür"] }
 ];
+
+/* ---------- Fertigkeiten: jede Person kann eine lernen (5 Rätsel zum Thema richtig) ---------- */
+window.INSEL.fkNoetig = 5;
+window.INSEL.fertigkeiten = {
+  tischler: { e: "🪚", name: "Tischler:in",   th: ["Perfekt"],               kann: "Baut die Hütte und das Boot." },
+  seiler:   { e: "🪢", name: "Seiler:in",     th: ["Dativ", "Präpositionen"], kann: "Macht feste Knoten – ohne Seiler:in kein Boot." },
+  koch:     { e: "🍳", name: "Koch / Köchin", th: ["Akkusativ"],             kann: "Baut eine Feuerstelle: Jeden Abend braucht die Gruppe 1 Essen weniger." },
+  heiler:   { e: "🩺", name: "Heiler:in",     th: ["Modalverben"],           kann: "Hilft bei Fieber – auch ohne Medikament." }
+};
+/* ---------- Bauwerke ---------- */
+window.INSEL.bauwerke = {
+  huette: { e: "🛖", name: "Hütte",       braucht: { holz: 3, seil: 1 }, fk: ["tischler"],           text: "Ein Platz zum Schlafen: +5 Punkte und +2 für jede Nacht in der Hütte." },
+  feuer:  { e: "🔥", name: "Feuerstelle", braucht: { holz: 2 },          fk: ["koch"],               text: "Jeden Abend braucht ihr 1 Essen weniger. +3 Punkte." },
+  boot:   { e: "⛵", name: "Boot",        braucht: window.INSEL.boot,     fk: ["tischler", "seiler"], text: "Damit kommt ihr nach Hause! Nur am Bautag." }
+};
+Object.assign(window.INSEL.punkte, { huette: 5, nacht: 2, feuer: 3, fertigkeit: 2 });
+/* ---------- mehr Rätsel für die Fertigkeiten ---------- */
+window.INSEL.raetsel.push(
+  { th: "Perfekt", s: "Ich habe das Holz ___.", o: ["gesägt", "gesägen", "sägt"] },
+  { th: "Perfekt", s: "Wir haben einen Tisch ___.", o: ["gebaut", "gebauen", "baute"] },
+  { th: "Perfekt", s: "Sie ist in den Wald ___.", o: ["gegangen", "gegeht", "gehen"] },
+  { th: "Perfekt", s: "Hast du den Hammer ___?", o: ["gefunden", "gefindet", "findet"] },
+  { th: "Perfekt", s: "Ihr seid zum Strand ___.", o: ["gelaufen", "gelauft", "laufen"] },
+  { th: "Perfekt", s: "Wir ___ ein Haus gebaut.", o: ["haben", "sind", "hat"] },
+  { th: "Perfekt", s: "Der Baum ___ umgefallen.", o: ["ist", "hat", "sind"] },
+  { th: "Dativ", s: "Das Seil liegt neben ___ Boot.", o: ["dem", "das", "den"] },
+  { th: "Dativ", s: "Ich helfe ___ Freundin.", o: ["meiner", "meine", "meinen"] },
+  { th: "Dativ", s: "Wir arbeiten mit ___ Seil.", o: ["dem", "das", "der"] },
+  { th: "Dativ", s: "Gib ___ Kind das Wasser!", o: ["dem", "das", "den"] },
+  { th: "Präpositionen", s: "Die Kiste steht unter ___ Baum.", o: ["dem", "den", "der"] },
+  { th: "Präpositionen", s: "Das Netz ist aus ___ Seil.", o: ["einem", "ein", "einen"] },
+  { th: "Akkusativ", s: "Ich koche ___ Suppe.", o: ["eine", "einen", "ein"] },
+  { th: "Akkusativ", s: "Wir braten ___ Fisch.", o: ["den", "der", "dem"] },
+  { th: "Akkusativ", s: "Hast du ___ Topf?", o: ["einen", "ein", "eine"] },
+  { th: "Akkusativ", s: "Ich schneide ___ Banane.", o: ["die", "der", "den"] },
+  { th: "Modalverben", s: "Du ___ viel Wasser trinken.", o: ["musst", "muss", "müssen"] },
+  { th: "Modalverben", s: "Er ___ heute nicht laufen.", o: ["kann", "können", "kannst"] },
+  { th: "Modalverben", s: "Wir ___ dir helfen.", o: ["können", "kann", "könnt"] },
+  { th: "Modalverben", s: "Ihr ___ hier nicht schwimmen!", o: ["dürft", "darf", "dürfen"] },
+  { th: "Modalverben", s: "Ich ___ ein Medikament nehmen.", o: ["muss", "musst", "müssen"] },
+  { th: "Modalverben", s: "___ du mir helfen?", o: ["Kannst", "Kann", "Können"] }
+);
