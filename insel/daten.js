@@ -65,7 +65,7 @@ window.INSEL = {
     { id: "kiste", icon: "📦", titel: "Eine Kiste im Meer", text: "Eine Kiste schwimmt im Meer. Darin sind Medikamente und ein Seil. Die Gruppe, die zuerst die richtige Antwort gibt, bekommt alles!", wirkung: {}, schnellste: { medizin: 2, seil: 1 },
       frage: "Was ist in der Kiste?", o: ["Medikamente und ein Seil", "Holz und Wasser", "Fische und Bananen"] }
   ],
-  punkte: { versorgt: 5, hunger: -2, boot: 20, mitfahren: 12, aufgabe: 3, handelMax: 10, muschelnPro: 3, fieber: -5 }
+  punkte: { versorgt: 5, hunger: -2, boot: 20, mitfahren: 12, aufgabe: 3, handelMax: 10, muschelnPro: 3, muschelnMax: 10, fieber: -5 }
 };
 
 /* =========================================================
