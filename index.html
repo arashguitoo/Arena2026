@@ -220,7 +220,7 @@ h2{font-size:24px} h3{font-size:19px}
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=LW.esc;
 const KAT=window.LW_KATALOG||[], BER=window.LW_BEREICHE||[];
-let me=null, E=[], logs={}, pub={}, ansicht="start", filter="alle", rangModus="monat", rangMonat=null, malTimer=null;
+let me=null, E=[], logs={}, ladeFehler=false, pub={}, ansicht="start", filter="alle", rangModus="monat", rangMonat=null, malTimer=null;
 
 const ARENA=[
   {gruppe:"Live im Unterricht", icon:"🎮", farbe:"#FFE9E3", titel:"Live-Quiz", text:"Alle spielen gleichzeitig – wer ist am schnellsten? Platz 1–3 bekommen Bonus-Punkte.", tags:["live","ganze Klasse","bis 20 Punkte"], pin:true},
@@ -253,8 +253,9 @@ function starten(){
   $("#anmeldung").classList.add("hidden"); $("#app").classList.remove("hidden");
   $("#kopf-init").textContent=(me.name||"?").charAt(0).toUpperCase(); $("#kopf-name").textContent=me.name;
   LW.nachsenden().then(n=>{ if(n) toast(`${n} gespeicherte Ergebnisse nachgesendet ✓`); });
-  LW.ref(`log/${me.pid}`).on("value", s=>{ E=LW.eintraege(s.val()); mal(); });
-  LW.ref("log").on("value", s=>{ logs=s.val()||{}; mal(); });
+  const fehler=()=>{ ladeFehler=true; mal(); };
+  LW.ref(`log/${me.pid}`).on("value", s=>{ E=LW.eintraege(s.val()); mal(); }, fehler);
+  LW.ref("log").on("value", s=>{ ladeFehler=false; logs=s.val()||{}; mal(); }, fehler);
   LW.ref("public").on("value", s=>{ pub=s.val()||{}; mal(); });
   window.addEventListener("hashchange", ()=>{ route(); window.scrollTo(0,0); });
   route();
@@ -285,7 +286,10 @@ function jetztMalen(){
   const W=meineWertung(); $("#kopf-pk").textContent=`${W.gesamt} P`;
   const m=$("#main"); const y=window.scrollY;
   const ae=document.activeElement; if(ae && ae.tagName==="INPUT" && m.contains(ae) && ae.value) return; // nicht beim Tippen neu zeichnen
-  m.innerHTML = ansicht==="ueben"?ueben(W):ansicht==="arena"?arena():ansicht==="rang"?rang():ansicht==="ich"?ichSeite(W):start(W);
+  let warten=0; try{ warten=JSON.parse(localStorage.getItem(`lw_warteschlange_${LW.KURS}`)||"[]").length; }catch(e){}
+  const hinweis = ladeFehler ? `<div style="background:#FDE8E6;color:#9B1C14;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-weight:600">⚠️ Punkte und Rangliste können gerade nicht geladen werden. Bitte sag es deiner Lehrkraft.</div>`
+    : warten ? `<div style="background:#FFF4D6;color:#7A5300;border-radius:14px;padding:12px 14px;margin:0 0 14px;font-weight:600">⏳ ${warten} Ergebnis${warten>1?"se warten":" wartet"} noch auf das Speichern. Sie werden automatisch nachgesendet.</div>` : "";
+  m.innerHTML = hinweis + (ansicht==="ueben"?ueben(W):ansicht==="arena"?arena():ansicht==="rang"?rang():ansicht==="ich"?ichSeite(W):start(W));
   binden(); window.scrollTo(0,y);
 }
 function start(W){

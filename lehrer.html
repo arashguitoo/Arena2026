@@ -109,7 +109,7 @@ const LIVE_SETS=[["grammatik","🧠 Grammatik-Mix"],["warmup","🔥 Warm-up"],["
 let user=null, tab="heute", codes={}, pub={}, logs={}, monat=null, malT=null;
 LW.init(true);
 const auth=LW.auth;
-auth.onAuthStateChanged(u=>{ user=u; if(!u){ $("#login").classList.remove("hidden"); $("#app").classList.add("hidden"); return; } $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); laden(); });
+auth.onAuthStateChanged(u=>{ user=u; if(!u){ $("#login").classList.remove("hidden"); $("#app").classList.add("hidden"); return; } $("#login").classList.add("hidden"); $("#app").classList.remove("hidden"); laden(); regelnPruefen(); });
 $("#lf").onsubmit=e=>{ e.preventDefault(); $("#lerr").textContent="Moment …"; auth.signInWithEmailAndPassword($("#lm").value.trim(), $("#lp").value).catch(()=>$("#lerr").textContent="E-Mail oder Passwort stimmt nicht."); };
 $("#aus").onclick=()=>auth.signOut();
 $("#tabs").onclick=e=>{ const b=e.target.closest("[data-tab]"); if(!b) return; tab=b.dataset.tab; location.hash=tab; male(); };
@@ -134,12 +134,16 @@ function male(){
 function schuelerLogs(){ const n=namen(); let anzahl=0; Object.keys(logs).forEach(p=>{ if(n[p]) Object.values(logs[p]||{}).forEach(e=>{ if(e.code!=="lehrkraft") anzahl++; }); }); return anzahl; }
 
 /* ---------- Heute ---------- */
+let regelnOk=null;
+async function regelnPruefen(){ try{ const u=LW_DBURL+"/jugendliga/"+LW.KURS+"/log.json?shallow=true"; const r=await fetch(u,{cache:"no-store"}); regelnOk=r.ok; }catch(e){ regelnOk=null; } male(); if(regelnOk===false) setTimeout(regelnPruefen, 20000); }
+const LW_DBURL="https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app";
+function regelnWarnung(){ return regelnOk===false?`<div class="hinweis" style="margin-bottom:14px;background:#FDE8E6;border-color:#E2483D;color:#7A120C"><b>⚠️ Die Jugendlichen sehen gerade keine Punkte.</b> Die Firebase-Regeln sind nicht aktuell – deshalb dürfen die Handys die Ergebnisse weder lesen noch speichern (überall steht 0). Bitte die Regeln neu einfügen: <a href="#einst" data-tab-link="einst"><b>So geht's (2 Minuten) ›</b></a></div>`:regelnOk===true?"":""; }
 function heute(){
   const heuteT=LW.tagVon(LW.jetzt()); const n=namen();
   const heuteAktiv=Object.keys(n).map(p=>({p, E:LW.eintraege(logs[p]).filter(e=>LW.tagVon(e.ts)===heuteT)})).filter(x=>x.E.length).sort((a,b)=>b.E.length-a.E.length);
   const r=LW.rangliste(logs, n, MON());
   const keinLog = Object.keys(n).length && !schuelerLogs();
-  return `${keinLog?`<div class="hinweis" style="margin-bottom:14px"><b>Einmal einrichten:</b> Damit die Jugendlichen ihre Punkte speichern dürfen, müssen einmalig die neuen Firebase-Regeln eingefügt werden. <a href="#einst" data-tab-link="einst"><b>So geht's (2 Minuten) ›</b></a></div>`:""}
+  return `${regelnWarnung()}${regelnOk!==false&&keinLog?`<div class="hinweis" style="margin-bottom:14px"><b>Einmal einrichten:</b> Damit die Jugendlichen ihre Punkte speichern dürfen, müssen einmalig die neuen Firebase-Regeln eingefügt werden. <a href="#einst" data-tab-link="einst"><b>So geht's (2 Minuten) ›</b></a></div>`:""}
     <h1 style="margin:6px 0 12px">Heute im Unterricht</h1>
     <div class="start">
       <div class="st" style="--f:var(--acc)"><span class="e">🎮</span><h3>Live-Quiz</h3><p>Kahoot-Prinzip: alle gleichzeitig am Handy, Leinwand mit PIN. Platz 1–3 bekommen Bonus.</p>
@@ -251,7 +255,7 @@ function regeln(){
   }}, null, 2);
 }
 function einst(){
-  return `<h1 style="margin:6px 0 12px">⚙️ Einstellungen</h1>
+  return `<h1 style="margin:6px 0 12px">⚙️ Einstellungen</h1>${regelnOk===true?`<div class="hinweis" style="margin-bottom:14px;background:#E2F6EF;border-color:#14A37F;color:#0B5E49">✓ Regeln aktiv: Die Handys dürfen Punkte lesen und speichern.</div>`:regelnWarnung()}
     <div class="card"><h2>1 · Firebase-Regeln (einmalig)</h2>
       <ol><li>Öffne die <a href="https://console.firebase.google.com/project/lern-deutsch-arash/database/lern-deutsch-arash-default-rtdb/rules" target="_blank">Regeln in der Firebase-Konsole</a>.</li>
       <li>Alles markieren und löschen, dann diese Regeln einfügen (Knopf „Kopieren“).</li><li>Auf <b>Veröffentlichen</b> klicken. Fertig.</li></ol>
