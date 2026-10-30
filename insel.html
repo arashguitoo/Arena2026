@@ -300,7 +300,18 @@ function leitung(){
     if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${IROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
       await I().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}}); }
     try{ localStorage.setItem("insel_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
-    I().on("value", s=>{ S=s.val()||{}; male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500);
+    I().on("value", s=>{ S=s.val()||{}; waechter(); male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500);
+  }
+  /* Wächter: Rätsel außerhalb der laufenden Arbeitszeit (z. B. alte Handy-Version während des Marktes) → −3 Punkte pro Rätsel */
+  let stand=null;
+  function waechter(){
+    const L=S.leistung||{}, jetztStand={}; Object.entries(L).forEach(([p,x])=>jetztStand[p]=Number(x&&x.r)||0);
+    if(stand===null || S.info?.phase!=="spiel"){ stand=jetztStand; return; }
+    const erlaubt = S.schritt==="arbeit" && S.markt && (Number(S.markt.ende)||0) - jetzt() > -5000;   // 5 Sek. Toleranz für Antworten in der letzten Sekunde
+    if(!erlaubt){ Object.entries(jetztStand).forEach(([p,r])=>{ const d=r-(stand[p]||0); const g=((S.spieler||{})[p]||{}).gruppe; if(d>0 && g){
+        I(`korr/${g}`).transaction(k=>(Number(k)||0)-3*d);
+        I("ticker").push({text:`⚠️ ${(L[p]&&L[p].name)||"Jemand"} (${G(g).emoji} ${G(g).name}) hat während des Marktes Rätsel gelöst: −${3*d} Punkte`, ts:TS()}); } }); }
+    stand=jetztStand;
   }
   const namen=()=>pub.names||{};
   function male(){
