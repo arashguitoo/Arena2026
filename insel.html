@@ -166,9 +166,10 @@ function spieler(){
       try{ const c=(await db.ref(`${BASE}/codes/${code}`).once("value")).val(); if(!c||!c.pid) return codeScreen("Diesen Code gibt es nicht.");
         const n=(await db.ref(`${BASE}/public/names/${c.pid}`).once("value")).val(); me={code,pid:c.pid,name:n||c.name||"?"}; localStorage.setItem(CODE_KEY,JSON.stringify(me)); los(); }catch(err){ codeScreen("Keine Verbindung."); } }; }
   function los(){ const ref=I(`spieler/${me.pid}`); ref.update({name:me.name, ts:TS(), online:true, da:true}); try{ ref.child("online").onDisconnect().set(false); }catch(e){}
-    I().on("value", s=>{ S=s.val()||{}; male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500); }
+    I().on("value", s=>{ S=s.val()||{}; male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); if(S&&S.schritt==="arbeit"&&!arbeitLaeuft(S)&&$("[data-rz],#rz-pruefen")) male(); },500); }
   function male(){
-    const ae=document.activeElement; if(ae && (ae.tagName==="SELECT" || ae.id==="funktext")) return;
+    const ae=document.activeElement; if(ae && ae.tagName==="SELECT") return;
+    const ft=$("#funktext"); funkEntwurf = ft ? {wert:ft.value, fokus:document.activeElement===ft} : funkEntwurf;
     if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
     const ich=(S.spieler||{})[me.pid]||{}, g=ich.gruppe, GR=g&&G(g);
     if(S.info.phase==="lobby"||!GR){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:6vh;text-align:center"><div style="font-size:60px">🏝️</div><h2>Hallo ${esc(me.name)}!</h2>
@@ -188,17 +189,19 @@ function spieler(){
       <div class="small muted" style="margin-top:8px"><b>Für das Boot braucht ihr:</b></div><div class="brauch">${Object.entries(D.boot).map(([r,n])=>`<span class="${(lager[r]||0)>=n?"ja":"nein"}">${name1(r,n)} ${R[r][0]}</span>`).join("")}</div>
       ${(m.boote||{})[g]?`<p style="color:var(--ok);font-weight:800;margin:10px 0 0">⛵ ${m.boote[g]==="eigen"?"Euer Boot ist fertig!":"Ihr fahrt bei einer anderen Gruppe mit."}</p>`:""}</div>`;
     if(S.schritt==="abend"){ const v=((m.versorgt||{})[S.tag]||{})[g]; h+=`<div class="card" style="text-align:center"><div style="font-size:44px">🌙</div><h3>Abend auf der Insel</h3>${v?(v.ok?`<p>Alle haben gegessen und getrunken. 😊 +${PK.versorgt} Punkte</p>`:`<p style="color:var(--bad)"><b>Ihr habt Hunger und Durst!</b> Es fehlen ${v.fehlt} Sachen. ${v.fehlt*PK.hunger} Punkte</p>`):"<p>Gleich wird gegessen …</p>"}</div>`; }
-    if(S.schritt==="arbeit"||S.schritt==="markt") h+=raetselHtml(S,g);
+    if(S.schritt==="arbeit") h+= arbeitLaeuft(S) ? raetselHtml(S,g) : `<div class="card" style="border:3px solid #F5B82E;text-align:center"><div style="font-size:44px">⏰</div><h3 style="margin:4px 0">Die Arbeitszeit ist vorbei!</h3><p class="muted" style="margin:0">Gleich geht es zum Markt. Schaut auf die Leinwand.</p>${rzFb?`<p style="font-weight:800;color:${rzFb.ok?"var(--ok)":"var(--bad)"}">${esc(rzFb.text)}</p>`:""}</div>`;
     if(S.schritt==="markt"||S.schritt==="bau") h+=marktHtml(S,g,lager);
     if(["arbeit","markt","bau"].includes(S.schritt)) h+=funkHtml(S,g);
     if(S.schritt==="bau" && !(m.boote||{})[g]){ const kann=Object.entries(D.boot).every(([r,n])=>(lager[r]||0)>=n);
       h+=`<div class="card" style="text-align:center"><div style="font-size:50px">🛠️</div><h3>Bautag!</h3><p class="muted">${kann?"Ihr habt alles – baut euer Boot!":"Euch fehlt noch etwas. Handelt mit den anderen Gruppen!"}</p><button class="btn ok wide" id="bauen" ${kann?"":"disabled"} style="min-height:56px">⛵ Boot bauen</button></div>`; }
     h+=`<details class="card"><summary><b>💬 So verhandelt ihr</b></summary><ul style="margin:8px 0 0;padding-left:20px">${D.redemittel.map(r=>`<li>${esc(r)}</li>`).join("")}</ul></details>`;
     app.innerHTML=h+`</div>`; binden(g,lager);
+    const ft2=$("#funktext"); if(ft2 && funkEntwurf){ ft2.value=funkEntwurf.wert||""; if(funkEntwurf.fokus) try{ ft2.focus({preventScroll:true}); }catch(e){} }
   }
   function neuesRaetsel(){ let frei=RZ.map((_,i)=>i).filter(i=>!gesehen.has(i)); if(!frei.length){ gesehen=new Set(); frei=RZ.map((_,i)=>i); }
-    rz=frei[Math.floor(Math.random()*frei.length)]; gesehen.add(rz); rzSeq=[]; const q=RZ[rz]; rzOrd = q.w ? mische(q.w.map((_,i)=>i)) : mische(q.o.map((_,i)=>i)); }
-  let rzOrd=[];
+    rz=frei[Math.floor(Math.random()*frei.length)]; gesehen.add(rz); rzSeq=[]; rzNr++; const q=RZ[rz]; rzOrd = q.w ? mische(q.w.map((_,i)=>i)) : mische(q.o.map((_,i)=>i)); }
+  let rzOrd=[], rzNr=0, rzBusy=false, funkEntwurf=null;
+  const arbeitLaeuft=S=>S.schritt==="arbeit" && rest(S)>0;
   function raetselHtml(S,g){
     if(rz===null) neuesRaetsel(); const q=RZ[rz]; const n=Number(((S.arbeit||{})[S.tag]||{})[g])||0; const ich=(S.leistung||{})[me.pid]||{}; const ernte=D.ernte[g]||[]; const naechst=ernte[n%ernte.length];
     let h=`<div class="card" style="border:3px solid #F5B82E"><div class="row" style="justify-content:space-between"><h3 style="margin:0">🧩 Arbeit: Sprachrätsel</h3>${S.schritt==="arbeit"&&S.markt&&S.markt.ende?`<b style="font-family:var(--head);font-size:22px;color:var(--acc)" id="uhr">${mmss(rest(S))}</b>`:""}</div>
@@ -206,18 +209,22 @@ function spieler(){
       <div class="small muted">${esc(q.th)}</div>`;
     if(q.w){ h+=`<div style="min-height:50px;border:2px dashed var(--line);border-radius:12px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;margin:6px 0">${rzSeq.map(i=>`<button class="btn sm" data-rzraus="${i}">${esc(q.w[i])}</button>`).join("")}</div>
       <div class="row">${rzOrd.map(i=>`<button class="btn sm ghost" data-rzrein="${i}" ${rzSeq.includes(i)?"style='visibility:hidden'":""}>${esc(q.w[i])}</button>`).join("")}</div>
-      <button class="btn wide" id="rz-pruefen" style="margin-top:8px" ${rzSeq.length===q.w.length?"":"disabled"}>✓ Prüfen</button>`; }
-    else { const teile=q.s.split("___"); h+=`<h2 style="font-size:22px;margin:6px 0">${esc(teile[0])}<span style="color:var(--pri)">____</span>${esc(teile[1]||"")}</h2><div class="opts">${rzOrd.map(i=>`<button class="opt" style="color:var(--ink);background:#fff;border-color:var(--line)" data-rz="${i}">${esc(q.o[i])}</button>`).join("")}</div>`; }
+      <button class="btn wide" id="rz-pruefen" data-nr="${rzNr}" style="margin-top:8px" ${rzSeq.length===q.w.length&&!rzBusy?"":"disabled"}>✓ Prüfen</button>`; }
+    else { const teile=q.s.split("___"); h+=`<h2 style="font-size:22px;margin:6px 0">${esc(teile[0])}<span style="color:var(--pri)">____</span>${esc(teile[1]||"")}</h2><div class="opts">${rzOrd.map(i=>`<button class="opt" style="color:var(--ink);background:#fff;border-color:var(--line)" data-rz="${i}" data-nr="${rzNr}" ${rzBusy?"disabled":""}>${esc(q.o[i])}</button>`).join("")}</div>`; }
     if(rzFb) h+=`<div style="margin-top:8px;font-weight:800;color:${rzFb.ok?"var(--ok)":"var(--bad)"}">${esc(rzFb.text)}</div>`;
     return h+`<p class="small muted" style="margin:8px 0 0">Du hast heute schon ${ich.r||0} Rätsel richtig gelöst. 💪</p></div>`;
   }
-  function loesen(g, ok, richtig){
-    const tag=S.tag; I(`leistung/${me.pid}`).transaction(x=>{ x=x||{r:0,f:0}; if(ok) x.r=(x.r||0)+1; else x.f=(x.f||0)+1; x.name=me.name; return x; });
-    if(!ok){ rzFb={ok:false, text:`✗ Leider falsch. Richtig ist: ${richtig}`}; neuesRaetsel(); male(); return; }
-    let bekommen=null;
-    I().transaction(st=>{ if(!st) return st; st.arbeit=st.arbeit||{}; st.arbeit[tag]=st.arbeit[tag]||{}; const n=Number(st.arbeit[tag][g])||0; st.m=st.m||{}; st.m.lager=st.m.lager||{}; const l=st.m.lager[g]=st.m.lager[g]||{};
-      if(n<D.arbeitMax){ const ernte=D.ernte[g]; bekommen=ernte[n%ernte.length]; st.arbeit[tag][g]=n+1; } else bekommen="muscheln";
-      l[bekommen]=(l[bekommen]||0)+1; return st; }).then(()=>{ rzFb={ok:true, text:`✓ Richtig! Eure Gruppe bekommt 1 ${R[bekommen][1]} ${R[bekommen][0]}`}; neuesRaetsel(); male(); });
+  function loesen(g, ok, richtig, nr){
+    if(rzBusy || nr!==rzNr) return;                       // schon beantwortet oder alter Knopf
+    if(!arbeitLaeuft(S)){ male(); return; }
+    rzBusy=true; const tag=S.tag||1, fertig=()=>{ rzBusy=false; neuesRaetsel(); male(); };
+    I(`leistung/${me.pid}`).transaction(x=>{ x=x||{r:0,f:0}; if(ok) x.r=(x.r||0)+1; else x.f=(x.f||0)+1; x.name=me.name; return x; });
+    if(!ok){ rzFb={ok:false, text:`✗ Leider falsch. Richtig ist: ${richtig}`}; fertig(); return; }
+    let bekommen="muscheln";
+    I(`arbeit/${tag}/${g}`).transaction(n=>{ n=Number(n)||0; if(n<D.arbeitMax){ const ernte=D.ernte[g]; bekommen=ernte[n%ernte.length]; return n+1; } bekommen="muscheln"; return; })
+      .then(()=>I(`m/lager/${g}/${bekommen}`).transaction(x=>(Number(x)||0)+1))
+      .then(()=>{ rzFb={ok:true, text:`✓ Richtig! Eure Gruppe bekommt 1 ${R[bekommen][1]} ${R[bekommen][0]}`}; fertig(); })
+      .catch(()=>{ rzFb={ok:false, text:"Keine Verbindung – bitte noch einmal."}; rzBusy=false; male(); });
   }
   function funkHtml(S,g){
     const alle=arr(S.funk).filter(f=>f.von===g||f.an===g||f.an==="alle").slice(-12);
@@ -245,10 +252,10 @@ function spieler(){
   }
   function binden(g,lager){
     const fl=$("#funkliste"); if(fl) fl.scrollTop=fl.scrollHeight;
-    $$("[data-rz]").forEach(b=>b.onclick=()=>{ const q=RZ[rz]; const i=+b.dataset.rz; loesen(g, i===0, q.o[0]); });
+    $$("[data-rz]").forEach(b=>b.onclick=()=>{ const nr=+b.dataset.nr; if(nr!==rzNr||rzBusy) return; const q=RZ[rz]; const i=+b.dataset.rz; $$("[data-rz]").forEach(x=>x.disabled=true); loesen(g, i===0, q.o[0], nr); });
     $$("[data-rzrein]").forEach(b=>b.onclick=()=>{ rzSeq.push(+b.dataset.rzrein); rzFb=null; male(); });
     $$("[data-rzraus]").forEach(b=>b.onclick=()=>{ rzSeq=rzSeq.filter(i=>i!==+b.dataset.rzraus); male(); });
-    const rp=$("#rz-pruefen"); if(rp) rp.onclick=()=>{ const q=RZ[rz]; const satz=rzSeq.map(i=>q.w[i]).join(" "); loesen(g, q.a.some(a=>satzW(a)===satzW(satz)), q.a[0].charAt(0).toUpperCase()+q.a[0].slice(1)+"."); };
+    const rp=$("#rz-pruefen"); if(rp) rp.onclick=()=>{ const nr=+rp.dataset.nr; if(nr!==rzNr||rzBusy) return; rp.disabled=true; const q=RZ[rz]; const satz=rzSeq.map(i=>q.w[i]).join(" "); loesen(g, q.a.some(a=>satzW(a)===satzW(satz)), q.a[0].charAt(0).toUpperCase()+q.a[0].slice(1)+".", nr); };
     $$("[data-funkan]").forEach(b=>b.onclick=()=>{ funkAn=b.dataset.funkan; male(); });
     const ff=$("#funkform"); if(ff) ff.onsubmit=e=>{ e.preventDefault(); const t=$("#funktext").value.trim(); if(!t) return; I("funk").push({von:g, an:funkAn, text:t.slice(0,160), name:me.name, ts:TS()}); $("#funktext").value=""; $("#funktext").blur(); };
     $$("[data-antwort]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.antwort; const E=D.ereignisse.find(e=>e.id===S.ereignis.id);
@@ -336,7 +343,7 @@ function leitung(){
       main=`<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px"><div class="card" style="text-align:center"><div style="opacity:.8">🧩 Arbeitszeit · Tag ${S.tag}</div><div class="uhr" id="uhr">${mmss(rest(S))}</div><p style="opacity:.85">Löst Sprachrätsel am Handy – jede richtige Antwort bringt eurer Gruppe etwas!</p></div>
         <div class="card"><h2>Erarbeitet heute</h2>${gruppen(S).map(g=>{ const n=Number(a[g])||0; return `<div style="margin:10px 0"><div class="row" style="justify-content:space-between"><b>${G(g).emoji} ${G(g).name}</b><span>${n}/${D.arbeitMax}</span></div><div style="height:16px;background:rgba(255,255,255,.12);border-radius:8px;overflow:hidden"><i style="display:block;height:100%;width:${Math.min(100,n/D.arbeitMax*100)}%;background:${G(g).farbe}"></i></div></div>`; }).join("")}
           <p class="small" style="opacity:.75">Beste Rätsel-Löser:innen: ${Object.values(S.leistung||{}).sort((x,y)=>(y.r||0)-(x.r||0)).slice(0,5).map(x=>`${esc(x.name)} (${x.r||0})`).join(", ")||"–"}</p></div></div>`;
-      knoepfe=`<button class="btn hell" id="plus2">+2 Min.</button><label class="chip">Markt <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn acc" id="markt">🤝 Markt starten</button>`; }
+      knoepfe=`<button class="btn hell" id="plus2">+2 Min.</button><button class="btn hell" id="stopp">⏹ Zeit stoppen</button><label class="chip">Markt <input type="number" id="min" value="${marktMin}" min="2" max="30" style="width:70px;min-height:32px"> Min.</label><button class="btn acc" id="markt">🤝 Markt starten</button>`; }
     else if(S.schritt==="markt"){ main=`<div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px"><div class="card" style="text-align:center"><div style="opacity:.8">Markt · Tag ${S.tag}</div><div class="uhr" id="uhr">${mmss(rest(S))}</div><p style="opacity:.8">Erst sprechen – dann am Handy schicken!</p>
         ${E?`<p class="small" style="opacity:.75">Ereignis heute: ${E.icon} ${esc(E.titel)}</p>`:""}</div>
         <div class="card"><h2>📜 Neue Geschäfte</h2><div class="ticker" style="max-height:24vh">${ticker.map(t=>`<div>${esc(t.text)}</div>`).join("")||`<p style="opacity:.6">Noch keine Geschäfte …</p>`}</div>
@@ -402,6 +409,7 @@ function leitung(){
     on("ereignis", ()=>ereignisZeigen(S.tag||1));
     on("arbeit", ()=>{ marktMin=Math.max(2,Math.min(30,Number(($("#min")||{}).value)||marktMin)); I().update({schritt:"arbeit", markt:{ende:jetzt()+marktMin*60000}}); });
     on("markt", ()=>{ marktMin=Math.max(2,Math.min(30,Number(($("#min")||{}).value)||marktMin)); I().update({schritt:"markt", markt:{ende:jetzt()+marktMin*60000}}); });
+    on("stopp", ()=>I("markt/ende").set(jetzt()));
     on("plus2", ()=>I("markt/ende").set(Math.max(jetzt(),(S.markt&&S.markt.ende)||jetzt())+120000));
     on("abend", abend);
     on("naechster", ()=>ereignisZeigen((S.tag||1)+1));
