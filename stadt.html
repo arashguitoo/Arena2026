@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F766E">
+<meta name="robots" content="noindex, nofollow">
+<title>Stadt-Präsentation – Lernwelt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --pri:#0F766E; --pri-2:#E0F2EF; --acc:#FF6B4A; --gold:#F5B82E; --gold-2:#FFF4D6; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6; --blau:#3B4FD8; --blau-2:#E8EBFF;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5}
+button,input,textarea,select{font:inherit;color:inherit}
+input,select,textarea{color:#1E2A44;background-color:#fff}
+input::placeholder,textarea::placeholder{color:#8A8F9C}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:820px;margin:0 auto;padding:16px 16px 70px} .wrap.weit{max-width:1240px}
+.card{background:var(--card);border-radius:18px;padding:18px;box-shadow:var(--schatten);margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px} .btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.rot{background:var(--bad-2);color:var(--bad)} .btn.wide{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kopf{background:linear-gradient(135deg,#0F766E,#14A37F);color:#fff;position:sticky;top:0;z-index:10}
+.kopf .in{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;min-height:56px;flex-wrap:wrap}
+.kopf a{color:#fff;text-decoration:none;font-weight:700} .kopf b{font-family:var(--head);font-size:19px} .kopf .r{margin-left:auto}
+.fort{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0}
+.fort a{flex:1;min-width:84px;text-decoration:none;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:12px;padding:6px 8px;font-size:13px;font-weight:700;text-align:center}
+.fort a.voll{border-color:var(--ok);background:var(--ok-2)} .fort a.korr{border-color:var(--gold);background:var(--gold-2)} .fort a.an{outline:3px solid var(--pri)}
+.fort a .e{display:block;font-size:20px}
+.sec{border-left:6px solid var(--pri)}
+.sec h2{display:flex;gap:10px;align-items:center}
+.hinweis{background:var(--pri-2);border-radius:12px;padding:10px 12px;margin:6px 0 10px;font-size:15px}
+.fragen{margin:0 0 8px;padding-left:20px} .fragen li{margin:2px 0}
+textarea{width:100%;min-height:170px;border:2px solid var(--line);border-radius:14px;padding:12px;font-size:18px;line-height:1.6;background:#fff;resize:vertical}
+textarea:focus,input[type=text]:focus{outline:none;border-color:var(--pri)}
+input[type=text],input[type=email],input[type=password]{width:100%;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:8px 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chips button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font-size:14px;cursor:pointer;text-align:left}
+.chips button:hover{border-color:var(--pri);color:var(--pri)}
+.chips span{border-radius:999px;padding:3px 10px;font-size:14px;background:var(--soft);border:1px solid var(--line)}
+.zaehler{display:flex;justify-content:space-between;font-size:14px;margin:6px 2px;flex-wrap:wrap;gap:6px}
+.bilder{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:10px 0}
+.bild{position:relative;background:var(--soft);border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.bild img{width:100%;height:120px;object-fit:cover;display:block}
+.bild input{border:0;border-top:1px solid var(--line);width:100%;padding:6px 8px;font-size:13px;min-height:34px}
+.bild .x{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-weight:800}
+.hoch{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;min-height:120px;border:2px dashed var(--line);border-radius:12px;cursor:pointer;color:var(--muted);font-weight:700;background:#fff;text-align:center;padding:6px}
+.hoch:hover{border-color:var(--pri);color:var(--pri)}
+.korr{background:var(--gold-2);border-radius:14px;padding:12px;margin-top:10px}
+.diff{white-space:pre-wrap;background:#fff;border-radius:10px;padding:10px;line-height:1.7;margin-top:6px}
+.diff del{background:var(--bad-2);color:var(--bad);text-decoration:line-through} .diff ins{background:var(--ok-2);color:var(--ok);text-decoration:none;font-weight:700}
+.text{white-space:pre-wrap;background:var(--soft);border-radius:12px;padding:10px;line-height:1.6}
+.tipp{font-size:13px;color:var(--pri);font-weight:700;min-height:18px}
+select{min-height:38px;border:2px solid var(--line);border-radius:10px;padding:4px 8px}
+table{border-collapse:collapse;width:100%} th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:15px;vertical-align:top}
+.st{display:inline-block;min-width:28px;text-align:center;border-radius:8px;padding:2px 6px;font-weight:800;font-size:13px}
+.st.leer{background:var(--soft);color:var(--muted)} .st.text{background:var(--blau-2);color:var(--blau)} .st.korr{background:var(--gold-2);color:#8A5A00} .st.fertig{background:var(--ok-2);color:var(--ok)}
+.namen button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:5px 12px;cursor:pointer;font-weight:600}
+.namen button.an{background:var(--pri);border-color:var(--pri);color:#fff}
+.gruppe{border:2px solid var(--line);border-radius:16px;padding:12px;margin-bottom:10px}
+.err{color:var(--bad);font-weight:700;min-height:20px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-weight:700;z-index:99}
+/* ---------- Präsentation ---------- */
+.show{position:fixed;inset:0;background:#0B1F2A;color:#fff;z-index:50;display:flex;flex-direction:column}
+.folie{flex:1;display:flex;flex-direction:column;padding:4vh 5vw 2vh;overflow:hidden}
+.folie h1{font-size:clamp(28px,5vw,64px);margin:0 0 2vh;display:flex;gap:16px;align-items:center}
+.folie .inhalt{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:3vw;min-height:0}
+.folie .inhalt.nur{grid-template-columns:1fr}
+.folie .txt{font-size:clamp(18px,2.4vw,34px);line-height:1.45;overflow:auto}
+.folie .txt p{margin:0 0 .6em}
+.folie .fotos{display:grid;gap:1.4vw;min-height:0;grid-auto-rows:minmax(0,1fr)}
+.folie .fotos figure{margin:0;position:relative;min-height:0;border-radius:14px;overflow:hidden;background:#000}
+.folie .fotos img{width:100%;height:100%;object-fit:contain;display:block}
+.folie .fotos figcaption{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.75));padding:20px 12px 8px;font-size:clamp(13px,1.4vw,20px)}
+.folie.titelf{justify-content:center;align-items:center;text-align:center;background-size:cover;background-position:center}
+.folie.titelf .box{background:rgba(11,31,42,.72);padding:4vh 5vw;border-radius:24px}
+.folie.titelf h1{font-size:clamp(40px,8vw,110px);justify-content:center}
+.sprecher{font-size:clamp(14px,1.5vw,20px);opacity:.75;margin-top:-1vh;margin-bottom:1.5vh}
+.leiste{display:flex;gap:10px;align-items:center;padding:10px 16px;background:rgba(255,255,255,.06)}
+.leiste button{border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:8px 14px;font-weight:700;cursor:pointer}
+.leiste .pz{margin-left:auto;opacity:.7}
+@media (max-width:760px){ .folie .inhalt{grid-template-columns:1fr} }
+@media print{
+  @page{size:landscape;margin:0}
+  body{background:#fff}
+  .noprint{display:none!important}
+  .show{position:static;display:block;background:#0B1F2A}
+  .folie{height:100vh;page-break-after:always;break-after:page;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .leiste{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><div class="card">Einen Moment …</div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="katalog.js"></script>
+<script src="lernwelt.js"></script>
+<script src="stadt/vorlage.js"></script>
+<script>
+/* =========================================================
+   STADT-PRÄSENTATION
+   Jugendliche: stadt.html · Lehrkraft: stadt.html?leitung=1 · Beamer: stadt.html?zeigen=GRUPPE
+   Daten: ligastadt/ploen-jik/aktiv = Projekt-ID
+          ligastadt/ploen-jik/p/{proj}/info {titel, erstellt}
+            gruppen/{gid} {name, stadt, mitglieder:{pid:true}}
+            text/{gid}/{sec} {t, ts, von}       sprecher/{gid}/{sec} = pid
+            bilder/{gid}/{bid} {sec, cap, von, ts}   ← nur Angaben; das Bild selbst liegt in
+          ligastadt/ploen-jik/bild/{proj}/{gid}/{bid} = {d}  (so lädt jede:r nur die Bilder der eigenen Gruppe)
+            korr/{gid}/{sec} {k (korrigierter Text), kom, basis, ts}    fertig/{gid}/{sec} = true
+            tippt/{gid}/{sec} {name, ts}
+   ========================================================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const V=window.STADT_VORLAGE, SEC=V.abschnitte;
+const P=new URLSearchParams(location.search);
+const app=$("#app");
+LW.init(!!P.get("leitung"));
+const esc=LW.esc, ROOT="ligastadt/"+LW.KURS;
+const R=p=>firebase.database().ref(ROOT+(p?"/"+p:""));
+const woerter=t=>String(t||"").trim()?String(t).trim().split(/\s+/).length:0;
+const minW=s=>s.min!==undefined?s.min:V.minWoerter;
+const BILD={};   // BILD[gid][bid] = Bilddaten
+const bildAbo={};
+function bilderLaden(proj,gid,cb){ if(bildAbo[gid]===proj) return; bildAbo[gid]=proj; R(`bild/${proj}/${gid}`).on("value", s=>{ BILD[gid]={}; Object.entries(s.val()||{}).forEach(([k,v])=>BILD[gid][k]=v&&v.d); cb&&cb(); }); }
+const bildVon=(gid,bid)=>(BILD[gid]||{})[bid]||"";
+async function bildSpeichern(proj,gid,sec,file,von){ const d=await bildLesen(file); const bid=neueId(); await R(`bild/${proj}/${gid}/${bid}`).set({d}); await R(`p/${proj}/bilder/${gid}/${bid}`).set({sec, cap:"", von, ts:Date.now()}); }
+function bildLoeschen(proj,gid,bid){ R(`bild/${proj}/${gid}/${bid}`).remove(); return R(`p/${proj}/bilder/${gid}/${bid}`).remove(); }
+const toast=t=>{ const d=document.createElement("div"); d.className="toast"; d.textContent=t; document.body.appendChild(d); setTimeout(()=>d.remove(),2400); };
+const neueId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const datum=ts=>{ if(!ts) return ""; const d=new Date(ts); return `${d.getDate()}.${d.getMonth()+1}. ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`; };
+function diff(a,b){ const A=String(a).split(/(\s+)/), B=String(b).split(/(\s+)/); const n=A.length, m=B.length;
+  if(n*m>400000) return esc(b);
+  const L=Array.from({length:n+1},()=>new Uint16Array(m+1)); for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=A[i]===B[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  let i=0,j=0,o=""; while(i<n&&j<m){ if(A[i]===B[j]){ o+=esc(A[i]); i++; j++; } else if(L[i+1][j]>=L[i][j+1]){ o+=/^\s+$/.test(A[i])?esc(A[i]):`<del>${esc(A[i])}</del>`; i++; } else { o+=/^\s+$/.test(B[j])?esc(B[j]):`<ins>${esc(B[j])}</ins>`; j++; } }
+  while(i<n){ o+=/^\s+$/.test(A[i])?"":`<del>${esc(A[i])}</del>`; i++; } while(j<m){ o+=/^\s+$/.test(B[j])?esc(B[j]):`<ins>${esc(B[j])}</ins>`; j++; } return o; }
+
+/* ---------- Bild verkleinern (max. 1400 px, JPEG) ---------- */
+function bildLesen(file){ return new Promise((ok,no)=>{
+  if(!file || !/^image\//.test(file.type)) return no(new Error("Das ist kein Bild."));
+  const url=URL.createObjectURL(file); const img=new Image();
+  img.onload=()=>{ let q=0.8, max=1280, d="";
+    for(let v=0; v<5; v++){ const f=Math.min(1, max/Math.max(img.width,img.height)); const c=document.createElement("canvas"); c.width=Math.round(img.width*f); c.height=Math.round(img.height*f);
+      const x=c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(img,0,0,c.width,c.height); d=c.toDataURL("image/jpeg",q);
+      if(d.length<320000) break; max=Math.round(max*0.8); q=Math.max(0.6,q-0.06); }
+    URL.revokeObjectURL(url); ok(d); };
+  img.onerror=()=>{ URL.revokeObjectURL(url); no(new Error("Das Bild kann nicht gelesen werden.")); };
+  img.src=url; }); }
+
+/* ---------- Status eines Abschnitts ---------- */
+function stand(D, gid, s){
+  const t=(((D.text||{})[gid]||{})[s.id]||{}).t||""; const k=((D.korr||{})[gid]||{})[s.id]; const f=((D.fertig||{})[gid]||{})[s.id];
+  const bilder=Object.values((D.bilder||{})[gid]||{}).filter(b=>b&&b.sec===s.id).length;
+  if(f) return {k:"fertig", z:"✓", t, bilder};
+  if(k && k.ts) return {k:"korr", z:"✎", t, bilder};
+  if(woerter(t)>=minW(s) || (s.id==="titel" && (woerter(t)>0 || bilder))) return {k:"text", z:woerter(t), t, bilder};
+  return {k:"leer", z:woerter(t)||"–", t, bilder};
+}
+
+/* ---------- Präsentation (für alle) ---------- */
+function folien(D, gid){
+  const g=(D.gruppen||{})[gid]||{}; const T=(D.text||{})[gid]||{}; const B=Object.entries((D.bilder||{})[gid]||{}).filter(([bid,b])=>b&&bildVon(gid,bid)).map(([bid,b])=>[bid,Object.assign({},b,{d:bildVon(gid,bid)})]).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0));
+  const namen=(D._namen||{}); const sp=(D.sprecher||{})[gid]||{};
+  return SEC.map(s=>{ const txt=((T[s.id]||{}).t||"").trim(); const fotos=B.filter(([,b])=>b.sec===s.id).map(([,b])=>b);
+    const wer=sp[s.id]&&namen[sp[s.id]]?`🎤 ${esc(namen[sp[s.id]])}`:"";
+    if(s.id==="titel"){ const bg=fotos[0]?`style="background-image:url('${fotos[0].d}')"`:"";
+      const leute=Object.keys(g.mitglieder||{}).map(p=>esc(namen[p]||"")).filter(Boolean).join(" · ");
+      return `<div class="folie titelf" ${bg}><div class="box"><h1>${esc(g.stadt||"Unsere Stadt")}</h1>${txt?`<div style="font-size:clamp(18px,2.6vw,36px)">${esc(txt).replace(/\n/g,"<br>")}</div>`:""}<div style="margin-top:2vh;opacity:.8;font-size:clamp(14px,1.8vw,24px)">${leute}</div></div></div>`; }
+    const absaetze=txt?txt.split(/\n+/).map(z=>`<p>${esc(z)}</p>`).join(""):`<p style="opacity:.4">(noch kein Text)</p>`;
+    const n=fotos.length; const spalten=n>=3?2:1;
+    return `<div class="folie"><h1><span>${s.icon}</span>${esc(s.name)}</h1>${wer?`<div class="sprecher">${wer}</div>`:""}
+      <div class="inhalt ${n?"":"nur"}"><div class="txt">${absaetze}</div>${n?`<div class="fotos" style="grid-template-columns:repeat(${spalten},1fr)">${fotos.slice(0,4).map(b=>`<figure><img src="${b.d}" alt="">${b.cap?`<figcaption>${esc(b.cap)}</figcaption>`:""}</figure>`).join("")}</div>`:""}</div></div>`; });
+}
+function zeigen(D, gid, zurueck){
+  const F=folien(D,gid); let i=0;
+  const box=document.createElement("div"); box.className="show"; document.body.appendChild(box); document.body.style.overflow="hidden";
+  const mal=()=>{ box.innerHTML=F[i]+`<div class="leiste noprint"><button data-z="-1">‹ zurück</button><button data-z="1">weiter ›</button><button id="vollb">⛶ Vollbild</button><button id="druck">🖨️ PDF / Drucken</button><button id="zu">✕ schließen</button><span class="pz">${i+1} / ${F.length}</span></div>`;
+    $$("[data-z]",box).forEach(b=>b.onclick=()=>{ i=Math.max(0,Math.min(F.length-1,i+Number(b.dataset.z))); mal(); });
+    $("#vollb",box).onclick=()=>{ try{ document.fullscreenElement?document.exitFullscreen():box.requestFullscreen(); }catch(e){} };
+    $("#druck",box).onclick=()=>{ box.innerHTML=F.join(""); setTimeout(()=>{ window.print(); mal(); },400); };
+    $("#zu",box).onclick=schliessen; };
+  const taste=e=>{ if(["ArrowRight","PageDown"," "].includes(e.key)){ i=Math.min(F.length-1,i+1); mal(); e.preventDefault(); } if(["ArrowLeft","PageUp"].includes(e.key)){ i=Math.max(0,i-1); mal(); } if(e.key==="Escape") schliessen(); };
+  function schliessen(){ document.removeEventListener("keydown",taste); box.remove(); document.body.style.overflow=""; try{ if(document.fullscreenElement) document.exitFullscreen(); }catch(e){} if(zurueck) zurueck(); }
+  document.addEventListener("keydown",taste); mal();
+}
+
+/* =========================================================
+   JUGENDLICHE
+   ========================================================= */
+function jugendliche(){
+  let me=null, proj=null, D={}, namen={}, gid=null, offen=null, warte=false, lokal={}, speicherT={}, tippT=null;
+  (async()=>{
+    me=await LW.pruefen();
+    if(!me){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:50px">🏙️</div><h2>Stadt-Präsentation</h2><p class="muted">Bitte melde dich zuerst in der Lernwelt mit deinem Code an.</p><a class="btn" href="index.html">Zur Anmeldung</a></div></div>`; return; }
+    LW.ref("public/names").on("value", s=>{ namen=s.val()||{}; male(); });
+    R("aktiv").on("value", s=>{ const p=s.val(); if(p===proj) return; if(proj) R("p/"+proj).off(); proj=p; D={};
+      if(!proj){ male(); return; } R("p/"+proj).on("value", x=>{ D=x.val()||{}; male(); }); });
+    window.addEventListener("hashchange", ()=>{ offen=location.hash.slice(1)||null; male(true); scrollTo(0,0); });
+    offen=location.hash.slice(1)||null;
+  })();
+  const kopf=(g)=>`<div class="kopf"><div class="in" style="max-width:820px"><a href="${offen?"#":"index.html#ueben"}">‹ ${offen?"Übersicht":"Lernwelt"}</a><b>🏙️ ${esc(g&&g.stadt||"Stadt-Präsentation")}</b><span class="r small">${esc(me.name)}</span></div></div>`;
+  function male(hart){
+    const ae=document.activeElement; if(!hart && ae && (ae.tagName==="TEXTAREA" || (ae.tagName==="INPUT"&&ae.type==="text") || ae.tagName==="SELECT")){ warte=true; return; }
+    warte=false;
+    if(!proj){ app.innerHTML=kopf()+`<div class="wrap"><div class="card" style="text-align:center"><div style="font-size:50px">🏙️</div><h2>Noch kein Projekt</h2><p class="muted">Deine Lehrkraft startet die Stadt-Präsentation gleich.</p></div></div>`; return; }
+    const G=D.gruppen||{}; gid=Object.keys(G).find(k=>(G[k].mitglieder||{})[me.pid])||null;
+    if(!gid) return gruppeWaehlen(G);
+    const g=G[gid]; D._namen=namen; bilderLaden(proj,gid,()=>male());
+    if(offen && SEC.some(s=>s.id===offen)) return abschnitt(g, SEC.find(s=>s.id===offen)); else offen=null;
+    uebersicht(g);
+  }
+  function gruppeWaehlen(G){
+    const ids=Object.keys(G).sort((a,b)=>String(G[a].name).localeCompare(G[b].name));
+    app.innerHTML=kopf()+`<div class="wrap"><div class="card"><h1>Welche Gruppe bist du?</h1><p class="muted">Tippe auf deine Gruppe. Deine Lehrkraft kann das später noch ändern.</p>
+      ${ids.map(k=>{ const g=G[k]; const m=Object.keys(g.mitglieder||{}).map(p=>esc(namen[p]||"?")); return `<button class="btn ghost wide" style="justify-content:flex-start;margin:6px 0;min-height:58px" data-gr="${k}"><b>${esc(g.name||"Gruppe")}</b>${g.stadt?` · ${esc(g.stadt)}`:""}<span class="small muted" style="margin-left:auto">${m.join(", ")||"noch leer"}</span></button>`; }).join("")||`<p class="muted">Noch keine Gruppen.</p>`}</div></div>`;
+    $$("[data-gr]").forEach(b=>b.onclick=()=>R(`p/${proj}/gruppen/${b.dataset.gr}/mitglieder/${me.pid}`).set(true));
+  }
+  function uebersicht(g){
+    const fertigZahl=SEC.filter(s=>["text","korr","fertig"].includes(stand(D,gid,s).k)).length;
+    const leute=Object.keys(g.mitglieder||{});
+    let h=kopf(g)+`<div class="wrap"><div class="card"><div class="row" style="justify-content:space-between"><h1 style="margin:0">${esc(g.name||"Unsere Gruppe")}</h1><span class="small muted">${leute.map(p=>esc(namen[p]||"?")).join(", ")}</span></div>
+      <label class="small muted" style="display:block;margin-top:10px">Unsere Stadt:</label>
+      <div class="row"><input type="text" id="stadtname" value="${esc(g.stadt||"")}" placeholder="z. B. Hamburg" style="flex:1;min-width:0"><button class="btn sm" id="stadtok">Speichern</button></div>
+      <p style="margin:12px 0 4px"><b>${fertigZahl} von ${SEC.length} Folien</b> haben genug Text.</p>
+      <div class="fort">${SEC.map(s=>{ const st=stand(D,gid,s); return `<a href="#${s.id}" class="${st.k==="fertig"||st.k==="text"?"voll":st.k==="korr"?"korr":""}"><span class="e">${s.icon}</span>${esc(s.kurz)}<br><span class="muted">${st.k==="fertig"?"✓ fertig":st.k==="korr"?"✎ Korrektur":st.k==="text"?"✓ "+st.z+" W.":(st.z==="–"?"leer":st.z+" W.")}${st.bilder?` · 🖼️${st.bilder}`:""}</span></a>`; }).join("")}</div>
+      <div class="row" style="margin-top:14px"><a class="btn" href="#${(SEC.find(s=>stand(D,gid,s).k==="leer")||SEC[0]).id}">✏️ Weiterschreiben</a><button class="btn gold" id="vorschau">▶ Präsentation ansehen</button></div></div>
+      <div class="card"><h3>🎤 Wer spricht was?</h3><p class="small muted" style="margin-top:0">Jede Person präsentiert mindestens einen Teil.</p>
+        <table>${SEC.map(s=>`<tr><td>${s.icon} ${esc(s.name)}</td><td><select data-sp="${s.id}"><option value="">–</option>${leute.map(p=>`<option value="${p}" ${((D.sprecher||{})[gid]||{})[s.id]===p?"selected":""}>${esc(namen[p]||"?")}</option>`).join("")}</select></td></tr>`).join("")}</table></div>
+      <div class="card"><h3>🗣️ Redemittel für den Vortrag</h3><div class="chips">${V.vortrag.map(r=>`<span>${esc(r)}</span>`).join("")}</div>
+        <h3 style="margin-top:12px">💡 Tipps</h3><ul style="margin:0;padding-left:20px">${V.tipps.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div></div>`;
+    app.innerHTML=h;
+    $("#stadtok").onclick=()=>{ R(`p/${proj}/gruppen/${gid}/stadt`).set($("#stadtname").value.trim().slice(0,60)); $("#stadtname").blur(); toast("✓ gespeichert"); };
+    $("#stadtname").onkeydown=e=>{ if(e.key==="Enter") $("#stadtok").click(); };
+    $("#stadtname").onblur=()=>{ if(warte) setTimeout(()=>male(),50); };
+    $$("[data-sp]").forEach(sel=>{ sel.onchange=()=>{ R(`p/${proj}/sprecher/${gid}/${sel.dataset.sp}`).set(sel.value||null); sel.blur(); }; sel.onblur=()=>{ if(warte) setTimeout(()=>male(),50); }; });
+    $("#vorschau").onclick=()=>zeigen(D,gid,()=>male(true));
+  }
+  function abschnitt(g, s){
+    const i=SEC.indexOf(s); const st=stand(D,gid,s);
+    const server=(((D.text||{})[gid]||{})[s.id]||{}); const text=lokal[s.id]!==undefined?lokal[s.id]:(server.t||"");
+    const k=((D.korr||{})[gid]||{})[s.id]; const fertig=((D.fertig||{})[gid]||{})[s.id];
+    const tipp=((D.tippt||{})[gid]||{})[s.id]; const andere=tipp && tipp.name!==me.name && Date.now()-(tipp.ts||0)<15000 ? tipp.name : null;
+    const B=Object.entries((D.bilder||{})[gid]||{}).filter(([,b])=>b&&b.sec===s.id).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0));
+    const w=woerter(text), ziel=minW(s);
+    let h=kopf(g)+`<div class="wrap"><div class="fort">${SEC.map(x=>{ const t=stand(D,gid,x); return `<a href="#${x.id}" class="${x.id===s.id?"an ":""}${t.k==="fertig"||t.k==="text"?"voll":t.k==="korr"?"korr":""}"><span class="e">${x.icon}</span>${esc(x.kurz)}</a>`; }).join("")}</div>
+      <div class="card sec" style="margin-top:12px"><div class="small muted">Folie ${i+1} von ${SEC.length}</div><h2><span>${s.icon}</span>${esc(s.name)}</h2>
+      <div class="hinweis">${esc(s.hinweis)}</div>
+      <b>Beantwortet diese Fragen:</b><ul class="fragen">${s.fragen.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>`;
+    if(fertig) h+=`<div class="korr" style="background:var(--ok-2)"><b>✓ Deine Lehrkraft sagt: Diese Folie ist fertig!</b></div>`;
+    if(k && k.ts && !fertig && k.k && k.basis===k.k){ h+=`<div class="korr" style="background:var(--ok-2)"><b>✓ Korrektur übernommen.</b>${k.kom?`<p style="margin:6px 0 0;white-space:pre-wrap">💬 ${esc(k.kom)}</p>`:""}</div>`; }
+    else if(k && k.ts && !fertig){ h+=`<div class="korr"><b>✎ Korrektur von deiner Lehrkraft</b> <span class="small muted">${datum(k.ts)}</span>${k.kom?`<p style="margin:6px 0 0;white-space:pre-wrap">💬 ${esc(k.kom)}</p>`:""}
+        ${k.k?`<div class="small" style="margin-top:8px"><del style="background:var(--bad-2);color:var(--bad)">rot</del> = falsch · <ins style="background:var(--ok-2);color:var(--ok);text-decoration:none;font-weight:700">grün</ins> = richtig</div><div class="diff">${diff(k.basis||text,k.k)}</div>
+        <div class="row" style="margin-top:8px"><button class="btn sm ok" id="uebernehmen">✓ Korrektur übernehmen</button><span class="small muted">Lies die grünen Stellen genau. Dann übernehmen.</span></div>`:""}</div>`; }
+    h+=`<div style="margin-top:12px"><b>Satzanfänge</b> <span class="small muted">(antippen = in den Text einfügen, dann ___ ausfüllen)</span><div class="chips">${s.saetze.map((x,j)=>`<button data-satz="${j}">${esc(x)}</button>`).join("")}</div></div>
+      ${s.woerter.length?`<div><b>Wörter</b><div class="chips">${s.woerter.map(x=>`<span>${esc(x)}</span>`).join("")}</div></div>`:""}
+      <textarea id="txt" placeholder="Schreibt hier eure Sätze. Für jeden Gedanken eine neue Zeile." spellcheck="false" autocomplete="off">${esc(text)}</textarea>
+      <div class="zaehler"><span><b id="wz">${w}</b> Wörter ${ziel?`(Ziel: mind. ${ziel})`:""}</span><span class="tipp" id="tipp">${andere?`✏️ ${esc(andere)} schreibt gerade hier …`:""}</span><span id="gesp" class="muted">${server.ts?`gespeichert ${datum(server.ts)}${server.von?" · "+esc(server.von):""}`:""}</span></div>
+      <h3 style="margin-top:14px">🖼️ Bilder für diese Folie</h3><p class="small muted" style="margin:0">Bis zu 4 Bilder. Schreibt unter jedes Bild, was man sieht.</p>
+      <div class="bilder">${B.map(([bid,b])=>`<div class="bild">${bildVon(gid,bid)?`<img src="${bildVon(gid,bid)}" alt="">`:`<div style="height:120px;display:flex;align-items:center;justify-content:center" class="muted small">lädt …</div>`}<button class="x" data-weg="${bid}" title="löschen">✕</button><input type="text" data-cap="${bid}" value="${esc(b.cap||"")}" placeholder="Was sieht man?" maxlength="80"></div>`).join("")}
+        ${B.length<4?`<label class="hoch"><span style="font-size:30px">＋</span>Bild hochladen<input type="file" accept="image/*" multiple id="datei" class="hidden"></label>`:""}</div>
+      <div class="err" id="berr"></div>
+      <div class="row" style="justify-content:space-between;margin-top:6px">${i>0?`<a class="btn ghost" href="#${SEC[i-1].id}">‹ ${esc(SEC[i-1].kurz)}</a>`:"<span></span>"}${i<SEC.length-1?`<a class="btn" href="#${SEC[i+1].id}">${esc(SEC[i+1].kurz)} ›</a>`:`<a class="btn ok" href="#">✓ Zur Übersicht</a>`}</div></div></div>`;
+    app.innerHTML=h;
+    const ta=$("#txt");
+    const speichern=()=>{ clearTimeout(speicherT[s.id]); const t=ta.value.slice(0,3000); R(`p/${proj}/text/${gid}/${s.id}`).set({t, ts:firebase.database.ServerValue.TIMESTAMP, von:me.name}).then(()=>{ const g=$("#gesp"); if(g) g.textContent="✓ gespeichert"; }).catch(()=>{ const g=$("#gesp"); if(g) g.textContent="⚠️ nicht gespeichert – Internet?"; }); };
+    ta.oninput=()=>{ lokal[s.id]=ta.value; $("#wz").textContent=woerter(ta.value); const g=$("#gesp"); if(g) g.textContent="…"; clearTimeout(speicherT[s.id]); speicherT[s.id]=setTimeout(speichern,900);
+      if(!tippT){ R(`p/${proj}/tippt/${gid}/${s.id}`).set({name:me.name, ts:Date.now()}); tippT=setTimeout(()=>tippT=null,5000); } };
+    ta.onblur=()=>{ if(lokal[s.id]!==undefined && lokal[s.id]!==(server.t||"")) speichern(); setTimeout(()=>{ if(document.activeElement!==ta){ delete lokal[s.id]; if(warte) male(); } },60); };
+    $$("[data-satz]").forEach(b=>b.onmousedown=e=>e.preventDefault());
+    $$("[data-satz]").forEach(b=>b.onclick=()=>{ const x=s.saetze[+b.dataset.satz]; const v=ta.value; const pos=ta.selectionStart!=null&&document.activeElement===ta?ta.selectionStart:v.length;
+      const vor=v.slice(0,pos), nach=v.slice(pos); const ein=(vor&&!/\n$/.test(vor)?"\n":"")+x; ta.value=vor+ein+nach; const st=vor.length+ein.indexOf("___");
+      ta.focus(); if(ein.includes("___")) ta.setSelectionRange(st, st+3); else ta.setSelectionRange(vor.length+ein.length, vor.length+ein.length); ta.oninput(); });
+    const ub=$("#uebernehmen"); if(ub) ub.onclick=()=>{ lokal[s.id]=k.k; R(`p/${proj}/text/${gid}/${s.id}`).set({t:k.k, ts:firebase.database.ServerValue.TIMESTAMP, von:me.name}); R(`p/${proj}/korr/${gid}/${s.id}/basis`).set(k.k).then(()=>{ delete lokal[s.id]; toast("✓ übernommen"); }); };
+    const dt=$("#datei"); if(dt) dt.onchange=async()=>{ const files=[...dt.files].slice(0,4-B.length); $("#berr").textContent=files.length?"Bild wird hochgeladen …":"";
+      for(const f of files){ try{ await bildSpeichern(proj,gid,s.id,f,me.name); }catch(e){ $("#berr").textContent=e.message||"Fehler beim Hochladen."; return; } }
+      $("#berr").textContent=""; toast("✓ Bild gespeichert"); };
+    $$("[data-weg]").forEach(b=>b.onclick=()=>{ if(confirm("Dieses Bild löschen?")) bildLoeschen(proj,gid,b.dataset.weg); });
+    $$("[data-cap]").forEach(inp=>{ inp.onchange=()=>R(`p/${proj}/bilder/${gid}/${inp.dataset.cap}/cap`).set(inp.value.trim().slice(0,80)); inp.onkeydown=e=>{ if(e.key==="Enter") inp.blur(); }; inp.onblur=()=>{ if(warte) setTimeout(()=>male(),50); }; });
+  }
+}
+
+/* =========================================================
+   LEHRKRAFT
+   ========================================================= */
+function lehrkraft(){
+  const auth=LW.auth; let proj=null, D={}, namen={}, projekte={}, ansicht="uebersicht", gOffen=null, warte=false;
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); start(); });
+  function login(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;max-width:420px;margin-left:auto;margin-right:auto"><h2>🏙️ Stadt-Präsentation · Lehrkraft</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="margin-bottom:8px"><button class="btn wide">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  function start(){
+    LW.ref("public/names").on("value", s=>{ namen=s.val()||{}; male(); });
+    R("projekte").on("value", s=>{ projekte=s.val()||{}; male(); });
+    R("aktiv").on("value", s=>{ const p=s.val(); if(proj) R("p/"+proj).off(); proj=p; D={}; if(proj) R("p/"+proj).on("value", x=>{ D=x.val()||{}; male(); }); else male(); });
+  }
+  const kopf=()=>`<div class="kopf noprint"><div class="in"><a href="lehrer.html">‹ Lehrer-Seite</a><b>🏙️ Stadt-Präsentation</b>
+    ${proj?`<button class="btn sm ghost" data-an="uebersicht">Übersicht</button><button class="btn sm ghost" data-an="gruppen">👥 Gruppen</button><button class="btn sm ghost" data-an="alle">📄 Alle Texte</button>`:""}<span class="r small">Jugendliche: <b>stadt.html</b> (Lernwelt → Üben)</span></div></div>`;
+  function male(hart){
+    const ae=document.activeElement; if(!hart && ae && (ae.tagName==="TEXTAREA" || ae.tagName==="INPUT" || ae.tagName==="SELECT")){ warte=true; return; }
+    warte=false; D._namen=namen;
+    if(!proj) return neuesProjekt();
+    if(gOffen && (D.gruppen||{})[gOffen]) return gruppeKorrigieren(gOffen);
+    gOffen=null;
+    if(ansicht==="gruppen") return gruppenSeite();
+    if(ansicht==="alle") return alleTexte();
+    uebersicht();
+  }
+  function binden(){ $$("[data-an]").forEach(b=>b.onclick=()=>{ ansicht=b.dataset.an; gOffen=null; male(true); scrollTo(0,0); });
+    $$("input,textarea,select").forEach(el=>el.addEventListener("blur",()=>{ if(warte) setTimeout(()=>male(),80); })); }
+  function neuesProjekt(){
+    const alte=Object.entries(projekte).sort((a,b)=>(b[1].erstellt||0)-(a[1].erstellt||0));
+    app.innerHTML=kopf()+`<div class="wrap"><div class="card"><h1>Neues Projekt</h1><p class="muted">Die Jugendlichen stellen in Gruppen eine Stadt vor. Sie schreiben Folie für Folie, laden Bilder hoch – du korrigierst jeden Text.</p>
+      <label>Titel</label><input type="text" id="ptitel" value="Wir stellen eine Stadt vor">
+      <label style="display:block;margin-top:10px">Wie viele Gruppen?</label><div class="row">${[3,4,5,6].map(n=>`<button class="btn ghost" data-ng="${n}">${n} Gruppen</button>`).join("")}</div>
+      <p class="small muted">Danach kannst du die Jugendlichen den Gruppen zuordnen – oder sie wählen ihre Gruppe selbst.</p></div>
+      ${alte.length?`<div class="card"><h3>Frühere Projekte</h3>${alte.map(([id,p])=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span>${esc(p.titel||id)} <span class="small muted">${datum(p.erstellt)}</span></span><button class="btn sm ghost" data-wieder="${id}">wieder öffnen</button></div>`).join("")}</div>`:""}</div>`;
+    binden();
+    $$("[data-ng]").forEach(b=>b.onclick=async()=>{ const id="s"+neueId(); const n=+b.dataset.ng; const gruppen={}; for(let i=1;i<=n;i++) gruppen["g"+i]={name:"Gruppe "+i, stadt:""};
+      const titel=$("#ptitel").value.trim()||"Stadt-Präsentation";
+      await R("p/"+id).set({info:{titel, erstellt:Date.now()}, gruppen}); await R("projekte/"+id).set({titel, erstellt:Date.now()}); await R("aktiv").set(id); ansicht="gruppen"; });
+    $$("[data-wieder]").forEach(b=>b.onclick=()=>R("aktiv").set(b.dataset.wieder));
+  }
+  function uebersicht(){
+    const G=D.gruppen||{}; const ids=Object.keys(G).sort();
+    const offen=[]; ids.forEach(g=>SEC.forEach(s=>{ const st=stand(D,g,s); const t=((D.text||{})[g]||{})[s.id]; const k=((D.korr||{})[g]||{})[s.id];
+      if(st.k==="text" || (st.k==="korr" && t && k && t.ts>k.ts && t.t!==k.k)) offen.push({g,s}); }));
+    app.innerHTML=kopf()+`<div class="wrap weit"><div class="card"><div class="row" style="justify-content:space-between"><h1 style="margin:0">${esc((D.info||{}).titel||"Stadt-Präsentation")}</h1><div class="row"><button class="btn sm ghost" id="beenden">Projekt schließen</button></div></div>
+      <p class="small muted" style="margin:6px 0 0"><span class="st leer">–</span> leer/zu kurz · <span class="st text">25</span> Text da (Zahl = Wörter) – bitte korrigieren · <span class="st korr">✎</span> korrigiert · <span class="st fertig">✓</span> fertig</p></div>
+      ${offen.length?`<div class="card" style="border-left:6px solid var(--gold)"><b>📝 ${offen.length} ${offen.length===1?"Folie wartet":"Folien warten"} auf deine Korrektur:</b> <span class="small">${offen.slice(0,12).map(o=>`${esc(G[o.g].name)} · ${o.s.icon} ${esc(o.s.kurz)}`).join(" · ")}${offen.length>12?" …":""}</span></div>`:""}
+      <div class="card" style="overflow:auto"><table><tr><th>Gruppe</th>${SEC.map(s=>`<th title="${esc(s.name)}">${s.icon}<br><span class="small">${esc(s.kurz)}</span></th>`).join("")}<th>🖼️</th><th></th></tr>
+      ${ids.map(g=>{ const x=G[g]; const nb=Object.keys((D.bilder||{})[g]||{}).length; return `<tr><td><b>${esc(x.name)}</b><br><span class="small">${esc(x.stadt||"(keine Stadt)")}</span><br><span class="small muted">${Object.keys(x.mitglieder||{}).map(p=>esc(namen[p]||"?")).join(", ")||"keine Mitglieder"}</span></td>
+        ${SEC.map(s=>{ const st=stand(D,g,s); return `<td><span class="st ${st.k}">${st.z}</span>${st.bilder?`<div class="small muted">🖼️${st.bilder}</div>`:""}</td>`; }).join("")}<td>${nb}</td>
+        <td><button class="btn sm" data-g="${g}">✎ Korrigieren</button><br><button class="btn sm gold" data-zeig="${g}" style="margin-top:4px">▶ Zeigen</button></td></tr>`; }).join("")}</table></div></div>`;
+    binden();
+    $$("[data-g]").forEach(b=>b.onclick=()=>{ gOffen=b.dataset.g; male(true); scrollTo(0,0); });
+    $$("[data-zeig]").forEach(b=>b.onclick=()=>{ const g=b.dataset.zeig; b.textContent="lädt …"; bilderLaden(proj,g); R(`bild/${proj}/${g}`).once("value").then(()=>zeigen(D,g,()=>male(true))); });
+    $("#beenden").onclick=()=>{ if(confirm("Projekt schließen? Die Texte bleiben gespeichert und du kannst es später wieder öffnen.")) R("aktiv").set(null); };
+  }
+  function gruppenSeite(){
+    const G=D.gruppen||{}; const ids=Object.keys(G).sort(); const alle=Object.keys(namen).sort((a,b)=>String(namen[a]).localeCompare(namen[b]));
+    const inGr=p=>ids.find(g=>(G[g].mitglieder||{})[p]);
+    app.innerHTML=kopf()+`<div class="wrap weit"><div class="card"><h1>👥 Gruppen</h1><p class="muted" style="margin:0">Tippe auf einen Namen, um ihn in die Gruppe zu nehmen (oder wieder heraus). Die Jugendlichen können ihre Gruppe auch selbst wählen.</p></div>
+      ${ids.map(g=>{ const x=G[g]; return `<div class="card gruppe"><div class="row"><input type="text" data-gname="${g}" value="${esc(x.name||"")}" style="max-width:220px"><input type="text" data-gstadt="${g}" value="${esc(x.stadt||"")}" placeholder="Stadt (die Gruppe kann sie auch selbst eintragen)" style="max-width:340px"><button class="btn sm rot" data-gweg="${g}">Gruppe löschen</button></div>
+        <div class="namen row" style="margin-top:10px">${alle.map(p=>{ const da=(x.mitglieder||{})[p]; const woanders=!da&&inGr(p); return `<button class="${da?"an":""}" data-m="${g}|${p}" ${woanders?`style="opacity:.4" title="in ${esc(G[woanders].name)}"`:""}>${esc(namen[p])}</button>`; }).join("")}</div></div>`; }).join("")}
+      <button class="btn ghost" id="gneu">＋ Gruppe dazu</button></div>`;
+    binden();
+    $$("[data-m]").forEach(b=>b.onclick=async()=>{ const [g,p]=b.dataset.m.split("|"); const da=((G[g]||{}).mitglieder||{})[p]; const up={};
+      ids.forEach(x=>{ if((G[x].mitglieder||{})[p]) up[`gruppen/${x}/mitglieder/${p}`]=null; }); if(!da) up[`gruppen/${g}/mitglieder/${p}`]=true; await R("p/"+proj).update(up); });
+    $$("[data-gname]").forEach(i=>i.onchange=()=>R(`p/${proj}/gruppen/${i.dataset.gname}/name`).set(i.value.trim()||"Gruppe"));
+    $$("[data-gstadt]").forEach(i=>i.onchange=()=>R(`p/${proj}/gruppen/${i.dataset.gstadt}/stadt`).set(i.value.trim()));
+    $$("[data-gweg]").forEach(b=>b.onclick=()=>{ if(confirm("Gruppe mit allen Texten und Bildern löschen?")){ const g=b.dataset.gweg; R(`bild/${proj}/${g}`).remove(); R("p/"+proj).update({[`gruppen/${g}`]:null,[`text/${g}`]:null,[`bilder/${g}`]:null,[`korr/${g}`]:null,[`fertig/${g}`]:null,[`sprecher/${g}`]:null}); } });
+    $("#gneu").onclick=()=>{ const n=ids.length+1; let id="g"+n; while(G[id]) id+="x"; R(`p/${proj}/gruppen/${id}`).set({name:"Gruppe "+n, stadt:""}); };
+  }
+  function gruppeKorrigieren(g){
+    bilderLaden(proj,g,()=>male()); const x=D.gruppen[g]; const T=(D.text||{})[g]||{}; const K=(D.korr||{})[g]||{}; const F=(D.fertig||{})[g]||{};
+    const B=Object.entries((D.bilder||{})[g]||{}).filter(([,b])=>b);
+    app.innerHTML=kopf()+`<div class="wrap weit"><div class="card"><div class="row" style="justify-content:space-between"><div><button class="btn sm ghost" id="zur">‹ alle Gruppen</button></div><button class="btn gold" id="zeig">▶ Präsentation zeigen</button></div>
+      <h1 style="margin-top:10px">${esc(x.name)} · ${esc(x.stadt||"(keine Stadt)")}</h1><p class="muted" style="margin:0">${Object.keys(x.mitglieder||{}).map(p=>esc(namen[p]||"?")).join(", ")}</p>
+      <p class="small muted">Schreib den Text richtig in das gelbe Feld. Die Jugendlichen sehen dann, was du geändert hast (rot/grün), und können die Korrektur übernehmen. „✓ Fertig“ = die Folie ist gut.</p></div>
+      ${SEC.map(s=>{ const t=(T[s.id]||{}); const k=K[s.id]||{}; const bil=B.filter(([,b])=>b.sec===s.id); const sp=((D.sprecher||{})[g]||{})[s.id];
+        const neu = t.t && k.ts && t.ts>k.ts && t.t!==k.k;
+        return `<div class="card sec" id="k-${s.id}"><div class="row" style="justify-content:space-between"><h2 style="margin:0"><span>${s.icon}</span>${esc(s.name)}</h2><span>${F[s.id]?`<span class="st fertig">✓ fertig</span>`:k.ts?`<span class="st korr">✎ korrigiert ${datum(k.ts)}</span>`:""}${neu?` <span class="st text">neu geändert</span>`:""}</span></div>
+          <div class="small muted">${t.ts?`${woerter(t.t)} Wörter · ${esc(t.von||"")} · ${datum(t.ts)}`:"noch kein Text"}${sp?` · 🎤 ${esc(namen[sp]||"")}`:""}</div>
+          <div class="zwei" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+            <div><b>Text der Gruppe</b><div class="text" style="min-height:120px">${esc(t.t||"")}</div>${k.k&&k.basis?`<div class="small muted" style="margin-top:6px">Deine letzte Korrektur:</div><div class="diff" style="background:var(--soft)">${diff(k.basis,k.k)}</div>`:""}</div>
+            <div><b>Deine Korrektur</b><textarea data-k="${s.id}" style="min-height:120px;background:var(--gold-2)">${esc(k.k&&!neu?k.k:(t.t||""))}</textarea>
+              <input type="text" data-kom="${s.id}" value="${esc(k.kom||"")}" placeholder="Kommentar, z. B. „Schreibt noch etwas über das Essen.“" style="margin-top:6px">
+              <div class="row" style="margin-top:8px"><button class="btn sm" data-ks="${s.id}">✎ Korrektur senden</button><button class="btn sm ok" data-fertig="${s.id}">${F[s.id]?"✓ fertig (zurücknehmen)":"✓ Fertig"}</button></div></div></div>
+          <div class="bilder">${bil.map(([bid,b])=>`<div class="bild">${bildVon(g,bid)?`<img src="${bildVon(g,bid)}" alt="">`:`<div style="height:120px" class="muted small">lädt …</div>`}<button class="x" data-weg="${bid}" title="löschen">✕</button><input type="text" data-cap="${bid}" value="${esc(b.cap||"")}" placeholder="Bildunterschrift"></div>`).join("")}
+            <label class="hoch"><span style="font-size:26px">＋</span>Bild für diese Folie hochladen<input type="file" accept="image/*" multiple data-hoch="${s.id}" class="hidden"></label></div></div>`; }).join("")}</div>`;
+    binden();
+    $("#zur").onclick=()=>{ gOffen=null; male(true); scrollTo(0,0); };
+    $("#zeig").onclick=()=>zeigen(D,g,()=>male(true));
+    $$("[data-ks]").forEach(b=>b.onclick=()=>{ const s=b.dataset.ks; const t=(T[s]||{}).t||""; const kk=$(`[data-k="${s}"]`).value; const kom=$(`[data-kom="${s}"]`).value.trim();
+      R(`p/${proj}/korr/${g}/${s}`).set({k:kk, kom, basis:t, ts:Date.now()}).then(()=>{ toast("✓ Korrektur gesendet"); male(true); }); });
+    $$("[data-fertig]").forEach(b=>b.onclick=()=>{ const s=b.dataset.fertig; R(`p/${proj}/fertig/${g}/${s}`).set(F[s]?null:true); });
+    $$("[data-weg]").forEach(b=>b.onclick=()=>{ if(confirm("Dieses Bild löschen?")) bildLoeschen(proj,g,b.dataset.weg); });
+    $$("[data-cap]").forEach(i=>i.onchange=()=>R(`p/${proj}/bilder/${g}/${i.dataset.cap}/cap`).set(i.value.trim().slice(0,80)));
+    $$("[data-hoch]").forEach(inp=>inp.onchange=async()=>{ for(const f of [...inp.files]){ try{ await bildSpeichern(proj,g,inp.dataset.hoch,f,"Lehrkraft"); }catch(e){ toast(e.message||"Fehler"); } } toast("✓ Bild gespeichert"); });
+  }
+  function alleTexte(){
+    const G=D.gruppen||{};
+    app.innerHTML=kopf()+`<div class="wrap"><div class="card noprint row" style="justify-content:space-between"><b>Alle Texte aller Gruppen</b><button class="btn sm" onclick="print()">🖨️ Drucken / PDF</button></div>
+      ${Object.keys(G).sort().map(g=>`<div class="card"><h2>${esc(G[g].name)} · ${esc(G[g].stadt||"")}</h2><p class="small muted">${Object.keys(G[g].mitglieder||{}).map(p=>esc(namen[p]||"?")).join(", ")}</p>
+        ${SEC.map(s=>{ const t=(((D.text||{})[g]||{})[s.id]||{}).t; return `<h3 style="margin-top:12px">${s.icon} ${esc(s.name)}</h3><div class="text">${esc(t||"–")}</div>`; }).join("")}</div>`).join("")}</div>`;
+    binden();
+  }
+}
+
+/* ---------- nur Beamer: stadt.html?zeigen=GRUPPE ---------- */
+function beamer(gid){
+  let D={}, namen={};
+  LW.ref("public/names").once("value").then(s=>{ namen=s.val()||{}; return R("aktiv").once("value"); }).then(s=>{ const p=s.val(); if(!p){ app.innerHTML=`<div class="wrap"><div class="card">Kein Projekt aktiv.</div></div>`; return; }
+    return Promise.all([R("p/"+p).once("value"), R(`bild/${p}/${gid}`).once("value")]).then(([x,b])=>{ D=x.val()||{}; D._namen=namen; BILD[gid]={}; Object.entries(b.val()||{}).forEach(([k,v])=>BILD[gid][k]=v&&v.d); app.innerHTML=""; zeigen(D,gid,()=>location.href="stadt.html"); }); });
+}
+
+if(!LW.db){ app.innerHTML=`<div class="wrap"><div class="card">Keine Verbindung.</div></div>`; }
+else if(P.get("leitung")) lehrkraft();
+else if(P.get("zeigen")) beamer(P.get("zeigen"));
+else jugendliche();
+</script>
+</body>
+</html>

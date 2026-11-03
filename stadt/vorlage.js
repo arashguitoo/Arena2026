@@ -1,0 +1,52 @@
+/* =========================================================
+   STADT-PRÄSENTATION · Vorlage (Abschnitte = Folien)
+   Für jeden Abschnitt: Leitfragen, Satzanfänge (zum Antippen), Wörter
+   ========================================================= */
+window.STADT_VORLAGE = {
+  titel: "Wir stellen eine Stadt vor",
+  minWoerter: 25,
+  abschnitte: [
+    { id: "titel", icon: "🏙️", name: "Titelfolie", kurz: "Titel",
+      hinweis: "Die erste Folie: Wie heißt eure Stadt? Ein schönes Foto! Ein Satz zur Begrüßung.",
+      fragen: ["Wie heißt eure Stadt?", "In welchem Land liegt sie?", "Wer seid ihr?"],
+      saetze: ["Hallo! Heute stellen wir euch ___ vor.", "Unsere Stadt heißt ___.", "Wir sind ___, ___ und ___."],
+      woerter: [], min: 5 },
+    { id: "lage", icon: "🗺️", name: "Wo liegt die Stadt?", kurz: "Lage",
+      hinweis: "Zeigt eine Karte! Wo ist die Stadt? Wie groß ist sie?",
+      fragen: ["In welchem Land liegt die Stadt?", "Im Norden, Süden, Osten oder Westen?", "Liegt sie am Meer, an einem Fluss oder in den Bergen?", "Wie viele Menschen wohnen dort?"],
+      saetze: ["___ liegt im Norden / Süden / Osten / Westen von ___.", "Die Stadt liegt am Meer / an einem Fluss / in den Bergen.", "In ___ wohnen ungefähr ___ Menschen.", "___ ist die Hauptstadt von ___.", "Die nächste große Stadt ist ___."],
+      woerter: ["der Norden", "der Süden", "der Osten", "der Westen", "das Land", "die Hauptstadt", "der Fluss", "das Meer", "die Berge", "die Einwohner (Pl.)", "ungefähr"] },
+    { id: "geschichte", icon: "🏰", name: "Ein bisschen Geschichte", kurz: "Geschichte",
+      hinweis: "Nur 3–4 Sätze! Was war früher? Gibt es eine berühmte Person?",
+      fragen: ["Wie alt ist die Stadt?", "Was ist früher passiert?", "Gibt es eine berühmte Person aus der Stadt?"],
+      saetze: ["Die Stadt ist ungefähr ___ Jahre alt.", "Früher war ___ ein kleines Dorf / eine kleine Stadt.", "Im Jahr ___ hat / ist ___.", "Eine berühmte Person aus ___ ist ___.", "Heute ist ___ eine moderne Stadt."],
+      woerter: ["früher", "heute", "das Jahrhundert", "der König / die Königin", "der Krieg", "bauen – hat gebaut", "berühmt", "alt – älter – am ältesten"] },
+    { id: "sehen", icon: "📸", name: "Sehenswürdigkeiten", kurz: "Sehenswürdigkeiten",
+      hinweis: "Was muss man sehen? Zu jedem Foto ein oder zwei Sätze.",
+      fragen: ["Was ist die bekannteste Sehenswürdigkeit?", "Was kann man noch besichtigen?", "Warum ist das interessant?"],
+      saetze: ["Die bekannteste Sehenswürdigkeit ist ___.", "Man kann ___ besichtigen.", "Dort gibt es einen / eine / ein ___.", "Sehr schön ist auch ___.", "Auf diesem Bild seht ihr ___."],
+      woerter: ["die Kirche", "die Moschee", "das Schloss", "die Burg", "das Museum", "der Turm", "die Brücke", "der Markt", "der Park", "die Altstadt", "besichtigen"] },
+    { id: "essen", icon: "🍽️", name: "Essen und Trinken", kurz: "Essen",
+      hinweis: "Was isst und trinkt man dort? Was empfehlt ihr?",
+      fragen: ["Was ist typisch für die Stadt?", "Was isst man dort gern?", "Was empfehlt ihr?"],
+      saetze: ["Typisch für ___ ist ___.", "Man isst dort gern ___.", "Wir empfehlen ___, weil es sehr lecker ist.", "___ schmeckt süß / scharf / salzig.", "Man trinkt dort oft ___."],
+      woerter: ["typisch", "lecker", "süß", "scharf", "salzig", "das Gericht", "die Spezialität", "das Restaurant", "der Markt", "empfehlen"] },
+    { id: "freizeit", icon: "⚽", name: "Freizeit und Leben", kurz: "Freizeit",
+      hinweis: "Was können junge Leute dort machen? Wie ist das Wetter?",
+      fragen: ["Was können junge Leute dort machen?", "Was kann man im Sommer / im Winter machen?", "Wie ist das Wetter?"],
+      saetze: ["Junge Leute können dort ___.", "Im Sommer kann man ___.", "Im Winter ist es ___.", "Es gibt viele ___.", "Am Wochenende ___."],
+      woerter: ["die Freizeit", "das Stadion", "das Kino", "das Schwimmbad", "der Strand", "einkaufen gehen", "spazieren gehen", "warm", "kalt", "regnen"] },
+    { id: "meinung", icon: "💬", name: "Unsere Meinung", kurz: "Meinung",
+      hinweis: "Was findet ihr gut? Was nicht so gut? Benutzt „weil“!",
+      fragen: ["Was gefällt euch?", "Was findet ihr nicht so gut?", "Möchtet ihr dort wohnen oder Urlaub machen? Warum?"],
+      saetze: ["Uns gefällt ___, weil ___.", "Wir finden ___ toll / interessant / langweilig.", "Nicht so gut finden wir ___.", "Wir möchten ___ besuchen, weil ___.", "Wir empfehlen die Stadt für ___."],
+      woerter: ["gefallen – gefällt", "finden", "interessant", "schön", "laut", "ruhig", "teuer", "weil … (Verb am Ende)"] },
+    { id: "ende", icon: "👋", name: "Schluss", kurz: "Schluss",
+      hinweis: "Bedankt euch und fragt nach Fragen. Woher habt ihr eure Informationen?",
+      fragen: ["Was ist das Wichtigste über eure Stadt? (ein Satz)", "Woher habt ihr die Informationen und Bilder?"],
+      saetze: ["Zum Schluss: ___ ist eine ___ Stadt.", "Vielen Dank für eure Aufmerksamkeit!", "Habt ihr Fragen?", "Unsere Informationen sind von ___."],
+      woerter: [], min: 8 }
+  ],
+  vortrag: ["Heute stellen wir euch ___ vor.", "Zuerst erzählen wir etwas über ___.", "Danach / Dann zeigen wir euch ___.", "Jetzt erzählt euch ___ etwas über ___.", "Hier seht ihr ___. / Auf diesem Bild sieht man ___.", "Zum Schluss ___.", "Vielen Dank! Habt ihr Fragen?"],
+  tipps: ["Schreibt kurze Sätze: ein Satz – eine Information.", "Jede Person spricht einen Teil.", "Lest nicht nur ab – schaut die Klasse an!", "Zu jedem Bild: Was sieht man?", "Lernt schwierige Wörter vorher: Sprecht sie laut!"]
+};

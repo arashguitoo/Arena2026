@@ -330,6 +330,7 @@ function ueben(W){
         <span class="bar"><i style="width:${f/us.length*100}%"></i></span><span class="small muted">${f} von ${us.length} diesen Monat${nie?` · <span style="color:var(--acc);font-weight:800">${nie} neu</span>`:""}</span></span><span class="pf">›</span></button>`; }).join("");
     return `<a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training · Prüfungsvorbereitung</h3><span>Hören · Lesen · Schreiben · Sprechen – im Format der Prüfung.</span></span></a>
     <a class="card dtz" href="schreiben.html" style="background:linear-gradient(135deg,#5B21B6,#7C3AED)"><span class="gross">✍️</span><span><h3>Schreibwerkstatt B1</h3><span>E-Mails und Briefe wie im DTZ – deine Lehrkraft korrigiert persönlich. Bis 20 Punkte pro Text.</span></span></a>
+    <a class="card dtz" href="stadt.html" style="background:linear-gradient(135deg,#0F766E,#14A37F)"><span class="gross">🏙️</span><span><h3>Stadt-Präsentation</h3><span>Stellt in eurer Gruppe eine Stadt vor: Folie für Folie, mit Satzanfängen und euren Bildern.</span></span></a>
       <div class="chips">${chips.map(([id,t])=>`<button class="chip ${filter===id?"on":""}" data-filter="${id}">${esc(t)}</button>`).join("")}</div>
       <div class="sek" style="margin-top:8px"><h2>📚 Lernpfad</h2></div><div class="pfad">${pfad}</div>`;
   }
@@ -341,6 +342,7 @@ function ueben(W){
       <div class="liste">${us.map(u=>ueKarte(u,W,alle)).join("")}</div>`; }).join("");
   return `<a class="card dtz" href="dtz.html"><span class="gross">🎓</span><span><h3>DTZ-Training · Prüfungsvorbereitung</h3><span>Hören · Lesen · Schreiben · Sprechen – im Format der Prüfung.</span></span></a>
     <a class="card dtz" href="schreiben.html" style="background:linear-gradient(135deg,#5B21B6,#7C3AED)"><span class="gross">✍️</span><span><h3>Schreibwerkstatt B1</h3><span>E-Mails und Briefe wie im DTZ – deine Lehrkraft korrigiert persönlich. Bis 20 Punkte pro Text.</span></span></a>
+    <a class="card dtz" href="stadt.html" style="background:linear-gradient(135deg,#0F766E,#14A37F)"><span class="gross">🏙️</span><span><h3>Stadt-Präsentation</h3><span>Stellt in eurer Gruppe eine Stadt vor: Folie für Folie, mit Satzanfängen und euren Bildern.</span></span></a>
     <div class="chips">${chips.map(([id,t])=>`<button class="chip ${filter===id?"on":""}" data-filter="${id}">${esc(t)}</button>`).join("")}</div>
     <p class="small muted" style="margin:4px 2px">Für die Monatswertung zählt bei jeder Übung dein <b>bester Versuch</b> in diesem Monat. Rechts siehst du deinen Monats-Bestwert.</p>
     ${teile||`<div class="leer">Hier ist nichts mehr offen – super! 🎉</div>`}`;
