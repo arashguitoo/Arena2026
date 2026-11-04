@@ -228,6 +228,9 @@ main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
 .tafel-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;align-items:start}
 @media (max-width:820px){ .tafel-grid{grid-template-columns:1fr} }
 .small{font-size:14px}
+.frage-kopf{font-weight:800;font-size:17px;margin-bottom:6px;color:var(--board)}
+.hinweise{background:#EEF2FF;border-radius:12px;padding:8px 12px;margin:0 0 8px;font-size:16px;line-height:1.5}
+.hinweise div{font-weight:600}
 
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -516,10 +519,13 @@ function planSVG(plan, o){ // o: {pos, dir, ziel, spur:[{x,y}], klick:true, gros
 const SPIELE = {
   navi:{key:"l12-stadt-navi", nr:1, icon:"🧭", title:"Stadt-Navi", thema:"links · rechts · geradeaus", color:"#3B4FD8", run:spielNavi, timer:true,
     text:"Steuer deine Figur durch die Stadt: Geh links! Geh geradeaus! Wie viele Ziele schaffst du?",
-    rules:["Die blaue Figur ist DU. Der Pfeil zeigt, wohin du schaust.","Links und rechts – immer von der Figur aus gesehen!","Geh zum Ziel (rot). Dann kommt das nächste Ziel.","Du hast 2 Minuten. Kurze Wege = Bonus."]},
+    rules:["Vor jedem Ziel: 3 Fragen. Wo liegt das Ziel? (Dativ) Wohin gehst du? (Akkusativ)","Die blaue Figur ist DU. Der Pfeil zeigt, wohin du schaust.","Links und rechts – immer von der Figur aus gesehen!","Geh zum Ziel (rot). Du hast 3 Minuten. Kurze Wege = Bonus."]},
   weg:{key:"l12-wegbeschreibung", nr:2, icon:"🗺️", title:"Weg-Rätsel", thema:"Wegbeschreibung & Wo? + Dativ", color:"#0E7490", run:spielWeg,
     text:"Lies den Weg und finde heraus: Wo bist du jetzt? Im Kino? Am Dom?",
     rules:["Du siehst einen Stadtplan und einen Weg.","Folge dem Weg im Kopf – links und rechts von der Figur aus.","Jeder Satz = bis zur nächsten Kreuzung.","Wo bist du am Ende? Wähle die richtige Antwort.","8 Wege."]},
+  wechsel:{key:"l12-wo-wohin", nr:11, icon:"🔀", title:"Wo oder wohin?", thema:"Wechselpräpositionen", color:"#9333EA", run:spielWechsel, timer:true,
+    text:"60 Sekunden: Ich gehe in den Park – ich sitze im Park. Akkusativ oder Dativ?",
+    rules:["Wohin? (Bewegung, Ziel) → Akkusativ: in den Park, ins Kino, an die Wand","Wo? (Ort, keine Bewegung) → Dativ: im Park, am Meer, an der Wand","in, an, auf, vor, hinter, neben, über, unter, zwischen","Du hast 60 Sekunden."]},
   mit:{key:"l12-mit-dem", nr:3, icon:"🚆", title:"Verkehrs-Blitz", thema:"mit + Dativ", color:"#DC2626", run:spielMit, timer:true,
     text:"45 Sekunden: mit dem Zug, mit der U-Bahn – oder zu Fuß?",
     rules:["Du siehst ein Verkehrsmittel.","Wähle: mit dem, mit der oder mit den?","der/das → dem · die → der · Plural → den (+n)","Du hast 45 Sekunden."]},
@@ -548,38 +554,52 @@ const SPIELE = {
 const BEREICH_KURZ = "L12";
 const PARAM = new URLSearchParams(location.search).get("spiel");
 const SPIEL = SPIELE[PARAM] || null;
-const MENU_TEXT = "Zehn Spiele zu Lektion 12: Stadtplan und Wegbeschreibung, Verkehrsmittel mit Dativ, von – nach – zu, Wo? im/am, Imperativ, Bahnhof und ein Stadtporträt. Jedes Spiel bringt Punkte für deine Monatswertung.";
+const MENU_TEXT = "Elf Spiele zu Lektion 12: Stadtplan und Wegbeschreibung, Wechselpräpositionen, Verkehrsmittel mit Dativ, von – nach – zu, Wo? im/am, Imperativ, Bahnhof und ein Stadtporträt. Jedes Spiel bringt Punkte für deine Monatswertung.";
 const HALLE_TITEL = "Unterwegs";
 const HALLE_SUB = "Lernwelt · Deutsch A1 · Unterwegs";
 
 /* 1 · Stadt-Navi */
 function spielNavi(area, finish){
-  const ZEIT=120, ZIEL=6; const plan=neuerPlan();
+  const ZEIT=180, ZIEL=4; const plan=neuerPlan();
   const mitOrt=plan.knoten.filter(n=>n.ort);
-  let start=mitOrt[rnd(mitOrt.length)]; let pos={x:start.x,y:start.y}, dir=0, ziel=null, schritte=0, optimal=0, geschafft=0, bonus=0, spur=[], locked=false;
+  let start=mitOrt[rnd(mitOrt.length)]; let pos={x:start.x,y:start.y}, dir=0, ziel=null, schritte=0, optimal=0, geschafft=0, bonus=0, richtig=0, spur=[], locked=false, fragen=[], fi=0, hinweise=[];
   function neuesZiel(){ const kand=mitOrt.filter(n=>(n.x!==pos.x||n.y!==pos.y) && Math.abs(n.x-pos.x)+Math.abs(n.y-pos.y)>=2);
-    const z=kand[rnd(kand.length)]; ziel={x:z.x,y:z.y,ort:z.ort}; schritte=0; optimal=kuerzester(plan,pos,dir,ziel); spur=[{...pos}]; }
-  area.innerHTML = hud(`<span class="pill">🎯<b id="nv-ok">0</b></span><span class="pill">⭐<b id="nv-bonus">0</b></span><div class="grow timer" id="nv-timer"><i style="width:100%"></i></div><span class="pill"><b id="nv-sec">${ZEIT}</b></span>`)
-    + `<div class="stage"><div class="flash"></div><div class="ziel-zeile" id="nv-ziel"></div><div id="nv-plan"></div>
-       <div class="steuer"><button class="sbtn" data-b="l">⬅️<span>Geh links!</span></button><button class="sbtn" data-b="g">⬆️<span>Geh geradeaus!</span></button><button class="sbtn" data-b="r">➡️<span>Geh rechts!</span></button></div>
-       <div style="text-align:center"><button class="sbtn klein" data-b="z">↩️ <span>Dreh um und geh zurück!</span></button></div>
-       <div class="tip" id="nv-tip"></div></div>`;
-  function mal(){ $("#nv-plan").innerHTML=planSVG(plan,{pos,dir,ziel,spur});
-    $("#nv-ziel").innerHTML=`Geh <b>${zuForm(ziel.ort)} ${esc(ziel.ort.n)}</b> ${ziel.ort.e} <span class="muted">· Schritte: ${schritte}</span>`; }
-  area.querySelector(".steuer").parentElement.addEventListener("click", e=>{
-    const b=e.target.closest(".sbtn"); if(!b||locked) return;
+    const z=kand[rnd(kand.length)]; ziel={x:z.x,y:z.y,ort:z.ort}; schritte=0; optimal=kuerzester(plan,pos,dir,ziel); spur=[{...pos}];
+    fragen=zielFragen(plan,z); fi=0; hinweise=[]; }
+  area.innerHTML = hud(`<span class="pill">🎯<b id="nv-ok">0</b></span><span class="pill">✓<b id="nv-r">0</b></span><span class="pill">⭐<b id="nv-bonus">0</b></span><div class="grow timer" id="nv-timer"><i style="width:100%"></i></div><span class="pill"><b id="nv-sec">${ZEIT}</b></span>`)
+    + `<div class="stage"><div class="flash"></div><div id="nv-oben"></div><div id="nv-plan"></div><div id="nv-unten"></div><div class="tip" id="nv-tip"></div></div>`;
+  const steuer=`<div class="steuer"><button class="sbtn" data-b="l">⬅️<span>Geh links!</span></button><button class="sbtn" data-b="g">⬆️<span>Geh geradeaus!</span></button><button class="sbtn" data-b="r">➡️<span>Geh rechts!</span></button></div>
+       <div style="text-align:center"><button class="sbtn klein" data-b="z">↩️ <span>Dreh um und geh zurück!</span></button></div>`;
+  function mal(){
+    const fragt = fi<fragen.length;
+    $("#nv-plan").innerHTML=planSVG(plan,{pos,dir,ziel:fragt?null:ziel,spur});
+    const hw=hinweise.length?`<div class="hinweise">${hinweise.map(h=>`<div>✓ ${esc(h)}</div>`).join("")}</div>`:"";
+    if(fragt){ const f=fragen[fi];
+      $("#nv-oben").innerHTML=`<div class="frage-kopf">❓ Frage ${fi+1} von ${fragen.length} · ${esc(f.frage)}</div>${hw}`;
+      $("#nv-unten").innerHTML=`<div class="prompt" style="margin:4px 0 10px"><span class="hint" style="font-weight:800">${esc(f.hint)}</span><span class="big" style="font-size:clamp(22px,5.8vw,30px)">${esc(f.satz).replace("___",'<span class="gap">&nbsp;</span>')}</span>${f.karte?`<span class="hint">über = auf der Karte darüber · unter = darunter</span>`:""}</div>
+        <div class="opts" id="nv-opts">${f.o.map(o=>`<button class="opt" data-v="${esc(o)}" style="font-size:22px">${esc(o)}</button>`).join("")}</div>`; }
+    else { $("#nv-oben").innerHTML=`<div class="ziel-zeile">Geh ${zuForm(ziel.ort)} <b>${esc(ziel.ort.n)}</b> ${ziel.ort.e} <span class="muted">· Schritte: ${schritte}</span></div>${hw}`;
+      if(!$("#nv-unten .steuer")) $("#nv-unten").innerHTML=steuer; }
+  }
+  area.addEventListener("click", e=>{
+    const o=e.target.closest("#nv-opts .opt");
+    if(o && !locked){ const f=fragen[fi]; const ok=o.dataset.v===f.ok; locked=true; const tip=$("#nv-tip");
+      o.classList.add(ok?"right":"wrong"); if(!ok){ const c=[...area.querySelectorAll("#nv-opts .opt")].find(x=>x.dataset.v===f.ok); if(c) c.classList.add("right"); }
+      if(ok){ richtig++; $("#nv-r").textContent=richtig; } tip.className="tip "+(ok?"ok":"bad"); tip.textContent=ok?"Richtig!":f.fertig; flash(area.querySelector(".stage"), ok);
+      setTimeout(()=>{ hinweise.push(f.fertig); fi++; locked=false; tip.textContent=""; mal(); }, ok?700:1900); return; }
+    const b=e.target.closest(".sbtn"); if(!b||locked||fi<fragen.length) return;
     const s=gehe(plan,pos,dir,b.dataset.b); const tip=$("#nv-tip");
-    if(!s){ tip.className="tip bad"; tip.textContent="Stopp! Da ist keine Straße."; const st=area.querySelector(".stage"); st.classList.add("shake"); setTimeout(()=>st.classList.remove("shake"),260); if(b.dataset.b==="l"||b.dataset.b==="r"){} return; }
+    if(!s){ tip.className="tip bad"; tip.textContent="Stopp! Da ist keine Straße."; const st=area.querySelector(".stage"); st.classList.add("shake"); setTimeout(()=>st.classList.remove("shake"),260); return; }
     pos=s.pos; dir=s.dir; schritte++; spur.push({...pos}); tip.className="tip"; tip.textContent="";
     if(pos.x===ziel.x&&pos.y===ziel.y){ geschafft++; locked=true; const extra = schritte<=optimal ? 1 : 0; bonus+=extra;
       $("#nv-ok").textContent=geschafft; $("#nv-bonus").textContent=bonus; mal();
-      tip.className="tip ok"; tip.textContent=`✓ Super! Du bist jetzt ${woSatz(ziel.ort)}.${extra?" Kürzester Weg! ⭐":""}`; flash(area.querySelector(".stage"), true);
-      setTimeout(()=>{ neuesZiel(); mal(); locked=false; }, 1300); return; }
+      tip.className="tip ok"; tip.textContent=`✓ Super! Du bist jetzt ${woWP(ziel.ort)}.${extra?" Kürzester Weg! ⭐":""}`; flash(area.querySelector(".stage"), true);
+      setTimeout(()=>{ neuesZiel(); $("#nv-unten").innerHTML=""; mal(); locked=false; tip.textContent=""; }, 1600); return; }
     mal();
   });
   neuesZiel(); mal();
   makeTimer(ZEIT, (sec,frac)=>{ const t=$("#nv-timer"); if(!t) return; t.firstElementChild.style.width=(frac*100)+"%"; t.classList.toggle("low", sec<15); $("#nv-sec").textContent=Math.ceil(sec); },
-    ()=>{ locked=true; finish(Math.min(1,(geschafft+bonus*0.5)/ZIEL), `${geschafft} Ziele erreicht, ${bonus}× kürzester Weg`); });
+    ()=>{ locked=true; finish(Math.min(1,(geschafft*2+richtig+bonus*0.5)/(ZIEL*2+ZIEL*3)), `${geschafft} Ziele, ${richtig} Fragen richtig, ${bonus}× kürzester Weg`); });
 }
 
 /* 2 · Wegbeschreibung */
@@ -753,6 +773,78 @@ const DE_KARTE = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 380">
 <circle cx="50" cy="180" r="4" fill="#E2483D"/><text x="58" y="176">Düsseldorf</text>
 <circle cx="185" cy="320" r="5" fill="#E2483D"/><text x="160" y="340">München</text>
 <circle cx="75" cy="330" r="5" fill="#E2483D"/><text x="84" y="334">Freiburg</text></g></svg>`;
+
+/* ==========================================================
+   WECHSELPRÄPOSITIONEN – Wo? (Dativ) · Wohin? (Akkusativ)
+   ========================================================== */
+const WP = {bahnhof:"in", rathaus:"in", dom:"in", cafe:"in", kino:"in", museum:"in", apotheke:"in", bank:"in", post:"in", supermarkt:"in", park:"in", schule:"in", hafen:"an", haltestelle:"an", markt:"auf", reise:"in"};
+const DAT_ART={m:"dem", f:"der", n:"dem"}, AKK_ART={m:"den", f:"die", n:"das"};
+function datForm(prep,g){ const a=DAT_ART[g]; if(a==="dem" && prep==="in") return "im"; if(a==="dem" && prep==="an") return "am"; return `${prep} ${a}`; }
+function akkForm(prep,g){ const a=AKK_ART[g]; if(a==="das" && prep==="in") return "ins"; if(a==="das" && prep==="an") return "ans"; return `${prep} ${a}`; }
+const andereG = g => g==="f" ? "m" : "f";
+function optsDat(prep,g){ return [...new Set([datForm(prep,g), akkForm(prep,g), datForm(prep,andereG(g))])]; }
+function optsAkk(prep,g){ return [...new Set([akkForm(prep,g), datForm(prep,g), akkForm(prep,andereG(g))])]; }
+const nameMitArt = o => `${artNom(o.g)} ${o.n}`;
+
+/* Drei Fragen zum Ziel: zwei Hinweise „Wo liegt es?“ (Dativ) + „Wohin gehen wir?“ (Akkusativ) */
+function zielFragen(plan, z){
+  const at=(x,y)=>{ const k=plan.an(x,y); return k&&k.ort ? k.ort : null; };
+  const H=[];
+  const l=at(z.x-1,z.y), r=at(z.x+1,z.y), o=at(z.x,z.y-1), u=at(z.x,z.y+1);
+  if(l&&r) H.push({prep:"zwischen", a:l, b:r});
+  if(o&&u) H.push({prep:"zwischen", a:o, b:u});
+  [l,r].filter(Boolean).forEach(x=>H.push({prep:"neben", a:x}));
+  if(u) H.push({prep:"über", a:u});
+  if(o) H.push({prep:"unter", a:o});
+  const gewaehlt=[]; const zw=H.find(h=>h.prep==="zwischen"); if(zw) gewaehlt.push(zw);
+  shuffle(H).forEach(h=>{ if(gewaehlt.length<2 && !gewaehlt.includes(h) && !gewaehlt.some(g=>g.prep===h.prep || g.a===h.a || g.b===h.a || (h.b&&(g.a===h.b||g.b===h.b)))) gewaehlt.push(h); });
+  const fragen=gewaehlt.slice(0,2).map((h,i)=>{
+    const zweit = h.b ? ` und ${DAT_ART[h.b.g]} ${h.b.n}` : "";
+    const ok=datForm(h.prep,h.a.g);
+    return {art:"wo", nr:i+1, frage:`Hinweis ${i+1}: Wo liegt euer Ziel?`, satz:`Es liegt ___ ${h.a.n}${zweit}.`, hint:`Wo? → Dativ · (${nameMitArt(h.a)})`, ok, o:shuffle(optsDat(h.prep,h.a.g)),
+      fertig:`Es liegt ${ok} ${h.a.n}${zweit}.`, karte:h.prep==="über"||h.prep==="unter"};
+  });
+  const wp=WP[z.ort.id]||"in"; const ok=akkForm(wp,z.ort.g);
+  fragen.push({art:"wohin", nr:fragen.length+1, frage:`Wohin geht ihr? Das Ziel ist ${nameMitArt(z.ort)} ${z.ort.e}`, satz:`Wir gehen ___ ${z.ort.n}.`, hint:`Wohin? → Akkusativ`, ok, o:shuffle(optsAkk(wp,z.ort.g)),
+    fertig:`Wir gehen ${ok} ${z.ort.n}.`});
+  return fragen;
+}
+const woWP = o => `${datForm(WP[o.id]||"in", o.g)} ${o.n}`;
+
+/* Wo oder wohin? – Sätze (prep, Nomen, Genus, Wohin-Satz, Wo-Satz) */
+const WECHSEL = [
+  {p:"in", n:"Park", g:"m", akk:"Ich gehe ___ Park.", dat:"Wir sitzen ___ Park.", e:"🌳"},
+  {p:"in", n:"Kino", g:"n", akk:"Wir gehen heute ___ Kino.", dat:"Ich bin gerade ___ Kino.", e:"🎬"},
+  {p:"in", n:"Stadt", g:"f", akk:"Wir fahren ___ Stadt.", dat:"Wir wohnen ___ Stadt.", e:"🏙️"},
+  {p:"in", n:"Apotheke", g:"f", akk:"Lina geht ___ Apotheke.", dat:"Lina ist ___ Apotheke.", e:"💊"},
+  {p:"an", n:"Haltestelle", g:"f", akk:"Ich gehe ___ Haltestelle.", dat:"Ich warte ___ Haltestelle.", e:"🚏"},
+  {p:"an", n:"Meer", g:"n", akk:"Im Sommer fahren wir ___ Meer.", dat:"Im Sommer sind wir ___ Meer.", e:"🌊"},
+  {p:"an", n:"Wand", g:"f", akk:"Ich hänge den Stadtplan ___ Wand.", dat:"Der Stadtplan hängt ___ Wand.", e:"🗺️"},
+  {p:"auf", n:"Tisch", g:"m", akk:"Leg die Fahrkarte ___ Tisch!", dat:"Die Fahrkarte liegt ___ Tisch.", e:"🎫"},
+  {p:"auf", n:"Marktplatz", g:"m", akk:"Wir gehen ___ Marktplatz.", dat:"Wir treffen uns ___ Marktplatz.", e:"🧺"},
+  {p:"vor", n:"Bahnhof", g:"m", akk:"Ich stelle das Fahrrad ___ Bahnhof.", dat:"Das Fahrrad steht ___ Bahnhof.", e:"🚲"},
+  {p:"vor", n:"Rathaus", g:"n", akk:"Der Bus fährt ___ Rathaus.", dat:"Der Bus hält ___ Rathaus.", e:"🚌"},
+  {p:"hinter", n:"Haus", g:"n", akk:"Stell das Auto ___ Haus!", dat:"Das Auto steht ___ Haus.", e:"🚗"},
+  {p:"neben", n:"Stuhl", g:"m", akk:"Leg den Rucksack ___ Stuhl!", dat:"Der Rucksack liegt ___ Stuhl.", e:"🎒"},
+  {p:"neben", n:"Bank", g:"f", akk:"Sie bauen das Café ___ Bank.", dat:"Das Café ist ___ Bank.", e:"☕"},
+  {p:"unter", n:"Auto", g:"n", akk:"Die Katze läuft ___ Auto.", dat:"Die Katze schläft ___ Auto.", e:"🐈"},
+  {p:"über", n:"Tisch", g:"m", akk:"Ich hänge die Lampe ___ Tisch.", dat:"Die Lampe hängt ___ Tisch.", e:"💡"},
+  {p:"zwischen", n:"Kino", g:"n", akk:"Stell das Fahrrad ___ Kino und die Post!", dat:"Das Fahrrad steht ___ Kino und der Post.", e:"🚲"},
+  {p:"in", n:"Zug", g:"m", akk:"Steig schnell ___ Zug!", dat:"Ich sitze schon ___ Zug.", e:"🚆"}
+];
+function spielWechsel(area, finish){
+  sprint(area, {seconds:60, target:14, cols:"three", badDelay:2000,
+    next:ohneWiederholung(()=>{
+      const x=WECHSEL[rnd(WECHSEL.length)], wohin=rnd(2)===0;
+      const ok = wohin ? akkForm(x.p,x.g) : datForm(x.p,x.g);
+      const opts = wohin ? optsAkk(x.p,x.g) : optsDat(x.p,x.g);
+      const satz = (wohin?x.akk:x.dat);
+      return {key:x.n+wohin, ok, tip:`${wohin?"Wohin? → Akkusativ":"Wo? → Dativ"}: ${satz.replace("___",ok)}`,
+        prompt:`<span class="emo pop">${x.e}</span><span class="hint" style="font-weight:800;color:${wohin?"#E2483D":"#3B4FD8"}">${wohin?"➡️ Wohin? (Akkusativ)":"📍 Wo? (Dativ)"} · ${esc(x.p)} · ${artNom(x.g)} ${esc(x.n)}</span><span class="big pop" style="font-size:clamp(22px,5.8vw,30px)">${esc(satz).replace("___",'<span class="gap">&nbsp;</span>')}</span>`,
+        options:shuffle(opts).map(o=>({v:o,label:esc(o)}))};
+    })
+  }, finish);
+}
 
 /* ---------- Bausteine ---------- */
 function hud(extra){ return `<div class="hud">${extra}</div>`; }
@@ -1117,56 +1209,77 @@ function spielen(){
    ========================================================== */
 function tafelNavi(){
   document.documentElement.style.setProperty("--accent","#3B4FD8");
-  document.querySelector("main").style.maxWidth="1200px";
+  document.querySelector("main").style.maxWidth="1240px";
   const head=$("#head"); if(head) head.remove();
   ["scr-menu","scr-loading","scr-code","scr-block","scr-start","scr-game","scr-end"].forEach(id=>{ const e=document.getElementById(id); if(e) e.classList.add("hidden"); });
   const box=document.createElement("section"); document.querySelector("main").appendChild(box);
   let teams=[{n:"Team A",p:0},{n:"Team B",p:0}], aktiv=0, runde=1, plan=null, pos=null, dir=0, ziel=null, optimal=0, schritte=0, spur=[], fertig=false, abstand=4, gesagt=[];
+  let fragen=[], fi=0, hinweise=[], antwort=null, rundePunkte=0, msg="", msgCls="";
   const FARBEN=["#3B4FD8","#E2483D","#14A37F","#E9800E"];
   function setup(){
-    box.innerHTML=`<div class="card"><h2>🧭 Navi-Duell</h2><p>Ohne Handys: Die Teams führen die blaue Figur mit Befehlen auf Deutsch zum Ziel. <b>Eine Person pro Team spricht</b> – jede Runde eine andere. Du klickst, was gesagt wird.</p>
-      <p><b>Punkte:</b> kürzester Weg = 3 · bis 2 Schritte mehr = 2 · sonst 1. Ein falscher Befehl („Stopp! Keine Straße“) zählt als Schritt.</p>
-      <div id="t-namen" class="stack" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">${teams.map((t,i)=>`<input class="tname" data-i="${i}" value="${esc(t.n)}" style="min-height:48px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;font-size:18px;border-left:8px solid ${FARBEN[i]}">`).join("")}</div>
+    box.innerHTML=`<div class="card"><h2>🧭 Navi-Duell</h2><p>Ohne Handys. Jede Runde spielt ein Team:</p>
+      <ol style="margin:0 0 10px;padding-left:22px;font-size:18px;line-height:1.6">
+        <li><b>3 Fragen</b> beantworten: Wo liegt das Ziel? (Dativ: <i>zwischen dem Kino und der Post</i>) und Wohin geht ihr? (Akkusativ: <i>in die Apotheke</i>). Jede richtige Antwort = 1 Punkt.</li>
+        <li>Die Figur <b>mit Befehlen auf Deutsch</b> zum Ziel führen: „Geh links!“ – du klickst. Kürzester Weg = 3 Punkte · bis 2 Schritte mehr = 2 · sonst 1.</li></ol>
+      <p><b>Eine Person pro Team spricht</b> – jede Runde eine andere. Pfeiltasten: ← links · ↑ geradeaus · → rechts · ↓ umdrehen. Tasten 1/2/3 = Antwort A/B/C.</p>
+      <div class="stack" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">${teams.map((t,i)=>`<input class="tname" data-i="${i}" value="${esc(t.n)}" style="min-height:48px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;font-size:18px;border-left:8px solid ${FARBEN[i]}">`).join("")}</div>
       <div class="stack" style="grid-template-columns:repeat(3,1fr)"><button class="btn ghost" id="t-minus" ${teams.length<=2?"disabled":""}>– Team</button><button class="btn ghost" id="t-plus" ${teams.length>=4?"disabled":""}>+ Team</button><button class="btn led" id="t-los">▶ Los geht’s</button></div></div>`;
     box.querySelectorAll(".tname").forEach(i=>i.oninput=()=>teams[+i.dataset.i].n=i.value.trim()||("Team "+"ABCD"[+i.dataset.i]));
     $("#t-minus").onclick=()=>{ teams.pop(); setup(); }; $("#t-plus").onclick=()=>{ teams.push({n:"Team "+"ABCD"[teams.length],p:0}); setup(); };
     $("#t-los").onclick=()=>{ plan=neuerPlan(); neueRunde(); };
   }
   function neueRunde(){
-    const mitOrt=plan.knoten.filter(n=>n.ort); let guard=0;
-    do{ const s=mitOrt[rnd(mitOrt.length)], z=mitOrt[rnd(mitOrt.length)]; pos={x:s.x,y:s.y}; dir=rnd(4); ziel={x:z.x,y:z.y,ort:z.ort}; optimal=kuerzester(plan,pos,dir,ziel); }
-    while((optimal!==abstand || (pos.x===ziel.x&&pos.y===ziel.y)) && guard++<400);
-    schritte=0; spur=[{...pos}]; fertig=false; gesagt=[]; mal("");
+    const mitOrt=plan.knoten.filter(n=>n.ort); let guard=0, zk=null;
+    do{ const s=mitOrt[rnd(mitOrt.length)]; zk=mitOrt[rnd(mitOrt.length)]; pos={x:s.x,y:s.y}; dir=rnd(4); ziel={x:zk.x,y:zk.y,ort:zk.ort}; optimal=kuerzester(plan,pos,dir,ziel); }
+    while((optimal!==abstand || (pos.x===ziel.x&&pos.y===ziel.y) || zielFragen(plan,zk).length<3) && guard++<600);
+    fragen=zielFragen(plan,zk); fi=0; hinweise=[]; antwort=null; rundePunkte=0;
+    schritte=0; spur=[{...pos}]; fertig=false; gesagt=[]; msg=""; msgCls=""; mal();
   }
-  function mal(msg, cls){
-    const t=teams[aktiv];
-    box.innerHTML=`<div class="tafel-grid"><div>${planSVG(plan,{pos,dir,ziel,spur})}</div>
-      <div><div class="card" style="border-left:10px solid ${FARBEN[aktiv]}"><div class="muted" style="font-weight:700">Runde ${runde} · jetzt spielt</div><h2 style="font-size:44px;color:${FARBEN[aktiv]}">${esc(t.n)}</h2>
-        <div class="ziel-zeile" style="text-align:left">Ziel: <b>${zuForm(ziel.ort)} ${esc(ziel.ort.n)}</b> ${ziel.ort.e}</div>
+  function mal(){
+    const t=teams[aktiv], fragt=fi<fragen.length;
+    let rechts=`<div class="card" style="border-left:10px solid ${FARBEN[aktiv]}"><div class="muted" style="font-weight:700">Runde ${runde} · jetzt spielt</div><h2 style="font-size:44px;color:${FARBEN[aktiv]}">${esc(t.n)}</h2>`;
+    if(hinweise.length) rechts+=`<div class="hinweise" style="font-size:19px">${hinweise.map(h=>`<div>✓ ${esc(h)}</div>`).join("")}</div>`;
+    if(fragt){ const f=fragen[fi];
+      rechts+=`<div class="frage-kopf" style="font-size:20px">❓ Frage ${fi+1} von ${fragen.length} · ${esc(f.frage)}</div>
+        <div style="font-family:var(--display);font-weight:900;font-size:40px;line-height:1.1;margin:6px 0">${esc(f.satz).replace("___",'<span class="gap">&nbsp;</span>')}</div>
+        <div class="muted" style="font-weight:700;margin-bottom:8px">${esc(f.hint)}${f.karte?" · über/unter = auf der Karte darüber/darunter":""}</div>
+        <div class="opts">${f.o.map((o,k)=>`<button class="opt ${antwort?(o===f.ok?"right":(o===antwort?"wrong":"")):""}" data-a="${esc(o)}" style="font-size:30px;text-align:left;padding-left:16px" ${antwort?"disabled":""}><span style="color:var(--muted);margin-right:10px">${"ABC"[k]}</span>${esc(o)}</button>`).join("")}</div>
+        ${antwort?`<div class="tip ${antwort===f.ok?"ok":"bad"}" style="font-size:20px">${antwort===f.ok?"✓ Richtig! +1":"✗ "+esc(f.fertig)}</div><button class="btn led wide" id="t-fweiter">${fi<fragen.length-1?"Nächste Frage ›":"🗺️ Zum Ziel fahren ›"}</button>`:""}`;
+    } else {
+      rechts+=`<div class="ziel-zeile" style="text-align:left">Ziel: <b>${esc(ziel.ort.n)}</b> ${ziel.ort.e}</div>
         <div style="font-size:20px">Schritte: <b style="font-size:30px">${schritte}</b> <span class="muted">(kürzester Weg: ${fertig?optimal:"?"})</span></div>
-        <div class="tip ${cls||""}" style="text-align:left;font-size:20px;min-height:30px">${msg||""}</div>
+        <div class="tip ${msgCls}" style="text-align:left;font-size:20px;min-height:30px">${msg}</div>
         ${fertig?`<button class="btn led wide" id="t-next">Nächstes Team ›</button>`:`<div class="steuer"><button class="sbtn" data-b="l">⬅️<span>Geh links!</span></button><button class="sbtn" data-b="g">⬆️<span>Geh geradeaus!</span></button><button class="sbtn" data-b="r">➡️<span>Geh rechts!</span></button></div>
         <div style="text-align:center"><button class="sbtn klein" data-b="z">↩️ <span>Dreh um!</span></button> <button class="sbtn klein" id="t-skip">⏭ überspringen</button></div>`}
-        <div class="muted small" style="margin-top:8px;font-size:14px">${gesagt.slice(-6).map(x=>`„${x}“`).join(" → ")}</div></div>
-        <div class="card" style="margin-top:12px"><h2 style="font-size:26px">🏆 Punkte</h2>${teams.map((x,i)=>`<div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;padding:4px 0;color:${FARBEN[i]}"><span>${esc(x.n)}</span><span>${x.p}</span></div>`).join("")}
-        <div class="stack" style="grid-template-columns:1fr 1fr"><button class="btn ghost" id="t-neu">🗺️ Neuer Stadtplan</button><button class="btn ghost" id="t-schwer">Weg: ${abstand} Schritte ${abstand<7?"+":"↺"}</button></div></div></div></div>`;
+        <div class="muted" style="margin-top:8px;font-size:14px">${gesagt.slice(-6).map(x=>`„${x}“`).join(" → ")}</div>`;
+    }
+    rechts+=`<div class="muted" style="margin-top:6px;font-weight:700">Diese Runde: +${rundePunkte}</div></div>
+      <div class="card" style="margin-top:12px"><h2 style="font-size:26px">🏆 Punkte</h2>${teams.map((x,i)=>`<div style="display:flex;justify-content:space-between;font-size:22px;font-weight:700;padding:4px 0;color:${FARBEN[i]}"><span>${i===aktiv?"▶ ":""}${esc(x.n)}</span><span>${x.p}</span></div>`).join("")}
+        <div class="stack" style="grid-template-columns:1fr 1fr"><button class="btn ghost" id="t-neu">🗺️ Neuer Stadtplan</button><button class="btn ghost" id="t-schwer">Weg: ${abstand} Schritte ${abstand<7?"+":"↺"}</button></div></div>`;
+    box.innerHTML=`<div class="tafel-grid"><div>${planSVG(plan,{pos,dir,ziel:fragt?null:ziel,spur})}</div><div>${rechts}</div></div>`;
     box.querySelectorAll(".sbtn[data-b]").forEach(b=>b.onclick=()=>befehl(b.dataset.b));
+    box.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>antworten(b.dataset.a));
+    const fw=$("#t-fweiter"); if(fw) fw.onclick=frageWeiter;
     const n=$("#t-next"); if(n) n.onclick=weiter;
-    const sk=$("#t-skip"); if(sk) sk.onclick=()=>{ fertig=true; mal(`Übersprungen – keine Punkte. Kürzester Weg: ${optimal} Schritte.`,"bad"); };
+    const sk=$("#t-skip"); if(sk) sk.onclick=()=>{ fertig=true; msg=`Übersprungen – keine Weg-Punkte. Kürzester Weg: ${optimal} Schritte.`; msgCls="bad"; mal(); };
     $("#t-neu").onclick=()=>{ plan=neuerPlan(); neueRunde(); };
-    $("#t-schwer").onclick=()=>{ abstand = abstand<7 ? abstand+1 : 3; if(!fertig && schritte===0) neueRunde(); else mal(msg,cls); };
+    $("#t-schwer").onclick=()=>{ abstand = abstand<7 ? abstand+1 : 3; if(fi===0 && !antwort) neueRunde(); else mal(); };
   }
+  function antworten(a){ if(antwort || fi>=fragen.length) return; antwort=a; if(a===fragen[fi].ok){ teams[aktiv].p++; rundePunkte++; } mal(); }
+  function frageWeiter(){ if(!antwort) return; hinweise.push(fragen[fi].fertig); fi++; antwort=null; mal(); }
   function befehl(b){
-    if(fertig) return; const s=gehe(plan,pos,dir,b); schritte++;
+    if(fertig || fi<fragen.length) return; const s=gehe(plan,pos,dir,b); schritte++;
     gesagt.push({l:"Geh links!",g:"Geh geradeaus!",r:"Geh rechts!",z:"Dreh um!"}[b]);
-    if(!s){ mal("Stopp! Da ist keine Straße.","bad"); return; }
+    if(!s){ msg="Stopp! Da ist keine Straße."; msgCls="bad"; mal(); return; }
     pos=s.pos; dir=s.dir; spur.push({...pos});
-    if(pos.x===ziel.x&&pos.y===ziel.y){ fertig=true; const p = schritte<=optimal?3 : schritte<=optimal+2?2 : 1; teams[aktiv].p+=p;
-      mal(`✓ Angekommen! Ihr seid ${woSatz(ziel.ort)}. +${p} Punkt${p>1?"e":""}${p===3?" – kürzester Weg! ⭐":""}`,"ok"); return; }
-    mal("");
+    if(pos.x===ziel.x&&pos.y===ziel.y){ fertig=true; const p = schritte<=optimal?3 : schritte<=optimal+2?2 : 1; teams[aktiv].p+=p; rundePunkte+=p;
+      msg=`✓ Angekommen! Sagt laut: „Wir sind jetzt ${woWP(ziel.ort)}.“ +${p}${p===3?" – kürzester Weg! ⭐":""}`; msgCls="ok"; mal(); return; }
+    msg=""; msgCls=""; mal();
   }
   function weiter(){ aktiv=(aktiv+1)%teams.length; if(aktiv===0) runde++; neueRunde(); }
-  document.addEventListener("keydown", e=>{ if(!plan) return; const k={ArrowLeft:"l",ArrowUp:"g",ArrowRight:"r",ArrowDown:"z"}[e.key]; if(k){ e.preventDefault(); befehl(k); } if(e.key==="Enter" && fertig){ weiter(); } });
+  document.addEventListener("keydown", e=>{ if(!plan) return;
+    if(fi<fragen.length){ const k={"1":0,"2":1,"3":2}[e.key]; if(k!==undefined && !antwort){ antworten(fragen[fi].o[k]); return; } if(e.key==="Enter" && antwort){ frageWeiter(); } return; }
+    const k={ArrowLeft:"l",ArrowUp:"g",ArrowRight:"r",ArrowDown:"z"}[e.key]; if(k){ e.preventDefault(); befehl(k); } if(e.key==="Enter" && fertig){ weiter(); } });
   setup();
 }
 

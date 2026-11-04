@@ -53,6 +53,7 @@ window.LW_BEREICHE = [
 window.LW_KATALOG = [
 {"key": "l12-stadt-navi", "titel": "Stadt-Navi", "icon": "🧭", "max": 10, "datei": "a1-unterwegs.html?spiel=navi", "text": "2 Minuten: Steuer deine Figur durch die Stadt – Geh links! Geh geradeaus!", "bereich": "l12", "themen": ["wortschatz", "alltag"], "zeit": true},
 {"key": "l12-wegbeschreibung", "titel": "Weg-Rätsel", "icon": "🗺️", "max": 10, "datei": "a1-unterwegs.html?spiel=weg", "text": "Lies den Weg auf dem Stadtplan: Wo bist du jetzt? Im Kino? Am Dom?", "bereich": "l12", "themen": ["lesen", "dativ"], "zeit": false},
+{"key": "l12-wo-wohin", "titel": "Wo oder wohin?", "icon": "🔀", "max": 10, "datei": "a1-unterwegs.html?spiel=wechsel", "text": "60 Sekunden: Ich gehe in den Park – ich sitze im Park. Akkusativ oder Dativ?", "bereich": "l12", "themen": ["dativ", "akkusativ"], "zeit": true},
 {"key": "l12-mit-dem", "titel": "Verkehrs-Blitz", "icon": "🚆", "max": 10, "datei": "a1-unterwegs.html?spiel=mit", "text": "45 Sekunden: mit dem Zug, mit der U-Bahn – oder zu Fuß?", "bereich": "l12", "themen": ["dativ"], "zeit": true},
 {"key": "l12-von-nach-zu", "titel": "Woher? Wohin?", "icon": "🎯", "max": 10, "datei": "a1-unterwegs.html?spiel=wohin", "text": "60 Sekunden: nach Bremen, zum Bahnhof, zur Schule, vom Kino …", "bereich": "l12", "themen": ["dativ"], "zeit": true},
 {"key": "l12-wo-bist-du", "titel": "Wo bist du?", "icon": "📍", "max": 10, "datei": "a1-unterwegs.html?spiel=wo", "text": "45 Sekunden: im Café, am Rathaus, an der Haltestelle?", "bereich": "l12", "themen": ["dativ"], "zeit": true},
