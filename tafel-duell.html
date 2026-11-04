@@ -234,11 +234,12 @@ const TYPEN = {
 };
 const KLAU_SEK=15, KLAU_P=1;
 const THEMEN = {
-  praesens:{name:"Präsens",      icon:"🟢", std:3},
-  perfekt: {name:"Perfekt",      icon:"⏪", std:3},
-  modal:   {name:"Modalverben",  icon:"💪", std:3},
-  akk:     {name:"Akkusativ",    icon:"🎯", std:5},
-  dativ:   {name:"Dativ",        icon:"🎁", std:2}
+  praesens:{name:"Präsens",      icon:"🟢", std:3, an:false},
+  perfekt: {name:"Perfekt",      icon:"⏪", std:3, an:false},
+  modal:   {name:"Modalverben",  icon:"💪", std:3, an:false},
+  akk:     {name:"Akkusativ",    icon:"🎯", std:5, an:false},
+  dativ:   {name:"Dativ",        icon:"🎁", std:2, an:false},
+  unterwegs:{name:"Unterwegs",   icon:"🚆", std:8}
 };
 
 /* ---------- Aufgaben (o[0] ist immer richtig; Fehler: x = Index des falschen Wortes) ---------- */
@@ -320,12 +321,62 @@ const A = [
   {th:"dativ",t:"quiz",f:"Kannst du ___ helfen?",o:["mir","mich","ich","mein"]},
   {th:"dativ",t:"ordnen",w:["ich","gebe","dem","Lehrer","das","Heft"],a:["ich gebe dem Lehrer das Heft"],p:"."},
   {th:"dativ",t:"fehler",w:["Ich","helfe","dich."],x:2,l:"Ich helfe dir.",tipp:"helfen + Dativ: dir"},
-  {th:"dativ",t:"blitz",f:"mit + der Zug",o:["mit dem Zug","mit den Zug"]}
+  {th:"dativ",t:"blitz",f:"mit + der Zug",o:["mit dem Zug","mit den Zug"]},
+  // UNTERWEGS (Lektion 12)
+  {th:"unterwegs",t:"quiz",f:"Ich fahre mit ___ U-Bahn.",h:"die U-Bahn",o:["der","dem","den","die"]},
+  {th:"unterwegs",t:"quiz",f:"Fährst du mit ___ Fahrrad?",h:"das Fahrrad",o:["dem","der","den","das"]},
+  {th:"unterwegs",t:"quiz",f:"Wir fahren ___ Bremen.",o:["nach","zum","zur","in"]},
+  {th:"unterwegs",t:"quiz",f:"Ich gehe ___ Apotheke.",h:"die Apotheke",o:["zur","zum","nach","zu"]},
+  {th:"unterwegs",t:"quiz",f:"Ich komme gerade ___ Bahnhof.",h:"der Bahnhof",o:["vom","von der","zum","nach"]},
+  {th:"unterwegs",t:"quiz",f:"Wo bist du? – ___ Café.",h:"das Café",o:["Im","In der","Am","Ins"]},
+  {th:"unterwegs",t:"quiz",f:"Wir warten ___ Haltestelle.",h:"die Haltestelle",o:["an der","am","in den","zur"]},
+  {th:"unterwegs",t:"quiz",f:"Du nimmst den Bus. → ___ den Bus!",o:["Nimm","Nehm","Nimmst","Nehmen"]},
+  {th:"unterwegs",t:"quiz",f:"Hier fahren Züge ab. Das ist …",o:["der Bahnhof","der Hafen","die Post","der Park"]},
+  {th:"unterwegs",t:"quiz",f:"München liegt im ___ von Deutschland.",o:["Süden","Norden","Westen","Osten"]},
+  {th:"unterwegs",t:"ordnen",w:["ich","fahre","mit","dem","Bus","zur","Schule"],a:["ich fahre mit dem Bus zur Schule","mit dem Bus fahre ich zur Schule"],p:"."},
+  {th:"unterwegs",t:"ordnen",w:["wie","kommst","du","zum","Bahnhof"],a:["wie kommst du zum Bahnhof"],p:"?"},
+  {th:"unterwegs",t:"ordnen",w:["geh","an","der","Kreuzung","links"],a:["geh an der Kreuzung links"],p:"!"},
+  {th:"unterwegs",t:"ordnen",w:["steig","am","Hauptbahnhof","aus"],a:["steig am Hauptbahnhof aus"],p:"!"},
+  {th:"unterwegs",t:"ordnen",w:["ich","gehe","zu","Fuß","nach","Hause"],a:["ich gehe zu Fuß nach Hause"],p:"."},
+  {th:"unterwegs",t:"fehler",w:["Ich","fahre","mit","der","Zug."],x:3,l:"Ich fahre mit dem Zug.",tipp:"der Zug → mit dem Zug"},
+  {th:"unterwegs",t:"fehler",w:["Wir","fahren","zu","Hamburg."],x:2,l:"Wir fahren nach Hamburg.",tipp:"Städte: nach"},
+  {th:"unterwegs",t:"fehler",w:["Ich","gehe","zum","Schule."],x:2,l:"Ich gehe zur Schule.",tipp:"die Schule → zur Schule"},
+  {th:"unterwegs",t:"fehler",w:["Kommst","zum","Büro!"],x:0,l:"Komm zum Büro!",tipp:"Imperativ: ohne -st"},
+  {th:"unterwegs",t:"fehler",w:["Ich","bin","in","der","Kino."],x:2,l:"Ich bin im Kino.",tipp:"das Kino → im Kino"},
+  {th:"unterwegs",t:"blitz",f:"zu + dem",o:["zum","zur"]},
+  {th:"unterwegs",t:"blitz",f:"von + dem",o:["vom","von der"]},
+  {th:"unterwegs",t:"blitz",f:"in + dem",o:["im","in"]},
+  {th:"unterwegs",t:"blitz",f:"fahren → du-Imperativ",o:["Fahr!","Fähr!"]},
+  {th:"unterwegs",t:"blitz",f:"lesen → du-Imperativ",o:["Lies!","Les!"]},
+  {th:"unterwegs",t:"blitz",f:"Wohin? … Hause",o:["nach Hause","zu Hause"]},
+  {th:"unterwegs",t:"bild",e:"🚌 ➡️ 🏫",h:"ich · Bus · Schule",w:["ich","fahre","mit","dem","Bus","zur","Schule"],a:["ich fahre mit dem Bus zur Schule","mit dem Bus fahre ich zur Schule"],p:"."},
+  {th:"unterwegs",t:"bild",e:"🚆 Kiel ➡️ Hamburg",h:"Lina · Zug",w:["Lina","fährt","mit","dem","Zug","von","Kiel","nach","Hamburg"],a:["Lina fährt mit dem Zug von Kiel nach Hamburg"],p:"."},
+  {th:"unterwegs",t:"bild",e:"🚶 ⬅️ ✚",h:"du · Kreuzung · links",w:["geh","an","der","Kreuzung","links"],a:["geh an der Kreuzung links"],p:"!"}
 ];
-const MIX={std:["quiz","ordnen","fehler","blitz","quiz","ordnen","fehler","blitz"], perfekt:["quiz","bild","fehler","blitz","ordnen","bild","quiz"]};
+const MIX={std:["quiz","ordnen","fehler","blitz","quiz","ordnen","fehler","blitz"], unterwegs:["quiz","blitz","ordnen","fehler","bild","quiz","blitz","fehler","ordnen","quiz","bild","blitz"], perfekt:["quiz","bild","fehler","blitz","ordnen","bild","quiz"]};
 
 /* ---------- Lehrtafeln ---------- */
 const TAFELN = {
+  unterwegs:`<h2>Unterwegs <small>Lektion 12</small></h2>
+    <div class="spalten"><div>
+      <h3>mit + Dativ</h3>
+      <table><tr><td>der Zug / das Auto</td><td>mit <span class="hl">dem</span> Zug / Auto</td></tr>
+        <tr><td>die U-Bahn</td><td>mit <span class="hl">der</span> U-Bahn</td></tr>
+        <tr><td>die Verkehrsmittel</td><td>mit <span class="hl">den</span> Verkehrsmitteln</td></tr></table>
+      <p>aber: zu Fuß 🚶</p>
+      <h3>Woher? – Wohin?</h3>
+      <p><b>von</b> + dem = <span class="hl">vom</span> · von der</p>
+      <p><b>zu</b> + dem = <span class="hl">zum</span> · zu + der = <span class="hl">zur</span></p>
+      <p>Städte: <b>nach</b> Bremen · <b>nach</b> Hause</p>
+    </div><div>
+      <h3>Wo? in / an + Dativ</h3>
+      <p><span class="hl">im</span> Café · <span class="hl">in der</span> Apotheke</p>
+      <p><span class="hl">am</span> Rathaus · <span class="hl">an der</span> Haltestelle</p>
+      <h3>Imperativ (du)</h3>
+      <p>du komm<span class="rot">st</span> → <b>Komm!</b> · du nimm<span class="rot">st</span> → <b>Nimm!</b></p>
+      <p>du f<span class="rot">ä</span>hrst → <b>Fahr!</b> · du steigst aus → <b>Steig … aus!</b></p>
+      <div class="bsp">Geh geradeaus. Geh an der Kreuzung links. Steig am Bahnhof aus!</div>
+    </div></div>`,
   praesens:`<h2>Präsens <small>Was passiert jetzt?</small></h2>
     <div class="spalten"><div>
       <h3>Endungen</h3>
@@ -415,7 +466,7 @@ const TAFELN = {
       <div class="bsp">Ich schenke <b>meiner Mutter</b> <span class="hl">Blumen</span>.</div>
     </div></div>`
 };
-const TH_REIHE=["praesens","perfekt","modal","akk","dativ"];
+const TH_REIHE=["unterwegs","praesens","perfekt","modal","akk","dativ"];
 
 /* ---------- Firebase (nur für Liga-Teams und Übertragung) ---------- */
 const firebaseConfig = {
@@ -443,7 +494,7 @@ const FARBEN=["#E4412F","#1F6FD1","#1E9E6A","#E9800E"];
 /* ---------- Einrichten ---------- */
 let cfg={quelle:"frei", namen:{}, da:{}, anzTeams:2,
   frei:[{name:"Team A",color:FARBEN[0],an:true},{name:"Team B",color:FARBEN[1],an:true},{name:"Team C",color:FARBEN[2],an:false},{name:"Team D",color:FARBEN[3],an:false}],
-  liga:[], themen:Object.fromEntries(Object.entries(THEMEN).map(([k,t])=>[k,{an:true,n:t.std}]))};
+  liga:[], themen:Object.fromEntries(Object.entries(THEMEN).map(([k,t])=>[k,{an:t.an!==false,n:t.std}]))};
 const verfuegbar = th => A.filter(a=>a.th===th).length;
 function renderSetup(){
   document.querySelectorAll("[data-quelle]").forEach(b=>b.setAttribute("aria-pressed", b.dataset.quelle===cfg.quelle));

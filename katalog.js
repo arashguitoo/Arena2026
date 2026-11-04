@@ -38,6 +38,12 @@ window.LW_BEREICHE = [
 "text": "Feste, Datum, Dativ"
 },
 {
+"id": "l12",
+"titel": "Lektion 12 · Unterwegs",
+"icon": "🚆",
+"text": "Stadtplan, Verkehrsmittel, von/nach/zu, im/am, Imperativ"
+},
+{
 "id": "pt",
 "titel": "Perfekt-Training",
 "icon": "🏋️",
@@ -45,6 +51,16 @@ window.LW_BEREICHE = [
 }
 ];
 window.LW_KATALOG = [
+{"key": "l12-stadt-navi", "titel": "Stadt-Navi", "icon": "🧭", "max": 10, "datei": "a1-unterwegs.html?spiel=navi", "text": "2 Minuten: Steuer deine Figur durch die Stadt – Geh links! Geh geradeaus!", "bereich": "l12", "themen": ["wortschatz", "alltag"], "zeit": true},
+{"key": "l12-wegbeschreibung", "titel": "Weg-Rätsel", "icon": "🗺️", "max": 10, "datei": "a1-unterwegs.html?spiel=weg", "text": "Lies den Weg auf dem Stadtplan: Wo bist du jetzt? Im Kino? Am Dom?", "bereich": "l12", "themen": ["lesen", "dativ"], "zeit": false},
+{"key": "l12-mit-dem", "titel": "Verkehrs-Blitz", "icon": "🚆", "max": 10, "datei": "a1-unterwegs.html?spiel=mit", "text": "45 Sekunden: mit dem Zug, mit der U-Bahn – oder zu Fuß?", "bereich": "l12", "themen": ["dativ"], "zeit": true},
+{"key": "l12-von-nach-zu", "titel": "Woher? Wohin?", "icon": "🎯", "max": 10, "datei": "a1-unterwegs.html?spiel=wohin", "text": "60 Sekunden: nach Bremen, zum Bahnhof, zur Schule, vom Kino …", "bereich": "l12", "themen": ["dativ"], "zeit": true},
+{"key": "l12-wo-bist-du", "titel": "Wo bist du?", "icon": "📍", "max": 10, "datei": "a1-unterwegs.html?spiel=wo", "text": "45 Sekunden: im Café, am Rathaus, an der Haltestelle?", "bereich": "l12", "themen": ["dativ"], "zeit": true},
+{"key": "l12-imperativ", "titel": "Komm! Geh! Nimm!", "icon": "📣", "max": 10, "datei": "a1-unterwegs.html?spiel=imperativ", "text": "60 Sekunden: Mach aus dem Satz eine Aufforderung!", "bereich": "l12", "themen": ["satzbau"], "zeit": true},
+{"key": "l12-orte-raetsel", "titel": "Orte-Rätsel", "icon": "❓", "max": 10, "datei": "a1-unterwegs.html?spiel=raetsel", "text": "60 Sekunden: Hier fahren Züge ab. – Was ist das?", "bereich": "l12", "themen": ["wortschatz"], "zeit": true},
+{"key": "l12-am-bahnhof", "titel": "Am Bahnhof", "icon": "🚉", "max": 10, "datei": "a1-unterwegs.html?spiel=bahnhof", "text": "Fahrkarte und Durchsagen: Wann? Welches Gleis? Umsteigen?", "bereich": "l12", "themen": ["lesen", "zahlen"], "zeit": false},
+{"key": "l12-satz-kette", "titel": "Satz-Kette", "icon": "🧱", "max": 10, "datei": "a1-unterwegs.html?spiel=kette", "text": "Bau Sätze: Ich fahre mit dem Bus vom Bahnhof zur Schule.", "bereich": "l12", "themen": ["satzbau", "dativ"], "zeit": false},
+{"key": "l12-stadtportraet", "titel": "Stadtporträt Kiel", "icon": "⛵", "max": 10, "datei": "a1-unterwegs.html?spiel=portraet", "text": "Lies einen Text über Kiel – und: Liegt München im Süden?", "bereich": "l12", "themen": ["lesen"], "zeit": false},
 {"key": "a1-verb-sprint", "titel": "Verb-Sprint", "icon": "⚡", "max": 10, "datei": "a1-spielhalle.html?spiel=verben", "text": "Präsens: 60 Sekunden – wähle die richtige Verbform.", "bereich": "grund", "themen": ["praesens"], "zeit": true},
 {"key": "a1-artikel-blitz", "titel": "Artikel-Blitz", "icon": "🎯", "max": 10, "datei": "a1-spielhalle.html?spiel=artikel", "text": "der, die oder das? 45 Sekunden – sammle eine Serie!", "bereich": "grund", "themen": ["artikel"], "zeit": true},
 {"key": "a1-einkaufswagen", "titel": "Einkaufswagen", "icon": "🛒", "max": 10, "datei": "a1-spielhalle.html?spiel=einkauf", "text": "Akkusativ: einen, eine oder ein? Pass auf die Fallen auf.", "bereich": "grund", "themen": ["akkusativ"], "zeit": false},

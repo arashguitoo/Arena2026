@@ -437,5 +437,27 @@
   ["Schatzkiste", "pme", ["Schatz", "Kiste", "Gold"], "Zusammengesetzte Wörter"],
   ["Holzhaus", "pme", ["Holz", "Haus", "Baum"], "Zusammengesetzte Wörter"],
   ["Palmenstrand", "pme", ["Palme", "Strand", "Meer"], "Zusammengesetzte Wörter"],
-  ["Lagerfeuer", "pme", ["Lager", "Feuer", "Holz"], "Zusammengesetzte Wörter"]
+  ["Lagerfeuer", "pme", ["Lager", "Feuer", "Holz"], "Zusammengesetzte Wörter"],
+  /* Lektion 12 – Unterwegs */
+  ["Haltestelle", "pme", ["Bus", "warten", "Schild"], "Verkehr"],
+  ["Gleis", "me", ["Zug", "Bahnhof", "Nummer"], "Verkehr"],
+  ["umsteigen", "pe", ["Zug", "wechseln", "Bahnhof"], "Verkehr"],
+  ["einsteigen", "pe", ["Bus", "Tür", "rein"], "Verkehr"],
+  ["aussteigen", "pe", ["Bus", "Tür", "raus"], "Verkehr"],
+  ["U-Bahn", "pme", ["unter", "Stadt", "fahren"], "Verkehr"],
+  ["Straßenbahn", "pme", ["Schienen", "Stadt", "fahren"], "Verkehr"],
+  ["Stadtplan", "pme", ["Karte", "Straße", "finden"], "Verkehr"],
+  ["Verspätung", "pe", ["spät", "Zug", "warten"], "Verkehr"],
+  ["links abbiegen", "pe", ["Straße", "rechts", "Auto"], "Verkehr"],
+  ["geradeaus gehen", "pe", ["Weg", "links", "rechts"], "Verkehr"],
+  ["Hafen", "pme", ["Schiff", "Meer", "Wasser"], "Verkehr"],
+  ["Fahrkartenautomat", "pme", ["Ticket", "kaufen", "Bahnhof"], "Verkehr"],
+  ["Touristeninformation", "pe", ["Tourist", "Stadtplan", "Fragen"], "Verkehr"],
+  ["Reisebüro", "pe", ["Reise", "buchen", "Urlaub"], "Verkehr"],
+  ["Abfahrt", "pe", ["Zug", "fahren", "Uhrzeit"], "Verkehr"],
+  ["Ankunft", "pe", ["ankommen", "Zug", "Uhrzeit"], "Verkehr"],
+  ["Ausgang", "pme", ["raus", "Tür", "Eingang"], "Verkehr"],
+  ["den Weg erklären", "pe", ["links", "rechts", "Straße"], "Verkehr"],
+  ["sich verlaufen", "pe", ["Weg", "falsch", "finden"], "Verkehr"],
+  ["Navi", "pme", ["Auto", "Weg", "Handy"], "Verkehr"]
 ] };
