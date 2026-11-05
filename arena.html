@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1A1033">
+<meta name="robots" content="noindex, nofollow">
+<title>Arena-Duell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1EA; --card:#FFFFFF; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3;
+  --nacht:#1A1033; --nacht-2:#2A1C4F; --pri:#6D28D9; --pri-2:#EDE4FF; --acc:#FF6B4A; --gold:#F5B82E; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{color:#1E2A44;background-color:#fff}
+input::placeholder,textarea::placeholder{color:#8A8F9C}
+.hidden{display:none!important}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0 0 8px}
+.muted{color:var(--muted)} .small{font-size:14px}
+.wrap{max-width:640px;margin:0 auto;padding:12px 12px 50px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--schatten);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px;border-radius:10px}
+.btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.hell{background:rgba(255,255,255,.14);color:#fff}
+.btn.acc{background:var(--acc)} .btn.ok{background:var(--ok)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.rot{background:var(--bad)}
+.btn.wide{width:100%} .btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+input[type=text],input[type=number],select{min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;background:#fff}
+.pin-in{width:100%;font-family:var(--head);font-size:34px;letter-spacing:.3em;text-align:center}
+/* Handy */
+.kopf{color:#fff;position:sticky;top:0;z-index:5;background:var(--nacht)}
+.kopf .in{max-width:640px;margin:0 auto;padding:8px 12px;display:flex;gap:10px;align-items:center;min-height:56px}
+.kopf b{font-family:var(--head);font-size:19px} .kopf .r{margin-left:auto;font-family:var(--head);font-weight:800;color:var(--gold)}
+.dran{background:linear-gradient(135deg,#FF6B4A,#F5B82E);color:#1E2A44;border-radius:18px;padding:16px;margin-bottom:12px;text-align:center;animation:puls 1.4s infinite}
+@keyframes puls{50%{transform:scale(1.02)}}
+.namen{display:flex;flex-wrap:wrap;gap:6px}
+.namen button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer}
+.opts{display:grid;gap:8px;margin-top:10px}
+.opt{border:3px solid var(--line);background:#fff;color:var(--ink);border-radius:14px;min-height:56px;padding:8px 14px;text-align:left;cursor:pointer;font-weight:700;font-size:19px}
+.opt.ok{background:var(--ok-2);border-color:var(--ok)} .opt.falsch{background:var(--bad-2);border-color:var(--bad)}
+.gross{font-family:var(--head);font-weight:800;font-size:26px;line-height:1.2}
+.linie{min-height:56px;border:3px dashed var(--line);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.kachel{min-height:44px;padding:6px 12px;border-radius:10px;border:0;background:var(--pri);color:#fff;font-weight:700;font-size:18px;cursor:pointer}
+.kachel.weg{visibility:hidden}
+.pool{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
+.wort{font-family:var(--head);font-weight:900;font-size:40px;text-align:center;margin:10px 0;line-height:1.1}
+.verboten{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.verboten span{background:var(--bad-2);color:var(--bad);border-radius:999px;padding:3px 10px;font-weight:700;text-decoration:line-through}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips span{background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:15px}
+.vote{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vote button{min-height:110px;border-radius:18px;border:4px solid var(--line);background:#fff;font-family:var(--head);font-weight:800;font-size:22px;cursor:pointer}
+.vote button.an{border-color:var(--pri);background:var(--pri-2)}
+.feld label{display:block;font-weight:800;margin-top:10px} .feld input{width:100%}
+.feld .tipp{font-size:13px;color:var(--muted)}
+/* Leinwand */
+body.board{background:var(--nacht);color:#fff}
+body.board .card{background:var(--nacht-2);box-shadow:none;color:#fff}
+.bkopf{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 20px;background:rgba(0,0,0,.25)}
+.bkopf h1{margin:0;font-size:26px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 12px;font-weight:700;background:rgba(255,255,255,.12)}
+.chip.gold{background:var(--gold);color:var(--ink)}
+.bwrap{padding:16px 20px;max-width:1500px;margin:0 auto}
+.tafel{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.team{flex:1;min-width:150px;border-radius:16px;padding:10px 14px;background:rgba(255,255,255,.07);border-top:6px solid var(--f);position:relative}
+.team b{font-family:var(--head);font-size:20px} .team .p{font-family:var(--head);font-weight:900;font-size:44px;color:var(--gold);line-height:1}
+.team.aktiv{background:rgba(255,255,255,.16)}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:center;text-align:center;margin:10px 0}
+.vs .seite{border-radius:24px;padding:24px;background:rgba(255,255,255,.08);border:5px solid var(--f)}
+.vs .seite h2{font-size:clamp(30px,4vw,56px);margin:0 0 6px}
+.vs .seite .tn{font-size:clamp(18px,2vw,26px);opacity:.85}
+.vs .x{font-family:var(--head);font-weight:900;font-size:clamp(50px,7vw,110px);color:var(--gold)}
+.uhr{font-family:var(--head);font-weight:900;font-size:clamp(70px,10vw,150px);line-height:1;color:var(--gold);text-align:center}
+.typband{display:flex;gap:16px;align-items:center;justify-content:center;font-family:var(--head);font-weight:800;font-size:clamp(26px,3vw,44px);margin:6px 0 10px}
+.steuer{position:fixed;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);padding:10px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;z-index:20}
+.steuer select{min-height:40px}
+.balken{height:22px;border-radius:11px;background:rgba(255,255,255,.12);overflow:hidden;margin:6px 0}
+.balken i{display:block;height:100%;background:var(--f,var(--gold))}
+.lobbygrid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+.lwpin{font-family:var(--head);font-weight:900;font-size:90px;letter-spacing:.08em;color:var(--gold);line-height:1}
+.spieler{display:flex;flex-wrap:wrap;gap:6px}
+.spieler button{border:0;border-radius:999px;padding:6px 12px;font-weight:700;cursor:pointer;color:#fff;background:var(--f,rgba(255,255,255,.15))}
+.plan{background:#fff;color:var(--ink);border-radius:18px;padding:18px;font-size:clamp(18px,1.8vw,26px)}
+.plan div{margin:4px 0}
+.wolke{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.wolke button{border:0;border-radius:999px;padding:6px 14px;font-weight:800;font-size:20px;cursor:pointer;background:#fff;color:var(--ink)}
+.wolke button.weg{text-decoration:line-through;opacity:.4}
+.rolle{background:#fff;color:var(--ink);border-radius:16px;padding:14px;font-size:clamp(17px,1.7vw,24px)}
+.ergebnis{font-family:var(--head);font-weight:900;font-size:clamp(40px,5vw,80px);text-align:center;color:var(--gold)}
+@media (max-width:900px){ .vs{grid-template-columns:1fr} .lobbygrid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><div class="card">Einen Moment …</div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="arena/inhalt.js"></script>
+<script src="activity/woerter-a2.js"></script>
+<script>
+/* =========================================================
+   ARENA-DUELL – Live-Spiel mit Handys, eigenständig (ohne Lernwelt-Punkte)
+   Leinwand: arena.html?leitung=1     Handy: arena.html?pin=1234 (oder live.html)
+   Daten: ligaarena/ploen-jik/{PIN}/…
+   ========================================================= */
+const KURS="ploen-jik", ROOT=`ligaarena/${KURS}`;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash"};
+let db=null, offset=0; try{ firebase.initializeApp(cfg); db=firebase.database(); db.ref(".info/serverTimeOffset").on("value",s=>offset=Number(s.val())||0); }catch(e){}
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const jetzt=()=>Date.now()+offset; const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+function rnd(n){ try{ return Math.floor(crypto.getRandomValues(new Uint32Array(1))[0]/4294967296*n); }catch(e){ return Math.floor(Math.random()*n); } }
+function mische(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const P=new URLSearchParams(location.search); let PIN=(P.get("pin")||"").replace(/\D/g,"");
+const I=p=>db.ref(`${ROOT}/${PIN}${p?"/"+p:""}`);
+const app=$("#app");
+const rest=R=>R&&R.ende?Math.max(0,Math.ceil((R.ende-jetzt())/1000)):0;
+const mmss=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+const norm=s=>String(s||"").toLowerCase().replace(/[.,!?;:"„“]/g,"").replace(/\s+/g," ").trim();
+const WOERTER=((window.WORT_LISTEN||{}).a2||{woerter:[]}).woerter.filter(w=>w[1].includes("e"));
+
+const TEAMVORLAGE=[{n:"Löwen",e:"🦁",f:"#F59E0B"},{n:"Adler",e:"🦅",f:"#3B82F6"},{n:"Wölfe",e:"🐺",f:"#64748B"},{n:"Delfine",e:"🐬",f:"#06B6D4"},{n:"Füchse",e:"🦊",f:"#F97316"},{n:"Bären",e:"🐻",f:"#A16207"}];
+const TYPEN={
+  quiz:     {n:"Blitz-Quiz",     e:"⚡", text:"6 Fragen am Handy – richtig UND schnell!", sek:75},
+  satz:     {n:"Satz-Duell",     e:"🧩", text:"Baut 4 Sätze am Handy. Wer schafft mehr?", sek:100},
+  sprint:   {n:"Wörter-Sprint",  e:"📝", text:"45 Sekunden: Schreibt so viele Wörter zum Thema wie möglich!", sek:45},
+  erklaeren:{n:"Erklär-Duell",   e:"🗣️", text:"Erklärt Wörter – ohne die verbotenen Wörter! 60 Sekunden pro Seite.", sek:60},
+  gespraech:{n:"Gespräch",       e:"💬", text:"Spielt eine Situation. Das Publikum stimmt ab!", sek:90},
+  party:    {n:"Party planen",   e:"🎉", text:"Plant eine Party am Handy und präsentiert sie. Das Publikum stimmt ab!", sek:150},
+  janein:   {n:"Ja-Nein-Verbot", e:"🙅", text:"Das Publikum fragt. Wer „ja“ oder „nein“ sagt, ist raus!", sek:60}
+};
+function schritte(R){ switch(R.typ){
+  case "quiz": case "satz": return ["vs","los","ergebnis"];
+  case "sprint": return ["vs","los","pruefen","ergebnis"];
+  case "erklaeren": case "janein": return ["vs","a","b","ergebnis"];
+  case "gespraech": return R.fmt===1 ? ["vs","zusammen","abstimmung","ergebnis"] : ["vs","a","b","abstimmung","ergebnis"];
+  case "party": return ["vs","planen","a","b","abstimmung","ergebnis"];
+} return ["vs","ergebnis"]; }
+const zeitVon=(R,s)=>({los:TYPEN[R.typ].sek, planen:150, a:R.typ==="party"?60:R.typ==="janein"?60:TYPEN[R.typ].sek, b:R.typ==="party"?60:R.typ==="janein"?60:TYPEN[R.typ].sek, zusammen:90, abstimmung:25})[s]||0;
+
+/* Seiten-Wertung (wird auf Leinwand und Handy gleich berechnet) */
+function wertung(S,R){
+  const D=((S.rd||{})[R.nr])||{}; const w={a:0,b:0}, info={a:"",b:""};
+  ["a","b"].forEach(sd=>{ const ids=R[sd].ids||[];
+    if(R.typ==="quiz"||R.typ==="satz"){ let ok=0, zeit=0; const key=R.typ==="quiz"?"q":"s"; ids.forEach(p=>Object.values(((D[key]||{})[p])||{}).forEach(x=>{ if(x&&x.ok) ok++; zeit+=Number(x&&x.t)||0; })); w[sd]=ok+Math.max(0,1-zeit/1e7)*0; info[sd]=`${ok} richtig`; w[sd+"z"]=zeit; }
+    if(R.typ==="sprint"){ const weg=D.weg||{}; const set=new Set(); Object.entries(((D.w||{})[sd])||{}).forEach(([k,x])=>{ if(!weg[k] && x && x.w) set.add(norm(x.w)); }); w[sd]=set.size; info[sd]=`${set.size} ${set.size===1?"Wort":"Wörter"}`; }
+    if(R.typ==="erklaeren"){ const e=((D.e||{})[sd])||{}; w[sd]=Number(e.ok)||0; info[sd]=`${w[sd]} erraten`; }
+    if(R.typ==="janein"){ const s=Number(((D.j||{})[sd]))||0; w[sd]=s; info[sd]=`${s} ${s===1?"Sekunde":"Sekunden"}`; }
+    if(["gespraech","party"].includes(R.typ)){ const v=Object.values(D.v||{}).filter(x=>x===sd).length; w[sd]=v; info[sd]=`${v} Stimme${v===1?"":"n"}`; }
+  });
+  let sieger = w.a>w.b?"a":w.b>w.a?"b":null;
+  if(!sieger && (R.typ==="quiz"||R.typ==="satz") && w.a>0 && w.az!==w.bz) sieger = w.az<w.bz?"a":"b";
+  return {w, info, sieger};
+}
+
+/* =========================================================
+   HANDY
+   ========================================================= */
+function handy(){
+  let me=null, S={}, namen={}, lokal={qi:0, si:0, gelegt:[], satzFb:null, sprintFb:""}, rundeNr=null;
+  const MEKEY=()=>`arena_me_${PIN}`;
+  function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🏟️</div><h2>Arena-Duell</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
+    <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefe(); }; }
+  async function pruefe(){ if(PIN.length!==4) return pinScreen(PIN?"Die PIN hat 4 Ziffern.":"");
+    const i=(await I("info").once("value")).val(); if(!i) return pinScreen("Diese PIN gibt es nicht.");
+    history.replaceState(null,"","?pin="+PIN);
+    try{ me=JSON.parse(localStorage.getItem(MEKEY())||"null"); }catch(e){}
+    if(me) return los(); namenWahl(); }
+  async function namenWahl(){
+    try{ namen=(await db.ref(`jugendliga/${KURS}/public/names`).once("value")).val()||{}; }catch(e){ namen={}; }
+    let lw=null; try{ lw=JSON.parse(localStorage.getItem(`liga_code_${KURS}`)||"null"); }catch(e){}
+    const ids=Object.keys(namen).sort((a,b)=>String(namen[a]).localeCompare(namen[b]));
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:4vh"><h2>Wer bist du?</h2><p class="muted">Tippe auf deinen Namen.</p>
+      <div class="namen">${ids.map(p=>`<button data-p="${p}" ${lw&&lw.pid===p?'style="border-color:var(--pri);background:var(--pri-2)"':""}>${esc(namen[p])}</button>`).join("")}</div>
+      <form id="nf" class="row" style="margin-top:14px"><input id="nn" type="text" placeholder="anderer Name" maxlength="20" style="flex:1"><button class="btn">OK</button></form></div></div>`;
+    $$("[data-p]").forEach(b=>b.onclick=()=>{ me={pid:b.dataset.p, name:namen[b.dataset.p]}; speichernMe(); });
+    $("#nf").onsubmit=e=>{ e.preventDefault(); const n=$("#nn").value.trim(); if(!n) return; me={pid:"g"+Math.random().toString(36).slice(2,9), name:n.slice(0,20)}; speichernMe(); };
+  }
+  function speichernMe(){ try{ localStorage.setItem(MEKEY(), JSON.stringify(me)); }catch(e){} los(); }
+  function los(){ const r=I(`spieler/${me.pid}`); r.update({name:me.name, ts:TS(), online:true}); try{ r.child("online").onDisconnect().set(false); }catch(e){}
+    I().on("value", s=>{ S=s.val()||{}; male(); });
+    setInterval(()=>{ const u=$("#uhr"); if(u&&S.runde) u.textContent=mmss(rest(S.runde)); if(S.runde && ["los","planen","a","b"].includes(S.runde.schritt) && S.runde.ende && rest(S.runde)===0 && !$("[data-zu]") && zuletztKey!==`${S.runde.nr}-${S.runde.schritt}-true`){ if(document.activeElement) document.activeElement.blur(); male(); } },500); }
+  let zuletztKey="";
+  function male(){
+    const ae=document.activeElement; const key=S.runde?`${S.runde.nr}-${S.runde.schritt}-${rest(S.runde)===0}`:"";
+    const fokusSw = ae && ae.id==="sw";
+    if(ae && ae.tagName==="INPUT" && ae.dataset.feld!==undefined && key===zuletztKey) return;
+    zuletztKey=key; const swWert=fokusSw?ae.value:null;
+    if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Dieses Spiel gibt es nicht mehr.</div></div>`; return; }
+    const ich=(S.spieler||{})[me.pid]||{}; const T=(S.teams||{})[ich.team];
+    let h=`<div class="kopf" style="background:${T?T.f:"var(--nacht)"}"><div class="in"><b>${T?`${T.e} ${esc(T.n)}`:"🏟️ Arena-Duell"}</b><span class="small" style="opacity:.85">${esc(me.name)}</span><span class="r">${T?((S.punkte||{})[ich.team]||0)+" P":""}</span></div></div><div class="wrap">`;
+    if(S.info.phase==="lobby"||!T){ app.innerHTML=h+`<div class="card" style="text-align:center"><div style="font-size:60px">🏟️</div><h2>Hallo ${esc(me.name)}!</h2>${T?`<p>Dein Team: <b style="color:${T.f}">${T.e} ${esc(T.n)}</b></p>`:`<p class="muted">Gleich bekommst du ein Team.</p>`}<p class="small muted">Schau auf die Leinwand.</p>
+      <button class="btn ghost sm" id="nichtich">Das bin ich nicht</button></div></div>`; $("#nichtich").onclick=()=>{ try{ localStorage.removeItem(MEKEY()); }catch(e){} I(`spieler/${me.pid}`).remove(); me=null; I().off(); namenWahl(); }; return; }
+    if(S.info.phase==="ende"){ const rang=Object.entries(S.teams||{}).sort((a,b)=>((S.punkte||{})[b[0]]||0)-((S.punkte||{})[a[0]]||0)); const platz=rang.findIndex(([k])=>k===ich.team)+1;
+      app.innerHTML=h+`<div class="card" style="text-align:center"><div style="font-size:60px">${["🥇","🥈","🥉"][platz-1]||"🏅"}</div><h2>Platz ${platz}!</h2><p>${T.e} ${esc(T.n)}: <b>${(S.punkte||{})[ich.team]||0} Punkte</b></p></div></div>`; return; }
+    const R=S.runde;
+    if(!R){ app.innerHTML=h+`<div class="card" style="text-align:center"><div style="font-size:50px">👀</div><p>Gleich geht es los. Schau auf die Leinwand!</p></div></div>`; return; }
+    if(R.nr!==rundeNr){ rundeNr=R.nr; lokal={qi:0, si:0, gelegt:[], satzFb:null, sprintFb:""}; }
+    const seite = (R.a.ids||[]).includes(me.pid)?"a":(R.b.ids||[]).includes(me.pid)?"b":null;
+    h+= seite ? kaempfer(R, seite) : publikum(R, ich);
+    app.innerHTML=h+`</div>`; binden(R, seite);
+    if(swWert!==null){ const n=$("#sw"); if(n){ n.value=swWert; n.focus(); } }
+  }
+  function kopfTyp(R){ const t=TYPEN[R.typ]; return `<div class="small muted" style="font-weight:800">Runde ${R.nr} · ${t.e} ${t.n}</div>`; }
+  function kaempfer(R, sd){
+    const t=TYPEN[R.typ], s=R.schritt, mein=R[sd], geg=R[sd==="a"?"b":"a"]; const TM=(S.teams||{})[mein.t]||{}, TG=(S.teams||{})[geg.t]||{};
+    const partner=(mein.ids||[]).filter(p=>p!==me.pid).map(p=>esc(((S.spieler||{})[p]||{}).name)).join(", ");
+    if(s==="vs"){ let x=`<div class="dran"><div style="font-size:44px">⚔️</div><div class="gross">Du bist dran!</div><div>Komm in die Mitte!</div></div>
+      <div class="card">${kopfTyp(R)}<p style="margin:4px 0"><b>${t.text}</b></p><p class="small">${partner?`Dein Partner: <b>${partner}</b> · `:""}Gegner: ${TG.e||""} ${esc(TG.n||"")}</p></div>`;
+      if(R.typ==="gespraech") x+=rollenKarte(R, sd);
+      if(R.typ==="party"){ const pt=ARENA.partys[R.inhalt.p]; x+=`<div class="card"><h3>${pt.e} ${esc(pt.t)}</h3><p>${esc(pt.text)}</p><p class="small muted">Gleich plant ihr am Handy.</p></div>`; }
+      return x; }
+    if(s==="ergebnis") return ergebnisKarte(R, sd);
+    if(R.typ==="quiz"&&s==="los") return quizKarte(R, sd);
+    if(R.typ==="satz"&&s==="los") return satzKarte(R, sd);
+    if(R.typ==="sprint"&&(s==="los"||s==="pruefen")) return sprintKarte(R, sd);
+    if(R.typ==="erklaeren"&&(s==="a"||s==="b")) return s===sd ? erklaerKarte(R, sd) : `<div class="card" style="text-align:center"><div style="font-size:44px">⏳</div><p>Jetzt erklärt die andere Seite. ${s<sd?"Ihr seid gleich dran!":""}</p></div>`;
+    if(R.typ==="janein"&&(s==="a"||s==="b")) return s===sd ? `<div class="dran" style="animation:none"><div style="font-size:50px">🙅</div><div class="gross">Kein „Ja“! Kein „Nein“!</div><p>Antworte anders: „Natürlich!“, „Auf keinen Fall!“, „Vielleicht …“, „Das stimmt.“, „Ich glaube nicht.“</p></div>` : `<div class="card" style="text-align:center"><p>Jetzt ist die andere Seite dran. Hör gut zu!</p></div>`;
+    if(R.typ==="gespraech"&&["a","b","zusammen"].includes(s)) return (s==="zusammen"||s===sd?`<div class="dran" style="animation:none"><div class="gross">🎬 Los! Spielt die Szene!</div></div>`:`<div class="card"><p>Jetzt spielt die andere Seite.</p></div>`)+rollenKarte(R, sd);
+    if(R.typ==="party"&&s==="planen") return partyForm(R, sd);
+    if(R.typ==="party"&&(s==="a"||s==="b")) return (s===sd?`<div class="dran" style="animation:none"><div class="gross">🎤 Präsentiert eure Party!</div></div>`:`<div class="card"><p>Jetzt präsentiert die andere Seite.</p></div>`)+partyAnsicht(R, sd)+`<div class="card"><b>So sagt ihr es:</b><div class="chips" style="margin-top:6px">${ARENA.partyRm.map(r=>`<span>${esc(r)}</span>`).join("")}</div></div>`;
+    if(s==="abstimmung") return `<div class="card" style="text-align:center"><div style="font-size:44px">🗳️</div><p>Das Publikum stimmt ab …</p></div>`;
+    return `<div class="card">Schau auf die Leinwand.</div>`;
+  }
+  function rollenKarte(R, sd){ const g=ARENA.gespraeche[R.inhalt.g]; const ids=R[sd].ids||[];
+    const rolle = R.fmt===1 ? (sd==="a"?"a":"b") : (ids.indexOf(me.pid)===0?"a":"b");
+    return `<div class="card"><h3>${g.e} ${esc(g.t)}</h3><p style="background:var(--pri-2);border-radius:12px;padding:10px;margin:6px 0"><b>Deine Rolle (${rolle.toUpperCase()}):</b> ${esc(g[rolle])}</p>
+      <details><summary class="small">Die andere Rolle</summary><p class="small">${esc(g[rolle==="a"?"b":"a"])}</p></details>
+      <b class="small">Redemittel:</b><div class="chips" style="margin-top:4px">${g.rm.map(r=>`<span>${esc(r)}</span>`).join("")}</div></div>`; }
+  function ergebnisKarte(R, sd){ const E=R.ergebnis||wertung(S,R); const gew=E.sieger===sd, unent=!E.sieger;
+    return `<div class="card" style="text-align:center"><div style="font-size:60px">${unent?"🤝":gew?"🏆":"💪"}</div><h2>${unent?"Unentschieden!":gew?"Gewonnen!":"Gut gekämpft!"}</h2><p>Ihr: ${esc(E.info[sd])} · Gegner: ${esc(E.info[sd==="a"?"b":"a"])}</p><p class="small muted">Sieg = 3 Punkte · Unentschieden = 2 · Niederlage = 1 für dein Team</p></div>`; }
+  function zu(R){ return rest(R)===0; }
+  /* Quiz */
+  function quizKarte(R, sd){ const fr=R.inhalt.q; const meine=((((S.rd||{})[R.nr]||{}).q||{})[me.pid])||{}; const n=Object.keys(meine).length;
+    if(n>=fr.length || zu(R)) return `<div class="card" style="text-align:center" data-zu><div style="font-size:50px">✅</div><h2>${n>=fr.length?"Fertig!":"Zeit ist um!"}</h2><p>${Object.values(meine).filter(x=>x.ok).length} von ${fr.length} richtig.</p></div>`;
+    const q=ARENA.quiz[fr[n]]; const ord=R.inhalt.ord[n];
+    return `<div class="card">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><b>Frage ${n+1} / ${fr.length}</b><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div><div class="gross" style="margin-top:8px">${esc(q.f)}</div>
+      <div class="opts">${ord.map(i=>`<button class="opt" data-q="${i}">${esc(q.o[i])}</button>`).join("")}</div></div>`; }
+  /* Satz */
+  function satzKarte(R, sd){ const ls=R.inhalt.s; const meine=((((S.rd||{})[R.nr]||{}).s||{})[me.pid])||{}; const n=Object.keys(meine).length;
+    if(n>=ls.length || zu(R)) return `<div class="card" style="text-align:center" data-zu><div style="font-size:50px">✅</div><h2>${n>=ls.length?"Fertig!":"Zeit ist um!"}</h2><p>${Object.values(meine).filter(x=>x.ok).length} von ${ls.length} Sätzen richtig.</p></div>`;
+    const it=ARENA.saetze[ls[n]]; const ord=R.inhalt.sord[n];
+    return `<div class="card">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><b>Satz ${n+1} / ${ls.length}</b><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div>
+      <div class="linie">${lokal.gelegt.map((i,k)=>`<button class="kachel" style="background:var(--ink)" data-raus="${k}">${esc(it.w[i])}</button>`).join("")}${lokal.gelegt.length===it.w.length?`<b style="font-size:22px">${it.p}</b>`:""}</div>
+      <div class="pool">${ord.map(i=>`<button class="kachel ${lokal.gelegt.includes(i)?"weg":""}" data-rein="${i}">${esc(it.w[i])}</button>`).join("")}</div>
+      <button class="btn wide" id="satzok" ${lokal.gelegt.length===it.w.length?"":"disabled"}>✓ Prüfen</button>${lokal.satzFb?`<p style="font-weight:800;color:${lokal.satzFb.ok?"var(--ok)":"var(--bad)"}">${esc(lokal.satzFb.t)}</p>`:""}</div>`; }
+  /* Sprint */
+  function sprintKarte(R, sd){ const k=ARENA.kategorien[R.inhalt.k]; const D=((S.rd||{})[R.nr])||{}; const liste=Object.entries(((D.w||{})[sd])||{}); const weg=D.weg||{};
+    const offen = R.schritt==="los" && !zu(R);
+    return `<div class="card">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><b>${k.e} ${esc(k.k)}</b>${offen?`<b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b>`:""}</div>
+      ${offen?`<form id="sf" class="row" style="margin-top:8px"><input id="sw" type="text" data-halten autocomplete="off" autocapitalize="off" placeholder="Wort eingeben …" style="flex:1;min-width:0;font-size:20px"><button class="btn">+</button></form><div class="small" style="color:var(--bad);min-height:18px" id="sfb">${esc(lokal.sprintFb)}</div>`:`<p data-zu><b>Zeit ist um!</b> Die Lehrkraft prüft eure Wörter.</p>`}
+      <div class="chips">${liste.map(([key,x])=>`<span style="${weg[key]?"text-decoration:line-through;opacity:.5":""}">${esc(x.w)}</span>`).join("")}</div><p class="small muted">${liste.length} ${liste.length===1?"Wort":"Wörter"}</p></div>`; }
+  /* Erklären */
+  function erklaerKarte(R, sd){ const ids=R[sd].ids||[]; const erklaerer=ids[0]; const e=((((S.rd||{})[R.nr]||{}).e||{})[sd])||{}; const pos=Number(e.pos)||0;
+    const liste=R.inhalt[sd==="a"?"wa":"wb"]||[]; const w=WOERTER[liste[pos%liste.length]]||["?","e",[]];
+    if(me.pid!==erklaerer) return `<div class="dran" style="animation:none"><div style="font-size:50px">🤔</div><div class="gross">Rate!</div><p>${esc(((S.spieler||{})[erklaerer]||{}).name)} erklärt dir Wörter. Sag die Lösung laut!</p><p class="gross">✓ ${Number(e.ok)||0}</p></div>`;
+    if(zu(R)) return `<div class="card" style="text-align:center" data-zu><h2>Zeit ist um!</h2><p class="gross">✓ ${Number(e.ok)||0}</p></div>`;
+    return `<div class="card" style="text-align:center">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><b>Erkläre!</b><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div>
+      <div class="wort">${esc(w[0])}</div><div class="small muted">Nicht sagen:</div><div class="verboten">${(w[2]||[]).map(v=>`<span>${esc(v)}</span>`).join("")}</div>
+      <div class="row" style="margin-top:14px"><button class="btn ok" style="flex:2;min-height:70px;font-size:22px" id="eok">✓ Erraten!</button><button class="btn ghost" style="flex:1;min-height:70px" id="eskip">⏭ Weiter</button></div>
+      <p class="gross" style="margin-top:8px">✓ ${Number(e.ok)||0}</p></div>`; }
+  /* Party */
+  function partyForm(R, sd){ const pt=ARENA.partys[R.inhalt.p]; const plan=((((S.rd||{})[R.nr]||{}).plan||{})[sd])||{};
+    return `<div class="card">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><h3 style="margin:0">${pt.e} ${esc(pt.t)}</h3><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div><p class="small">${esc(pt.text)}</p>
+      <div class="feld">${ARENA.partyFelder.map(f=>`<label>${esc(f.f)}</label><input type="text" data-halten data-feld="${f.k}" value="${esc(plan[f.k]||"")}" maxlength="80" ${zu(R)?"disabled":""}><div class="tipp">z. B. ${esc(f.tipp)}</div>`).join("")}</div>
+      <p class="small muted">${(R[sd].ids||[]).length>1?"Ihr schreibt zusammen – jede Person kann jedes Feld ändern.":""}</p></div>`; }
+  function partyAnsicht(R, sd){ const plan=((((S.rd||{})[R.nr]||{}).plan||{})[sd])||{};
+    return `<div class="card">${ARENA.partyFelder.map(f=>`<div><b>${esc(f.f)}</b> ${esc(plan[f.k]||"–")}</div>`).join("")}</div>`; }
+  /* Publikum */
+  function publikum(R, ich){
+    const A=(S.teams||{})[R.a.t]||{}, B=(S.teams||{})[R.b.t]||{}; const nm=sd=>(R[sd].ids||[]).map(p=>esc(((S.spieler||{})[p]||{}).name)).join(" & ");
+    let x=`<div class="card" style="text-align:center">${kopfTyp(R)}<div class="gross">${A.e} ${nm("a")} <span style="color:var(--gold)">vs</span> ${B.e} ${nm("b")}</div></div>`;
+    if(R.schritt==="abstimmung"){ const mein=((((S.rd||{})[R.nr]||{}).v||{})[me.pid]);
+      return x+`<div class="card"><h3>🗳️ Wer war besser?</h3><p class="small muted">Achte auf: verständlich? höflich? kreativ? viel Deutsch?</p>
+        <div class="vote"><button data-v="a" class="${mein==="a"?"an":""}" style="border-top:8px solid ${A.f}">${A.e}<br>${nm("a")}</button><button data-v="b" class="${mein==="b"?"an":""}" style="border-top:8px solid ${B.f}">${B.e}<br>${nm("b")}</button></div>
+        <p class="small muted" style="text-align:center">${mein?"✓ Danke! Du kannst noch ändern.":""}</p></div>`; }
+    if(R.typ==="janein" && (R.schritt==="a"||R.schritt==="b")) return x+`<div class="card"><h3>🙋 Stell Fragen!</h3><p class="small">Versuch, dass ${nm(R.schritt)} „ja“ oder „nein“ sagt!</p><div class="chips">${mische(ARENA.janein).slice(0,8).map(q=>`<span>${esc(q)}</span>`).join("")}</div></div>`;
+    if(R.typ==="erklaeren" && (R.schritt==="a"||R.schritt==="b") && R.fmt===1 && ich.team===R[R.schritt].t) return x+`<div class="dran" style="animation:none"><div class="gross">🤔 Rate mit!</div><p>${nm(R.schritt)} erklärt deinem Team Wörter. Ruf die Lösung!</p></div>`;
+    if(R.schritt==="ergebnis"){ const E=R.ergebnis||wertung(S,R); return x+`<div class="card" style="text-align:center"><div class="gross">${E.sieger?`🏆 ${esc(((S.teams||{})[R[E.sieger].t]||{}).n)} gewinnt!`:"🤝 Unentschieden"}</div><p>${esc(E.info.a)} : ${esc(E.info.b)}</p></div>`; }
+    return x+`<div class="card" style="text-align:center"><div style="font-size:40px">👀</div><p>Schau zu und feuere dein Team an!</p></div>`;
+  }
+  function binden(R, sd){
+    $$("[data-q]").forEach(b=>b.onclick=()=>{ const fr=R.inhalt.q; const meine=((((S.rd||{})[R.nr]||{}).q||{})[me.pid])||{}; const n=Object.keys(meine).length; if(n>=fr.length||zu(R)) return;
+      const ok=+b.dataset.q===0; $$("[data-q]").forEach(x=>x.disabled=true); b.classList.add(ok?"ok":"falsch"); const t=Math.max(0,jetzt()-(R.start||jetzt()));
+      setTimeout(()=>I(`rd/${R.nr}/q/${me.pid}/${n}`).set({ok, t}), 450); });
+    $$("[data-rein]").forEach(b=>b.onclick=()=>{ lokal.gelegt.push(+b.dataset.rein); lokal.satzFb=null; male(); });
+    $$("[data-raus]").forEach(b=>b.onclick=()=>{ lokal.gelegt.splice(+b.dataset.raus,1); male(); });
+    const so=$("#satzok"); if(so) so.onclick=()=>{ const ls=R.inhalt.s; const meine=((((S.rd||{})[R.nr]||{}).s||{})[me.pid])||{}; const n=Object.keys(meine).length; const it=ARENA.saetze[ls[n]];
+      const satz=lokal.gelegt.map(i=>it.w[i]).join(" "); const ok=it.a.some(a=>norm(a)===norm(satz));
+      lokal.satzFb={ok, t: ok?"✓ Richtig!":`✗ Richtig ist: ${it.a[0].charAt(0).toUpperCase()+it.a[0].slice(1)}${it.p}`}; lokal.gelegt=[];
+      I(`rd/${R.nr}/s/${me.pid}/${n}`).set({ok, t:Math.max(0,jetzt()-(R.start||jetzt()))}); };
+    const sf=$("#sf"); if(sf){ const inp=$("#sw");
+      sf.onsubmit=e=>{ e.preventDefault(); const w=inp.value.trim(); if(!w) return; const D=((S.rd||{})[R.nr])||{}; const schon=Object.values(((D.w||{})[sd])||{}).some(x=>norm(x.w)===norm(w));
+        if(schon){ $("#sfb").textContent=`„${w}“ habt ihr schon!`; inp.value=""; return; } if(zu(R)) return;
+        I(`rd/${R.nr}/w/${sd}`).push({w:w.slice(0,30), von:me.name}); inp.value=""; $("#sfb").textContent=""; }; }
+    const eok=$("#eok"), esk=$("#eskip");
+    if(eok) eok.onclick=()=>{ if(zu(R)) return; I(`rd/${R.nr}/e/${sd}`).transaction(x=>{ x=x||{pos:0,ok:0,skip:0}; x.pos=(x.pos||0)+1; x.ok=(x.ok||0)+1; return x; }); };
+    if(esk) esk.onclick=()=>{ if(zu(R)) return; I(`rd/${R.nr}/e/${sd}`).transaction(x=>{ x=x||{pos:0,ok:0,skip:0}; x.pos=(x.pos||0)+1; x.skip=(x.skip||0)+1; return x; }); };
+    $$("[data-feld]").forEach(inp=>{ let t=null; inp.oninput=()=>{ clearTimeout(t); t=setTimeout(()=>I(`rd/${R.nr}/plan/${sd}/${inp.dataset.feld}`).set(inp.value.slice(0,80)),400); };
+      inp.onblur=()=>{ I(`rd/${R.nr}/plan/${sd}/${inp.dataset.feld}`).set(inp.value.slice(0,80)); setTimeout(()=>{ if(!document.activeElement||document.activeElement.dataset.halten===undefined) male(); },80); }; });
+    $$("[data-v]").forEach(b=>b.onclick=()=>I(`rd/${R.nr}/v/${me.pid}`).set(b.dataset.v));
+  }
+  if(!db){ app.innerHTML=`<div class="wrap"><div class="card">Keine Verbindung.</div></div>`; return; }
+  PIN?pruefe():pinScreen();
+}
+
+/* =========================================================
+   LEINWAND
+   ========================================================= */
+function leitung(){
+  document.body.classList.add("board");
+  let S={}, wahlFmt="auto", wahlTyp="zufall", anzahl=4;
+  async function start(){
+    if(!PIN){ try{ PIN=localStorage.getItem("arena_leitung_pin")||""; }catch(e){} }
+    if(PIN){ const i=(await I("info").once("value")).val(); if(!i||(i.phase==="ende"&&!P.get("pin"))) PIN=""; }
+    if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+rnd(9000)); const ex=(await db.ref(`${ROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
+      const teams={}; TEAMVORLAGE.slice(0,anzahl).forEach((t,i)=>teams["t"+i]=t);
+      await I().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}, teams}); }
+    try{ localStorage.setItem("arena_leitung_pin",PIN); }catch(e){}
+    history.replaceState(null,"","?leitung=1&pin="+PIN);
+    I().on("value", s=>{ S=s.val()||{}; male(); });
+    setInterval(tick,250);
+  }
+  function tick(){ const R=S.runde; const u=$("#uhr"); if(!u||!R) return;
+    if(R.typ==="janein" && (R.schritt==="a"||R.schritt==="b")){ const D=((S.rd||{})[R.nr]||{}).j||{}; if(D[R.schritt]!==undefined){ u.textContent=D[R.schritt]+" s"; return; }
+      const s=Math.min(60, Math.floor((jetzt()-(R.start||jetzt()))/1000)); u.textContent=s+" s"; if(s>=60) I(`rd/${R.nr}/j/${R.schritt}`).set(60); return; }
+    u.textContent=mmss(rest(R)); }
+  const teams=()=>Object.entries(S.teams||{});
+  const spieler=()=>Object.entries(S.spieler||{}).filter(([,x])=>x&&x.name);
+  const mitglieder=t=>spieler().filter(([,x])=>x.team===t).map(([p])=>p);
+  const nm=p=>esc(((S.spieler||{})[p]||{}).name||"?");
+  function male(){
+    const ae=document.activeElement; if(ae && ["INPUT","SELECT"].includes(ae.tagName)) return;
+    const ph=(S.info||{}).phase; const dabei=spieler().filter(([,x])=>x.online!==false).length;
+    let h=`<div class="bkopf"><h1>🏟️ Arena-Duell</h1><span class="chip gold">PIN ${PIN}</span><span class="chip">${dabei} dabei</span><span class="small" style="opacity:.75">Handy: ${esc(location.origin+location.pathname.replace(/arena\.html$/,""))}live.html</span>
+      <span style="margin-left:auto" class="row">${ph==="spiel"?`<button class="btn sm hell" id="beenden">🏁 Spiel beenden</button>`:""}${ph==="ende"?`<button class="btn sm hell" id="weiter">↩ weiterspielen</button>`:""}<button class="btn sm hell" id="neu">Neues Spiel</button></span></div>`;
+    h+= ph==="lobby" ? lobby() : ph==="ende" ? ende() : spiel();
+    app.innerHTML=h; binden();
+    if(ph==="lobby"){ const q=$("#qr"); if(q && window.QRCode){ q.innerHTML=""; new QRCode(q,{text:location.origin+location.pathname.replace(/arena\.html$/,"")+"arena.html?pin="+PIN, width:240, height:240}); } }
+  }
+  function tafel(R){ return `<div class="tafel">${teams().map(([k,t])=>`<div class="team ${R&&(R.a.t===k||R.b.t===k)?"aktiv":""}" style="--f:${t.f}"><b>${t.e} ${esc(t.n)}</b><div class="p">${(S.punkte||{})[k]||0}</div><div class="small" style="opacity:.7">${mitglieder(k).length} Pers.</div></div>`).join("")}</div>`; }
+  function lobby(){
+    const T=teams();
+    return `<div class="bwrap"><div class="lobbygrid"><div class="card" style="text-align:center"><div id="qr" style="display:flex;justify-content:center;background:#fff;padding:10px;border-radius:14px"></div><div style="margin-top:8px">PIN</div><div class="lwpin">${PIN}</div></div>
+      <div><div class="card"><h2>1 · Teams</h2><div class="row">Anzahl: ${[2,3,4,5,6].map(n=>`<button class="btn sm ${T.length===n?"gold":"hell"}" data-anz="${n}">${n}</button>`).join("")}<button class="btn sm acc" id="mischen">🔀 Teams mischen</button></div>
+        <div class="tafel" style="margin-top:12px">${T.map(([k,t])=>`<div class="team" style="--f:${t.f}"><b>${t.e} ${esc(t.n)}</b><div class="spieler" style="margin-top:6px">${mitglieder(k).map(p=>`<button data-sp="${p}" style="--f:${t.f}">${nm(p)}</button>`).join("")||`<span class="small" style="opacity:.6">noch leer</span>`}</div></div>`).join("")}</div>
+        <p class="small" style="opacity:.75">Ohne Team: ${spieler().filter(([,x])=>!x.team).map(([p])=>`<button class="btn sm hell" data-sp="${p}">${nm(p)}</button>`).join(" ")||"–"} · Tipp: Name antippen = ins nächste Team.</p></div>
+        <div class="card"><h2>2 · Los!</h2><p style="opacity:.85">Jede Runde kommen 2 oder 4 Personen in die Mitte: 1 gegen 1 oder 2 gegen 2. Alle anderen sind Publikum und stimmen bei Gespräch und Party am Handy ab.</p>
+        <button class="btn acc" id="starten" ${spieler().some(([,x])=>x.team)?"":"disabled"}>▶ Spiel starten</button></div></div></div></div>`;
+  }
+  function vsBlock(R){ const A=(S.teams||{})[R.a.t]||{}, B=(S.teams||{})[R.b.t]||{};
+    return `<div class="vs"><div class="seite" style="--f:${A.f}"><div style="font-size:40px">${A.e}</div><h2>${(R.a.ids||[]).map(nm).join(" & ")}</h2><div class="tn">${esc(A.n)}</div></div><div class="x">VS</div><div class="seite" style="--f:${B.f}"><div style="font-size:40px">${B.e}</div><h2>${(R.b.ids||[]).map(nm).join(" & ")}</h2><div class="tn">${esc(B.n)}</div></div></div>`; }
+  function spiel(){
+    const R=S.runde;
+    let h=`<div class="bwrap" style="padding-bottom:90px">${tafel(R)}`;
+    if(!R){ h+=`<div class="card" style="text-align:center;padding:40px"><div style="font-size:70px">🏟️</div><h1 style="font-size:46px">Bereit für das erste Duell?</h1><p style="font-size:22px;opacity:.85">Unten: Format und Aufgabe wählen – dann „🎲 Nächstes Duell“.</p></div>`; }
+    else { const t=TYPEN[R.typ]; h+=`<div class="typband">${t.e} ${t.n} <span class="chip">${R.fmt} gegen ${R.fmt}</span> <span class="chip">Runde ${R.nr}</span></div>`+schrittAnzeige(R); }
+    return h+`</div>`+steuer(R);
+  }
+  function seitenBalken(R, wert, max){ return ["a","b"].map(sd=>{ const T=(S.teams||{})[R[sd].t]||{}; const v=wert(sd); return `<div style="margin:10px 0"><div class="row" style="justify-content:space-between;font-size:22px"><b>${T.e} ${(R[sd].ids||[]).map(nm).join(" & ")}</b><b>${v}</b></div><div class="balken" style="--f:${T.f}"><i style="width:${Math.min(100,max?v/max*100:0)}%"></i></div></div>`; }).join(""); }
+  function schrittAnzeige(R){
+    const s=R.schritt, D=((S.rd||{})[R.nr])||{}, t=TYPEN[R.typ];
+    if(s==="vs"){ let x=vsBlock(R)+`<p style="text-align:center;font-size:24px;opacity:.9">${esc(t.text)}</p>`;
+      if(R.typ==="gespraech"){ const g=ARENA.gespraeche[R.inhalt.g]; x+=`<div class="card"><h2>${g.e} ${esc(g.t)}</h2><div class="row" style="align-items:stretch">${["a","b"].map(r=>`<div class="rolle" style="flex:1"><b>Rolle ${r.toUpperCase()}:</b> ${esc(g[r])}</div>`).join("")}</div>
+        <p style="opacity:.8">${R.fmt===1?"Die beiden spielen die Szene zusammen (A und B). Danach stimmt das Publikum ab: Wer war besser?":"Erst spielt das linke Paar, dann das rechte Paar die gleiche Szene. Kurz vorbereiten!"}</p></div>`; }
+      if(R.typ==="party"){ const pt=ARENA.partys[R.inhalt.p]; x+=`<div class="card" style="text-align:center"><h2 style="font-size:40px">${pt.e} ${esc(pt.t)}</h2><p style="font-size:22px">${esc(pt.text)}</p></div>`; }
+      if(R.typ==="sprint"){ x+=`<div class="card" style="text-align:center"><p style="font-size:22px">Gleich kommt das Thema …</p></div>`; }
+      if(R.typ==="erklaeren"){ x+=`<div class="card" style="text-align:center;font-size:21px">${R.fmt===2?"Eine Person erklärt, der Partner / die Partnerin rät.":"Die Person in der Mitte erklärt – das <b>eigene Team</b> rät von den Plätzen."} Erst links, dann rechts. Je 60 Sekunden.</div>`; }
+      if(R.typ==="janein"){ x+=`<div class="card" style="text-align:center;font-size:21px">Das Publikum stellt Fragen. Wer „ja“ oder „nein“ sagt, ist raus. Wer länger durchhält, gewinnt (max. 60 s). Du drückst ❌, wenn es passiert.</div>`; }
+      return x; }
+    if(s==="los" && (R.typ==="quiz"||R.typ==="satz")){ const key=R.typ==="quiz"?"q":"s"; const n=R.typ==="quiz"?R.inhalt.q.length:R.inhalt.s.length;
+      return `<div class="uhr" id="uhr">${mmss(rest(R))}</div>`+seitenBalken(R, sd=>{ let ok=0; (R[sd].ids||[]).forEach(p=>Object.values(((D[key]||{})[p])||{}).forEach(x=>{ if(x&&x.ok) ok++; })); return ok; }, n*(R.fmt))+`<p style="text-align:center;opacity:.75">Die Zahl = richtige Antworten. Bei Gleichstand gewinnt, wer schneller war.</p>`; }
+    if(R.typ==="sprint" && (s==="los"||s==="pruefen")){ const k=ARENA.kategorien[R.inhalt.k]; const weg=D.weg||{};
+      let x=`<div class="typband" style="font-size:clamp(34px,4vw,64px)">${k.e} ${esc(k.k)}</div>`;
+      if(s==="los") return x+`<div class="uhr" id="uhr">${mmss(rest(R))}</div>`+seitenBalken(R, sd=>Object.keys(((D.w||{})[sd])||{}).length, 20);
+      return x+`<p style="text-align:center;opacity:.85;font-size:20px">Prüft gemeinsam: Falsche Wörter antippen = durchstreichen.</p><div class="row" style="align-items:start">${["a","b"].map(sd=>{ const T=(S.teams||{})[R[sd].t]||{}; return `<div class="card" style="flex:1;border-top:8px solid ${T.f}"><h2>${T.e} ${(R[sd].ids||[]).map(nm).join(" & ")}</h2><div class="wolke">${Object.entries(((D.w||{})[sd])||{}).map(([key,w])=>`<button data-weg="${key}" class="${weg[key]?"weg":""}">${esc(w.w)}</button>`).join("")||"–"}</div></div>`; }).join("")}</div>`; }
+    if(R.typ==="erklaeren" && (s==="a"||s==="b")){ const T=(S.teams||{})[R[s].t]||{}; const e=((D.e||{})[s])||{};
+      return `<div class="card" style="text-align:center;border-top:10px solid ${T.f}"><h2 style="font-size:40px">${T.e} ${nm((R[s].ids||[])[0])} erklärt${R.fmt===2?` – ${nm((R[s].ids||[])[1])} rät`:" – das Team rät"}!</h2><div class="uhr" id="uhr">${mmss(rest(R))}</div><div class="ergebnis">✓ ${Number(e.ok)||0}</div><p style="opacity:.7">übersprungen: ${Number(e.skip)||0}</p></div>`; }
+    if(R.typ==="janein" && (s==="a"||s==="b")){ const T=(S.teams||{})[R[s].t]||{}; const fertig=((D.j||{})[s])!==undefined;
+      return `<div class="card" style="text-align:center;border-top:10px solid ${T.f}"><h2 style="font-size:44px">🙅 ${T.e} ${(R[s].ids||[]).map(nm).join(" & ")}</h2><p style="font-size:22px">Fragt! Wer „ja“ oder „nein“ sagt, ist raus.</p><div class="uhr" id="uhr">0 s</div>${fertig?`<div class="ergebnis">${D.j[s]} Sekunden</div>`:`<button class="btn rot" id="jnraus" style="font-size:28px;min-height:80px;padding:10px 40px">❌ Ja/Nein gesagt!</button>`}</div>`; }
+    if(R.typ==="gespraech" && ["a","b","zusammen"].includes(s)){ const g=ARENA.gespraeche[R.inhalt.g];
+      return (s==="zusammen"?vsBlock(R):`<div class="typband">🎬 ${esc(((S.teams||{})[R[s].t]||{}).e)} ${(R[s].ids||[]).map(nm).join(" & ")} spielen</div>`)+`<div class="uhr" id="uhr">${mmss(rest(R))}</div><div class="card"><h2>${g.e} ${esc(g.t)}</h2><div class="row" style="align-items:stretch">${["a","b"].map(r=>`<div class="rolle" style="flex:1"><b>${r.toUpperCase()}:</b> ${esc(g[r])}</div>`).join("")}</div></div>`; }
+    if(R.typ==="party" && s==="planen"){ return `<div class="uhr" id="uhr">${mmss(rest(R))}</div>`+seitenBalken(R, sd=>Object.values(((D.plan||{})[sd])||{}).filter(v=>String(v).trim()).length, 6)+`<p style="text-align:center;opacity:.75">Felder ausgefüllt (von 6)</p>`; }
+    if(R.typ==="party" && (s==="a"||s==="b")){ const T=(S.teams||{})[R[s].t]||{}; const plan=((D.plan||{})[s])||{}; const pt=ARENA.partys[R.inhalt.p];
+      return `<div class="typband">🎤 ${T.e} ${(R[s].ids||[]).map(nm).join(" & ")} präsentieren</div><div class="row" style="align-items:start"><div style="flex:2"><div class="plan" style="border-top:10px solid ${T.f}"><h2 style="color:var(--ink)">${pt.e} ${esc(pt.t)}</h2>${ARENA.partyFelder.map(f=>`<div><b>${esc(f.f)}</b> ${esc(plan[f.k]||"–")}</div>`).join("")}</div></div><div style="flex:1"><div class="uhr" id="uhr" style="font-size:90px">${mmss(rest(R))}</div></div></div>`; }
+    if(s==="abstimmung"){ const v=Object.values(D.v||{}); return `<div class="typband">🗳️ Publikum, stimmt ab: Wer war besser?</div><div class="uhr" id="uhr">${mmss(rest(R))}</div><p style="text-align:center;font-size:24px">${v.length} Stimmen abgegeben</p>`; }
+    if(s==="ergebnis"){ const E=R.ergebnis||wertung(S,R); const W=E.sieger?(S.teams||{})[R[E.sieger].t]:null;
+      return vsBlock(R)+`<div class="ergebnis">${W?`🏆 ${W.e} ${esc(W.n)} gewinnt!`:"🤝 Unentschieden!"}</div><p style="text-align:center;font-size:30px">${esc(E.info.a)} : ${esc(E.info.b)}</p><p style="text-align:center;opacity:.75">Sieg 3 · Unentschieden 2 · Niederlage 1 Punkt</p>`; }
+    return vsBlock(R);
+  }
+  function steuer(R){
+    const auswahl=`<select id="fmt"><option value="auto" ${wahlFmt==="auto"?"selected":""}>Format: abwechselnd</option><option value="1" ${wahlFmt==="1"?"selected":""}>1 gegen 1</option><option value="2" ${wahlFmt==="2"?"selected":""}>2 gegen 2</option></select>
+      <select id="typ"><option value="zufall">🎲 Aufgabe: Zufall</option>${Object.entries(TYPEN).map(([k,t])=>`<option value="${k}" ${wahlTyp===k?"selected":""}>${t.e} ${t.n}</option>`).join("")}</select>`;
+    if(!R || R.schritt==="ergebnis") return `<div class="steuer">${auswahl}<button class="btn acc" id="duell">🎲 Nächstes Duell</button>${R?`<span class="small" style="opacity:.75;margin-left:auto">Punkte korrigieren:</span>${teams().map(([k,t])=>`<button class="btn sm hell" data-plus="${k}" data-w="-1">${t.e}−1</button><button class="btn sm hell" data-plus="${k}" data-w="1">${t.e}+1</button>`).join("")}`:""}</div>`;
+    const S2=schritte(R); const i=S2.indexOf(R.schritt); const naechst=S2[i+1];
+    const label={los:"▶ Start!", a:R.typ==="party"?"🎤 Links präsentiert":"▶ Links ist dran", b:R.typ==="party"?"🎤 Rechts präsentiert":"▶ Rechts ist dran", zusammen:"🎬 Szene starten", abstimmung:"🗳️ Abstimmung", ergebnis:"🏆 Ergebnis", pruefen:"🔍 Wörter prüfen", planen:"▶ Planen (2:30)"}[naechst]||"Weiter";
+    return `<div class="steuer">${R.schritt==="vs"?`<button class="btn hell" id="tausch">🔁 andere Personen</button>`:""}${zeitVon(R,R.schritt)&&R.typ!=="janein"?`<button class="btn hell" id="plus">+30 s</button>`:""}<button class="btn gold" id="next">${label}</button><button class="btn hell" id="abbruch" style="margin-left:auto">✕ Duell abbrechen</button></div>`;
+  }
+  /* ---------- Duell auslosen ---------- */
+  function neuesDuell(nochmal){
+    const T=teams().filter(([k])=>mitglieder(k).length>0); if(T.length<2){ alert("Es braucht mindestens 2 Teams mit Personen."); return; }
+    const alt=S.runde;
+    let fmt = wahlFmt==="auto" ? (((alt&&alt.fmt)||2)===2?1:2) : Number(wahlFmt);
+    let typ = wahlTyp!=="zufall" ? wahlTyp : null;
+    if(!typ){ const liste=Object.keys(TYPEN); const zuletzt=(S.verlauf||[]).slice(-3); const frei=liste.filter(k=>!zuletzt.includes(k)); typ=frei[rnd(frei.length)]; }
+    const auftr=S.auftritte||{}, duelle=S.duelle||{};
+    const kand=T.filter(([k])=>mitglieder(k).length>=fmt); const pool=(kand.length>=2?kand:T);
+    if(kand.length<2) fmt=1;
+    const sort=mische(pool).sort((x,y)=>(duelle[x[0]]||0)-(duelle[y[0]]||0)); const ta=sort[0][0], tb=sort[1][0];
+    const waehle=t=>mische(mitglieder(t)).sort((x,y)=>(auftr[x]||0)-(auftr[y]||0)).slice(0,fmt);
+    const R={nr:(alt?alt.nr+(nochmal?0:1):1), typ, fmt, a:{t:ta, ids:waehle(ta)}, b:{t:tb, ids:waehle(tb)}, schritt:"vs", inhalt:inhaltFuer(typ)};
+    I().update({runde:R, [`rd/${R.nr}`]:null});
+  }
+  function inhaltFuer(typ){
+    if(typ==="quiz"){ const q=mische(ARENA.quiz.map((_,i)=>i)).slice(0,6); return {q, ord:q.map(i=>mische(ARENA.quiz[i].o.map((_,k)=>k)))}; }
+    if(typ==="satz"){ const s=mische(ARENA.saetze.map((_,i)=>i)).slice(0,4); return {s, sord:s.map(i=>mische(ARENA.saetze[i].w.map((_,k)=>k)))}; }
+    if(typ==="sprint") return {k:rnd(ARENA.kategorien.length)};
+    if(typ==="erklaeren"){ const w=mische(WOERTER.map((_,i)=>i)); return {wa:w.slice(0,40), wb:w.slice(40,80)}; }
+    if(typ==="gespraech") return {g:rnd(ARENA.gespraeche.length)};
+    if(typ==="party") return {p:rnd(ARENA.partys.length)};
+    return {x:1};
+  }
+  function weiterSchritt(){
+    const R=S.runde; if(!R) return; const S2=schritte(R); const i=S2.indexOf(R.schritt); const n=S2[i+1]; if(!n) return;
+    if(n==="ergebnis") return auswerten(R);
+    const sek=zeitVon(R,n); const up={schritt:n, start:jetzt(), ende: sek? jetzt()+sek*1000 : null};
+    if(R.schritt==="vs"){ const a={}; [...(R.a.ids||[]),...(R.b.ids||[])].forEach(p=>a[`auftritte/${p}`]=((S.auftritte||{})[p]||0)+1); a[`duelle/${R.a.t}`]=((S.duelle||{})[R.a.t]||0)+1; a[`duelle/${R.b.t}`]=((S.duelle||{})[R.b.t]||0)+1; I().update(a); }
+    const u={}; Object.entries(up).forEach(([k,v])=>u[`runde/${k}`]=v); I().update(u);
+  }
+  function auswerten(R){
+    if(R.ergebnis) return; const E=wertung(S,R); const up={"runde/schritt":"ergebnis", "runde/ergebnis":E, "runde/ende":null};
+    const pa = E.sieger==="a"?3:E.sieger==="b"?1:2, pb = E.sieger==="b"?3:E.sieger==="a"?1:2;
+    up[`punkte/${R.a.t}`]=((S.punkte||{})[R.a.t]||0)+pa; up[`punkte/${R.b.t}`]=((S.punkte||{})[R.b.t]||0)+pb;
+    up.verlauf=[...(S.verlauf||[]), R.typ].slice(-10);
+    I().update(up);
+  }
+  function binden(){
+    const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
+    $$("[data-anz]").forEach(b=>b.onclick=()=>{ const n=+b.dataset.anz; const neu={}; TEAMVORLAGE.slice(0,n).forEach((t,i)=>neu["t"+i]=t); const up={teams:neu};
+      spieler().forEach(([p,x])=>{ if(x.team && !neu[x.team]) up[`spieler/${p}/team`]=null; }); I().update(up); });
+    on("mischen", ()=>{ const T=teams().map(([k])=>k); const up={}; mische(spieler().map(([p])=>p)).forEach((p,i)=>up[`spieler/${p}/team`]=T[i%T.length]); I().update(up); });
+    $$("[data-sp]").forEach(b=>b.onclick=()=>{ const T=teams().map(([k])=>k); const x=(S.spieler||{})[b.dataset.sp]||{}; const i=T.indexOf(x.team); I(`spieler/${b.dataset.sp}/team`).set(T[(i+1)%T.length]); });
+    on("starten", ()=>I("info/phase").set("spiel"));
+    const f=$("#fmt"); if(f) f.onchange=()=>{ wahlFmt=f.value; f.blur(); };
+    const t=$("#typ"); if(t) t.onchange=()=>{ wahlTyp=t.value; t.blur(); };
+    on("duell", ()=>neuesDuell(false));
+    on("tausch", ()=>neuesDuell(true));
+    on("next", weiterSchritt);
+    on("plus", ()=>I("runde/ende").set(Math.max(jetzt(),(S.runde&&S.runde.ende)||jetzt())+30000));
+    on("abbruch", ()=>{ if(confirm("Duell abbrechen? Es gibt keine Punkte.")) I("runde").set(null); });
+    on("jnraus", ()=>{ const R=S.runde; const s=Math.min(60, Math.floor((jetzt()-(R.start||jetzt()))/1000)); I(`rd/${R.nr}/j/${R.schritt}`).set(s); });
+    $$("[data-weg]").forEach(b=>b.onclick=()=>{ const R=S.runde; const k=b.dataset.weg; const ist=(((S.rd||{})[R.nr]||{}).weg||{})[k]; I(`rd/${R.nr}/weg/${k}`).set(ist?null:true); });
+    $$("[data-plus]").forEach(b=>b.onclick=()=>I(`punkte/${b.dataset.plus}`).set(((S.punkte||{})[b.dataset.plus]||0)+Number(b.dataset.w)));
+    on("beenden", ()=>{ if(confirm("Spiel beenden und Sieger zeigen?")) I("info/phase").set("ende"); });
+    on("weiter", ()=>I("info/phase").set("spiel"));
+    on("neu", ()=>{ if(!confirm("Ein neues Spiel mit neuer PIN starten?")) return; I().off(); try{ localStorage.removeItem("arena_leitung_pin"); }catch(e){} PIN=""; start(); });
+  }
+  function ende(){
+    const rang=teams().sort((a,b)=>((S.punkte||{})[b[0]]||0)-((S.punkte||{})[a[0]]||0));
+    return `<div class="bwrap" style="text-align:center"><h1 style="font-size:64px;margin-top:20px">🏆 ${rang[0]?`${rang[0][1].e} ${esc(rang[0][1].n)} gewinnt!`:""}</h1>
+      ${rang.map(([k,t],i)=>`<div class="card" style="max-width:700px;margin:10px auto;display:flex;justify-content:space-between;font-size:30px;border-left:10px solid ${t.f}"><b>${["🥇","🥈","🥉"][i]||i+1+"."} ${t.e} ${esc(t.n)}</b><b style="color:var(--gold)">${(S.punkte||{})[k]||0}</b></div>`).join("")}
+      <p style="opacity:.75">${(S.verlauf||[]).length} Duelle gespielt</p></div>`;
+  }
+  if(!db){ app.innerHTML="Keine Verbindung."; return; }
+  start();
+}
+
+P.get("leitung") ? leitung() : handy();
+</script>
+</body>
+</html>
