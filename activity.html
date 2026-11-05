@@ -96,6 +96,7 @@ td input{width:80px;min-height:36px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="activity/woerter-a2.js"></script>
+<script src="nachzuegler.js"></script>
 <script>
 /* =========================================================
    WORT-PARTY · Pantomime 🎭 · Malen ✏️ · Erklären 💬 – in Teams
@@ -221,7 +222,7 @@ function leitung(){
     if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${AROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
       await A().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}}); }
     try{ localStorage.setItem("activity_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
-    A().on("value", s=>{ S=s.val()||{}; male(); });
+    A().on("value", s=>{ S=s.val()||{}; male(); Nachzuegler.update({aktiv:!!S.info&&S.info.phase!=="lobby", spieler:S.spieler, feld:"team", gruppen:Object.entries(S.teams||{}).map(([t,T])=>({k:t, name:T.name, emoji:T.emoji||"", farbe:T.farbe})), setze:(p,k)=>A(`spieler/${p}`).update({team:k, da:true})}); });
     tick=setInterval(uhr, 250);
   }
   function uhr(){ if(!S||!S.zug) return; const Z=S.zug; const r=rest(Z); const z=$("#zeit"); if(z){ z.textContent=r; z.style.color=r<=10?"var(--bad)":""; }

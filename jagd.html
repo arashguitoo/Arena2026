@@ -126,6 +126,7 @@ body.lw{background:var(--ink);color:#fff}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="jagd/index.js"></script>
+<script src="nachzuegler.js"></script>
 <script>
 /* =========================================================
    SCHNITZELJAGD-ENGINE  ·  Plön
@@ -538,7 +539,7 @@ function leitung(){
   function verbinden(){
     try{ localStorage.setItem("jagd_leitung_pin",PIN); }catch(e){}
     history.replaceState(null,"","?leitung=1&pin="+PIN);
-    J().on("value", async s=>{ S=s.val()||{}; if(!S.info){ menue(); return; } if(!F) F=await ladeFall(S.info.fall); male(); });
+    J().on("value", async s=>{ S=s.val()||{}; if(!S.info){ menue(); return; } if(!F) F=await ladeFall(S.info.fall); male(); Nachzuegler.update({aktiv:S.info.phase!=="lobby", spieler:S.spieler, feld:"team", gruppen:Object.entries(S.teams||{}).map(([t,T])=>({k:t, name:T.name, emoji:T.emoji, farbe:T.farbe})), setze:(p,k)=>J(`spieler/${p}`).update({team:k, da:true})}); });
     setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(zeitRest(S)); }, 1000);
   }
   const namen = () => pub.names||{};

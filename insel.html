@@ -104,6 +104,7 @@ td input{width:80px;min-height:36px}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="insel/daten.js"></script>
+<script src="nachzuegler.js"></script>
 <script>
 /* =========================================================
    GESTRANDET – DIE INSEL  ·  ?leitung=1 (Lehrkraft = Leinwand) · ?pin= (Jugendliche)
@@ -345,7 +346,7 @@ function leitung(){
     if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+Math.floor(Math.random()*9000)); const ex=(await db.ref(`${IROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
       await I().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}}); }
     try{ localStorage.setItem("insel_leitung_pin",PIN); }catch(e){} history.replaceState(null,"","?leitung=1&pin="+PIN);
-    I().on("value", s=>{ S=s.val()||{}; waechter(); male(); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500);
+    I().on("value", s=>{ S=s.val()||{}; waechter(); male(); Nachzuegler.update({aktiv:!!S.info&&S.info.phase!=="lobby", spieler:S.spieler, feld:"gruppe", gruppen:gruppen(S).map(g=>({k:g, name:G(g).name, emoji:G(g).emoji, farbe:G(g).farbe})), setze:(p,k)=>I(`spieler/${p}`).update({gruppe:k, da:true}), plural:"Gruppen", frage:"in welche Gruppe?"}); }); setInterval(()=>{ const u=$("#uhr"); if(u&&S) u.textContent=mmss(rest(S)); },500);
   }
   /* Wächter: Rätsel außerhalb der laufenden Arbeitszeit (z. B. alte Handy-Version während des Marktes) → −3 Punkte pro Rätsel */
   let stand=null; const zuletzt={};

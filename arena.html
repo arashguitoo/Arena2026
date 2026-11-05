@@ -106,6 +106,7 @@ body.board .card{background:var(--nacht-2);box-shadow:none;color:#fff}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="arena/inhalt.js"></script>
 <script src="activity/woerter-a2.js"></script>
+<script src="nachzuegler.js"></script>
 <script>
 /* =========================================================
    ARENA-DUELL – Live-Spiel mit Handys, eigenständig (ohne Lernwelt-Punkte)
@@ -333,7 +334,7 @@ function leitung(){
       await I().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}, teams}); }
     try{ localStorage.setItem("arena_leitung_pin",PIN); }catch(e){}
     history.replaceState(null,"","?leitung=1&pin="+PIN);
-    I().on("value", s=>{ S=s.val()||{}; male(); });
+    I().on("value", s=>{ S=s.val()||{}; male(); Nachzuegler.update({aktiv:!!S.info&&S.info.phase==="spiel", spieler:S.spieler, feld:"team", gruppen:teams().map(([k,t])=>({k, name:t.n, emoji:t.e, farbe:t.f})), setze:(p,k)=>I(`spieler/${p}/team`).set(k)}); });
     setInterval(tick,250);
   }
   function tick(){ const R=S.runde; const u=$("#uhr"); if(!u||!R) return;
