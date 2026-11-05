@@ -132,7 +132,17 @@ const WOERTER=((window.WORT_LISTEN||{}).a2||{woerter:[]}).woerter.filter(w=>w[1]
 const KOMPOSITA=((window.WORT_LISTEN||{}).a2||{woerter:[]}).woerter.filter(w=>w[3]==="Zusammengesetzte Wörter" && w[1].includes("p") && w[0].length>=9);
 const listeFuer=R=>R.typ==="pantomime"?KOMPOSITA:WOERTER;
 
-const TEAMVORLAGE=[{n:"Löwen",e:"🦁",f:"#F59E0B"},{n:"Adler",e:"🦅",f:"#3B82F6"},{n:"Wölfe",e:"🐺",f:"#64748B"},{n:"Delfine",e:"🐬",f:"#06B6D4"},{n:"Füchse",e:"🦊",f:"#F97316"},{n:"Bären",e:"🐻",f:"#A16207"}];
+const NAMENSETS={
+  tiere:{t:"🦁 Tiere", l:[{n:"Löwen",e:"🦁",f:"#F59E0B"},{n:"Adler",e:"🦅",f:"#3B82F6"},{n:"Wölfe",e:"🐺",f:"#64748B"},{n:"Delfine",e:"🐬",f:"#06B6D4"},{n:"Füchse",e:"🦊",f:"#F97316"},{n:"Bären",e:"🐻",f:"#A16207"}]},
+  farben:{t:"🎨 Farben", l:[{n:"Rot",e:"🔴",f:"#E2483D"},{n:"Blau",e:"🔵",f:"#3B82F6"},{n:"Grün",e:"🟢",f:"#14A37F"},{n:"Gelb",e:"🟡",f:"#EAB308"},{n:"Lila",e:"🟣",f:"#8B5CF6"},{n:"Orange",e:"🟠",f:"#F97316"}]},
+  planeten:{t:"🪐 Planeten", l:[{n:"Merkur",e:"☄️",f:"#94A3B8"},{n:"Venus",e:"✨",f:"#EAB308"},{n:"Erde",e:"🌍",f:"#3B82F6"},{n:"Mars",e:"🔴",f:"#E2483D"},{n:"Jupiter",e:"🪐",f:"#F97316"},{n:"Saturn",e:"💫",f:"#8B5CF6"}]},
+  obst:{t:"🍎 Obst", l:[{n:"Äpfel",e:"🍎",f:"#E2483D"},{n:"Bananen",e:"🍌",f:"#EAB308"},{n:"Trauben",e:"🍇",f:"#8B5CF6"},{n:"Kiwis",e:"🥝",f:"#14A37F"},{n:"Orangen",e:"🍊",f:"#F97316"},{n:"Kirschen",e:"🍒",f:"#BE185D"}]},
+  wetter:{t:"⛅ Wetter", l:[{n:"Sonne",e:"☀️",f:"#EAB308"},{n:"Blitz",e:"⚡",f:"#8B5CF6"},{n:"Regen",e:"🌧️",f:"#3B82F6"},{n:"Schnee",e:"❄️",f:"#06B6D4"},{n:"Wind",e:"🌪️",f:"#64748B"},{n:"Regenbogen",e:"🌈",f:"#E2483D"}]},
+  staedte:{t:"🏙️ Städte", l:[{n:"Berlin",e:"🐻",f:"#E2483D"},{n:"Hamburg",e:"⚓",f:"#3B82F6"},{n:"München",e:"🥨",f:"#06B6D4"},{n:"Köln",e:"⛪",f:"#64748B"},{n:"Kiel",e:"⛵",f:"#14A37F"},{n:"Plön",e:"🏰",f:"#F97316"}]},
+  edelsteine:{t:"💎 Edelsteine", l:[{n:"Rubin",e:"❤️",f:"#E2483D"},{n:"Saphir",e:"💙",f:"#3B82F6"},{n:"Smaragd",e:"💚",f:"#14A37F"},{n:"Gold",e:"🥇",f:"#EAB308"},{n:"Amethyst",e:"💜",f:"#8B5CF6"},{n:"Diamant",e:"💎",f:"#06B6D4"}]}
+};
+let namenSet="tiere"; const TEAMVORLAGE=NAMENSETS.tiere.l;
+const vorlage=()=>NAMENSETS[namenSet]?NAMENSETS[namenSet].l:TEAMVORLAGE;
 const TYPEN={
   quiz:     {n:"Blitz-Quiz",     e:"⚡", text:"6 Fragen am Handy – richtig UND schnell!", sek:75},
   satz:     {n:"Satz-Duell",     e:"🧩", text:"Baut 4 Sätze am Handy. Wer schafft mehr?", sek:100},
@@ -330,11 +340,11 @@ function leitung(){
     if(!PIN){ try{ PIN=localStorage.getItem("arena_leitung_pin")||""; }catch(e){} }
     if(PIN){ const i=(await I("info").once("value")).val(); if(!i||(i.phase==="ende"&&!P.get("pin"))) PIN=""; }
     if(!PIN){ for(let i=0;i<15;i++){ const c=String(1000+rnd(9000)); const ex=(await db.ref(`${ROOT}/${c}/info`).once("value")).val(); if(!ex){ PIN=c; break; } }
-      const teams={}; TEAMVORLAGE.slice(0,anzahl).forEach((t,i)=>teams["t"+i]=t);
+      const teams={}; vorlage().slice(0,anzahl).forEach((t,i)=>teams["t"+i]=t);
       await I().set({info:{phase:"lobby", erstellt:TS(), pin:PIN}, teams}); }
     try{ localStorage.setItem("arena_leitung_pin",PIN); }catch(e){}
     history.replaceState(null,"","?leitung=1&pin="+PIN);
-    I().on("value", s=>{ S=s.val()||{}; male(); Nachzuegler.update({aktiv:!!S.info&&S.info.phase==="spiel", spieler:S.spieler, feld:"team", gruppen:teams().map(([k,t])=>({k, name:t.n, emoji:t.e, farbe:t.f})), setze:(p,k)=>I(`spieler/${p}/team`).set(k)}); });
+    I().on("value", s=>{ S=s.val()||{}; if(S.info&&S.info.namen) namenSet=S.info.namen; male(); Nachzuegler.update({aktiv:!!S.info&&S.info.phase==="spiel", spieler:S.spieler, feld:"team", gruppen:teams().map(([k,t])=>({k, name:t.n, emoji:t.e, farbe:t.f})), setze:(p,k)=>I(`spieler/${p}/team`).set(k)}); });
     setInterval(tick,250);
   }
   function tick(){ const R=S.runde; const u=$("#uhr"); if(!u||!R) return;
@@ -358,7 +368,7 @@ function leitung(){
   function lobby(){
     const T=teams();
     return `<div class="bwrap"><div class="lobbygrid"><div class="card" style="text-align:center"><div id="qr" style="display:flex;justify-content:center;background:#fff;padding:10px;border-radius:14px"></div><div style="margin-top:8px">PIN</div><div class="lwpin">${PIN}</div></div>
-      <div><div class="card"><h2>1 · Teams</h2><div class="row">Anzahl: ${[2,3,4,5,6].map(n=>`<button class="btn sm ${T.length===n?"gold":"hell"}" data-anz="${n}">${n}</button>`).join("")}<button class="btn sm acc" id="mischen">🔀 Teams mischen</button></div>
+      <div><div class="card"><h2>1 · Teams</h2><div class="row" style="margin-bottom:8px">Namen: ${Object.entries(NAMENSETS).map(([k,x])=>`<button class="btn sm ${((S.info||{}).namen||"tiere")===k?"gold":"hell"}" data-set="${k}">${x.t}</button>`).join("")}</div><div class="row">Anzahl: ${[2,3,4,5,6].map(n=>`<button class="btn sm ${T.length===n?"gold":"hell"}" data-anz="${n}">${n}</button>`).join("")}<button class="btn sm acc" id="mischen">🔀 Teams mischen</button></div>
         <div class="tafel" style="margin-top:12px">${T.map(([k,t])=>`<div class="team" style="--f:${t.f}"><b>${t.e} ${esc(t.n)}</b><div class="spieler" style="margin-top:6px">${mitglieder(k).map(p=>`<button data-sp="${p}" style="--f:${t.f}">${nm(p)}</button>`).join("")||`<span class="small" style="opacity:.6">noch leer</span>`}</div></div>`).join("")}</div>
         <p class="small" style="opacity:.75">Ohne Team: ${spieler().filter(([,x])=>!x.team).map(([p])=>`<button class="btn sm hell" data-sp="${p}">${nm(p)}</button>`).join(" ")||"–"} · Tipp: Name antippen = ins nächste Team.</p></div>
         <div class="card"><h2>2 · Los!</h2><p style="opacity:.85">Jede Runde kommen 2 oder 4 Personen in die Mitte: 1 gegen 1 oder 2 gegen 2. Alle anderen sind Publikum und stimmen bei Gespräch und Party am Handy ab.</p>
@@ -454,8 +464,9 @@ function leitung(){
   }
   function binden(){
     const on=(id,f)=>{ const el=$("#"+id); if(el) el.onclick=f; };
-    $$("[data-anz]").forEach(b=>b.onclick=()=>{ const n=+b.dataset.anz; const neu={}; TEAMVORLAGE.slice(0,n).forEach((t,i)=>neu["t"+i]=t); const up={teams:neu};
+    $$("[data-anz]").forEach(b=>b.onclick=()=>{ const n=+b.dataset.anz; const neu={}; vorlage().slice(0,n).forEach((t,i)=>neu["t"+i]=t); const up={teams:neu};
       spieler().forEach(([p,x])=>{ if(x.team && !neu[x.team]) up[`spieler/${p}/team`]=null; }); I().update(up); });
+    $$("[data-set]").forEach(b=>b.onclick=()=>{ namenSet=b.dataset.set; const L=vorlage(); const up={"info/namen":namenSet}; teams().forEach(([k],i)=>up[`teams/${k}`]=L[i%L.length]); I().update(up); });
     on("mischen", ()=>{ const T=teams().map(([k])=>k); const up={}; mische(spieler().map(([p])=>p)).forEach((p,i)=>up[`spieler/${p}/team`]=T[i%T.length]); I().update(up); });
     $$("[data-sp]").forEach(b=>b.onclick=()=>{ const T=teams().map(([k])=>k); const x=(S.spieler||{})[b.dataset.sp]||{}; const i=T.indexOf(x.team); I(`spieler/${b.dataset.sp}/team`).set(T[(i+1)%T.length]); });
     on("starten", ()=>I("info/phase").set("spiel"));
