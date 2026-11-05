@@ -52,7 +52,7 @@ input[type=text],input[type=number],select{min-height:44px;border:2px solid var(
 .kachel{min-height:44px;padding:6px 12px;border-radius:10px;border:0;background:var(--pri);color:#fff;font-weight:700;font-size:18px;cursor:pointer}
 .kachel.weg{visibility:hidden}
 .pool{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0}
-.wort{font-family:var(--head);font-weight:900;font-size:40px;text-align:center;margin:10px 0;line-height:1.1}
+.wort{font-family:var(--head);font-weight:900;font-size:clamp(26px,9vw,40px);text-align:center;margin:10px 0;line-height:1.1;overflow-wrap:anywhere;hyphens:auto}
 .verboten{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
 .verboten span{background:var(--bad-2);color:var(--bad);border-radius:999px;padding:3px 10px;font-weight:700;text-decoration:line-through}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -127,6 +127,9 @@ const rest=R=>R&&R.ende?Math.max(0,Math.ceil((R.ende-jetzt())/1000)):0;
 const mmss=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 const norm=s=>String(s||"").toLowerCase().replace(/[.,!?;:"„“]/g,"").replace(/\s+/g," ").trim();
 const WOERTER=((window.WORT_LISTEN||{}).a2||{woerter:[]}).woerter.filter(w=>w[1].includes("e"));
+/* Pantomime: nur schwierigere zusammengesetzte Wörter (lang, mit Pantomime-Modus) */
+const KOMPOSITA=((window.WORT_LISTEN||{}).a2||{woerter:[]}).woerter.filter(w=>w[3]==="Zusammengesetzte Wörter" && w[1].includes("p") && w[0].length>=9);
+const listeFuer=R=>R.typ==="pantomime"?KOMPOSITA:WOERTER;
 
 const TEAMVORLAGE=[{n:"Löwen",e:"🦁",f:"#F59E0B"},{n:"Adler",e:"🦅",f:"#3B82F6"},{n:"Wölfe",e:"🐺",f:"#64748B"},{n:"Delfine",e:"🐬",f:"#06B6D4"},{n:"Füchse",e:"🦊",f:"#F97316"},{n:"Bären",e:"🐻",f:"#A16207"}];
 const TYPEN={
@@ -134,6 +137,7 @@ const TYPEN={
   satz:     {n:"Satz-Duell",     e:"🧩", text:"Baut 4 Sätze am Handy. Wer schafft mehr?", sek:100},
   sprint:   {n:"Wörter-Sprint",  e:"📝", text:"45 Sekunden: Schreibt so viele Wörter zum Thema wie möglich!", sek:45},
   erklaeren:{n:"Erklär-Duell",   e:"🗣️", text:"Erklärt Wörter – ohne die verbotenen Wörter! 60 Sekunden pro Seite.", sek:60},
+  pantomime:{n:"Pantomime",      e:"🎭", text:"Zusammengesetzte Wörter vorspielen – ohne Sprechen! Passen kostet 1 Punkt.", sek:75},
   gespraech:{n:"Gespräch",       e:"💬", text:"Spielt eine Situation. Das Publikum stimmt ab!", sek:90},
   party:    {n:"Party planen",   e:"🎉", text:"Plant eine Party am Handy und präsentiert sie. Das Publikum stimmt ab!", sek:150},
   janein:   {n:"Ja-Nein-Verbot", e:"🙅", text:"Das Publikum fragt. Wer „ja“ oder „nein“ sagt, ist raus!", sek:60}
@@ -141,7 +145,7 @@ const TYPEN={
 function schritte(R){ switch(R.typ){
   case "quiz": case "satz": return ["vs","los","ergebnis"];
   case "sprint": return ["vs","los","pruefen","ergebnis"];
-  case "erklaeren": case "janein": return ["vs","a","b","ergebnis"];
+  case "erklaeren": case "pantomime": case "janein": return ["vs","a","b","ergebnis"];
   case "gespraech": return R.fmt===1 ? ["vs","zusammen","abstimmung","ergebnis"] : ["vs","a","b","abstimmung","ergebnis"];
   case "party": return ["vs","planen","a","b","abstimmung","ergebnis"];
 } return ["vs","ergebnis"]; }
@@ -154,6 +158,7 @@ function wertung(S,R){
     if(R.typ==="quiz"||R.typ==="satz"){ let ok=0, zeit=0; const key=R.typ==="quiz"?"q":"s"; ids.forEach(p=>Object.values(((D[key]||{})[p])||{}).forEach(x=>{ if(x&&x.ok) ok++; zeit+=Number(x&&x.t)||0; })); w[sd]=ok+Math.max(0,1-zeit/1e7)*0; info[sd]=`${ok} richtig`; w[sd+"z"]=zeit; }
     if(R.typ==="sprint"){ const weg=D.weg||{}; const set=new Set(); Object.entries(((D.w||{})[sd])||{}).forEach(([k,x])=>{ if(!weg[k] && x && x.w) set.add(norm(x.w)); }); w[sd]=set.size; info[sd]=`${set.size} ${set.size===1?"Wort":"Wörter"}`; }
     if(R.typ==="erklaeren"){ const e=((D.e||{})[sd])||{}; w[sd]=Number(e.ok)||0; info[sd]=`${w[sd]} erraten`; }
+    if(R.typ==="pantomime"){ const e=((D.e||{})[sd])||{}; const ok=Number(e.ok)||0, pa=Number(e.skip)||0; w[sd]=ok-pa; info[sd]=`${ok} erraten${pa?`, ${pa}× gepasst`:""} = ${ok-pa}`; }
     if(R.typ==="janein"){ const s=Number(((D.j||{})[sd]))||0; w[sd]=s; info[sd]=`${s} ${s===1?"Sekunde":"Sekunden"}`; }
     if(["gespraech","party"].includes(R.typ)){ const v=Object.values(D.v||{}).filter(x=>x===sd).length; w[sd]=v; info[sd]=`${v} Stimme${v===1?"":"n"}`; }
   });
@@ -224,7 +229,7 @@ function handy(){
     if(R.typ==="quiz"&&s==="los") return quizKarte(R, sd);
     if(R.typ==="satz"&&s==="los") return satzKarte(R, sd);
     if(R.typ==="sprint"&&(s==="los"||s==="pruefen")) return sprintKarte(R, sd);
-    if(R.typ==="erklaeren"&&(s==="a"||s==="b")) return s===sd ? erklaerKarte(R, sd) : `<div class="card" style="text-align:center"><div style="font-size:44px">⏳</div><p>Jetzt erklärt die andere Seite. ${s<sd?"Ihr seid gleich dran!":""}</p></div>`;
+    if((R.typ==="erklaeren"||R.typ==="pantomime")&&(s==="a"||s==="b")) return s===sd ? erklaerKarte(R, sd) : `<div class="card" style="text-align:center"><div style="font-size:44px">⏳</div><p>Jetzt ist die andere Seite dran. ${s<sd?"Ihr seid gleich dran!":""}</p></div>`;
     if(R.typ==="janein"&&(s==="a"||s==="b")) return s===sd ? `<div class="dran" style="animation:none"><div style="font-size:50px">🙅</div><div class="gross">Kein „Ja“! Kein „Nein“!</div><p>Antworte anders: „Natürlich!“, „Auf keinen Fall!“, „Vielleicht …“, „Das stimmt.“, „Ich glaube nicht.“</p></div>` : `<div class="card" style="text-align:center"><p>Jetzt ist die andere Seite dran. Hör gut zu!</p></div>`;
     if(R.typ==="gespraech"&&["a","b","zusammen"].includes(s)) return (s==="zusammen"||s===sd?`<div class="dran" style="animation:none"><div class="gross">🎬 Los! Spielt die Szene!</div></div>`:`<div class="card"><p>Jetzt spielt die andere Seite.</p></div>`)+rollenKarte(R, sd);
     if(R.typ==="party"&&s==="planen") return partyForm(R, sd);
@@ -262,13 +267,13 @@ function handy(){
       <div class="chips">${liste.map(([key,x])=>`<span style="${weg[key]?"text-decoration:line-through;opacity:.5":""}">${esc(x.w)}</span>`).join("")}</div><p class="small muted">${liste.length} ${liste.length===1?"Wort":"Wörter"}</p></div>`; }
   /* Erklären */
   function erklaerKarte(R, sd){ const ids=R[sd].ids||[]; const erklaerer=ids[0]; const e=((((S.rd||{})[R.nr]||{}).e||{})[sd])||{}; const pos=Number(e.pos)||0;
-    const liste=R.inhalt[sd==="a"?"wa":"wb"]||[]; const w=WOERTER[liste[pos%liste.length]]||["?","e",[]];
-    if(me.pid!==erklaerer) return `<div class="dran" style="animation:none"><div style="font-size:50px">🤔</div><div class="gross">Rate!</div><p>${esc(((S.spieler||{})[erklaerer]||{}).name)} erklärt dir Wörter. Sag die Lösung laut!</p><p class="gross">✓ ${Number(e.ok)||0}</p></div>`;
+    const liste=R.inhalt[sd==="a"?"wa":"wb"]||[]; const w=listeFuer(R)[liste[pos%liste.length]]||["?","e",[]]; const pm=R.typ==="pantomime";
+    if(me.pid!==erklaerer) return `<div class="dran" style="animation:none"><div style="font-size:50px">🤔</div><div class="gross">Rate!</div><p>${esc(((S.spieler||{})[erklaerer]||{}).name)} ${pm?"spielt dir Wörter vor (ohne Sprechen)":"erklärt dir Wörter"}. Sag die Lösung laut!</p><p class="gross">✓ ${Number(e.ok)||0}</p></div>`;
     if(zu(R)) return `<div class="card" style="text-align:center" data-zu><h2>Zeit ist um!</h2><p class="gross">✓ ${Number(e.ok)||0}</p></div>`;
-    return `<div class="card" style="text-align:center">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><b>Erkläre!</b><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div>
-      <div class="wort">${esc(w[0])}</div><div class="small muted">Nicht sagen:</div><div class="verboten">${(w[2]||[]).map(v=>`<span>${esc(v)}</span>`).join("")}</div>
-      <div class="row" style="margin-top:14px"><button class="btn ok" style="flex:2;min-height:70px;font-size:22px" id="eok">✓ Erraten!</button><button class="btn ghost" style="flex:1;min-height:70px" id="eskip">⏭ Weiter</button></div>
-      <p class="gross" style="margin-top:8px">✓ ${Number(e.ok)||0}</p></div>`; }
+    return `<div class="card" style="text-align:center">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><b>${pm?"Spiel vor!":"Erkläre!"}</b><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div>
+      <div class="wort">${esc(w[0])}</div>${pm?`<div style="font-weight:800;color:var(--bad)">🤐 Nicht sprechen! Nur zeigen!</div><div class="small muted">Tipp: Zeig erst den einen Teil, dann den anderen Teil.</div>`:`<div class="small muted">Nicht sagen:</div><div class="verboten">${(w[2]||[]).map(v=>`<span>${esc(v)}</span>`).join("")}</div>`}
+      <div class="row" style="margin-top:14px"><button class="btn ok" style="flex:2;min-height:70px;font-size:22px" id="eok">✓ Erraten!</button><button class="btn ${pm?"rot":"ghost"}" style="flex:1;min-height:70px" id="eskip">${pm?"⏭ Passen (−1)":"⏭ Weiter"}</button></div>
+      <p class="gross" style="margin-top:8px">✓ ${Number(e.ok)||0}${pm&&Number(e.skip)?` · −${Number(e.skip)}`:""}</p></div>`; }
   /* Party */
   function partyForm(R, sd){ const pt=ARENA.partys[R.inhalt.p]; const plan=((((S.rd||{})[R.nr]||{}).plan||{})[sd])||{};
     return `<div class="card">${kopfTyp(R)}<div class="row" style="justify-content:space-between"><h3 style="margin:0">${pt.e} ${esc(pt.t)}</h3><b id="uhr" style="color:var(--acc)">${mmss(rest(R))}</b></div><p class="small">${esc(pt.text)}</p>
@@ -285,7 +290,7 @@ function handy(){
         <div class="vote"><button data-v="a" class="${mein==="a"?"an":""}" style="border-top:8px solid ${A.f}">${A.e}<br>${nm("a")}</button><button data-v="b" class="${mein==="b"?"an":""}" style="border-top:8px solid ${B.f}">${B.e}<br>${nm("b")}</button></div>
         <p class="small muted" style="text-align:center">${mein?"✓ Danke! Du kannst noch ändern.":""}</p></div>`; }
     if(R.typ==="janein" && (R.schritt==="a"||R.schritt==="b")) return x+`<div class="card"><h3>🙋 Stell Fragen!</h3><p class="small">Versuch, dass ${nm(R.schritt)} „ja“ oder „nein“ sagt!</p><div class="chips">${mische(ARENA.janein).slice(0,8).map(q=>`<span>${esc(q)}</span>`).join("")}</div></div>`;
-    if(R.typ==="erklaeren" && (R.schritt==="a"||R.schritt==="b") && R.fmt===1 && ich.team===R[R.schritt].t) return x+`<div class="dran" style="animation:none"><div class="gross">🤔 Rate mit!</div><p>${nm(R.schritt)} erklärt deinem Team Wörter. Ruf die Lösung!</p></div>`;
+    if((R.typ==="erklaeren"||R.typ==="pantomime") && (R.schritt==="a"||R.schritt==="b") && R.fmt===1 && ich.team===R[R.schritt].t) return x+`<div class="dran" style="animation:none"><div class="gross">🤔 Rate mit!</div><p>${nm(R.schritt)} erklärt deinem Team Wörter. Ruf die Lösung!</p></div>`;
     if(R.schritt==="ergebnis"){ const E=R.ergebnis||wertung(S,R); return x+`<div class="card" style="text-align:center"><div class="gross">${E.sieger?`🏆 ${esc(((S.teams||{})[R[E.sieger].t]||{}).n)} gewinnt!`:"🤝 Unentschieden"}</div><p>${esc(E.info.a)} : ${esc(E.info.b)}</p></div>`; }
     return x+`<div class="card" style="text-align:center"><div style="font-size:40px">👀</div><p>Schau zu und feuere dein Team an!</p></div>`;
   }
@@ -375,6 +380,7 @@ function leitung(){
         <p style="opacity:.8">${R.fmt===1?"Die beiden spielen die Szene zusammen (A und B). Danach stimmt das Publikum ab: Wer war besser?":"Erst spielt das linke Paar, dann das rechte Paar die gleiche Szene. Kurz vorbereiten!"}</p></div>`; }
       if(R.typ==="party"){ const pt=ARENA.partys[R.inhalt.p]; x+=`<div class="card" style="text-align:center"><h2 style="font-size:40px">${pt.e} ${esc(pt.t)}</h2><p style="font-size:22px">${esc(pt.text)}</p></div>`; }
       if(R.typ==="sprint"){ x+=`<div class="card" style="text-align:center"><p style="font-size:22px">Gleich kommt das Thema …</p></div>`; }
+      if(R.typ==="pantomime"){ x+=`<div class="card" style="text-align:center;font-size:21px">🎭 Zusammengesetzte Wörter – <b>ohne Sprechen, ohne Zeigen auf Dinge im Raum</b>. ${R.fmt===2?"Eine Person spielt, der Partner / die Partnerin rät.":"Die Person in der Mitte spielt – das <b>eigene Team</b> rät."} Je 75 Sekunden. <b>Passen = −1 Punkt!</b></div>`; }
       if(R.typ==="erklaeren"){ x+=`<div class="card" style="text-align:center;font-size:21px">${R.fmt===2?"Eine Person erklärt, der Partner / die Partnerin rät.":"Die Person in der Mitte erklärt – das <b>eigene Team</b> rät von den Plätzen."} Erst links, dann rechts. Je 60 Sekunden.</div>`; }
       if(R.typ==="janein"){ x+=`<div class="card" style="text-align:center;font-size:21px">Das Publikum stellt Fragen. Wer „ja“ oder „nein“ sagt, ist raus. Wer länger durchhält, gewinnt (max. 60 s). Du drückst ❌, wenn es passiert.</div>`; }
       return x; }
@@ -384,8 +390,8 @@ function leitung(){
       let x=`<div class="typband" style="font-size:clamp(34px,4vw,64px)">${k.e} ${esc(k.k)}</div>`;
       if(s==="los") return x+`<div class="uhr" id="uhr">${mmss(rest(R))}</div>`+seitenBalken(R, sd=>Object.keys(((D.w||{})[sd])||{}).length, 20);
       return x+`<p style="text-align:center;opacity:.85;font-size:20px">Prüft gemeinsam: Falsche Wörter antippen = durchstreichen.</p><div class="row" style="align-items:start">${["a","b"].map(sd=>{ const T=(S.teams||{})[R[sd].t]||{}; return `<div class="card" style="flex:1;border-top:8px solid ${T.f}"><h2>${T.e} ${(R[sd].ids||[]).map(nm).join(" & ")}</h2><div class="wolke">${Object.entries(((D.w||{})[sd])||{}).map(([key,w])=>`<button data-weg="${key}" class="${weg[key]?"weg":""}">${esc(w.w)}</button>`).join("")||"–"}</div></div>`; }).join("")}</div>`; }
-    if(R.typ==="erklaeren" && (s==="a"||s==="b")){ const T=(S.teams||{})[R[s].t]||{}; const e=((D.e||{})[s])||{};
-      return `<div class="card" style="text-align:center;border-top:10px solid ${T.f}"><h2 style="font-size:40px">${T.e} ${nm((R[s].ids||[])[0])} erklärt${R.fmt===2?` – ${nm((R[s].ids||[])[1])} rät`:" – das Team rät"}!</h2><div class="uhr" id="uhr">${mmss(rest(R))}</div><div class="ergebnis">✓ ${Number(e.ok)||0}</div><p style="opacity:.7">übersprungen: ${Number(e.skip)||0}</p></div>`; }
+    if((R.typ==="erklaeren"||R.typ==="pantomime") && (s==="a"||s==="b")){ const T=(S.teams||{})[R[s].t]||{}; const e=((D.e||{})[s])||{}; const pm=R.typ==="pantomime";
+      return `<div class="card" style="text-align:center;border-top:10px solid ${T.f}"><h2 style="font-size:40px">${pm?"🎭 ":""}${T.e} ${nm((R[s].ids||[])[0])} ${pm?"spielt":"erklärt"}${R.fmt===2?` – ${nm((R[s].ids||[])[1])} rät`:" – das Team rät"}!</h2><div class="uhr" id="uhr">${mmss(rest(R))}</div><div class="ergebnis">✓ ${Number(e.ok)||0}${pm&&Number(e.skip)?` <span style="color:#FF8A7A">−${Number(e.skip)}</span>`:""}</div><p style="opacity:.7">${pm?"gepasst (−1 pro Wort)":"übersprungen"}: ${Number(e.skip)||0}</p></div>`; }
     if(R.typ==="janein" && (s==="a"||s==="b")){ const T=(S.teams||{})[R[s].t]||{}; const fertig=((D.j||{})[s])!==undefined;
       return `<div class="card" style="text-align:center;border-top:10px solid ${T.f}"><h2 style="font-size:44px">🙅 ${T.e} ${(R[s].ids||[]).map(nm).join(" & ")}</h2><p style="font-size:22px">Fragt! Wer „ja“ oder „nein“ sagt, ist raus.</p><div class="uhr" id="uhr">0 s</div>${fertig?`<div class="ergebnis">${D.j[s]} Sekunden</div>`:`<button class="btn rot" id="jnraus" style="font-size:28px;min-height:80px;padding:10px 40px">❌ Ja/Nein gesagt!</button>`}</div>`; }
     if(R.typ==="gespraech" && ["a","b","zusammen"].includes(s)){ const g=ARENA.gespraeche[R.inhalt.g];
@@ -426,6 +432,7 @@ function leitung(){
     if(typ==="satz"){ const s=mische(ARENA.saetze.map((_,i)=>i)).slice(0,4); return {s, sord:s.map(i=>mische(ARENA.saetze[i].w.map((_,k)=>k)))}; }
     if(typ==="sprint") return {k:rnd(ARENA.kategorien.length)};
     if(typ==="erklaeren"){ const w=mische(WOERTER.map((_,i)=>i)); return {wa:w.slice(0,40), wb:w.slice(40,80)}; }
+    if(typ==="pantomime"){ const w=mische(KOMPOSITA.map((_,i)=>i)); const h=Math.floor(w.length/2); return {wa:w.slice(0,h), wb:w.slice(h)}; }
     if(typ==="gespraech") return {g:rnd(ARENA.gespraeche.length)};
     if(typ==="party") return {p:rnd(ARENA.partys.length)};
     return {x:1};
