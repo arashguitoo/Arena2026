@@ -297,7 +297,7 @@ function start(W){
   const aktuell=Object.keys(pub.aktuell||{}).filter(k=>pub.aktuell[k]).map(k=>KAT.find(u=>u.key===k)).filter(Boolean);
   const alle=st.bestAll;
   let vorschlag=[];
-  if(!aktuell.length){ const offen=KAT.filter(u=>W.best[u.key]===undefined); const ord=["l12","l11","l10","pt","lesen","l9","l8","grund"]; offen.sort((a,b)=>ord.indexOf(a.bereich)-ord.indexOf(b.bereich)); vorschlag=offen.slice(0,4); }
+  if(!aktuell.length){ const offen=KAT.filter(u=>W.best[u.key]===undefined); const ord=["wdh","l12","l11","l10","pt","lesen","l9","l8","grund"]; offen.sort((a,b)=>ord.indexOf(a.bereich)-ord.indexOf(b.bereich)); vorschlag=offen.slice(0,4); }
   const naechster=LW.meilensteine(E,{sieger:istSieger()}).find(x=>!x.ok);
   const tage=tageBisMonatsende();
   return `<section class="held">

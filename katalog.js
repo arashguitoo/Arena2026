@@ -44,6 +44,12 @@ window.LW_BEREICHE = [
 "text": "Stadtplan, Verkehrsmittel, von/nach/zu, im/am, Imperativ"
 },
 {
+"id": "wdh",
+"titel": "Wiederholung 1",
+"icon": "🔁",
+"text": "Präsens, Perfekt, Modalverben, Akkusativ/Dativ, Possessiv, Wo/Wohin, Dialoge"
+},
+{
 "id": "pt",
 "titel": "Perfekt-Training",
 "icon": "🏋️",
@@ -51,6 +57,12 @@ window.LW_BEREICHE = [
 }
 ];
 window.LW_KATALOG = [
+{"key": "wdh1-zeit", "titel": "Wiederholung: Präsens & Perfekt", "icon": "⏪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=zeit", "text": "Tafel + 4 Übungen: du fährst, er liest – und haben oder sein?", "bereich": "wdh", "themen": ["praesens", "perfekt"], "zeit": false},
+{"key": "wdh1-modal", "titel": "Wiederholung: Modalverben", "icon": "💪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=modal", "text": "Tafel + 2 Übungen: kann, muss, will – das zweite Verb ans Ende!", "bereich": "wdh", "themen": ["modalverben", "satzbau"], "zeit": false},
+{"key": "wdh1-kasus", "titel": "Wiederholung: Akkusativ, Dativ & Possessiv", "icon": "🎁", "max": 10, "datei": "unterricht.html?solo=wdh1&block=kasus", "text": "Tafel + 4 Übungen: Wen? Wem? meinen, meinem, ihr, sein …", "bereich": "wdh", "themen": ["akkusativ", "dativ", "possessiv"], "zeit": false},
+{"key": "wdh1-wo", "titel": "Wiederholung: Wo? oder Wohin?", "icon": "📦", "max": 10, "datei": "unterricht.html?solo=wdh1&block=wo", "text": "Tafel + 2 Übungen: legen – liegen, auf den Tisch – auf dem Tisch", "bereich": "wdh", "themen": ["akkusativ", "dativ"], "zeit": false},
+{"key": "wdh1-theater", "titel": "Wiederholung: Dialoge: Party, Picknick, Weg", "icon": "🎭", "max": 10, "datei": "unterricht.html?solo=wdh1&block=theater", "text": "Wähle eine Szene, fülle die Lücken und lies den Dialog laut.", "bereich": "wdh", "themen": ["lesen", "perfekt", "alltag"], "zeit": false},
+{"key": "wdh1-ende", "titel": "Wiederholung: Abschluss-Quiz", "icon": "🏁", "max": 10, "datei": "unterricht.html?solo=wdh1&block=ende", "text": "8 Fragen – alles gemischt.", "bereich": "wdh", "themen": ["perfekt", "modalverben", "dativ"], "zeit": false},
 {"key": "l12-stadt-navi", "titel": "Stadt-Navi", "icon": "🧭", "max": 10, "datei": "a1-unterwegs.html?spiel=navi", "text": "2 Minuten: Steuer deine Figur durch die Stadt – Geh links! Geh geradeaus!", "bereich": "l12", "themen": ["wortschatz", "alltag"], "zeit": true},
 {"key": "l12-wegbeschreibung", "titel": "Weg-Rätsel", "icon": "🗺️", "max": 10, "datei": "a1-unterwegs.html?spiel=weg", "text": "Lies den Weg auf dem Stadtplan: Wo bist du jetzt? Im Kino? Am Dom?", "bereich": "l12", "themen": ["lesen", "dativ"], "zeit": false},
 {"key": "l12-wo-wohin", "titel": "Wo oder wohin?", "icon": "🔀", "max": 10, "datei": "a1-unterwegs.html?spiel=wechsel", "text": "60 Sekunden: Ich gehe in den Park – ich sitze im Park. Akkusativ oder Dativ?", "bereich": "l12", "themen": ["dativ", "akkusativ"], "zeit": true},
