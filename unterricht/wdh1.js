@@ -14,13 +14,13 @@
 window.UNTERRICHT_PLAENE = window.UNTERRICHT_PLAENE || {};
 window.UNTERRICHT_PLAENE.wdh1 = {
   id: "wdh1", titel: "Wiederholung: Alles, was wir können", minuten: 90,
-  text: "Präsens · Perfekt · Modalverben · Akkusativ & Dativ · Possessiv · Wechselpräpositionen · Theater",
+  text: "Präsens · Perfekt · Modalverben · Imperativ · Akkusativ & Dativ · Possessiv · Wechselpräpositionen · Theater",
   bloecke: [
   /* ---------------------------------------------------------------- */
   { id: "start", icon: "🚦", titel: "Einstieg", minuten: 5,
     tafel: [
       { titel: "Heute: Wiederholung", html: `<p>Heute wiederholen wir <b>alles</b>, was wir schon können:</p>
-        <div class="chips"><span>⏪ Präsens & Perfekt</span><span>💪 Modalverben</span><span>🎁 Akkusativ & Dativ</span><span>👪 mein, dein, sein …</span><span>📦 Wo? und Wohin?</span><span>🎭 Theater</span></div>
+        <div class="chips"><span>⏪ Präsens & Perfekt</span><span>💪 Modalverben</span><span>📣 Imperativ: du & Sie</span><span>🎁 Akkusativ & Dativ</span><span>👪 mein, dein, sein …</span><span>📦 Wo? und Wohin?</span><span>🎭 Theater</span></div>
         <h3>So geht es</h3><ol><li>Ich erkläre an der <b>Tafel</b>.</li><li>Ihr macht die <b>Aufgabe am Handy</b>.</li><li>Wir <b>sprechen</b> zusammen.</li></ol>` },
       { titel: "Blitzrunde: Dein Wochenende", html: `<p>Ich ziehe eine Person. Sie antwortet mit <b>zwei Sätzen</b>.</p>
         <div class="bsp">Am Samstag <b>habe</b> ich Fußball <b>gespielt</b>.<br>Am Sonntag <b>bin</b> ich nach Kiel <b>gefahren</b>.</div>` }
@@ -56,7 +56,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
         ] }
     ] },
   /* ---------------------------------------------------------------- */
-  { id: "zeit", icon: "⏪", titel: "Präsens & Perfekt", minuten: 10,
+  { id: "zeit", icon: "⏪", titel: "Präsens & Perfekt", minuten: 9,
     tafel: [
       { titel: "Präsens: Achtung bei du und er/sie/es", html: `<table><tr><th></th><th>spielen</th><th>fahren</th><th>essen</th><th>lesen</th></tr>
         <tr><td>ich</td><td>spiel<b>e</b></td><td>fahr<b>e</b></td><td>ess<b>e</b></td><td>les<b>e</b></td></tr>
@@ -113,7 +113,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
         ] }
     ] },
   /* ---------------------------------------------------------------- */
-  { id: "modal", icon: "💪", titel: "Modalverben", minuten: 7,
+  { id: "modal", icon: "💪", titel: "Modalverben", minuten: 6,
     tafel: [
       { titel: "Modalverben", html: `<table><tr><th></th><th>können</th><th>müssen</th><th>wollen</th><th>dürfen</th><th>möchten</th></tr>
         <tr><td>ich</td><td>kann</td><td>muss</td><td>will</td><td>darf</td><td>möchte</td></tr>
@@ -148,6 +148,56 @@ window.UNTERRICHT_PLAENE.wdh1 = {
         ] },
     ] },
   /* ---------------------------------------------------------------- */
+  { id: "imp", icon: "📣", titel: "Imperativ: du und Sie", minuten: 7,
+    tafel: [
+      { titel: "Imperativ mit du", html: `<p>So geht es: <b>du</b>-Form nehmen → <b>du</b> und <b>-st</b> weg → fertig!</p>
+        <table><tr><th>du-Form</th><th>Imperativ</th></tr>
+        <tr><td>du komm<b>st</b></td><td><b>Komm!</b></td></tr>
+        <tr><td>du geh<b>st</b></td><td><b>Geh</b> geradeaus!</td></tr>
+        <tr><td>du f<span class="rot">ä</span>hr<b>st</b></td><td><b>Fahr</b> langsam! <span class="klein">(kein ä!)</span></td></tr>
+        <tr><td>du <span class="rot">i</span>ss<b>t</b></td><td><b>Iss</b> dein Brot! <span class="klein">(i bleibt)</span></td></tr>
+        <tr><td>du n<span class="rot">imm</span><b>st</b></td><td><b>Nimm</b> den Bus!</td></tr>
+        <tr><td>du l<span class="rot">ie</span>s<b>t</b></td><td><b>Lies</b> den Text!</td></tr>
+        <tr><td>du stehst auf</td><td><b>Steh</b> bitte <b>auf</b>! <span class="klein">(trennbar: auf ans Ende)</span></td></tr>
+        <tr><td>du bist</td><td><b>Sei</b> leise!</td></tr></table>` },
+      { titel: "Imperativ mit Sie", html: `<p>So geht es: <b>Verb + Sie</b> – das Verb steht <b>vorne</b>.</p>
+        <div class="bsp">Sie kommen. → <b>Kommen Sie</b> bitte! &nbsp;·&nbsp; Sie nehmen den Bus. → <b>Nehmen Sie</b> den Bus!</div>
+        <p>trennbar: <b>Stehen Sie</b> bitte <b>auf</b>! · <b>Rufen Sie</b> mich <b>an</b>! &nbsp; sein: <b>Seien Sie</b> pünktlich!</p>
+        <div class="zwei-sp"><div class="box-gruen"><h3>du 👋</h3><p>Freund:in, Familie, Kinder, Mitschüler:in</p><div class="bsp">Ali, <b>komm</b> bitte!</div></div>
+        <div class="box-blau"><h3>Sie 🤝</h3><p>Lehrer:in, Chef:in, Ärztin, fremde Person auf der Straße</p><div class="bsp">Frau Koch, <b>kommen Sie</b> bitte!</div></div></div>
+        <p class="hinweis">Höflich mit <b>bitte</b>: Komm bitte! · Kommen Sie bitte!</p>` }
+    ],
+    aufgaben: [
+      { id: "i1", minuten: 2, typ: "wahl", titel: "Imperativ: Welche Form?", anleitung: "Lies den Satz. Wer spricht mit wem? du oder Sie? Tippe auf die richtige Form.",
+        items: [
+          { f: "Ali, ___ bitte! (kommen)", o: ["komm", "kommst", "kommen Sie"], tipp: "du kommst → Komm!" },
+          { f: "Frau Koch, ___ bitte Platz! (nehmen)", o: ["nehmen Sie", "nimm", "Sie nehmen"], tipp: "Sie: Verb vorne + Sie → Nehmen Sie!" },
+          { f: "Lina, ___ nicht so schnell! (fahren)", o: ["fahr", "fähr", "fährst"], tipp: "du fährst → Fahr! (kein ä)" },
+          { f: "Omar, ___ den Text laut! (lesen)", o: ["lies", "les", "liest"], tipp: "du liest → Lies!" },
+          { f: "Herr Berg, ___ bitte geradeaus! (gehen)", o: ["gehen Sie", "geh", "Sie gehen"], tipp: "Sie → Gehen Sie!" },
+          { f: "Tarek, ___ bitte auf! (aufstehen)", o: ["steh", "stehst", "stehen"], tipp: "trennbar: Steh … auf!" },
+          { f: "Mina, ___ bitte leise! (sein)", o: ["sei", "bist", "seid"], tipp: "sein → Sei!" },
+          { f: "Frau Doktor, ___ Sie mir bitte! (helfen)", o: ["helfen", "hilf", "helft"], tipp: "Sie → Helfen Sie!" }
+        ] },
+      { id: "i2", minuten: 2, typ: "sortieren", titel: "du oder Sie?", hinweis: "du: Verb ohne -st, ohne „du“. Sie: Verb + Sie.", anleitung: "Lies die Aufforderung. Spricht man mit du oder mit Sie? Tippe auf den Korb.",
+        koerbe: [{ k: "du", t: "👋 du" }, { k: "Sie", t: "🤝 Sie" }],
+        items: [
+          { t: "Komm bitte her!", k: "du" }, { t: "Kommen Sie bitte her!", k: "Sie" },
+          { t: "Nimm den Bus Nummer 5!", k: "du" }, { t: "Nehmen Sie den Bus Nummer 5!", k: "Sie" },
+          { t: "Steh bitte auf!", k: "du" }, { t: "Rufen Sie mich morgen an!", k: "Sie" },
+          { t: "Sei pünktlich!", k: "du" }, { t: "Seien Sie bitte leise!", k: "Sie" },
+          { t: "Iss dein Brot!", k: "du" }, { t: "Gehen Sie die zweite Straße links!", k: "Sie" }
+        ] },
+      { id: "i3", minuten: 3, typ: "bauen", titel: "Imperativ: Sätze bauen", hinweis: "Imperativ: Das Verb steht vorne (Position 1). Bei Sie: Verb + Sie. Trennbares Teil ans Ende.", anleitung: "Das Verb steht ganz vorne! Tippe die Wörter in der richtigen Reihenfolge.",
+        items: [
+          { w: ["gehen", "Sie", "bitte", "geradeaus"], a: ["gehen sie bitte geradeaus", "bitte gehen sie geradeaus"], p: "!" },
+          { w: ["nimm", "den", "Bus", "zum", "Bahnhof"], a: ["nimm den bus zum bahnhof"], p: "!" },
+          { w: ["stehen", "Sie", "bitte", "auf"], a: ["stehen sie bitte auf", "bitte stehen sie auf"], p: "!" },
+          { w: ["ruf", "mich", "morgen", "an"], a: ["ruf mich morgen an"], p: "!" },
+          { w: ["leg", "das", "Buch", "auf", "den", "Tisch"], a: ["leg das buch auf den tisch"], p: "!" }
+        ] }
+    ] },
+  /* ---------------------------------------------------------------- */
   { id: "kugel", icon: "🚶", titel: "Steh auf! Kugellager", minuten: 10, steh: true,
     tafel: [
       { titel: "🚶 Steh auf! Kugellager", html: `<ol class="schritte"><li>Schau auf dein Handy: Bist du im <b>Innenkreis</b> 🔵 oder im <b>Außenkreis</b> 🟠?</li>
@@ -165,12 +215,12 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Was musst du zu Hause machen?", h: "Zu Hause muss ich … · Ich muss nicht …" },
           { f: "Wie heißt deine Mutter / dein Bruder / deine Freundin?", h: "Meine Mutter heißt … · Mein Bruder heißt …" },
           { f: "Was willst du am Wochenende machen?", h: "Am Wochenende will ich … gehen / fahren / spielen." },
-          { f: "Wohin bist du zuletzt gefahren? Mit wem?", h: "Ich bin nach … gefahren. Ich bin mit meinem/meiner … gefahren." },
-          { f: "Was darf man im Kurs nicht machen?", h: "Im Kurs darf man nicht … · Man darf …" }
+          { f: "Gib deinem Partner 2 Tipps für Plön – mit du!", h: "Geh an den See! · Besuch das Schloss! · Iss ein Eis!" },
+          { f: "Dein Partner ist eine Touristin. Erklär den Weg zum Bahnhof – mit Sie!", h: "Gehen Sie geradeaus! · Nehmen Sie die zweite Straße links! · Fahren Sie mit dem Bus!" }
         ] }
     ] },
   /* ---------------------------------------------------------------- */
-  { id: "kasus", icon: "🎁", titel: "Akkusativ, Dativ & Possessiv", minuten: 10,
+  { id: "kasus", icon: "🎁", titel: "Akkusativ, Dativ & Possessiv", minuten: 8,
     tafel: [
       { titel: "Wen? Was? – Wem?", html: `<div class="zwei-sp"><div><h3>Akkusativ: Wen? Was?</h3><p>Nur <b>der</b> ändert sich:<br>der → <b>den</b> · ein → <b>einen</b> · kein → <b>keinen</b> · mein → <b>meinen</b></p>
         <p class="klein">haben, brauchen, kaufen, sehen, besuchen, suchen, essen, trinken …</p><div class="bsp">Ich besuche <b>meinen</b> Opa.</div></div>
@@ -298,7 +348,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
         ] }
     ] },
   /* ---------------------------------------------------------------- */
-  { id: "theater", icon: "🎭", titel: "Theater in Gruppen", minuten: 20, steh: true,
+  { id: "theater", icon: "🎭", titel: "Theater in Gruppen", minuten: 17, steh: true,
     tafel: [
       { titel: "Theater: So geht es", html: `<p>Ihr arbeitet in Gruppen zu dritt. Jede Gruppe hat eine Szene. Am Handy seht ihr eure Rolle.</p>
         <ol class="schritte"><li><b>Schritt 1 · Lesen und Lücken (5 Min.):</b> Lies deine Sätze. Wähle die richtigen Wörter. Tippe „Prüfen“.</li>
@@ -308,7 +358,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
       { titel: "Tipps für das Theater", html: `<ul><li>Sprich <b>laut</b> und <b>langsam</b>.</li><li>Schau die anderen an – nicht nur das Handy.</li><li>Benutze Hände und Bewegung.</li><li>Ein Fehler? Kein Problem – einfach weiterspielen!</li></ul>` }
     ],
     aufgaben: [
-      { id: "t1", minuten: 5, typ: "theater", schrittMin: [5, 8, 2], titel: "Theater: Party, Picknick, Weg fragen", anleitung: "Jede Gruppe bekommt eine Szene. Die Lehrkraft sagt, wann der nächste Schritt beginnt.",
+      { id: "t1", minuten: 4, typ: "theater", schrittMin: [4, 8, 2], titel: "Theater: Party, Picknick, Weg fragen", anleitung: "Jede Gruppe bekommt eine Szene. Die Lehrkraft sagt, wann der nächste Schritt beginnt.",
         szenen: [
           { id: "party", icon: "🎉", titel: "Party planen", situation: "Mina hat am Samstag Geburtstag. Drei Freunde planen eine Überraschungsparty.",
             rollen: ["Sami", "Lea", "Jonas"],
@@ -364,9 +414,9 @@ window.UNTERRICHT_PLAENE.wdh1 = {
     ] },
   /* ---------------------------------------------------------------- */
   { id: "ende", icon: "🏁", titel: "Abschluss-Quiz", minuten: 3,
-    tafel: [{ titel: "Was haben wir heute wiederholt?", html: `<div class="chips"><span>⏪ Präsens & Perfekt</span><span>💪 Modalverben</span><span>🎁 Akkusativ & Dativ</span><span>👪 Possessiv</span><span>📦 Wo? und Wohin?</span><span>🎭 Theater</span></div><p>Die ganze Lektion könnt ihr jetzt auch allein üben: <b>Lernwelt → Üben → Wiederholung</b>.</p>` }],
+    tafel: [{ titel: "Was haben wir heute wiederholt?", html: `<div class="chips"><span>⏪ Präsens & Perfekt</span><span>💪 Modalverben</span><span>📣 Imperativ</span><span>🎁 Akkusativ & Dativ</span><span>👪 Possessiv</span><span>📦 Wo? und Wohin?</span><span>🎭 Theater</span></div><p>Die ganze Lektion könnt ihr jetzt auch allein üben: <b>Lernwelt → Üben → Wiederholung</b>.</p>` }],
     aufgaben: [
-      { id: "e1", typ: "quiz", titel: "Abschluss-Quiz für alle", anleitung: "Acht Fragen – alles gemischt!",
+      { id: "e1", typ: "quiz", titel: "Abschluss-Quiz für alle", anleitung: "Neun Fragen – alles gemischt!",
         items: [
           { f: "Wir ___ gestern ins Kino gegangen.", o: ["sind", "haben", "seid", "hat"] },
           { f: "Er ___ gut Deutsch sprechen.", o: ["kann", "kannst", "können", "könnt"] },
@@ -375,6 +425,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Das Bild hängt an ___ Wand.", o: ["der", "die", "den", "dem"] },
           { f: "Das ist Mina. ___ Vater ist Koch.", o: ["Ihr", "Sein", "Ihre", "Seine"] },
           { f: "du – nehmen", o: ["du nimmst", "du nehmst", "du nimmt", "du nehmen"] },
+          { f: "Herr Berg, ___ bitte Platz!", o: ["nehmen Sie", "nimm", "Sie nehmen", "nehmt"] },
           { f: "Welcher Satz ist richtig?", o: ["Ich muss heute arbeiten.", "Ich muss arbeiten heute.", "Ich heute muss arbeiten.", "Ich muss heute arbeite."] }
         ] }
     ] }

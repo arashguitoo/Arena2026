@@ -47,7 +47,7 @@ window.LW_BEREICHE = [
 "id": "wdh",
 "titel": "Wiederholung 1",
 "icon": "🔁",
-"text": "Präsens, Perfekt, Modalverben, Akkusativ/Dativ, Possessiv, Wo/Wohin, Dialoge"
+"text": "Präsens, Perfekt, Modalverben, Imperativ, Akkusativ/Dativ, Possessiv, Wo/Wohin, Dialoge"
 },
 {
 "id": "pt",
@@ -59,6 +59,7 @@ window.LW_BEREICHE = [
 window.LW_KATALOG = [
 {"key": "wdh1-zeit", "titel": "Wiederholung: Präsens & Perfekt", "icon": "⏪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=zeit", "text": "Tafel + 4 Übungen: du fährst, er liest – und haben oder sein?", "bereich": "wdh", "themen": ["praesens", "perfekt"], "zeit": false},
 {"key": "wdh1-modal", "titel": "Wiederholung: Modalverben", "icon": "💪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=modal", "text": "Tafel + 2 Übungen: kann, muss, will – das zweite Verb ans Ende!", "bereich": "wdh", "themen": ["modalverben", "satzbau"], "zeit": false},
+{"key": "wdh1-imp", "titel": "Wiederholung: Imperativ du & Sie", "icon": "📣", "max": 10, "datei": "unterricht.html?solo=wdh1&block=imp", "text": "Tafel + 3 Übungen: Komm! – Kommen Sie! Nimm! – Nehmen Sie!", "bereich": "wdh", "themen": ["satzbau", "alltag"], "zeit": false},
 {"key": "wdh1-kasus", "titel": "Wiederholung: Akkusativ, Dativ & Possessiv", "icon": "🎁", "max": 10, "datei": "unterricht.html?solo=wdh1&block=kasus", "text": "Tafel + 4 Übungen: Wen? Wem? meinen, meinem, ihr, sein …", "bereich": "wdh", "themen": ["akkusativ", "dativ", "possessiv"], "zeit": false},
 {"key": "wdh1-wo", "titel": "Wiederholung: Wo? oder Wohin?", "icon": "📦", "max": 10, "datei": "unterricht.html?solo=wdh1&block=wo", "text": "Tafel + 2 Übungen: legen – liegen, auf den Tisch – auf dem Tisch", "bereich": "wdh", "themen": ["akkusativ", "dativ"], "zeit": false},
 {"key": "wdh1-theater", "titel": "Wiederholung: Dialoge: Party, Picknick, Weg", "icon": "🎭", "max": 10, "datei": "unterricht.html?solo=wdh1&block=theater", "text": "Wähle eine Szene, fülle die Lücken und lies den Dialog laut.", "bereich": "wdh", "themen": ["lesen", "perfekt", "alltag"], "zeit": false},

@@ -237,13 +237,13 @@ function uebungHtml(A, ctx){
     h+=`<div class="card"><div class="frage">${esc(it.f)}</div><div class="opts">${opts.map(o=>`<button class="opt ${a.falsch&&a.falsch["f"+it.o.indexOf(o)]?"falsch":""}" data-wahl="${esc(o)}" ${a.falsch&&a.falsch["f"+it.o.indexOf(o)]?"disabled":""}>${esc(o)}</button>`).join("")}</div>
       ${a.n&&!a.ok?`<div class="tipp">💡 ${esc(it.tipp||"Lies den Satz noch einmal genau.")} – Versuch es noch einmal!</div>`:""}</div>`; }
   if(A.typ==="sortieren"){ h+=`<div class="card"><div class="sortkarte">${esc(it.t)}</div><div class="korb2">${A.koerbe.map((k,ki)=>`<button data-wahl="${esc(k.k)}" ${a.falsch&&a.falsch["f"+ki]?'disabled style="opacity:.35"':""}>${esc(k.t)}</button>`).join("")}</div>
-      ${a.n&&!a.ok?`<div class="tipp">💡 Nicht ganz. ${A.koerbe[0].k==="haben"?"Bewegung von A nach B oder Veränderung → sein.":"Bewegung → Wohin? Keine Bewegung → Wo?"} Versuch es noch einmal!</div>`:""}</div>`; }
+      ${a.n&&!a.ok?`<div class="tipp">💡 Nicht ganz. ${A.hinweis?esc(A.hinweis):A.koerbe[0].k==="haben"?"Bewegung von A nach B oder Veränderung → sein.":"Bewegung → Wohin? Keine Bewegung → Wo?"} Versuch es noch einmal!</div>`:""}</div>`; }
   if(A.typ==="bauen"){ const L2=ctx.lokal; const key=A.id+"|"+i; if(L2.bauKey!==key){ L2.bauKey=key; L2.gelegt=[]; }
     const pool=mischS(it.w.map((w,j)=>({w,j})), key+"|"+ctx.pid);
     h+=`<div class="card"><p class="small muted" style="margin:0">Tippe die Wörter in der richtigen Reihenfolge:</p><div class="linie">${L2.gelegt.map((j,k)=>`<button class="kachel" data-raus="${k}">${esc(it.w[j])}</button>`).join("")}<b style="font-size:22px">${L2.gelegt.length===it.w.length?esc(it.p||""):""}</b></div>
       <div class="pool">${pool.map(x=>`<button class="kachel ${L2.gelegt.includes(x.j)?"weg":""}" data-rein="${x.j}">${esc(x.w)}</button>`).join("")}</div>
       <div class="row"><button class="btn ok" id="pruef" ${L2.gelegt.length===it.w.length?"":"disabled"}>Prüfen</button><button class="btn ghost" id="leeren">↺ Neu</button></div>
-      ${a.n&&!a.ok?`<div class="tipp">💡 Noch nicht richtig. Wo steht das Verb? ${A.id==="m2"?"Das Modalverb auf Position 2, das andere Verb am Ende.":"Verb auf Position 2. Dann: Wem? – Was?"}</div>`:""}</div>`; }
+      ${a.n&&!a.ok?`<div class="tipp">💡 Noch nicht richtig. Wo steht das Verb? ${A.hinweis?esc(A.hinweis):A.id==="m2"?"Das Modalverb auf Position 2, das andere Verb am Ende.":"Verb auf Position 2. Dann: Wem? – Was?"}</div>`:""}</div>`; }
   return h;
 }
 function uebungBinden(A, ctx){
