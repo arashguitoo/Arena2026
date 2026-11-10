@@ -331,27 +331,9 @@ window.UNTERRICHT_PLAENE.wdh1 = {
         ] }
     ] },
   /* ---------------------------------------------------------------- */
-  { id: "kugel", icon: "🚶", titel: "Steh auf! Kugellager", minuten: 10, steh: true,
-    tafel: [
-      { titel: "🚶 Steh auf! Kugellager", html: `<ol class="schritte"><li>Schau auf dein Handy: Bist du im <b>Innenkreis</b> 🔵 oder im <b>Außenkreis</b> 🟠?</li>
-        <li>Innenkreis: Stellt euch in einen Kreis und <b>schaut nach außen</b>.<br>Außenkreis: Stellt euch <b>gegenüber</b> – eine Person vor jede Person.</li>
-        <li>Die Frage steht am Handy. <b>Innen fragt zuerst</b>, dann fragt außen.</li>
-        <li>Antwortet mit einem <b>ganzen Satz</b>. Die Hilfe steht am Handy.</li>
-        <li>Timer bei 0 → <b>Außenkreis geht einen Platz nach rechts</b>. Neue Frage, neuer Partner!</li></ol>` }
-    ],
-    aufgaben: [
-      { id: "kg1", typ: "kugellager", titel: "Kugellager: Fragen & Antworten", minuten: 2,
-        anleitung: "Innen fragt zuerst. Dann außen. Bei 0: Außenkreis einen Platz nach rechts!",
-        runden: [
-          { f: "Was kannst du gut? Was kannst du nicht so gut?", h: "Ich kann gut … · Ich kann nicht so gut …" },
-          { f: "Was hast du gestern Abend gemacht?", h: "Gestern Abend habe ich … / bin ich …" },
-          { f: "Was musst du zu Hause machen?", h: "Zu Hause muss ich … · Ich muss nicht …" },
-          { f: "Wie heißt deine Mutter / dein Bruder / deine Freundin?", h: "Meine Mutter heißt … · Mein Bruder heißt …" },
-          { f: "Was willst du am Wochenende machen?", h: "Am Wochenende will ich … gehen / fahren / spielen." },
-          { f: "Gib deinem Partner 2 Tipps für Plön – mit du!", h: "Geh an den See! · Besuch das Schloss! · Iss ein Eis!" },
-          { f: "Dein Partner ist eine Touristin. Erklär den Weg zum Bahnhof – mit Sie!", h: "Gehen Sie geradeaus! · Nehmen Sie die zweite Straße links! · Fahren Sie mit dem Bus!" }
-        ] }
-    ] },
+  { id: "schlange", icon: "🚶", titel: "Steh auf! Schlangen-Puzzle", minuten: 10, steh: true,
+    tafel: [window.SCHLANGE_TAFEL],
+    aufgaben: [window.SCHLANGE_AUFGABE] },
   /* ---------------------------------------------------------------- */
   { id: "kasus", icon: "🎁", titel: "Akkusativ, Dativ & Possessiv", minuten: 8,
     tafel: [
