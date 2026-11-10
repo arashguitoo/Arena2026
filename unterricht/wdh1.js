@@ -81,7 +81,17 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Ich ___ den Zug. (nehmen)", o: ["nehme", "nimme", "nimmt"], tipp: "ich nehme – nur du/er ändern sich" },
           { f: "Das Baby ___. (schlafen)", o: ["schläft", "schlaft", "schlafen"], tipp: "schlafen: es schläft" },
           { f: "Ihr ___ super! (sein)", o: ["seid", "sind", "seit"], tipp: "ihr seid" },
-          { f: "Wir ___ Hunger. (haben)", o: ["haben", "habt", "hat"], tipp: "wir haben" }
+          { f: "Wir ___ Hunger. (haben)", o: ["haben", "habt", "hat"], tipp: "wir haben" },
+          { f: "Was ___ du? (lesen)", o: ["liest", "lest", "lesst"], tipp: "lesen: du liest" },
+          { f: "Mein Bruder ___ gut Deutsch. (sprechen)", o: ["spricht", "sprecht", "sprichst"], tipp: "e → i: er spricht" },
+          { f: "___ du mir das Salz? (geben)", o: ["Gibst", "Gebst", "Gibt"], tipp: "geben: du gibst" },
+          { f: "Er ___ jeden Tag zur Schule. (laufen)", o: ["läuft", "lauft", "läufst"], tipp: "au → äu: er läuft" },
+          { f: "Wann ___ der Film an? (anfangen)", o: ["fängt", "fangt", "fängst"], tipp: "anfangen: er fängt … an" },
+          { f: "Ihr ___ zu laut. (sprechen)", o: ["sprecht", "sprichst", "spricht"], tipp: "ihr: keine Änderung → ihr sprecht" },
+          { f: "Du ___ müde aus. (aussehen)", o: ["siehst", "sehst", "sieht"], tipp: "aussehen: du siehst … aus" },
+          { f: "Wie ___ du? (heißen)", o: ["heißt", "heißst", "heiße"], tipp: "heißen: du heißt" },
+          { f: "Was ___ ihr am Wochenende? (machen)", o: ["macht", "machst", "machen"], tipp: "ihr macht" },
+          { f: "Meine Mutter ___ heute lange. (arbeiten)", o: ["arbeitet", "arbeitt", "arbeitest"], tipp: "arbeiten: sie arbeitet (mit e)" }
         ] },
       { id: "z2", minuten: 3, typ: "sortieren", titel: "Perfekt: haben oder sein?", anleitung: "Bewegung von A nach B oder Veränderung? Dann sein. Sonst haben. Tippe auf den richtigen Korb.",
         koerbe: [{ k: "haben", t: "haben" }, { k: "sein", t: "sein" }],
@@ -89,7 +99,17 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { t: "essen → gegessen", k: "haben" }, { t: "fahren → gefahren", k: "sein" }, { t: "spielen → gespielt", k: "haben" },
           { t: "gehen → gegangen", k: "sein" }, { t: "aufstehen → aufgestanden", k: "sein" }, { t: "kaufen → gekauft", k: "haben" },
           { t: "fliegen → geflogen", k: "sein" }, { t: "schlafen → geschlafen", k: "haben" }, { t: "kommen → gekommen", k: "sein" },
-          { t: "lernen → gelernt", k: "haben" }, { t: "bleiben → geblieben", k: "sein" }, { t: "trinken → getrunken", k: "haben" }
+          { t: "lernen → gelernt", k: "haben" }, { t: "bleiben → geblieben", k: "sein" }, { t: "trinken → getrunken", k: "haben" },
+          { t: "laufen → gelaufen", k: "sein" },
+          { t: "schreiben → geschrieben", k: "haben" },
+          { t: "einschlafen → eingeschlafen", k: "sein" },
+          { t: "lesen → gelesen", k: "haben" },
+          { t: "ankommen → angekommen", k: "sein" },
+          { t: "kochen → gekocht", k: "haben" },
+          { t: "umziehen → umgezogen", k: "sein" },
+          { t: "telefonieren → telefoniert", k: "haben" },
+          { t: "passieren → passiert", k: "sein" },
+          { t: "arbeiten → gearbeitet", k: "haben" }
         ] },
       { id: "z3", minuten: 3, typ: "wahl", titel: "Perfekt: Lückensätze", anleitung: "Was fehlt? Tippe auf die richtige Lösung.",
         items: [
@@ -100,7 +120,27 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Ich habe meine Oma ___.", o: ["besucht", "gebesucht", "besuchen"], tipp: "besuchen → besucht (ohne ge)" },
           { f: "Wir haben im Supermarkt ___.", o: ["eingekauft", "geeinkauft", "einkaufen"], tipp: "trennbar: ein-ge-kauft" },
           { f: "Was ___ passiert?", o: ["ist", "hat"], tipp: "passieren → sein" },
-          { f: "Ich habe dich nicht ___.", o: ["verstanden", "geverstanden", "verstehen"], tipp: "verstehen → verstanden (ohne ge)" }
+          { f: "Ich habe dich nicht ___.", o: ["verstanden", "geverstanden", "verstehen"], tipp: "verstehen → verstanden (ohne ge)" },
+          { f: "Wir sind mit dem Zug nach Kiel ___.", o: ["gefahren", "gefahrt", "fahren"], tipp: "fahren → gefahren" },
+          { f: "Ich ___ gestern einen Film gesehen.", o: ["habe", "bin"], tipp: "sehen → haben" },
+          { f: "Wann ___ du heute aufgestanden?", o: ["bist", "hast"], tipp: "aufstehen → sein" },
+          { f: "Er hat mir eine Nachricht ___.", o: ["geschrieben", "geschreibt", "schreiben"], tipp: "schreiben → geschrieben" },
+          { f: "Habt ihr schon ___? (essen)", o: ["gegessen", "geesst", "gegesst"], tipp: "essen → gegessen" },
+          { f: "Lina ___ zu Hause geblieben.", o: ["ist", "hat"], tipp: "bleiben → sein" },
+          { f: "Ich habe die Tür ___. (aufmachen)", o: ["aufgemacht", "geaufmacht", "aufmachen"], tipp: "trennbar: auf-ge-macht" },
+          { f: "Wie lange hast du ___? (schlafen)", o: ["geschlafen", "geschlaft", "schlafen"], tipp: "schlafen → geschlafen" },
+          { f: "Wir ___ um 9 Uhr in Hamburg angekommen.", o: ["sind", "haben"], tipp: "ankommen → sein" },
+          { f: "Sie hat ihre Freundin ___. (anrufen)", o: ["angerufen", "geanruft", "anrufen"], tipp: "trennbar: an-ge-rufen" }
+        ] },
+      { id: "z5", minuten: 3, typ: "bauen", titel: "Perfekt: Sätze bauen", hinweis: "haben/sein auf Position 2, das Partizip ganz ans Ende.", anleitung: "Tippe die Wörter in der richtigen Reihenfolge. haben oder sein auf Position 2 – das Partizip (ge…t / ge…en) ans Ende!",
+        items: [
+          { w: ["ich", "habe", "gestern", "Fußball", "gespielt"], a: ["ich habe gestern fußball gespielt", "gestern habe ich fußball gespielt"], p: "." },
+          { w: ["wir", "sind", "am", "Sonntag", "nach", "Kiel", "gefahren"], a: ["wir sind am sonntag nach kiel gefahren", "am sonntag sind wir nach kiel gefahren"], p: "." },
+          { w: ["hast", "du", "die", "Hausaufgaben", "gemacht"], a: ["hast du die hausaufgaben gemacht"], p: "?" },
+          { w: ["Lina", "ist", "um", "7", "Uhr", "aufgestanden"], a: ["lina ist um 7 uhr aufgestanden", "um 7 uhr ist lina aufgestanden"], p: "." },
+          { w: ["ich", "habe", "meine", "Oma", "besucht"], a: ["ich habe meine oma besucht"], p: "." },
+          { w: ["wann", "bist", "du", "nach", "Hause", "gekommen"], a: ["wann bist du nach hause gekommen"], p: "?" },
+          { w: ["er", "hat", "im", "Supermarkt", "eingekauft"], a: ["er hat im supermarkt eingekauft", "im supermarkt hat er eingekauft"], p: "." }
         ] },
       { id: "z4", typ: "quiz", titel: "Quiz für alle: Präsens & Perfekt", anleitung: "Die Frage steht an der Tafel. Antworte schnell am Handy!",
         items: [
@@ -109,7 +149,11 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "gehen → Perfekt", o: ["ist gegangen", "hat gegangen", "ist gegeht", "hat gegeht"] },
           { f: "Ich ___ gestern lange geschlafen.", o: ["habe", "bin", "hat", "ist"] },
           { f: "einkaufen → Partizip II", o: ["eingekauft", "geeinkauft", "eingekaufen", "einkauft"] },
-          { f: "Welcher Satz ist richtig?", o: ["Gestern bin ich nach Kiel gefahren.", "Gestern ich bin nach Kiel gefahren.", "Gestern bin ich gefahren nach Kiel.", "Gestern habe ich nach Kiel gefahren."] }
+          { f: "Welcher Satz ist richtig?", o: ["Gestern bin ich nach Kiel gefahren.", "Gestern ich bin nach Kiel gefahren.", "Gestern bin ich gefahren nach Kiel.", "Gestern habe ich nach Kiel gefahren."] },
+          { f: "er – sprechen", o: ["er spricht", "er sprecht", "er sprichst", "er sprechen"] },
+          { f: "ankommen → Perfekt", o: ["ist angekommen", "hat angekommen", "ist angekommt", "hat angekommt"] },
+          { f: "Wir ___ gestern Pizza gegessen.", o: ["haben", "sind", "hat", "ist"] },
+          { f: "du – geben", o: ["du gibst", "du gebst", "du gibt", "du geben"] }
         ] }
     ] },
   /* ---------------------------------------------------------------- */
@@ -135,7 +179,15 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "___ ihr mitkommen? (wollen)", o: ["Wollt", "Willst", "Will"], tipp: "ihr wollt" },
           { f: "Wir ___ hier nicht parken. (dürfen)", o: ["dürfen", "darf", "dürft"], tipp: "wir dürfen" },
           { f: "Ich ___ einen Tee, bitte. (möchten)", o: ["möchte", "möchtest", "möchten"], tipp: "ich möchte" },
-          { f: "Der Arzt sagt, ich ___ mehr Wasser trinken. (sollen)", o: ["soll", "sollst", "sollen"], tipp: "ich soll" }
+          { f: "Der Arzt sagt, ich ___ mehr Wasser trinken. (sollen)", o: ["soll", "sollst", "sollen"], tipp: "ich soll" },
+          { f: "Ich ___ heute nicht kommen. (können)", o: ["kann", "kannst", "können"], tipp: "ich kann" },
+          { f: "Ihr ___ hier warten. (müssen)", o: ["müsst", "musst", "müssen"], tipp: "ihr müsst" },
+          { f: "Lina ___ Ärztin werden. (wollen)", o: ["will", "willst", "wollt"], tipp: "sie will" },
+          { f: "___ ich das Fenster aufmachen? (dürfen)", o: ["Darf", "Darfst", "Dürfen"], tipp: "ich darf" },
+          { f: "Was ___ ihr trinken? (möchten)", o: ["möchtet", "möchtest", "möchten"], tipp: "ihr möchtet" },
+          { f: "Du ___ mehr Gemüse essen. (sollen)", o: ["sollst", "soll", "sollt"], tipp: "du sollst" },
+          { f: "Wir ___ am Samstag nicht arbeiten. (müssen)", o: ["müssen", "müsst", "muss"], tipp: "wir müssen" },
+          { f: "___ du Gitarre spielen? (können)", o: ["Kannst", "Kann", "Könnt"], tipp: "du kannst" }
         ] },
       { id: "m2", minuten: 3, typ: "bauen", titel: "Modalverben: Sätze bauen", anleitung: "Tippe die Wörter in der richtigen Reihenfolge. Modalverb auf Position 2, das andere Verb ans Ende!",
         items: [
@@ -144,7 +196,12 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { w: ["wir", "wollen", "am", "Samstag", "ins", "Kino", "gehen"], a: ["wir wollen am Samstag ins Kino gehen", "am Samstag wollen wir ins Kino gehen"], p: "." },
           { w: ["hier", "darf", "man", "nicht", "rauchen"], a: ["hier darf man nicht rauchen", "man darf hier nicht rauchen"], p: "." },
           { w: ["möchtest", "du", "einen", "Tee", "trinken"], a: ["möchtest du einen Tee trinken"], p: "?" },
-          { w: ["meine", "Schwester", "kann", "sehr", "gut", "kochen"], a: ["meine Schwester kann sehr gut kochen"], p: "." }
+          { w: ["meine", "Schwester", "kann", "sehr", "gut", "kochen"], a: ["meine Schwester kann sehr gut kochen"], p: "." },
+          { w: ["ich", "möchte", "einen", "Kaffee", "trinken"], a: ["ich möchte einen kaffee trinken"], p: "." },
+          { w: ["wir", "dürfen", "im", "Kurs", "nicht", "essen"], a: ["wir dürfen im kurs nicht essen", "im kurs dürfen wir nicht essen"], p: "." },
+          { w: ["wann", "musst", "du", "morgen", "aufstehen"], a: ["wann musst du morgen aufstehen"], p: "?" },
+          { w: ["willst", "du", "mit", "mir", "Fußball", "spielen"], a: ["willst du mit mir fußball spielen"], p: "?" },
+          { w: ["Tarek", "soll", "mehr", "Wasser", "trinken"], a: ["tarek soll mehr wasser trinken"], p: "." }
         ] },
     ] },
   /* ---------------------------------------------------------------- */
@@ -177,7 +234,14 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Herr Berg, ___ bitte geradeaus! (gehen)", o: ["gehen Sie", "geh", "Sie gehen"], tipp: "Sie → Gehen Sie!" },
           { f: "Tarek, ___ bitte auf! (aufstehen)", o: ["steh", "stehst", "stehen"], tipp: "trennbar: Steh … auf!" },
           { f: "Mina, ___ bitte leise! (sein)", o: ["sei", "bist", "seid"], tipp: "sein → Sei!" },
-          { f: "Frau Doktor, ___ Sie mir bitte! (helfen)", o: ["helfen", "hilf", "helft"], tipp: "Sie → Helfen Sie!" }
+          { f: "Frau Doktor, ___ Sie mir bitte! (helfen)", o: ["helfen", "hilf", "helft"], tipp: "Sie → Helfen Sie!" },
+          { f: "Sara, ___ mir bitte das Buch! (geben)", o: ["gib", "gibst", "geb"], tipp: "du gibst → Gib!" },
+          { f: "Herr Weber, ___ Sie bitte langsam! (sprechen)", o: ["sprechen", "sprich", "sprecht"], tipp: "Sie → Sprechen Sie!" },
+          { f: "Frau Ali, ___ Sie bitte hier! (warten)", o: ["warten", "wartet", "wart"], tipp: "Sie → Warten Sie!" },
+          { f: "Emil, ___ morgen pünktlich! (sein)", o: ["sei", "bist", "seien"], tipp: "sein → Sei!" },
+          { f: "Entschuldigung, ___ Sie mir bitte den Weg! (zeigen)", o: ["zeigen", "zeig", "zeigst"], tipp: "Sie → Zeigen Sie!" },
+          { f: "Nour, ___ bitte deine Mutter an! (anrufen)", o: ["ruf", "rufst", "rufen Sie"], tipp: "du → Ruf … an!" },
+          { f: "Mo, ___ nicht so viel Schokolade! (essen)", o: ["iss", "esst", "isst"], tipp: "du isst → Iss!" }
         ] },
       { id: "i2", minuten: 2, typ: "sortieren", titel: "du oder Sie?", hinweis: "du: Verb ohne -st, ohne „du“. Sie: Verb + Sie.", anleitung: "Lies die Aufforderung. Spricht man mit du oder mit Sie? Tippe auf den Korb.",
         koerbe: [{ k: "du", t: "👋 du" }, { k: "Sie", t: "🤝 Sie" }],
@@ -186,7 +250,15 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { t: "Nimm den Bus Nummer 5!", k: "du" }, { t: "Nehmen Sie den Bus Nummer 5!", k: "Sie" },
           { t: "Steh bitte auf!", k: "du" }, { t: "Rufen Sie mich morgen an!", k: "Sie" },
           { t: "Sei pünktlich!", k: "du" }, { t: "Seien Sie bitte leise!", k: "Sie" },
-          { t: "Iss dein Brot!", k: "du" }, { t: "Gehen Sie die zweite Straße links!", k: "Sie" }
+          { t: "Iss dein Brot!", k: "du" }, { t: "Gehen Sie die zweite Straße links!", k: "Sie" },
+          { t: "Hilf mir bitte!", k: "du" },
+          { t: "Helfen Sie mir bitte!", k: "Sie" },
+          { t: "Fahr vorsichtig!", k: "du" },
+          { t: "Nehmen Sie bitte Platz!", k: "Sie" },
+          { t: "Mach das Fenster zu!", k: "du" },
+          { t: "Warten Sie bitte einen Moment!", k: "Sie" },
+          { t: "Gib mir den Ball!", k: "du" },
+          { t: "Zeigen Sie mir bitte Ihren Ausweis!", k: "Sie" }
         ] },
       { id: "i3", minuten: 3, typ: "bauen", titel: "Imperativ: Sätze bauen", hinweis: "Imperativ: Das Verb steht vorne (Position 1). Bei Sie: Verb + Sie. Trennbares Teil ans Ende.", anleitung: "Das Verb steht ganz vorne! Tippe die Wörter in der richtigen Reihenfolge.",
         items: [
@@ -194,7 +266,11 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { w: ["nimm", "den", "Bus", "zum", "Bahnhof"], a: ["nimm den bus zum bahnhof"], p: "!" },
           { w: ["stehen", "Sie", "bitte", "auf"], a: ["stehen sie bitte auf", "bitte stehen sie auf"], p: "!" },
           { w: ["ruf", "mich", "morgen", "an"], a: ["ruf mich morgen an"], p: "!" },
-          { w: ["leg", "das", "Buch", "auf", "den", "Tisch"], a: ["leg das buch auf den tisch"], p: "!" }
+          { w: ["leg", "das", "Buch", "auf", "den", "Tisch"], a: ["leg das buch auf den tisch"], p: "!" },
+          { w: ["sprechen", "Sie", "bitte", "langsam"], a: ["sprechen sie bitte langsam", "bitte sprechen sie langsam"], p: "!" },
+          { w: ["gib", "mir", "bitte", "das", "Heft"], a: ["gib mir bitte das heft", "bitte gib mir das heft"], p: "!" },
+          { w: ["mach", "das", "Licht", "aus"], a: ["mach das licht aus"], p: "!" },
+          { w: ["nehmen", "Sie", "die", "zweite", "Straße", "links"], a: ["nehmen sie die zweite straße links"], p: "!" }
         ] }
     ] },
   /* ---------------------------------------------------------------- */
@@ -245,7 +321,16 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Ich gebe ___ Kind einen Apfel.", o: ["dem", "das", "den"], tipp: "Wem? das Kind → dem Kind" },
           { f: "Gefällt ___ die Jacke? (du)", o: ["dir", "dich", "du"], tipp: "gefallen + Dativ: dir" },
           { f: "Ich sehe ___ jeden Tag. (er)", o: ["ihn", "ihm", "er"], tipp: "sehen + Akkusativ: ihn" },
-          { f: "Kannst du ___ helfen? (ich)", o: ["mir", "mich", "ich"], tipp: "helfen + Dativ: mir" }
+          { f: "Kannst du ___ helfen? (ich)", o: ["mir", "mich", "ich"], tipp: "helfen + Dativ: mir" },
+          { f: "Ich brauche ___ Stift. (der)", o: ["einen", "einem", "ein"], tipp: "brauchen + Akkusativ: der Stift → einen" },
+          { f: "Ich wohne bei ___ Tante.", o: ["meiner", "meine", "meinen"], tipp: "bei + Dativ: die Tante → meiner" },
+          { f: "Wir sehen ___ Film. (der)", o: ["den", "dem", "der"], tipp: "sehen + Akkusativ → den" },
+          { f: "Die Jacke gefällt ___. (ich)", o: ["mir", "mich", "ich"], tipp: "gefallen + Dativ → mir" },
+          { f: "Ich fahre mit ___ Bus.", o: ["dem", "den", "der"], tipp: "mit + Dativ: der Bus → dem Bus" },
+          { f: "Ich rufe ___ morgen an. (du)", o: ["dich", "dir", "du"], tipp: "anrufen + Akkusativ → dich" },
+          { f: "Ich danke ___. (Sie)", o: ["Ihnen", "Sie", "Ihr"], tipp: "danken + Dativ → Ihnen" },
+          { f: "Hast du ___ Bruder?", o: ["einen", "einem", "ein"], tipp: "haben + Akkusativ: der Bruder → einen" },
+          { f: "Ich schenke ___ Freund ein Buch.", o: ["meinem", "meinen", "mein"], tipp: "Wem? der Freund → meinem" }
         ] },
       { id: "k2", minuten: 3, typ: "wahl", titel: "mein, sein, ihr …", anleitung: "Wem gehört es? Welche Endung?",
         items: [
@@ -256,7 +341,14 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Ich rufe ___ Vater an.", o: ["meinen", "mein", "meinem"], tipp: "Akkusativ, der Vater → meinen" },
           { f: "Ich spiele mit ___ Bruder.", o: ["meinem", "meinen", "mein"], tipp: "mit + Dativ, der Bruder → meinem" },
           { f: "Frau Koch, ist das ___ Tasche?", o: ["Ihre", "Ihr", "Deine"], tipp: "Sie (höflich) → Ihre" },
-          { f: "Kinder, wo sind ___ Jacken?", o: ["eure", "euer", "ihre"], tipp: "ihr (Kinder) → eure" }
+          { f: "Kinder, wo sind ___ Jacken?", o: ["eure", "euer", "ihre"], tipp: "ihr (Kinder) → eure" },
+          { f: "Das ist Herr Berg. ___ Frau ist Lehrerin.", o: ["Seine", "Ihre", "Sein"], tipp: "Herr Berg → sein, die Frau → seine" },
+          { f: "Wir besuchen ___ Onkel.", o: ["unseren", "unser", "unserem"], tipp: "Akkusativ, der Onkel → unseren" },
+          { f: "Ali und Sara, ist das ___ Auto?", o: ["euer", "eure", "euren"], tipp: "ihr → euer, das Auto → euer" },
+          { f: "Lina telefoniert mit ___ Mutter.", o: ["ihrer", "ihre", "seiner"], tipp: "Lina → ihr; mit + Dativ, die Mutter → ihrer" },
+          { f: "Omar sucht ___ Handy.", o: ["sein", "seinen", "ihr"], tipp: "Omar → sein; das Handy → sein" },
+          { f: "Ich gebe ___ Schwester einen Apfel.", o: ["meiner", "meine", "meinen"], tipp: "Wem? die Schwester → meiner" },
+          { f: "Wo ist ___ Schlüssel? (du)", o: ["dein", "deine", "deinen"], tipp: "der Schlüssel, Nominativ → dein" }
         ] },
       { id: "k3", minuten: 3, typ: "bauen", titel: "Wem? Was? – Sätze bauen", anleitung: "Erst das Verb auf Position 2. Dann: Wem? (Dativ) und danach Was? (Akkusativ).",
         items: [
@@ -264,7 +356,11 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { w: ["Omar", "gibt", "seinem", "Bruder", "den", "Ball"], a: ["Omar gibt seinem Bruder den Ball"], p: "." },
           { w: ["kannst", "du", "mir", "den", "Weg", "zeigen"], a: ["kannst du mir den Weg zeigen"], p: "?" },
           { w: ["wir", "bringen", "unserer", "Lehrerin", "einen", "Kuchen"], a: ["wir bringen unserer Lehrerin einen Kuchen"], p: "." },
-          { w: ["der", "Lehrer", "erklärt", "den", "Schülern", "die", "Aufgabe"], a: ["der Lehrer erklärt den Schülern die Aufgabe"], p: "." }
+          { w: ["der", "Lehrer", "erklärt", "den", "Schülern", "die", "Aufgabe"], a: ["der Lehrer erklärt den Schülern die Aufgabe"], p: "." },
+          { w: ["Lina", "zeigt", "ihrer", "Freundin", "das", "Foto"], a: ["lina zeigt ihrer freundin das foto"], p: "." },
+          { w: ["ich", "kaufe", "meinem", "Vater", "einen", "Pullover"], a: ["ich kaufe meinem vater einen pullover"], p: "." },
+          { w: ["schick", "mir", "bitte", "die", "Adresse"], a: ["schick mir bitte die adresse", "bitte schick mir die adresse"], p: "!" },
+          { w: ["gibst", "du", "mir", "deinen", "Stift"], a: ["gibst du mir deinen stift"], p: "?" }
         ] },
       { id: "k4", typ: "quiz", titel: "Quiz für alle: Akkusativ, Dativ, Possessiv", anleitung: "Schnell antworten!",
         items: [
@@ -273,7 +369,11 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Das ist Ali. ___ Mutter ist Ärztin.", o: ["Seine", "Ihre", "Sein", "Ihr"] },
           { f: "Ich zeige ___ (du) mein Zimmer.", o: ["dir", "dich", "du", "dein"] },
           { f: "Wir besuchen ___ Großeltern.", o: ["unsere", "unser", "unseren", "unserem"] },
-          { f: "Schmeckt ___ (ihr) die Pizza?", o: ["euch", "ihr", "euer", "ihnen"] }
+          { f: "Schmeckt ___ (ihr) die Pizza?", o: ["euch", "ihr", "euer", "ihnen"] },
+          { f: "Ich fahre mit ___ U-Bahn.", o: ["der", "die", "dem", "den"] },
+          { f: "Das ist Sara. ___ Bruder heißt Tarek.", o: ["Ihr", "Sein", "Ihre", "Seine"] },
+          { f: "Ich brauche ___ Hilfe. (du)", o: ["deine", "dein", "deinen", "deinem"] },
+          { f: "Wir helfen ___. (er)", o: ["ihm", "ihn", "er", "sein"] }
         ] }
     ] },
   /* ---------------------------------------------------------------- */
@@ -297,7 +397,15 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { t: "Er hängt das Bild an die Wand.", k: "wohin" }, { t: "Das Bild hängt an der Wand.", k: "wo" },
           { t: "Wir gehen ins Kino.", k: "wohin" }, { t: "Wir sind im Kino.", k: "wo" },
           { t: "Setz dich neben mich!", k: "wohin" }, { t: "Sie sitzt neben mir.", k: "wo" },
-          { t: "Der Hund läuft unter den Tisch.", k: "wohin" }, { t: "Der Hund schläft unter dem Tisch.", k: "wo" }
+          { t: "Der Hund läuft unter den Tisch.", k: "wohin" }, { t: "Der Hund schläft unter dem Tisch.", k: "wo" },
+          { t: "Ich setze mich auf das Sofa.", k: "wohin" },
+          { t: "Ich sitze auf dem Sofa.", k: "wo" },
+          { t: "Sie legt das Handy in die Tasche.", k: "wohin" },
+          { t: "Das Handy liegt in der Tasche.", k: "wo" },
+          { t: "Wir fahren in die Stadt.", k: "wohin" },
+          { t: "Wir wohnen in der Stadt.", k: "wo" },
+          { t: "Er stellt das Fahrrad vor das Haus.", k: "wohin" },
+          { t: "Das Fahrrad steht vor dem Haus.", k: "wo" }
         ] },
       { id: "w2", minuten: 3, typ: "wahl", titel: "Wo oder wohin? – Lücken", anleitung: "Bewegung? → den / die / das. Keine Bewegung? → dem / der / dem.",
         items: [
@@ -308,7 +416,15 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Stell die Tasche hinter ___ Tür!", o: ["die", "der"], tipp: "stellen = Bewegung → die Tür" },
           { f: "Die Tasche steht hinter ___ Tür.", o: ["der", "die"], tipp: "stehen = keine Bewegung → der Tür" },
           { f: "Er hängt die Jacke an ___ Haken.", o: ["den", "dem"], tipp: "hängen + Bewegung → den Haken" },
-          { f: "Das Auto steht vor ___ Haus.", o: ["dem", "das"], tipp: "stehen → Dativ: dem Haus" }
+          { f: "Das Auto steht vor ___ Haus.", o: ["dem", "das"], tipp: "stehen → Dativ: dem Haus" },
+          { f: "Ich hänge die Lampe über ___ Tisch.", o: ["den", "dem"], tipp: "hängen + Bewegung → den" },
+          { f: "Die Lampe hängt über ___ Tisch.", o: ["dem", "den"], tipp: "hängt (keine Bewegung) → dem" },
+          { f: "Leg die Zeitung neben ___ Computer!", o: ["den", "dem"], tipp: "legen = Bewegung → den" },
+          { f: "Die Zeitung liegt neben ___ Computer.", o: ["dem", "den"], tipp: "liegen → dem" },
+          { f: "Wir gehen heute ___ Kino.", o: ["ins", "im"], tipp: "gehen = Bewegung → ins (in das)" },
+          { f: "Wir sind heute ___ Kino.", o: ["im", "ins"], tipp: "sein = keine Bewegung → im (in dem)" },
+          { f: "Die Katze springt auf ___ Bett.", o: ["das", "dem"], tipp: "springen = Bewegung → das" },
+          { f: "Die Katze schläft auf ___ Bett.", o: ["dem", "das"], tipp: "schlafen = keine Bewegung → dem" }
         ] }
     ] },
   /* ---------------------------------------------------------------- */
@@ -416,7 +532,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
   { id: "ende", icon: "🏁", titel: "Abschluss-Quiz", minuten: 3,
     tafel: [{ titel: "Was haben wir heute wiederholt?", html: `<div class="chips"><span>⏪ Präsens & Perfekt</span><span>💪 Modalverben</span><span>📣 Imperativ</span><span>🎁 Akkusativ & Dativ</span><span>👪 Possessiv</span><span>📦 Wo? und Wohin?</span><span>🎭 Theater</span></div><p>Die ganze Lektion könnt ihr jetzt auch allein üben: <b>Lernwelt → Üben → Wiederholung</b>.</p>` }],
     aufgaben: [
-      { id: "e1", typ: "quiz", titel: "Abschluss-Quiz für alle", anleitung: "Neun Fragen – alles gemischt!",
+      { id: "e1", typ: "quiz", titel: "Abschluss-Quiz für alle", anleitung: "Zwölf Fragen – alles gemischt!",
         items: [
           { f: "Wir ___ gestern ins Kino gegangen.", o: ["sind", "haben", "seid", "hat"] },
           { f: "Er ___ gut Deutsch sprechen.", o: ["kann", "kannst", "können", "könnt"] },
@@ -426,7 +542,10 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Das ist Mina. ___ Vater ist Koch.", o: ["Ihr", "Sein", "Ihre", "Seine"] },
           { f: "du – nehmen", o: ["du nimmst", "du nehmst", "du nimmt", "du nehmen"] },
           { f: "Herr Berg, ___ bitte Platz!", o: ["nehmen Sie", "nimm", "Sie nehmen", "nehmt"] },
-          { f: "Welcher Satz ist richtig?", o: ["Ich muss heute arbeiten.", "Ich muss arbeiten heute.", "Ich heute muss arbeiten.", "Ich muss heute arbeite."] }
+          { f: "Welcher Satz ist richtig?", o: ["Ich muss heute arbeiten.", "Ich muss arbeiten heute.", "Ich heute muss arbeiten.", "Ich muss heute arbeite."] },
+          { f: "Er ___ gern Bücher. (lesen)", o: ["liest", "lest", "lesst", "lese"] },
+          { f: "Kinder, ___ bitte leise!", o: ["seid", "sei", "seien Sie", "sind"] },
+          { f: "Ich gebe ___ Lehrerin das Heft.", o: ["der", "die", "dem", "den"] }
         ] }
     ] }
   ]

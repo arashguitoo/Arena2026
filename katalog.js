@@ -57,7 +57,7 @@ window.LW_BEREICHE = [
 }
 ];
 window.LW_KATALOG = [
-{"key": "wdh1-zeit", "titel": "Wiederholung: Präsens & Perfekt", "icon": "⏪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=zeit", "text": "Tafel + 4 Übungen: du fährst, er liest – und haben oder sein?", "bereich": "wdh", "themen": ["praesens", "perfekt"], "zeit": false},
+{"key": "wdh1-zeit", "titel": "Wiederholung: Präsens & Perfekt", "icon": "⏪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=zeit", "text": "Tafel + 5 Übungen: du fährst, er liest – haben oder sein? Perfekt-Sätze bauen", "bereich": "wdh", "themen": ["praesens", "perfekt"], "zeit": false},
 {"key": "wdh1-modal", "titel": "Wiederholung: Modalverben", "icon": "💪", "max": 10, "datei": "unterricht.html?solo=wdh1&block=modal", "text": "Tafel + 2 Übungen: kann, muss, will – das zweite Verb ans Ende!", "bereich": "wdh", "themen": ["modalverben", "satzbau"], "zeit": false},
 {"key": "wdh1-imp", "titel": "Wiederholung: Imperativ du & Sie", "icon": "📣", "max": 10, "datei": "unterricht.html?solo=wdh1&block=imp", "text": "Tafel + 3 Übungen: Komm! – Kommen Sie! Nimm! – Nehmen Sie!", "bereich": "wdh", "themen": ["satzbau", "alltag"], "zeit": false},
 {"key": "wdh1-kasus", "titel": "Wiederholung: Akkusativ, Dativ & Possessiv", "icon": "🎁", "max": 10, "datei": "unterricht.html?solo=wdh1&block=kasus", "text": "Tafel + 4 Übungen: Wen? Wem? meinen, meinem, ihr, sein …", "bereich": "wdh", "themen": ["akkusativ", "dativ", "possessiv"], "zeit": false},
