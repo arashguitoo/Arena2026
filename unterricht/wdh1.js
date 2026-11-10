@@ -69,7 +69,15 @@ window.UNTERRICHT_PLAENE.wdh1 = {
       { titel: "Perfekt: haben oder sein?", html: `<div class="bsp">Ich <b>habe</b> Pizza <b>gegessen</b>. &nbsp;·&nbsp; Ich <b>bin</b> nach Kiel <b>gefahren</b>.</div>
         <p><b>haben</b> + Partizip II am Ende – fast immer.</p>
         <p><b>sein</b> + Partizip II bei <b>Bewegung von A nach B</b>: gehen, fahren, kommen, fliegen, laufen<br>und bei <b>Veränderung</b>: aufstehen, einschlafen · und: bleiben, passieren</p>
-        <h3>Partizip II</h3><p>ge…t: <b>ge</b>spiel<b>t</b>, <b>ge</b>kauf<b>t</b> · ge…en: <b>ge</b>gess<b>en</b>, <b>ge</b>fahr<b>en</b><br>trennbar: ein<b>ge</b>kauft, auf<b>ge</b>standen · ohne ge: telefoniert, besucht, verstanden</p>` }
+        <h3>Partizip II</h3><p>ge…t: <b>ge</b>spiel<b>t</b>, <b>ge</b>kauf<b>t</b> · ge…en: <b>ge</b>gess<b>en</b>, <b>ge</b>fahr<b>en</b><br>trennbar: ein<b>ge</b>kauft, auf<b>ge</b>standen · ohne ge: telefoniert, besucht, verstanden</p>` },
+      { titel: "Perfekt: trennbar und nicht trennbar", html: `<div class="zwei-sp"><div class="box-gruen"><h3>✂️ trennbar → ge in der Mitte</h3>
+        <p>auf·stehen → auf<b>ge</b>standen<br>ein·kaufen → ein<b>ge</b>kauft<br>an·rufen → an<b>ge</b>rufen<br>mit·bringen → mit<b>ge</b>bracht<br>fern·sehen → fern<b>ge</b>sehen<br>an·kommen → an<b>ge</b>kommen</p>
+        <div class="bsp">Ich <b>habe</b> meine Mutter <b>angerufen</b>.</div></div>
+        <div class="box-blau"><h3>🔒 nicht trennbar → kein ge</h3>
+        <p><b>be</b>suchen → <b>be</b>sucht<br><b>ver</b>stehen → <b>ver</b>standen<br><b>er</b>zählen → <b>er</b>zählt<br><b>ent</b>schuldigen → <b>ent</b>schuldigt<br><b>emp</b>fehlen → <b>emp</b>fohlen<br><b>ge</b>hören → <b>ge</b>hört</p>
+        <div class="bsp">Ich <b>habe</b> meine Oma <b>besucht</b>.</div></div></div>
+        <p class="hinweis">Auch <b>kein ge</b>: Verben auf <b>-ieren</b> → telefoniert, fotografiert, repariert, studiert</p>
+        <p class="klein">Trick: Hört man die Vorsilbe laut (<b>AUF</b>stehen, <b>EIN</b>kaufen)? → trennbar. Leise (be<b>SU</b>chen)? → nicht trennbar.</p>` }
     ],
     aufgaben: [
       { id: "z1", minuten: 3, typ: "wahl", titel: "Präsens: Welche Form?", anleitung: "Lies den Satz. Tippe auf die richtige Form.",
@@ -140,7 +148,53 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { w: ["Lina", "ist", "um", "7", "Uhr", "aufgestanden"], a: ["lina ist um 7 uhr aufgestanden", "um 7 uhr ist lina aufgestanden"], p: "." },
           { w: ["ich", "habe", "meine", "Oma", "besucht"], a: ["ich habe meine oma besucht"], p: "." },
           { w: ["wann", "bist", "du", "nach", "Hause", "gekommen"], a: ["wann bist du nach hause gekommen"], p: "?" },
-          { w: ["er", "hat", "im", "Supermarkt", "eingekauft"], a: ["er hat im supermarkt eingekauft", "im supermarkt hat er eingekauft"], p: "." }
+          { w: ["er", "hat", "im", "Supermarkt", "eingekauft"], a: ["er hat im supermarkt eingekauft", "im supermarkt hat er eingekauft"], p: "." },
+          { w: ["ich", "habe", "meine", "Freunde", "eingeladen"], a: ["ich habe meine freunde eingeladen"], p: "." },
+          { w: ["er", "hat", "das", "Wort", "nicht", "verstanden"], a: ["er hat das wort nicht verstanden"], p: "." },
+          { w: ["wir", "haben", "das", "Zimmer", "aufgeräumt"], a: ["wir haben das zimmer aufgeräumt"], p: "." }
+        ] },
+      { id: "z6", minuten: 3, typ: "sortieren", titel: "Partizip: Wo ist das ge?", hinweis: "Hörst du die Vorsilbe laut (AUF-, EIN-, AN-)? → ge in der Mitte. be-, ver-, er-, ent-, emp-, ge- und -ieren → kein ge.", anleitung: "Lies das Verb. Wo steht ge? In der Mitte (trennbar)? Gar nicht (be-, ver-, er- … oder -ieren)? Tippe auf den Korb.",
+        koerbe: [{ k: "mitte", t: "✂️ ge in der Mitte" }, { k: "ohne", t: "🔒 ohne ge" }],
+        items: [
+          { t: "aufstehen → aufgestanden", k: "mitte" },
+          { t: "besuchen → besucht", k: "ohne" },
+          { t: "einkaufen → eingekauft", k: "mitte" },
+          { t: "verstehen → verstanden", k: "ohne" },
+          { t: "anrufen → angerufen", k: "mitte" },
+          { t: "erzählen → erzählt", k: "ohne" },
+          { t: "mitbringen → mitgebracht", k: "mitte" },
+          { t: "bezahlen → bezahlt", k: "ohne" },
+          { t: "fernsehen → ferngesehen", k: "mitte" },
+          { t: "vergessen → vergessen", k: "ohne" },
+          { t: "aufräumen → aufgeräumt", k: "mitte" },
+          { t: "telefonieren → telefoniert", k: "ohne" },
+          { t: "abholen → abgeholt", k: "mitte" },
+          { t: "bekommen → bekommen", k: "ohne" },
+          { t: "einladen → eingeladen", k: "mitte" },
+          { t: "fotografieren → fotografiert", k: "ohne" },
+          { t: "ankommen → angekommen", k: "mitte" },
+          { t: "entschuldigen → entschuldigt", k: "ohne" },
+          { t: "zumachen → zugemacht", k: "mitte" },
+          { t: "gehören → gehört", k: "ohne" }
+        ] },
+      { id: "z7", minuten: 3, typ: "wahl", titel: "Partizip: trennbar oder nicht?", anleitung: "Welches Partizip ist richtig? Achtung: trennbar → ge in der Mitte. be-, ver-, er- … und -ieren → kein ge.",
+        items: [
+          { f: "Ich habe das Zimmer ___. (aufräumen)", o: ["aufgeräumt", "geaufräumt", "aufräumt"], tipp: "trennbar: auf-ge-räumt" },
+          { f: "Wir haben die Rechnung ___. (bezahlen)", o: ["bezahlt", "gebezahlt", "bezahlen"], tipp: "be- → kein ge: bezahlt" },
+          { f: "Der Zug ist pünktlich ___. (ankommen)", o: ["angekommen", "geankommen", "ankommt"], tipp: "trennbar: an-ge-kommen" },
+          { f: "Ich habe meinen Schlüssel ___. (vergessen)", o: ["vergessen", "gevergessen", "vergesst"], tipp: "ver- → kein ge: vergessen" },
+          { f: "Hast du deine Freunde ___? (einladen)", o: ["eingeladen", "geeinladen", "einladet"], tipp: "trennbar: ein-ge-laden" },
+          { f: "Sie hat mir eine Geschichte ___. (erzählen)", o: ["erzählt", "geerzählt", "erzählen"], tipp: "er- → kein ge: erzählt" },
+          { f: "Er hat seine Schwester ___. (abholen)", o: ["abgeholt", "geabholt", "abholt"], tipp: "trennbar: ab-ge-holt" },
+          { f: "Ich habe einen Brief ___. (bekommen)", o: ["bekommen", "gebekommen", "bekommt"], tipp: "be- → kein ge: bekommen" },
+          { f: "Wir haben am Abend ___. (fernsehen)", o: ["ferngesehen", "gefernsehen", "fernsieht"], tipp: "trennbar: fern-ge-sehen" },
+          { f: "Er hat sich ___. (entschuldigen)", o: ["entschuldigt", "geentschuldigt", "entschuldiget"], tipp: "ent- → kein ge: entschuldigt" },
+          { f: "Habt ihr Kuchen ___? (mitbringen)", o: ["mitgebracht", "gemitbringt", "mitgebringt"], tipp: "trennbar: mit-ge-bracht" },
+          { f: "Ich habe mit meiner Mutter ___. (telefonieren)", o: ["telefoniert", "getelefoniert", "telefonierte"], tipp: "-ieren → kein ge: telefoniert" },
+          { f: "Der Arzt hat mir Tee ___. (empfehlen)", o: ["empfohlen", "geempfohlen", "empfehlt"], tipp: "emp- → kein ge: empfohlen" },
+          { f: "Wann bist du heute ___? (aufstehen)", o: ["aufgestanden", "geaufstanden", "aufgestehen"], tipp: "trennbar: auf-ge-standen" },
+          { f: "Das Handy hat mir ___. (gehören)", o: ["gehört", "gegehört", "gehören"], tipp: "ge- → kein zweites ge: gehört" },
+          { f: "Wir haben ein Foto ___. (fotografieren)", o: ["fotografiert", "gefotografiert", "fotografieren"], tipp: "-ieren → kein ge" }
         ] },
       { id: "z4", typ: "quiz", titel: "Quiz für alle: Präsens & Perfekt", anleitung: "Die Frage steht an der Tafel. Antworte schnell am Handy!",
         items: [
@@ -153,7 +207,10 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "er – sprechen", o: ["er spricht", "er sprecht", "er sprichst", "er sprechen"] },
           { f: "ankommen → Perfekt", o: ["ist angekommen", "hat angekommen", "ist angekommt", "hat angekommt"] },
           { f: "Wir ___ gestern Pizza gegessen.", o: ["haben", "sind", "hat", "ist"] },
-          { f: "du – geben", o: ["du gibst", "du gebst", "du gibt", "du geben"] }
+          { f: "du – geben", o: ["du gibst", "du gebst", "du gibt", "du geben"] },
+          { f: "verstehen → Partizip II", o: ["verstanden", "geverstanden", "verstehen", "versteht"] },
+          { f: "aufräumen → Partizip II", o: ["aufgeräumt", "geaufräumt", "aufgeräumen", "aufräumt"] },
+          { f: "Welches Partizip hat KEIN ge?", o: ["bezahlt", "eingekauft", "angerufen", "gespielt"] }
         ] }
     ] },
   /* ---------------------------------------------------------------- */
@@ -532,7 +589,7 @@ window.UNTERRICHT_PLAENE.wdh1 = {
   { id: "ende", icon: "🏁", titel: "Abschluss-Quiz", minuten: 3,
     tafel: [{ titel: "Was haben wir heute wiederholt?", html: `<div class="chips"><span>⏪ Präsens & Perfekt</span><span>💪 Modalverben</span><span>📣 Imperativ</span><span>🎁 Akkusativ & Dativ</span><span>👪 Possessiv</span><span>📦 Wo? und Wohin?</span><span>🎭 Theater</span></div><p>Die ganze Lektion könnt ihr jetzt auch allein üben: <b>Lernwelt → Üben → Wiederholung</b>.</p>` }],
     aufgaben: [
-      { id: "e1", typ: "quiz", titel: "Abschluss-Quiz für alle", anleitung: "Zwölf Fragen – alles gemischt!",
+      { id: "e1", typ: "quiz", titel: "Abschluss-Quiz für alle", anleitung: "Dreizehn Fragen – alles gemischt!",
         items: [
           { f: "Wir ___ gestern ins Kino gegangen.", o: ["sind", "haben", "seid", "hat"] },
           { f: "Er ___ gut Deutsch sprechen.", o: ["kann", "kannst", "können", "könnt"] },
@@ -545,7 +602,8 @@ window.UNTERRICHT_PLAENE.wdh1 = {
           { f: "Welcher Satz ist richtig?", o: ["Ich muss heute arbeiten.", "Ich muss arbeiten heute.", "Ich heute muss arbeiten.", "Ich muss heute arbeite."] },
           { f: "Er ___ gern Bücher. (lesen)", o: ["liest", "lest", "lesst", "lese"] },
           { f: "Kinder, ___ bitte leise!", o: ["seid", "sei", "seien Sie", "sind"] },
-          { f: "Ich gebe ___ Lehrerin das Heft.", o: ["der", "die", "dem", "den"] }
+          { f: "Ich gebe ___ Lehrerin das Heft.", o: ["der", "die", "dem", "den"] },
+          { f: "Ich habe dich gestern ___. (anrufen)", o: ["angerufen", "geanrufen", "anrufen", "angeruft"] }
         ] }
     ] }
   ]
