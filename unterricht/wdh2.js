@@ -90,11 +90,11 @@ const P5 = { id: "p5", typ: "partner", minuten: 5, titel: "Verabreden (Modalverb
 
 const PARTNER_TAFEL = { titel: "🗣️ Partner-Karten: So geht es", html: `<ol class="schritte">
   <li>Am Handy siehst du <b>deinen Partner</b> und <b>deine Rolle</b>: A 🔵 oder B 🟠.</li>
-  <li><b>Steht auf</b> und geht zu eurem Partner.</li>
+  <li><b>Dreht euch</b> zu eurem Partner. Ihr bleibt am Platz.</li>
   <li><b>A beginnt.</b> Die Sätze unter „Hilfe“ helfen euch.</li>
   <li>Sprecht mit <b>ganzen Sätzen</b>. Schaut euch an – nicht nur aufs Handy!</li>
   <li>Fertig? Einer tippt <b>„✅ Nächste Karte“</b>. Jetzt <b>tauscht ihr die Rollen</b>.</li>
-  <li>Bei 🔀 bekommt ihr einen <b>neuen Partner</b>.</li></ol>
+  <li>Danach bekommt ihr vielleicht einen <b>neuen Partner</b> – schaut aufs Handy.</li></ol>
   <p class="hinweis">Zu dritt? Die dritte Person hört zu, hilft und sagt: „Super!“ oder „Noch einmal, bitte!“ – bei der nächsten Karte ist sie dran.</p>` };
 
 const wo = kopie("wo"); wo.minuten = 8;
@@ -104,18 +104,20 @@ const ende = kopie("ende"); ende.minuten = 5;
 
 window.UNTERRICHT_PLAENE.wdh2 = {
   id: "wdh2", titel: "Wiederholung 2: Sprechen, sprechen, sprechen", minuten: 90,
-  text: "Fortsetzung: Partner-Karten (Perfekt, Dativ, Weg fragen, Tipps, Verabreden) · Wo/Wohin · Schlangen-Puzzle · Satzhälften · Theater",
+  text: "Fortsetzung am Platz: Partner-Karten (Perfekt, Dativ, Weg fragen, Tipps, Verabreden) · Wo/Wohin · Duelle 1 gegen 1 · Theater",
   bloecke: [
     { id: "start", icon: "🚦", titel: "Einstieg: Was weißt du noch?", minuten: 8,
       tafel: [ { titel: "Gestern haben wir gelernt …", html: `<div class="chips"><span>⏪ Präsens & Perfekt</span><span>✂️ aufgestanden – besucht</span><span>💪 Modalverben</span><span>📣 Komm! – Kommen Sie!</span><span>🎁 Akkusativ & Dativ</span></div>
-          <h3>Heute: viel sprechen!</h3><ol><li>Partner-Karten zu zweit</li><li>Wo? oder Wohin?</li><li>Schlangen-Puzzle</li><li>Satzhälften</li><li>Theater</li></ol>` } ],
+          <h3>Heute: viel sprechen!</h3><ol><li>Partner-Karten zu zweit</li><li>Wo? oder Wohin?</li><li>Duell 1 gegen 1</li><li>Noch ein Duell</li><li>Theater</li></ol>` } ],
       aufgaben: [ { id: "s2", typ: "sprechen", minuten: 5, titel: "Blitzrunde: Was weißt du noch?", anleitung: "Wer gezogen wird, steht kurz auf und antwortet mit einem ganzen Satz.",
         saetze: ["Was hast du gestern nach dem Kurs gemacht?", "Sag einen Satz mit „aufgestanden“.", "Was musst du heute noch machen?", "Gib mir einen Tipp mit dem Imperativ!", "Wem hilfst du zu Hause?", "Wem hast du zuletzt etwas geschenkt?", "Was kannst du gut?", "Sag einen Satz mit „angerufen“."] } ] },
-    { id: "sprechen1", icon: "🗣️", titel: "Sprechen zu zweit: Perfekt & Dativ", minuten: 12, steh: true, tafel: [PARTNER_TAFEL], aufgaben: [P1, P2] },
+    { id: "sprechen1", icon: "🗣️", titel: "Sprechen zu zweit: Perfekt & Dativ", minuten: 12, tafel: [PARTNER_TAFEL], aufgaben: [P1, P2] },
     wo,
-    { id: "schlange", icon: "🚶", titel: "Steh auf! Schlangen-Puzzle", minuten: 12, steh: true, tafel: [window.SCHLANGE_TAFEL], aufgaben: [window.SCHLANGE_AUFGABE] },
-    { id: "sprechen2", icon: "🗣️", titel: "Sprechen zu zweit: Weg, Tipps, Verabreden", minuten: 12, steh: true, tafel: [PARTNER_TAFEL], aufgaben: [P3, P4, P5] },
-    haelften,
+    { id: "duell1", icon: "⚔️", titel: "Duell 1 gegen 1: Perfekt & Co.", minuten: 12, tafel: [window.DUELL_TAFEL],
+      aufgaben: [window.duellAufgabe("d1", "Duell: Präsens, Perfekt, Modalverben, Imperativ", ["z1", "z3", "z7", "m1", "i1"], 12)] },
+    { id: "sprechen2", icon: "🗣️", titel: "Sprechen zu zweit: Weg, Tipps, Verabreden", minuten: 12, tafel: [PARTNER_TAFEL], aufgaben: [P3, P4, P5] },
+    { id: "duell2", icon: "⚔️", titel: "Duell 1 gegen 1: Akkusativ, Dativ, Wo/Wohin", minuten: 10, tafel: [window.DUELL_TAFEL],
+      aufgaben: [window.duellAufgabe("d2", "Duell: Akkusativ, Dativ, mein/sein, Wo/Wohin", ["k1", "k2", "w2"], 10)] },
     theater,
     ende
   ]

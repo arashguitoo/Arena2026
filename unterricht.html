@@ -204,6 +204,7 @@ body.beamer .layout{grid-template-columns:1fr} body.beamer .seite{display:none}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="unterricht/schlange.js"></script>
 <script src="unterricht/wdh1.js"></script>
+<script src="unterricht/duell.js"></script>
 <script src="unterricht/wdh2.js"></script>
 <script src="nachzuegler.js"></script>
 <script src="lernwelt.js"></script>
@@ -234,8 +235,8 @@ const I=p=>db.ref(`${ROOT}/${PIN}${p?"/"+p:""}`);
 const app=$("#app");
 const PLAENE=window.UNTERRICHT_PLAENE||{};
 let PLAN=PLAENE[P.get("plan")||P.get("solo")||"wdh1"]||PLAENE.wdh1;
-const LIVE_NUR=["sprechen","bewegung","bingo","kugellager","haelften","partner","schlange"];
-const TYP={wahl:"✅ Auswählen", sortieren:"🧺 Sortieren", bauen:"🧩 Sätze bauen", quiz:"⚡ Quiz für alle", sprechen:"🎤 Blitzrunde", bewegung:"🤫 Bewegungsspiel", bingo:"🚶 Bingo im Raum", kugellager:"🚶 Kugellager", haelften:"🚶 Satzhälften", theater:"🎭 Theater", partner:"🗣️ Partner-Karten", schlange:"🚶 Schlangen-Puzzle"};
+const LIVE_NUR=["sprechen","bewegung","bingo","kugellager","haelften","partner","schlange","duell"];
+const TYP={wahl:"✅ Auswählen", sortieren:"🧺 Sortieren", bauen:"🧩 Sätze bauen", quiz:"⚡ Quiz für alle", sprechen:"🎤 Blitzrunde", bewegung:"🤫 Bewegungsspiel", bingo:"🚶 Bingo im Raum", kugellager:"🚶 Kugellager", haelften:"🚶 Satzhälften", theater:"🎭 Theater", partner:"🗣️ Partner-Karten", schlange:"🚶 Schlangen-Puzzle", duell:"⚔️ Duell 1 gegen 1"};
 const QFARBE=["q0","q1","q2","q3"], QZ=["▲","●","■","◆"];
 function aufgabe(id){ for(const B of PLAN.bloecke) for(const A of B.aufgaben) if(A.id===id) return A; return null; }
 function blockVon(id){ return PLAN.bloecke.findIndex(B=>B.aufgaben.some(A=>A.id===id)); }
@@ -255,6 +256,10 @@ function toast(t){ const d=document.createElement("div"); d.className="toast"; d
    GEMEINSAME AUFGABEN-ANSICHTEN (Handy live + allein)
    ctx = {pid, ant:{i:{ok,v,n}}, setze(i,val), lokal, neu()}
    ========================================================= */
+/* Duell: Satz zum Vorlesen, Punkte */
+const duellSatz=it=>it.f.replace("___", it.o[0]).replace(/\s*\([^)]*\)\s*$/,"").replace(/\s+/g," ").trim();
+function duellStand(S, D){ const P={a:0,b:0}; for(let i=0;i<=Math.min(D.i, (D.q||[]).length-1);i++){ if(i===D.i && !D.zeigen) break; const an=(((S.du||{})[D.nr]||{})[i])||{}; const A=an[D.a], B=an[D.b];
+    const ra=A&&A.o===0, rb=B&&B.o===0; if(ra&&rb){ (Number(A.t)||0)<=(Number(B.t)||0)?P.a++:P.b++; } else { if(ra) P.a++; if(rb) P.b++; } } return P; }
 function warte(wer, text){ return `<div class="warte"><div class="e">⏳</div><h2>Warte auf ${wer}</h2>${text?`<p>${text}</p>`:""}</div>`; }
 function anleitung(A, steh){ return A.anleitung?`<details class="anl ${steh?"steh":""}" ${window.__anlOffen?"open":""}><summary>❓ So geht es</summary>${esc(A.anleitung)}</details>`:""; }
 document.addEventListener("toggle", e=>{ if(e.target.matches && e.target.matches("details.anl")) window.__anlOffen=e.target.open; }, true);
@@ -370,6 +375,7 @@ function handy(){
       if(A.typ==="bingo") r.b=((S.bingo||{})[A.id]||{})[me.pid]; if(A.typ==="haelften") r.h=S.hael;
       if(A.typ==="theater"){ r.th=S.theater; r.tw=((S.th||{})[A.id]||{})[me.pid]; }
       if(A.typ==="partner"){ r.pa=S.paar; r.sp=spielerListe().map(([p,x])=>p+x.name).join(); }
+      if(A.typ==="duell"){ r.du=S.duell; r.da=(S.du||{})[(S.duell||{}).nr]; r.sp=spielerListe().map(([p,x])=>p+x.name).join(); }
       if(A.typ==="schlange"){ r.sc=S.sch; r.sa=((S.sp||{})[A.id]||{})[me.pid]; } }
     return JSON.stringify(r); }
   function male(force){
@@ -386,7 +392,7 @@ function handy(){
       app.innerHTML=h+warte("die Lehrkraft","👀 Schau zur Tafel.")+`</div>`; return; }
     const steh=!!(PLAN.bloecke[blockVon(A.id)]||{}).steh;
     if(steh) h+=`<div class="small" style="font-weight:800;margin-bottom:4px;color:var(--steh)">🚶 Steh auf!</div>`;
-    const fn={wahl:uebung, sortieren:uebung, bauen:uebung, quiz:quiz, sprechen:zug, bewegung:zug, bingo:bingo, kugellager:kugel, haelften:haelften, theater:theater, partner:partner, schlange:schlange}[A.typ];
+    const fn={wahl:uebung, sortieren:uebung, bauen:uebung, quiz:quiz, sprechen:zug, bewegung:zug, bingo:bingo, kugellager:kugel, haelften:haelften, theater:theater, partner:partner, schlange:schlange, duell:duell}[A.typ];
     app.innerHTML=h+(fn?fn(A):"")+`</div>`; binder(A);
   }
   let binder=()=>{};
@@ -471,6 +477,23 @@ function handy(){
     return kopf+`<div class="dranband" style="background:#2F6FDB">🗣️ Du fragst</div>${msg?`<div class="tipp">${esc(msg)}</div>`:""}<div class="card"><div class="small muted" style="font-weight:800">1 · Lies vor:</div><div class="frage">„${esc(T.frage)}“</div>
       <div class="small muted" style="font-weight:800;margin-top:12px">2 · Was sagt dein Partner?</div><div class="opts">${mischS(T.o, A.id+T.id+me.pid+"|"+(a.n||0)).map(o=>`<button class="opt" data-spo="${esc(o)}">${T.e} ${esc(o)}</button>`).join("")}</div>
       ${fehlt.length>1?`<button class="zurueck" id="andere" style="margin-top:6px">🤷 Er weiß es nicht → andere Frage ↻</button>`:""}</div>`+bild; }
+  function duell(A){ const D=S.duell||{}; binder=()=>{};
+    if(D.aid!==A.id || !D.a) return warte("die Lehrkraft","⚔️ Gleich werden zwei Namen gezogen.<br>Vielleicht bist du dabei!");
+    const ich=me.pid===D.a||me.pid===D.b; const geg=me.pid===D.a?D.b:D.a; const P=duellStand(S,D); const meinP=me.pid===D.a?P.a:P.b, gegP=me.pid===D.a?P.b:P.a;
+    const band=ich?`<div class="dranband" style="background:var(--acc)">⚔️ Duell gegen ${esc(nameVon(geg))} – steh auf!</div><div class="zeile-klein"><span>Frage ${Math.min(D.i+1,3)}/3</span><span style="font-size:20px;color:var(--ink)">Du ${meinP} : ${gegP} ${esc(nameVon(geg))}</span></div>`
+      :`<div class="dranband" style="background:var(--nacht)">👀 ${esc(nameVon(D.a))} ⚔️ ${esc(nameVon(D.b))} – rate mit!</div>`;
+    if(D.ende){ if(!ich) return band+warte("das nächste Duell","Vielleicht bist du gleich dran!");
+      return band+`<div class="card fertig"><div class="e">${meinP>gegP?"🏆":meinP===gegP?"🤝":"👏"}</div><h2>${meinP>gegP?"Gewonnen!":meinP===gegP?"Unentschieden!":"Gut gekämpft!"}</h2><p style="font-size:20px">${meinP} : ${gegP}</p><p>Du kannst dich wieder setzen.</p></div>`; }
+    const it=A.pool[D.q[D.i]]; if(!it) return band;
+    const opts=mischS(it.o.map((o,j)=>({o,j})), A.id+"|"+D.nr+"|"+D.i); const mein=((((S.du||{})[D.nr]||{})[D.i])||{})[me.pid];
+    if(D.zeigen){ const r=mein&&mein.o===0;
+      return band+`<div class="card"><div class="frage">${esc(it.f)}</div>${mein?(r?`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">✅ Richtig!</div>`:`<div class="tipp">❌ Leider nicht.</div>`):""}</div>`
+        +(ich?`<div class="card mitte" style="border:4px solid var(--acc)"><div class="small muted" style="font-weight:800">🗣️ Lies laut vor:</div><div class="frage" style="font-size:26px">${esc(duellSatz(it))}</div></div>`
+             :`<div class="card mitte"><div class="small muted" style="font-weight:800">Richtig:</div><div class="frage">${esc(duellSatz(it))}</div></div>`+warte("die nächste Frage"));
+    }
+    if(mein) return band+`<div class="card"><div class="frage">${esc(it.f)}</div></div>`+warte("die Auflösung","✓ Deine Antwort ist gespeichert.");
+    binder=()=>$$("[data-dq]").forEach(b=>b.onclick=()=>schreib(`du/${D.nr}/${D.i}/${me.pid}`, {o:Number(b.dataset.dq), t:DEMO?Date.now():TS()}));
+    return band+`<div class="card"><div class="frage">${esc(it.f)}</div><div class="qopts">${opts.map((x,k)=>`<button class="${QFARBE[k]}" data-dq="${x.j}">${QZ[k]} ${esc(x.o)}</button>`).join("")}</div></div>`; }
   function theater(A){ const TH=S.theater||{}; const gid=((S.spieler||{})[me.pid]||{}).tg; const G=((TH.gr)||{})[gid];
     if(TH.aid!==A.id || !G){ binder=()=>{}; return warte("die Lehrkraft","🎭 Gleich bekommst du eine Gruppe."); }
     const SZ=szeneVon(A, G.sz); const mit=spielerListe().filter(([,x])=>x.tg===gid).sort((a,b)=>(Number(a[1].tr)||0)-(Number(b[1].tr)||0)||a[0].localeCompare(b[0])).map(([p])=>p);
@@ -500,7 +523,10 @@ function handy(){
     if(t==="schlange") S.sch={aid:A.id, r:0, linie:{demo:"A", d1:"B"}, karten:{demo:["mo","di"]}};
     if(t==="theater") S.theater={aid:A.id, schritt:1, gr:{g0:{sz:A.szenen[0].id}}};
     if(t==="kugellager") S.kugel={aid:A.id, r:0, kreis:{demo:"i"}};
+    if(t==="duell") S.duell={aid:A.id, nr:1, a:"demo", b:"d1", q:[0,1,2], i:0, zeigen:false};
     TIMER=S.timer; male(true);
+    if(t==="duell"){ const b=document.createElement("button"); b.textContent="▶ Vormachen: Auflösen / nächste Frage"; b.className="btn ghost"; b.style.cssText="position:fixed;left:10px;right:10px;bottom:10px;z-index:60";
+      b.onclick=()=>{ const D=S.duell; if(!D.zeigen){ D.zeigen=true; setzePfad(S,`du/1/${D.i}/d1`,{o:1,t:Date.now()}); } else if(D.i<2){ D.i++; D.zeigen=false; } else D.ende=true; male(true); }; document.body.appendChild(b); }
     if(t==="schlange"){ const b=document.createElement("button"); b.textContent="🔁 Vormachen: Jetzt fragt die andere Reihe"; b.className="btn ghost"; b.style.cssText="position:fixed;left:10px;right:10px;bottom:10px;z-index:60";
       b.onclick=()=>{ S.sch.ph=(S.sch.ph||"A")==="A"?"B":"A"; male(true); }; document.body.appendChild(b); } }
   if(DEMO) demoStart(); else
@@ -563,12 +589,19 @@ function leitung(){
     if(A.typ==="kugellager"){ const kr={}; mische(online()).forEach(([p],i)=>kr[p]=i%2?"a":"i"); I("kugel").set({aid:id, r:0, kreis:kr}); }
     if(A.typ==="haelften") karten(A, 1);
     if(A.typ==="partner") paareBilden(A);
+    if(A.typ==="duell") I("duell").set({aid:id, nr:(S.duell||{}).nr||0});
     if(A.typ==="schlange"){ const li={}, ka={}; const L=mische(online().map(([p])=>p)); L.forEach((p,i)=>li[p]=i%2?"B":"A");
       ["A","B"].forEach(X=>{ const mem=L.filter(p=>li[p]===X); const pool=mische(A.puzzles[X==="A"?"B":"A"].teile.map(t=>t.id)); let j=0; mem.forEach(p=>{ ka[p]=[pool[j%pool.length], pool[(j+1)%pool.length]]; j+=2; }); });
       I("sch").set({aid:id, r:0, ph:"A", linie:li, karten:ka}); }
     if(A.typ==="theater"){ if(!S.theater||S.theater.aid!==id||!S.theater.gr) await gruppenBilden(A); else I("theater/schritt").set(1); if(A.schrittMin) timerSetze(A.schrittMin[0]); }
   }
-  let paarHist=new Set();
+  let duellHist=[];
+  function duellZiehen(A){ const ids=online().map(([p])=>p); if(ids.length<2) return; let pool=ids.filter(p=>!duellHist.includes(p)); if(pool.length<2){ duellHist=[]; pool=ids; }
+    const a=pool[rnd(pool.length)]; const rest=pool.filter(p=>p!==a); const b=rest[rnd(rest.length)]; duellHist.push(a,b);
+    const q=mische(A.pool.map((_,i)=>i)).slice(0, A.fragen||3); I("duell").set({aid:A.id, nr:((S.duell||{}).nr||0)+1, a, b, q, i:0, zeigen:false}); timerSetze(A.minuten>5?3:A.minuten); }
+  let paarHist=new Set(), sitzModus=false, sitzListe=[];
+  function paareSetzen(A, gruppen){ const up={}; const alt=S.paar; if(alt && alt.gr) Object.values(alt.gr).forEach(G=>Object.values(G.m||{}).forEach(p=>{ up[`stat/${p}/karten`]=(Number(((S.stat||{})[p]||{}).karten)||0)+(Number(G.k)||0); }));
+    const gr={}; gruppen.forEach((g,i)=>gr["g"+i]={m:g, k:0}); up.paar={aid:A.id, runde:((alt&&alt.aid===A.id?alt.runde:0)||0)+1, gr}; I().update(up); timerSetze(A.minuten||5); }
   function paareBilden(A){ const ids=online().map(([p])=>p); let best=null, bestN=1e9;
     for(let v=0; v<25; v++){ const L=mische(ids); const gr=[]; for(let i=0;i+1<L.length;i+=2) gr.push([L[i],L[i+1]]); if(L.length%2===1){ if(gr.length) gr[gr.length-1].push(L[L.length-1]); else gr.push([L[0]]); }
       const n=gr.reduce((a,g)=>a+(paarHist.has([...g].sort().join("|"))?1:0),0); if(n<bestN){ bestN=n; best=gr; } if(!n) break; }
@@ -674,8 +707,28 @@ function leitung(){
           <div class="small" style="margin:6px 0">${mit.map(p=>{ const r=rollenVon(mit,p); const s=lueckenStand(SZ,r,W[p],r.includes(-2)); return `<div>${nm(p)} – <i>${esc(r.filter(x=>x>=0).map(x=>SZ.rollen[x]).join(" + ")||"Regie")}</i>${st===1?` <span class="muted">(${s.ok}/${s.n})</span>`:""}</div>`; }).join("")||'<span class="muted">leer</span>'}</div>
           <div class="row"><select data-szene="${gid}">${A.szenen.map(z=>`<option value="${z.id}" ${z.id===g.sz?"selected":""}>${z.icon} ${esc(z.titel)}</option>`).join("")}</select>${st===3?`<button class="btn sm steh" data-buehne="${gid}">🎬 Bühne</button>`:""}</div></div>`; }).join("")}</div>`;
       return h; }
+    if(A.typ==="duell"){ const D=S.duell||{}; if(D.aid!==A.id) return kopfA(A);
+      const schon=duellHist.length?`<p class="small muted">Schon im Duell: ${[...new Set(duellHist)].map(nm).join(", ")}</p>`:"";
+      if(!D.a) return kopfA(A)+`<div class="row" style="justify-content:center;margin:20px 0"><button class="btn acc" id="duellZiehen" style="font-size:24px;min-height:70px;padding:10px 30px">🎲 Duell ziehen</button></div>`+schon;
+      const P=duellStand(S,D); const an=(((S.du||{})[D.nr]||{})[D.i])||{};
+      let h=`<div class="vs" style="display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;text-align:center;margin:6px 0 14px">
+        <div style="border:5px solid var(--acc);border-radius:20px;padding:14px"><div class="grossname" style="font-size:clamp(36px,4.5vw,68px);color:var(--ink)">${nm(D.a)}</div><div style="font-family:var(--head);font-weight:900;font-size:44px;color:var(--acc)">${P.a}</div>${!D.ende&&!D.zeigen?`<div class="small">${an[D.a]?"✓ hat geantwortet":"… überlegt"}</div>`:""}</div>
+        <div style="font-family:var(--head);font-weight:900;font-size:60px;color:var(--gold)">⚔️</div>
+        <div style="border:5px solid var(--acc);border-radius:20px;padding:14px"><div class="grossname" style="font-size:clamp(36px,4.5vw,68px);color:var(--ink)">${nm(D.b)}</div><div style="font-family:var(--head);font-weight:900;font-size:44px;color:var(--acc)">${P.b}</div>${!D.ende&&!D.zeigen?`<div class="small">${an[D.b]?"✓ hat geantwortet":"… überlegt"}</div>`:""}</div></div>`;
+      if(D.ende){ const sieg=P.a>P.b?D.a:P.b>P.a?D.b:null; return h+`<div class="grossfrage">${sieg?`🏆 ${nm(sieg)} gewinnt!`:"🤝 Unentschieden!"}</div><div class="row" style="justify-content:center"><button class="btn acc" id="duellZiehen" style="font-size:22px">🎲 Nächstes Duell</button></div>`+schon; }
+      const it=A.pool[D.q[D.i]]; const opts=mischS(it.o.map((o,j)=>({o,j})), A.id+"|"+D.nr+"|"+D.i); const cnt=j=>Object.values(an).filter(x=>x.o===j).length;
+      h+=`<div class="small muted" style="font-weight:800">Frage ${D.i+1} von 3 · ${Object.keys(an).length} von ${online().length} haben geantwortet</div><div class="grossfrage" style="text-align:left;margin:6px 0">${esc(it.f)}</div>
+        <div class="qboard">${opts.map((x,k)=>`<div class="${QFARBE[k]} ${D.zeigen?(x.j===0?"richtig":"daneben"):""}"><span>${QZ[k]} ${esc(x.o)}</span>${D.zeigen?`<span>${cnt(x.j)}</span>`:""}</div>`).join("")}</div>`;
+      if(D.zeigen) h+=`<div class="tipp" style="font-size:clamp(20px,2.4vw,36px);margin-top:14px;background:var(--ok-2);border-color:var(--ok)">🗣️ ${nm(D.a)} und ${nm(D.b)}, lest laut vor:<br><b>${esc(duellSatz(it))}</b></div>`;
+      return h+`<div class="row" style="margin-top:14px">${D.zeigen?`<button class="btn acc" id="duellWeiter">${D.i<2?"Nächste Frage ▶":"🏆 Ergebnis"}</button>`:`<button class="btn ok" id="duellAuf">✅ Auflösen</button>`}<button class="btn ghost" id="duellZiehen">🎲 neu ziehen</button></div>`; }
     if(A.typ==="partner"){ const PA=S.paar||{}; if(PA.aid!==A.id) return kopfA(A); const gr=Object.entries(PA.gr||{}); const n=A.karten.length; const KA=A.karten[0];
-      return kopfA(A)+`<div class="row" style="margin:6px 0 12px"><button class="btn steh" id="neuePaare">🔀 Neue Paare – neuer Partner (Runde ${(PA.runde||1)+1})</button><span class="small muted">Runde ${PA.runde||1} · ${gr.length} Paare/Gruppen</span></div>
+      if(sitzModus){ const frei=online().filter(([p])=>!sitzListe.includes(p)); const paare=[]; for(let i=0;i<sitzListe.length;i+=2) paare.push(sitzListe.slice(i,i+2));
+        return kopfA(A)+`<h3>🪑 Paare nach Sitzplatz: Tippe die Namen so, wie sie sitzen – immer zwei Nachbarn nacheinander.</h3>
+          <div class="row" style="margin:8px 0">${frei.map(([p,x])=>`<button class="btn" data-sitz="${p}">${esc(x.name)}</button>`).join("")||'<span class="muted">Alle eingeteilt.</span>'}</div>
+          <div class="gruppen">${paare.map(g=>`<div class="gruppe"><b>${g.map(nm).join(" & ")}${g.length<2?" + …":""}</b></div>`).join("")}</div>
+          <div class="row" style="margin-top:12px"><button class="btn ok" id="sitzFertig" ${sitzListe.length>=2?"":"disabled"}>✅ Fertig – Paare starten</button><button class="btn ghost" id="sitzZurueck" ${sitzListe.length?"":"disabled"}>↶ letzten Namen zurück</button><button class="btn ghost" id="sitzAbbr">Abbrechen</button></div>
+          <p class="small muted">Ungerade Zahl? Die letzte Person kommt zum letzten Paar (3er-Gruppe).</p>`; }
+      return kopfA(A)+`<div class="row" style="margin:6px 0 12px"><button class="btn" id="sitzStart">🪑 Paare nach Sitzplatz (Nachbarn)</button><button class="btn ghost" id="neuePaare">🔀 Zufällige Paare</button><span class="small muted">Runde ${PA.runde||1} · ${gr.length} Paare/Gruppen</span></div>
         <h3>Beispiel – Karte 1: ${esc(KA.titel)}</h3><div class="tafelinhalt zwei-sp" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:clamp(16px,1.5vw,22px)">
           <div class="box-blau"><b>🔵 A:</b> ${esc(KA.a.t)}<ul class="hilfe">${KA.a.hilfe.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div><div class="box-gruen" style="background:var(--steh-2)"><b>🟠 B:</b> ${esc(KA.b.t)}<ul class="hilfe">${KA.b.hilfe.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div></div>
         <div class="gruppen">${gr.map(([g,G])=>{ const m=Object.values(G.m||{}); const k=Number(G.k)||0; return `<div class="gruppe ${k>=n?"buehne":""}"><b>${m.map(nm).join(" & ")}</b><div class="bz" style="grid-template-columns:1fr 60px;margin-top:6px"><div class="bal"><i style="width:${Math.min(1,k/n)*100}%"></i></div><span class="small">${Math.min(k,n)}/${n}${k>=n?" ✅":""}</span></div></div>`; }).join("")}</div>`; }
@@ -720,6 +773,11 @@ function leitung(){
     $$("[data-kreis]").forEach(b=>b.onclick=()=>{ const p=b.dataset.kreis; I(`kugel/kreis/${p}`).set(((S.kugel.kreis||{})[p])==="i"?"a":"i"); });
     on("#neueKarten", ()=>karten(A, ((S.hael||{}).runde||1)+1));
     on("#neuePaare", ()=>paareBilden(A));
+    on("#sitzStart", ()=>{ sitzModus=true; sitzListe=[]; male(); }); on("#sitzAbbr", ()=>{ sitzModus=false; male(); }); on("#sitzZurueck", ()=>{ sitzListe.pop(); male(); });
+    $$("[data-sitz]").forEach(b=>b.onclick=()=>{ sitzListe.push(b.dataset.sitz); male(); });
+    on("#sitzFertig", ()=>{ const g=[]; for(let i=0;i<sitzListe.length;i+=2) g.push(sitzListe.slice(i,i+2)); if(g.length>1 && g[g.length-1].length===1) g[g.length-2].push(g.pop()[0]); sitzModus=false; paareSetzen(A, g); });
+    on("#duellZiehen", ()=>duellZiehen(A)); on("#duellAuf", ()=>I("duell/zeigen").set(true));
+    on("#duellWeiter", ()=>{ const D=S.duell; if(D.i<2) I("duell").update({i:D.i+1, zeigen:false}); else I("duell/ende").set(true); });
     $$("[data-takt]").forEach(b=>b.onclick=()=>{ if(b.dataset.takt==="B") I("sch/ph").set("B"); else I("sch").update({r:(Number(S.sch.r)||0)+1, ph:"A"}); timerSetze(A.minuten||1.5); });
     $$("[data-linie]").forEach(b=>b.onclick=()=>{ const p=b.dataset.linie; const L=(S.sch.linie||{})[p]==="A"?"B":"A"; I("sch").update({[`linie/${p}`]:L, [`karten/${p}`]:mische(A.puzzles[L==="A"?"B":"A"].teile.map(t=>t.id)).slice(0,2)}); });
     $$("[data-schritt]").forEach(b=>b.onclick=()=>{ const s=Number(b.dataset.schritt); I("theater").update({schritt:s, buehne:null}); if(A.schrittMin) timerSetze(A.schrittMin[s-1]); });
@@ -738,6 +796,7 @@ function leitung(){
     theater:["Oben steht <b>deine Rolle</b>.","<b>Blaue Sätze</b> = deine Sätze.","Tippe das richtige Wort in den Lücken.","Dann: üben – und vorspielen!"],
     sprechen:["Ich ziehe einen Namen.","Auf deinem Handy steht die <b>Frage</b>.","<b>Steh auf</b> und antworte."],
     bewegung:["Dein Handy zeigt einen <b>geheimen Auftrag</b>.","Mach ihn – <b>ohne zu sprechen</b>.","Die anderen sagen: <b>Was hast du gemacht?</b>"],
+    duell:["Ich ziehe <b>2 Namen</b>. Die beiden <b>stehen auf</b>.","Alle sehen die gleiche Frage – <b>alle tippen</b> eine Antwort.","Ich löse auf. Die zwei im Duell <b>lesen den Satz laut vor</b>.","3 Fragen – dann setzen sie sich. <b>Nächstes Duell!</b>"],
     quiz:["Die Frage steht <b>an der Tafel</b>.","Tippe die <b>Farbe</b> mit der richtigen Antwort."],
     wahl:["Lies die Aufgabe.","Tippe die <b>richtige Antwort</b>.","Falsch? Lies die Lösung. Die Aufgabe kommt <b>später noch einmal</b>."],
     sortieren:["Lies den Satz.","Tippe den <b>richtigen Korb</b>.","Falsch? Lies die Lösung. Die Aufgabe kommt <b>später noch einmal</b>."],
@@ -756,6 +815,7 @@ function leitung(){
   function statZeilen(){ return spieler().map(([p,x])=>{ const z={p, name:x.name, on:x.online!==false, ueb:0, erst:0, vers:0, qa:0, qr:0, bingo:0, paare:0, puzzle:0, karten:0, theater:0};
       Object.entries(S.ant||{}).forEach(([aid,pro])=>{ Object.values((pro||{})[p]||{}).forEach(a=>{ if(!a) return; z.vers++; if(a.ok){ z.ueb++; if(a.n===1) z.erst++; } }); });
       Object.values(S.qz||{}).forEach(fr=>Object.values(fr||{}).forEach(an=>{ const a=(an||{})[p]; if(a){ z.qa++; if(a.o===0) z.qr++; } }));
+      Object.values(S.du||{}).forEach(fr=>Object.values(fr||{}).forEach(an=>{ const a=(an||{})[p]; if(a){ z.qa++; if(a.o===0) z.qr++; } }));
       Object.values(S.bingo||{}).forEach(b=>{ z.bingo+=Object.keys((b||{})[p]||{}).length; });
       z.paare=(Number(((S.stat||{})[p]||{}).paare)||0)+(S.hael&&S.hael.ok&&S.hael.ok[p]?1:0);
       Object.values(S.sp||{}).forEach(a=>{ Object.values((a||{})[p]||{}).forEach(v=>{ if(v&&v.ok){ z.puzzle++; if(v.n===1) z.erst++; } }); });
