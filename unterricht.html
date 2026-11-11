@@ -123,6 +123,17 @@ input[type=text]{min-height:44px;border:2px solid var(--line);border-radius:12px
 #statBox th,#statBox td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
 #statBox th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
 #statBox tr.off td{opacity:.5}
+details.anl{padding:8px 12px} details.anl summary{cursor:pointer;font-weight:800;color:var(--pri);list-style:none} details.anl.steh summary{color:var(--steh)} details.anl[open] summary{margin-bottom:4px}
+.gross-btn{display:block;width:100%;min-height:84px;border:0;border-radius:18px;font-family:var(--head);font-weight:900;font-size:24px;color:#fff;cursor:pointer;margin:8px 0}
+.zwei-btn{display:grid;grid-template-columns:1fr 1fr;gap:10px} .zwei-btn .gross-btn{min-height:110px;margin:0}
+.mitte{text-align:center} .zeile-klein{display:flex;justify-content:space-between;align-items:center;font-weight:800;color:var(--muted);font-size:14px;margin:2px 0 8px}
+.sprech{background:#fff;border:2px solid var(--line);border-radius:12px;padding:8px 12px;margin:6px 0;font-size:18px}
+.zurueck{background:none;border:0;color:var(--pri);font-weight:800;font-size:16px;cursor:pointer;padding:10px 0}
+#demoBox{position:fixed;inset:60px 0 0 0;background:var(--nacht);z-index:1000;display:flex;gap:30px;padding:20px 30px;align-items:flex-start;overflow:auto}
+#demoBox .rahmen{flex:none;border:10px solid #000;border-radius:36px;overflow:hidden;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+#demoBox iframe{width:390px;height:760px;border:0;display:block}
+#demoBox .r{color:#fff;flex:1;min-width:300px}
+#demoBox ol{font-size:clamp(20px,2.2vw,34px);line-height:1.35;padding-left:1.2em} #demoBox li{margin:12px 0}
 /* Leinwand */
 body.board{background:#E9E5DC}
 .bkopf{display:flex;gap:10px;align-items:center;flex-wrap:nowrap;padding:8px 16px;background:var(--nacht);color:#fff;position:sticky;top:0;z-index:20}
@@ -239,7 +250,8 @@ function toast(t){ const d=document.createElement("div"); d.className="toast"; d
    GEMEINSAME AUFGABEN-ANSICHTEN (Handy live + allein)
    ctx = {pid, ant:{i:{ok,v,n}}, setze(i,val), lokal, neu()}
    ========================================================= */
-function anleitung(A, steh){ return A.anleitung?`<div class="anl ${steh?"steh":""}"><b>${steh?"🚶 So geht es":"So geht es"}</b>${esc(A.anleitung)}</div>`:""; }
+function anleitung(A, steh){ return A.anleitung?`<details class="anl ${steh?"steh":""}" ${window.__anlOffen?"open":""}><summary>❓ So geht es</summary>${esc(A.anleitung)}</details>`:""; }
+document.addEventListener("toggle", e=>{ if(e.target.matches && e.target.matches("details.anl")) window.__anlOffen=e.target.open; }, true);
 function fortschritt(n, ok){ return `<div class="fortschritt">${Array.from({length:n},(_,i)=>`<i class="${i<ok?"ok":i===ok?"jetzt":""}"></i>`).join("")}</div>`; }
 /* Jede Person bekommt ihre eigene Reihenfolge. Falsch beantwortete Aufgaben kommen später noch einmal –
    mit neu gemischten Antworten. So gibt es kein Muster und kein „Durchtippen“. */
@@ -310,7 +322,10 @@ function szeneVon(A, id){ return (A.szenen||[]).find(s=>s.id===id)||A.szenen[0];
 function handy(){
   const SPIEGEL=P.get("spiegel")==="1"; let me=null, S={}, namen={}, lokal={gelegt:[]}, sig="", gesehen=false, abgemeldet=false;
   const MEKEY=()=>`unt_me_${PIN}`;
-  const schreib=(p,v)=>{ if(SPIEGEL) return; I(p).set(v); };
+  const DEMO=P.get("demo")==="1";
+  function setzePfad(o,p,v){ const ks=p.split("/"); let x=o; ks.slice(0,-1).forEach(k=>{ if(!x[k]||typeof x[k]!=="object") x[k]={}; x=x[k]; }); if(v===null) delete x[ks[ks.length-1]]; else x[ks[ks.length-1]]=v; }
+  const schreib=(p,v)=>{ if(SPIEGEL) return; if(DEMO){ setzePfad(S,p,v&&v[".sv"]?Date.now():(v&&typeof v==="object"&&v.t&&v.t[".sv"]?Object.assign({},v,{t:Date.now()}):v)); return male(true); } I(p).set(v); };
+  const aktual=(p,o)=>{ if(SPIEGEL) return; if(DEMO){ Object.entries(o).forEach(([k,v])=>setzePfad(S,p+"/"+k,v)); return male(true); } I(p).update(o); };
   function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🎓</div><h2>Live-Unterricht</h2><p class="muted">Gib die PIN von der Tafel ein.</p>
     <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
     $("#pf").onsubmit=e=>{ e.preventDefault(); PIN=$("#pin").value.replace(/\D/g,""); pruefe(); }; }
@@ -364,7 +379,7 @@ function handy(){
       if(inf.tafelHandy && F){ app.innerHTML=h+`<div class="card"><h2>${esc(F.titel)}</h2><div class="tafelinhalt">${F.html}</div></div></div>`; return; }
       app.innerHTML=h+`<div class="card fertig"><div class="e">👀</div><h2>Schau zur Tafel</h2><p class="muted">${B?esc(B.icon+" "+B.titel):""}</p></div></div>`; return; }
     const steh=!!(PLAN.bloecke[blockVon(A.id)]||{}).steh;
-    h+=`<div class="small muted" style="font-weight:800;margin-bottom:4px">${TYP[A.typ]||""}${steh?" · <span style='color:var(--steh)'>Steh auf!</span>":""}</div>`;
+    if(steh) h+=`<div class="small" style="font-weight:800;margin-bottom:4px;color:var(--steh)">🚶 Steh auf!</div>`;
     const fn={wahl:uebung, sortieren:uebung, bauen:uebung, quiz:quiz, sprechen:zug, bewegung:zug, bingo:bingo, kugellager:kugel, haelften:haelften, theater:theater, partner:partner, schlange:schlange}[A.typ];
     app.innerHTML=h+(fn?fn(A):"")+`</div>`; binder(A);
   }
@@ -378,95 +393,106 @@ function handy(){
     let h=`<div class="small muted" style="font-weight:800">Frage ${Q.i+1} von ${A.items.length}</div><div class="card"><div class="frage">${esc(it.f)}</div><div class="qopts">${opts.map((x,k)=>`<button class="${QFARBE[k]} ${mein&&mein.o===x.j?"gewaehlt":""}" data-q="${x.j}" ${mein||Q.zeigen?"disabled":""}>${QZ[k]} ${esc(x.o)}</button>`).join("")}</div>`;
     if(Q.zeigen) h+= mein? (mein.o===0?`<div class="tipp" style="border-color:var(--ok);background:var(--ok-2)">✅ Richtig!</div>`:`<div class="tipp">Richtig ist: <b>${esc(it.o[0])}</b></div>`) : `<div class="tipp">Richtig ist: <b>${esc(it.o[0])}</b></div>`;
     else if(mein) h+=`<p class="muted" style="text-align:center">✓ Antwort gespeichert. Warte auf die Auflösung.</p>`;
-    binder=()=>$$("[data-q]").forEach(b=>b.onclick=()=>schreib(`qz/${A.id}/${Q.i}/${me.pid}`, {o:Number(b.dataset.q), t:TS()}));
+    binder=()=>$$("[data-q]").forEach(b=>b.onclick=()=>schreib(`qz/${A.id}/${Q.i}/${me.pid}`, {o:Number(b.dataset.q), t:DEMO?Date.now():TS()}));
     return h+`</div>`; }
   function zug(A){ const Z=S.zug||{}; binder=()=>{}; const ich=Z.aid===A.id&&Z.pid===me.pid;
-    if(A.typ==="sprechen"){ if(ich) return `<div class="dran"><div style="font-size:50px">🎤</div><h2>Du bist dran!</h2><p>Steh kurz auf und antworte mit zwei Sätzen:</p><div class="frage">${esc(A.saetze[Z.s]||"")}</div></div>`;
-      return `<h2>${esc(A.titel)}</h2>${anleitung(A)}<div class="card"><p><b>Diese Fragen kommen:</b></p><ul>${A.saetze.map(s=>`<li>${esc(s)}</li>`).join("")}</ul><p class="muted">Überleg dir schon eine Antwort. Vielleicht bist du gleich dran!</p></div>`; }
+    if(A.typ==="sprechen"){ if(ich) return `<div class="dran"><div style="font-size:56px">🎤</div><h2>Du bist dran!</h2><div class="frage">${esc(A.saetze[Z.s]||"")}</div><p>Steh auf und antworte.</p></div>`;
+      return `<div class="card fertig"><div class="e">👀</div><h2>Hör gut zu!</h2><p>Vielleicht bist du gleich dran.</p></div>`; }
     const it=A.items[Z.s]||{};
-    if(ich) return `<div class="dran"><div style="font-size:50px">🤫</div><h2>Dein geheimer Auftrag</h2><div class="frage">${esc(it.befehl)}</div><p><b>Mach es jetzt – ohne zu sprechen!</b><br>Dann setz dich wieder.</p></div>`;
-    if(Z.aid===A.id&&Z.pid) return `<h2>Schau genau hin!</h2><div class="card"><p><b>${esc(nameVon(Z.pid))}</b> macht etwas. Danach fragt die Lehrkraft:</p><div class="frage">${esc(it.frage)}</div>${Z.zeigen?`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">✅ ${esc(it.antwort)}</div>`:`<p class="muted">Antwort-Hilfe: „Sie/Er hat … gelegt / gestellt. Es liegt / steht auf dem / der …“</p>`}</div>`;
-    return `<h2>${esc(A.titel)}</h2>${anleitung(A)}`; }
+    if(ich) return `<div class="dran"><div style="font-size:56px">🤫</div><h2>Geheim!</h2><div class="frage">${esc(it.befehl)}</div><p><b>Mach es – ohne zu sprechen.</b></p></div>`;
+    if(Z.aid===A.id&&Z.pid) return `<div class="card mitte"><div class="e" style="font-size:56px">👀</div><h2>Schau: ${esc(nameVon(Z.pid))}</h2><div class="frage">${esc(it.frage)}</div>${Z.zeigen?`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">✅ ${esc(it.antwort)}</div>`:""}</div>`;
+    return `<div class="card fertig"><div class="e">👀</div><h2>Schau nach vorne!</h2></div>`; }
+  function namenKnoepfe(liste, gesperrt){ return `<div class="namen" style="gap:8px">${liste.map(([p,x])=>`<button data-wer="${p}" style="font-size:19px;padding:10px 16px" ${gesperrt&&gesperrt.has(p)?"disabled":""}>${esc(x.name)}</button>`).join("")||"<span class='muted'>Niemand da.</span>"}</div>`; }
+  const andereOnline=()=>spielerListe().filter(([p,x])=>p!==me.pid&&x.online!==false).sort((a,b)=>String(a[1].name).localeCompare(b[1].name));
   function bingo(A){ const mein=((S.bingo||{})[A.id]||{})[me.pid]||{}; const benutzt=new Set(Object.values(mein)); const n=Object.keys(mein).length;
     if(lokal.bingo!==undefined && lokal.bingoAid===A.id){ const F=A.felder[lokal.bingo];
-      const andere=spielerListe().filter(([p,x])=>p!==me.pid&&x.online!==false).sort((a,b)=>String(a[1].name).localeCompare(b[1].name));
       binder=()=>{ $$("[data-wer]").forEach(b=>b.onclick=()=>{ schreib(`bingo/${A.id}/${me.pid}/${lokal.bingo}`, b.dataset.wer); delete lokal.bingo; toast("✓ Eingetragen!"); male(true); }); $("#zur").onclick=()=>{ delete lokal.bingo; male(true); }; };
-      return `<div class="card"><p class="small muted" style="margin:0">Frag eine Person:</p><div class="frage">„${esc(F.f)}“</div><div class="tipp">Antwort-Hilfe: ${esc(F.h)}</div>
-        <p style="margin-top:14px"><b>Die Person sagt „Ja“?</b> Tippe ihren Namen:</p><div class="namen">${andere.map(([p,x])=>`<button data-wer="${p}" ${benutzt.has(p)?"disabled":""}>${esc(x.name)}</button>`).join("")||"<span class='muted'>Noch niemand da.</span>"}</div>
-        <p class="small muted">Durchgestrichen = schon in einem anderen Feld. Jede Person nur einmal!</p><button class="btn ghost" id="zur">← zurück</button></div>`; }
+      return `<div class="card"><div class="small muted" style="font-weight:800">1 · Frag:</div><div class="frage">„${esc(F.f)}“</div>
+        <div class="small muted" style="font-weight:800;margin-top:14px">2 · „Ja“? Tippe den Namen:</div>${namenKnoepfe(andereOnline(), benutzt)}
+        <button class="zurueck" id="zur">← zurück</button></div>`; }
     binder=()=>$$("[data-feld]").forEach(b=>b.onclick=()=>{ lokal.bingo=Number(b.dataset.feld); lokal.bingoAid=A.id; male(true); });
-    const reihen=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].filter(r=>r.every(k=>mein[k]!==undefined)).length;
-    return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}<p style="font-weight:800">${n} von 9 Feldern${reihen?` · ${reihen} Reihe${reihen>1?"n":""} 🎉`:""}</p>
-      <div style="font-family:var(--head);font-weight:800;margin-bottom:6px">Finde jemanden, der …</div><div class="bingo">${A.felder.map((F,k)=>`<button data-feld="${k}" class="${mein[k]!==undefined?"voll":""}" ${mein[k]!==undefined?"disabled":""}>… ${esc(F.t.replace(/^…\s*/,""))}${mein[k]!==undefined?`<small>✓ ${esc(nameVon(mein[k]))}</small>`:""}</button>`).join("")}</div>`; }
+    return `<div class="zeile-klein"><span>Finde jemanden, der …</span><span>${n}/9</span></div>
+      <div class="bingo">${A.felder.map((F,k)=>`<button data-feld="${k}" class="${mein[k]!==undefined?"voll":""}" ${mein[k]!==undefined?"disabled":""}>${esc(F.t.replace(/^…\s*/,""))}${mein[k]!==undefined?`<small>✓ ${esc(nameVon(mein[k]))}</small>`:""}</button>`).join("")}</div>${anleitung(A,true)}`; }
   function kugel(A){ const K=S.kugel||{}; binder=()=>{}; const kr=(K.kreis||{})[me.pid];
-    if(K.aid!==A.id) return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}`;
+    if(K.aid!==A.id) return `<div class="card fertig"><div class="e">⏳</div></div>`;
     const R=A.runden[Math.min(K.r||0, A.runden.length-1)];
-    return `${kr?`<div class="kreis ${kr}">${kr==="i"?"🔵 Innenkreis":"🟠 Außenkreis"}</div><p style="text-align:center;margin:6px 0 12px">${kr==="i"?"Du bleibst stehen. <b>Du fragst zuerst.</b>":"Bei ⏰ gehst du <b>einen Platz nach rechts</b>."}</p>`:`<div class="anl">Warte kurz – die Lehrkraft teilt dich einem Kreis zu.</div>`}
-      <div class="small muted" style="font-weight:800">Runde ${(K.r||0)+1} von ${A.runden.length}</div><div class="card"><div class="frage">${esc(R.f)}</div><div class="tipp">💬 ${esc(R.h)}</div></div>${anleitung(A,true)}`; }
-  function haelften(A){ const H=S.hael||{}; if(H.aid!==A.id || !H.karten){ binder=()=>{}; return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}<div class="card fertig"><div class="e">🃏</div><p>Gleich kommen die Karten.</p></div>`; }
-    const K=H.karten[me.pid]; if(!K){ binder=()=>{}; return `<div class="card fertig"><div class="e">⏳</div><p>Diese Runde hast du keine Karte.<br>Die nächste Runde bist du dabei!</p></div>`; }
+    return `${kr?`<div class="kreis ${kr}">${kr==="i"?"🔵 Innen":"🟠 Außen"}</div>`:""}<div class="card"><div class="frage">${esc(R.f)}</div><div class="sprech">💬 ${esc(R.h)}</div></div>`; }
+  function haelften(A){ const H=S.hael||{}; if(H.aid!==A.id || !H.karten){ binder=()=>{}; return `<div class="card fertig"><div class="e">🃏</div><h2>Gleich kommen die Karten.</h2></div>`; }
+    const K=H.karten[me.pid]; if(!K){ binder=()=>{}; return `<div class="card fertig"><div class="e">⏳</div><h2>Nächste Runde bist du dabei!</h2></div>`; }
     const paar=A.paare[K.p]; const gef=(H.ok||{})[me.pid];
-    if(gef){ binder=()=>{}; return `<div class="card fertig"><div class="e">🤝</div><h2>Gefunden: ${esc(nameVon(gef))}</h2><div class="satzkarte" style="border-color:var(--ok)">${esc(paar[0])} ${esc(paar[1])}</div>
-      <ol style="text-align:left;margin-top:14px"><li>Lest den Satz <b>zusammen laut</b>.</li><li>Zeigt ihn mit <b>Händen oder einem Gegenstand</b>.</li><li>Wartet auf neue Karten.</li></ol></div>`; }
-    if(lokal.wahlH===H.runde){ const andere=spielerListe().filter(([p,x])=>p!==me.pid&&x.online!==false&&H.karten[p]&&!(H.ok||{})[p]).sort((a,b)=>String(a[1].name).localeCompare(b[1].name));
-      binder=()=>{ $$("[data-wer]").forEach(b=>b.onclick=()=>{ const o=b.dataset.wer; const k2=H.karten[o]; if(k2 && k2.p===K.p && k2.t!==K.t){ if(!SPIEGEL) I("hael/ok").update({[me.pid]:o, [o]:me.pid}); toast("✓ Passt!"); } else { lokal.falschH=true; } delete lokal.wahlH; male(true); }); $("#zur").onclick=()=>{ delete lokal.wahlH; male(true); }; };
-      return `<div class="card"><h2>Wer hat die andere Hälfte?</h2><div class="namen">${andere.map(([p,x])=>`<button data-wer="${p}">${esc(x.name)}</button>`).join("")||"<span class='muted'>Niemand mehr frei.</span>"}</div><button class="btn ghost" id="zur" style="margin-top:12px">← zurück</button></div>`; }
+    if(gef){ binder=()=>{}; return `<div class="card fertig"><div class="e">🤝</div><h2>Super – mit ${esc(nameVon(gef))}!</h2><div class="satzkarte" style="border-color:var(--ok)">${esc(paar[0])} ${esc(paar[1])}</div><p style="font-size:20px"><b>Lest den Satz zusammen laut.</b></p></div>`; }
+    if(lokal.wahlH===H.runde){ const frei=andereOnline().filter(([p])=>H.karten[p]&&!(H.ok||{})[p]);
+      binder=()=>{ $$("[data-wer]").forEach(b=>b.onclick=()=>{ const o=b.dataset.wer; const k2=H.karten[o]; if(k2 && k2.p===K.p && k2.t!==K.t){ aktual("hael/ok", {[me.pid]:o, [o]:me.pid}); toast("✓ Passt!"); } else { lokal.falschH=true; } delete lokal.wahlH; male(true); }); $("#zur").onclick=()=>{ delete lokal.wahlH; male(true); }; };
+      return `<div class="card"><h2>Wer hat die andere Hälfte?</h2>${namenKnoepfe(frei)}<button class="zurueck" id="zur">← zurück</button></div>`; }
     binder=()=>{ $("#gef").onclick=()=>{ lokal.wahlH=H.runde; lokal.falschH=false; male(true); }; };
     const f=lokal.falschH; lokal.falschH=false;
-    return `<div class="small muted" style="font-weight:800">Runde ${H.runde||1} · Deine Karte:</div><div class="satzkarte">${K.t===0?`${esc(paar[0])} …`:`… ${esc(paar[1])}`}</div>
-      ${f?`<div class="tipp">❌ Das passt nicht. Lies beide Karten noch einmal. Such weiter!</div>`:""}
-      ${anleitung(A,true)}<button class="btn steh wide" id="gef">🤝 Gefunden!</button>`; }
+    return `<div class="satzkarte">${K.t===0?`${esc(paar[0])} …`:`… ${esc(paar[1])}`}</div>
+      ${f?`<div class="tipp">❌ Passt nicht. Such weiter!</div>`:`<p class="mitte muted" style="font-size:18px">Lies laut. Such die andere Hälfte.</p>`}
+      <button class="gross-btn" style="background:var(--steh)" id="gef">🤝 Gefunden!</button>${anleitung(A,true)}`; }
   function partner(A){ const PA=S.paar||{}; let x=null; if(PA.aid===A.id) for(const [g,G] of Object.entries(PA.gr||{})){ const m=Object.values(G.m||{}); if(m.includes(me.pid)) x={g,G,m}; }
-    if(!x){ binder=()=>{}; return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}<div class="card fertig"><div class="e">🤝</div><p>Warte – du bekommst gleich einen Partner.</p></div>`; }
+    if(!x){ binder=()=>{}; return `<div class="card fertig"><div class="e">⏳</div><h2>Gleich bekommst du einen Partner.</h2></div>`; }
     const k=Number(x.G.k)||0, n=A.karten.length; const andere=x.m.filter(p=>p!==me.pid).map(p=>esc(nameVon(p))).join(" & ");
-    let h=`<div class="card" style="border-top:6px solid var(--steh)"><div class="small muted" style="font-weight:800">🤝 Dein Partner</div><div class="frage" style="margin:2px 0">${andere||"–"}</div><p class="small muted" style="margin:0">Steh auf und geh zu ${x.m.length>2?"deiner Gruppe":"deinem Partner"}!</p></div>`;
-    if(k>=n){ binder=()=>{}; return h+`<div class="card fertig"><div class="e">🎉</div><h2>Alle Karten geschafft!</h2><p>Erzählt euch noch etwas – frei! Oder wartet auf den neuen Partner.</p></div>`; }
-    const KA=A.karten[k]; const rolle=(x.m.indexOf(me.pid)+k)%x.m.length;
-    const R=rolle===0?KA.a:rolle===1?KA.b:null;
-    h+=`<div class="small muted" style="font-weight:800">Karte ${k+1} von ${n}</div><div class="card"><h2>${esc(KA.titel)}</h2>`;
-    if(R) h+=`<div class="kreis ${rolle===0?"i":"a"}" style="font-size:22px;padding:8px">${rolle===0?"🔵 Rolle A – du beginnst":"🟠 Rolle B – du antwortest"}</div><div class="frage" style="font-size:21px;margin-top:10px">${esc(R.t)}</div>
-      <div class="tipp"><b>💬 Hilfe:</b><ul class="hilfe">${R.hilfe.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`;
-    else h+=`<div class="kreis" style="background:var(--ok);font-size:22px;padding:8px">👂 Du hörst zu und hilfst</div><p><b>A:</b> ${esc(KA.a.t)}<br><b>B:</b> ${esc(KA.b.t)}</p><p class="small">Sag danach: „Super!“ oder „Noch einmal, bitte!“ – bei der nächsten Karte bist du dran.</p>`;
-    h+=`</div><button class="btn ok wide" id="naechste">✅ Fertig – nächste Karte (Rollen tauschen)</button>`;
-    binder=()=>{ $("#naechste").onclick=()=>{ if(SPIEGEL) return; const r=I(`paar/gr/${x.g}/k`); try{ r.transaction(v=>(Number(v)||0)===k?k+1:v); }catch(e){ r.set(k+1); } }; };
+    let h=`<div class="zeile-klein"><span style="font-size:20px;color:var(--ink)">🤝 ${andere||"–"}</span><span>Karte ${Math.min(k+1,n)}/${n}</span></div>`;
+    if(k>=n){ binder=()=>{}; return h+`<div class="card fertig"><div class="e">🎉</div><h2>Fertig!</h2><p>Sprecht frei weiter.</p></div>`; }
+    const KA=A.karten[k]; const rolle=(x.m.indexOf(me.pid)+k)%x.m.length; const R=rolle===0?KA.a:rolle===1?KA.b:null;
+    if(R) h+=`<div class="kreis ${rolle===0?"i":"a"}">${rolle===0?"🔵 Du fragst":"🟠 Du antwortest"}</div>
+      <div class="card"><div class="frage" style="font-size:21px">${esc(R.t)}</div>${R.hilfe.map(x=>`<div class="sprech">💬 ${esc(x)}</div>`).join("")}</div>`;
+    else h+=`<div class="kreis" style="background:var(--ok)">👂 Du hörst zu</div><div class="card"><p style="font-size:18px">Hör gut zu. Sag danach: <b>„Super!“</b></p></div>`;
+    h+=`<button class="gross-btn" style="background:var(--ok)" id="naechste">✅ Fertig – tauschen</button>`;
+    binder=()=>{ $("#naechste").onclick=()=>{ if(SPIEGEL) return; if(DEMO) return schreib(`paar/gr/${x.g}/k`, k+1); const r=I(`paar/gr/${x.g}/k`); try{ r.transaction(v=>(Number(v)||0)===k?k+1:v); }catch(e){ r.set(k+1); } }; };
     return h; }
   function schlange(A){ const SC=S.sch||{}; binder=()=>{};
-    if(SC.aid!==A.id) return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}<div class="card fertig"><div class="e">🐍</div><p>Gleich geht es los.</p></div>`;
-    const L=(SC.linie||{})[me.pid]; if(!L) return `<div class="card fertig"><div class="e">⏳</div><p>Die Lehrkraft teilt dich gleich einer Schlange zu.</p></div>`;
+    if(SC.aid!==A.id) return `<div class="card fertig"><div class="e">⏳</div><h2>Gleich geht es los.</h2></div>`;
+    const L=(SC.linie||{})[me.pid]; if(!L) return `<div class="card fertig"><div class="e">⏳</div><h2>Gleich bekommst du eine Reihe.</h2></div>`;
     const PZ=A.puzzles[L], AND=A.puzzles[L==="A"?"B":"A"]; const ant=((S.sp||{})[A.id]||{})[me.pid]||{}; const ok=new Set(PZ.teile.filter(t=>(ant[t.id]||{}).ok).map(t=>t.id));
-    const kopf=`<div class="kreis ${L==="A"?"i":"a"}" style="font-size:24px;padding:10px">${L==="A"?"🔵 Schlange A":"🟠 Schlange B"} · Runde ${(Number(SC.r)||0)+1}</div>
-      <p style="text-align:center;margin:6px 0 10px">${L==="A"?"<b>Du fragst zuerst.</b> Bei Wechsel bleibst du stehen.":"<b>Dein Partner fragt zuerst.</b> Bei Wechsel gehst du <b>einen Schritt weiter</b>."}</p>`;
-    if(lokal.spT && lokal.spAid===A.id && !ok.has(lokal.spT)){ const T=PZ.teile.find(t=>t.id===lokal.spT); const a=ant[T.id]||{};
-      binder=()=>{ $$("[data-spo]").forEach(b=>b.onclick=()=>{ const v=b.dataset.spo; const richtig=v===T.o[0]; const n=(a.n||0)+1; const neu={ok:richtig, n};
-          delete lokal.spT; if(richtig) toast("✓ Richtig! Das Bild wird voller."); else lokal.spMsg="❌ Nicht richtig. Frag noch einmal genau: „Noch einmal, bitte!“";
-          schreib(`sp/${A.id}/${me.pid}/${T.id}`, neu); male(true); });
-        $("#zur").onclick=()=>{ delete lokal.spT; male(true); }; };
-      return kopf+`<div class="card"><ol class="schritte" style="padding-left:20px;margin:0"><li>Frag deinen Partner:<div class="frage">„${esc(T.frage)}“</div></li><li>Hör gut zu.</li><li>Tippe die Antwort:</li></ol>
-        <p style="font-weight:800;margin:8px 0 6px">${T.e} ${esc(T.satz)}</p><div class="opts">${mischS(T.o, A.id+T.id+me.pid+"|"+(a.n||0)).map(o=>`<button class="opt" data-spo="${esc(o)}">${esc(o)}</button>`).join("")}</div>
-        <button class="btn ghost wide" id="zur" style="margin-top:12px">← Partner weiß es nicht – zurück</button></div>`; }
     const fehlt=PZ.teile.filter(t=>!ok.has(t.id)); const meine=((SC.karten||{})[me.pid]||[]).map(id=>AND.teile.find(t=>t.id===id)).filter(Boolean);
+    const kopf=`<div class="zeile-klein"><span style="color:${L==="A"?"#2F6FDB":"var(--steh)"};font-size:18px">${L==="A"?"🔵 Reihe A":"🟠 Reihe B"}</span><span>${L==="A"?"🏠":"📅"} ${ok.size}/${PZ.teile.length}</span></div>`;
+    if(lokal.spModus==="frage" && lokal.spAid===A.id && fehlt.length){ let T=fehlt.find(t=>t.id===lokal.spT)||fehlt[0]; lokal.spT=T.id; const a=ant[T.id]||{};
+      binder=()=>{ $$("[data-spo]").forEach(b=>b.onclick=()=>{ const v=b.dataset.spo; const richtig=v===T.o[0]; const n=(a.n||0)+1;
+          lokal.spModus=null; lokal.spT=null; if(richtig) toast("✓ Richtig!"); else lokal.spMsg="❌ Nicht richtig. Frag noch einmal!";
+          schreib(`sp/${A.id}/${me.pid}/${T.id}`, {ok:richtig, n}); male(true); });
+        $("#zur").onclick=()=>{ lokal.spModus=null; male(true); };
+        const an=$("#andere"); if(an) an.onclick=()=>{ const i=fehlt.indexOf(T); lokal.spT=fehlt[(i+1)%fehlt.length].id; male(true); }; };
+      return kopf+`<div class="card"><div class="small muted" style="font-weight:800">1 · Lies vor:</div><div class="frage">„${esc(T.frage)}“</div>
+        <div class="small muted" style="font-weight:800;margin-top:12px">2 · Was sagt dein Partner?</div><div class="opts">${mischS(T.o, A.id+T.id+me.pid+"|"+(a.n||0)).map(o=>`<button class="opt" data-spo="${esc(o)}">${T.e} ${esc(o)}</button>`).join("")}</div>
+        <div class="row" style="justify-content:space-between"><button class="zurueck" id="zur">← zurück</button>${fehlt.length>1?`<button class="zurueck" id="andere">andere Frage ↻</button>`:""}</div></div>`; }
+    if(lokal.spModus==="antwort" && lokal.spAid===A.id){ binder=()=>{ $("#zur").onclick=()=>{ lokal.spModus=null; male(true); }; };
+      return kopf+`<div class="card"><div class="small muted" style="font-weight:800">Dein Partner fragt. Lies die Antwort vor:</div>${meine.map(t=>`<div class="wkarte" style="font-size:19px">❓ ${esc(t.frage)}<br><b style="font-size:22px">→ ${esc(t.karte)}</b></div>`).join("")}
+        <div class="sprech">🤷 Etwas anderes? → <b>„Das weiß ich nicht.“</b></div><button class="zurueck" id="zur">← zurück</button></div>`; }
     const msg=lokal.spMsg;
-    binder=()=>$$("[data-spt]").forEach(b=>b.onclick=()=>{ lokal.spMsg=null; lokal.spT=b.dataset.spt; lokal.spAid=A.id; male(true); });
-    return kopf+`<div class="card"><h3 style="margin:0 0 4px">💬 Deine Karten – dein Partner fragt dich:</h3>${meine.map(t=>`<div class="wkarte">„${esc(t.frage)}“<br>→ <b>${esc(t.karte)}</b></div>`).join("")}
-      <p class="small muted" style="margin:6px 0 0">Er fragt etwas anderes? Sag: „Das weiß ich nicht. Frag weiter!“</p></div>
-      <div class="card"><h2 style="margin:0">${L==="A"?"🏠":"📅"} ${esc(PZ.titel)} <span class="small muted">${ok.size}/${PZ.teile.length}</span></h2>${bildHtml(PZ, ok)}
-      ${msg?`<div class="tipp">${esc(msg)}</div>`:""}${fehlt.length?`<p style="font-weight:800;margin:10px 0 6px">❓ Das fehlt noch – tippe und frag:</p><div class="fragen">${fehlt.map(t=>`<button data-spt="${t.id}">❓ ${esc(t.frage)}</button>`).join("")}</div>`
-        :`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">🎉 <b>Dein Bild ist fertig!</b> Hilf jetzt den anderen: Beantworte ihre Fragen.</div>`}</div>`; }
+    binder=()=>{ const f=$("#ichfrage"); if(f) f.onclick=()=>{ lokal.spMsg=null; lokal.spModus="frage"; lokal.spAid=A.id; male(true); }; $("#ichantworte").onclick=()=>{ lokal.spMsg=null; lokal.spModus="antwort"; lokal.spAid=A.id; male(true); }; };
+    return kopf+(msg?`<div class="tipp">${esc(msg)}</div>`:"")+`<div class="zwei-btn">${fehlt.length?`<button class="gross-btn" style="background:#2F6FDB" id="ichfrage">🗣️<br>Ich frage</button>`:`<button class="gross-btn" style="background:var(--ok)" disabled>🎉<br>Fertig!</button>`}<button class="gross-btn" style="background:var(--steh)" id="ichantworte">👂<br>Ich antworte</button></div>
+      <div class="card" style="margin-top:10px"><b>${esc(PZ.titel)}</b>${bildHtml(PZ, ok)}</div>`; }
   function theater(A){ const TH=S.theater||{}; const gid=((S.spieler||{})[me.pid]||{}).tg; const G=((TH.gr)||{})[gid];
-    if(TH.aid!==A.id || !G){ binder=()=>{}; return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}<div class="card fertig"><div class="e">🎭</div><p>Warte – du bekommst gleich eine Gruppe.</p></div>`; }
+    if(TH.aid!==A.id || !G){ binder=()=>{}; return `<div class="card fertig"><div class="e">🎭</div><h2>Gleich bekommst du eine Gruppe.</h2></div>`; }
     const SZ=szeneVon(A, G.sz); const mit=spielerListe().filter(([,x])=>x.tg===gid).sort((a,b)=>(Number(a[1].tr)||0)-(Number(b[1].tr)||0)||a[0].localeCompare(b[0])).map(([p])=>p);
     const meine=rollenVon(mit, me.pid); const wahl=((S.th||{})[A.id]||{})[me.pid]||{}; const st=TH.schritt||1;
-    const rollenTxt=meine.filter(r=>r>=0).map(r=>SZ.rollen[r]).join(" + ")||(meine.includes(-2)?"Regie: Du liest die Situation vor und hilfst":"–");
-    let h=`<div class="card" style="border-top:6px solid var(--steh)"><h2>${SZ.icon} ${esc(SZ.titel)}</h2><p style="margin:0">${esc(SZ.situation)}</p>
-      <p style="margin:8px 0 0"><b>Deine Rolle: ${esc(rollenTxt)}</b><br><span class="small muted">Deine Gruppe: ${mit.map(p=>esc(nameVon(p))).join(", ")}</span></p></div>`;
+    const rollenTxt=meine.filter(r=>r>=0).map(r=>SZ.rollen[r]).join(" + ")||(meine.includes(-2)?"Regie":"–");
+    let h=`<div class="zeile-klein"><span style="font-size:18px;color:var(--ink)">${SZ.icon} ${esc(SZ.titel)}</span><span>Schritt ${st}/3</span></div>
+      <div class="kreis a" style="font-size:22px;padding:8px">🎭 Du bist: ${esc(rollenTxt)}</div>`;
     if(st===1){ const s=lueckenStand(SZ, meine, wahl, meine.includes(-2));
-      h+=`<div class="anl steh"><b>Schritt 1 · Lesen und Lücken</b>Lies deine Sätze (blau). Tippe bei jeder Lücke das richtige Wort. ${s.ok}/${s.n} richtig.</div>`+dialogHtml(SZ, meine, "luecken", wahl, meine.includes(-2));
-      if(s.n&&s.ok===s.n) h+=`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">✅ Super! Alle Lücken richtig. Lies deine Sätze jetzt leise noch einmal.</div>`;
+      h+=`<p class="mitte" style="font-size:18px;margin:8px 0"><b>Tippe die richtigen Wörter</b> in deinen blauen Sätzen. ${s.ok}/${s.n} ✓</p>`+dialogHtml(SZ, meine, "luecken", wahl, meine.includes(-2));
+      if(s.n&&s.ok===s.n) h+=`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">✅ Super! Lies deine Sätze leise.</div>`;
       binder=()=>$$("[data-luecke]").forEach(b=>b.onclick=()=>{ schreib(`th/${A.id}/${me.pid}/${b.dataset.luecke}`, b.dataset.v); }); return h; }
     binder=()=>{};
-    if(st===2) return h+`<div class="anl steh"><b>Schritt 2 · Üben</b>1. Lest den Dialog zusammen – zweimal. 2. Steht auf. 3. Spielt mit Bewegung. Schaut euch an – nicht nur aufs Handy!</div>`+dialogHtml(SZ, meine, "voll");
-    if(TH.buehne===gid) return `<div class="dran"><div style="font-size:50px">🎬</div><h2>Ihr seid dran!</h2><p>Kommt nach vorne und spielt. Laut und langsam!</p></div>`+h+dialogHtml(SZ, meine, "voll");
-    const BG=TH.buehne&&(TH.gr||{})[TH.buehne]; return h+`<div class="anl steh"><b>Schritt 3 · Vorspielen</b>${BG?`Jetzt spielt die Gruppe <b>${esc(szeneVon(A,BG.sz).titel)}</b>. Schau zu und hör gut zu!`:"Die Gruppen spielen nacheinander. Seid bereit!"}</div>`+dialogHtml(SZ, meine, "voll"); }
+    if(st===2) return h+`<p class="mitte" style="font-size:18px;margin:8px 0"><b>Lest zusammen. Dann steht auf und spielt!</b></p>`+dialogHtml(SZ, meine, "voll");
+    if(TH.buehne===gid) return `<div class="dran"><div style="font-size:50px">🎬</div><h2>Ihr seid dran!</h2></div>`+h+dialogHtml(SZ, meine, "voll");
+    return h+`<p class="mitte" style="font-size:18px;margin:8px 0"><b>Schau zu und hör gut zu!</b></p>`+dialogHtml(SZ, meine, "voll"); }
+  /* ---------- Vormachen: Übungs-Handy ohne Speichern ---------- */
+  function demoStart(){ const A=aufgabe(P.get("aid")); if(!A){ app.innerHTML=`<div class="wrap"><div class="card">Keine Aufgabe.</div></div>`; return; }
+    me={pid:"demo", name:"Du"};
+    const sp={demo:{name:"Du",online:true,tg:"g0",tr:0}, d1:{name:"Ali",online:true,tg:"g0",tr:1}, d2:{name:"Sara",online:true,tg:"g0",tr:2}, d3:{name:"Mo",online:true}, d4:{name:"Lina",online:true}};
+    S={info:{phase:"lauf", plan:PLAN.id, auf:{id:A.id}}, spieler:sp, timer:{ende:Date.now()+(A.minuten||2)*60000}};
+    const t=A.typ;
+    if(t==="quiz") S.quiz={aid:A.id, i:0};
+    if(t==="sprechen"||t==="bewegung") S.zug={aid:A.id, pid:"demo", s:0};
+    if(t==="haelften") S.hael={aid:A.id, runde:1, karten:{demo:{p:0,t:0}, d1:{p:1,t:1}, d2:{p:0,t:1}, d3:{p:1,t:0}}};
+    if(t==="partner") S.paar={aid:A.id, runde:1, gr:{g0:{m:["demo","d1"], k:0}}};
+    if(t==="schlange") S.sch={aid:A.id, r:0, linie:{demo:"A", d1:"B"}, karten:{demo:["mo","di"]}};
+    if(t==="theater") S.theater={aid:A.id, schritt:1, gr:{g0:{sz:A.szenen[0].id}}};
+    if(t==="kugellager") S.kugel={aid:A.id, r:0, kreis:{demo:"i"}};
+    TIMER=S.timer; male(true); }
+  if(DEMO) demoStart(); else
   if(SPIEGEL && P.get("als")) pruefe(); else if(PIN) pruefe(); else pinScreen();
 }
 
@@ -579,7 +605,7 @@ function leitung(){
     return `<div class="planzeit" id="planzeit">${planzeit()||"⏱ Zeitplan startet mit dem Unterricht"}</div>`+PLAN.bloecke.map((B,bi)=>{ const an=bi===b; const t0=PLAN.bloecke.slice(0,bi).reduce((a,x)=>a+x.minuten,0);
       let h=`<div class="blk ${an?"an":""} ${B.steh?"steh":""} ${bi<b?"vorbei":""}"><div class="bh" data-block="${bi}">${B.icon} ${esc(B.titel)}<span class="m">${t0}–${t0+B.minuten}′</span></div>`;
       if(an) h+=`<div class="bi"><h4>Tafel</h4>${B.tafel.map((F,fi)=>`<div class="li ${i.ansicht!=="aufgabe"&&i.folie===fi?"an":""}" data-folie="${fi}">🖼️ ${esc(F.titel)}</div>`).join("")}
-        <h4>Aufgaben</h4>${B.aufgaben.map(A=>`<div class="li ${auf===A.id?"an":""}" ${auf===A.id?'data-zeig="1"':""}>${esc(TYP[A.typ]||A.typ)}<span class="small muted">${A.minuten?A.minuten+"′":""}</span><span class="r">${auf===A.id?`<button class="btn sm ghost" data-stopp="1">⏹</button>`:`<button class="btn sm ${B.steh?"steh":""}" data-frei="${A.id}">📲 frei</button>`}</span></div><div class="small muted" style="margin:-3px 0 4px 8px">${esc(A.titel)}</div>`).join("")}
+        <h4>Aufgaben</h4>${B.aufgaben.map(A=>`<div class="li ${auf===A.id?"an":""}" ${auf===A.id?'data-zeig="1"':""}>${esc(TYP[A.typ]||A.typ)}<span class="small muted">${A.minuten?A.minuten+"′":""}</span><span class="r"><button class="btn sm ghost" data-demo="${A.id}" title="Vormachen: Übungs-Handy am Beamer zeigen">🎓</button>${auf===A.id?`<button class="btn sm ghost" data-stopp="1">⏹</button>`:`<button class="btn sm ${B.steh?"steh":""}" data-frei="${A.id}">📲 frei</button>`}</span></div><div class="small muted" style="margin:-3px 0 4px 8px">${esc(A.titel)}</div>`).join("")}
         ${bi<PLAN.bloecke.length-1?`<button class="btn sm ghost wide" style="margin-top:8px" data-block="${bi+1}">Nächster Block ▶</button>`:""}</div>`;
       return h+`</div>`; }).join(""); }
   function haupt(){ const i=inf(); const A=aktA();
@@ -589,7 +615,7 @@ function leitung(){
       <div class="row" style="margin-top:22px"><button class="btn ghost" data-fd="-1" ${(i.folie||0)?"":"disabled"}>◀</button><button class="btn ghost" data-fd="1" ${(i.folie||0)<B.tafel.length-1?"":"disabled"}>▶</button>
       <label class="small" style="margin-left:10px"><input type="checkbox" id="thandy" ${i.tafelHandy?"checked":""}> Tafel auch auf den Handys zeigen</label>
       ${A?`<button class="btn sm ghost" data-zeig="1" style="margin-left:auto">↩ zur laufenden Aufgabe</button>`:""}</div></div>`; }
-  function kopfA(A){ const B=PLAN.bloecke[blockVon(A.id)]; return `<div class="small muted" style="font-weight:800">${B.icon} ${esc(B.titel)} · ${TYP[A.typ]}</div><h2>${esc(A.titel)}</h2>${A.anleitung?`<div class="anl ${B.steh?"steh":""}" style="font-size:clamp(16px,1.6vw,24px);max-width:1100px"><b>${B.steh?"🚶 So geht es":"So geht es"}</b>${esc(A.anleitung)}</div>`:""}`; }
+  function kopfA(A){ const B=PLAN.bloecke[blockVon(A.id)]; return `<div class="small muted" style="font-weight:800">${B.icon} ${esc(B.titel)} · ${TYP[A.typ]} <button class="btn sm ghost" data-demo="${A.id}" style="margin-left:8px">🎓 Vormachen</button></div><h2>${esc(A.titel)}</h2>${A.anleitung?`<div class="anl ${B.steh?"steh":""}" style="font-size:clamp(16px,1.6vw,24px);max-width:1100px"><b>${B.steh?"🚶 So geht es":"So geht es"}</b>${esc(A.anleitung)}</div>`:""}`; }
   function leinwand(A){
     const T=Object.entries(S.teams||{}); const ant=(S.ant||{})[A.id]||{};
     if(["wahl","sortieren","bauen"].includes(A.typ)){ const L=itemsVon(A); const fertig=online().filter(([p])=>aktuellerIndex(A, ant[p]||{})<0).length;
@@ -670,6 +696,7 @@ function leitung(){
     $$("[data-folie]").forEach(b=>b.onclick=()=>I("info").update({folie:Number(b.dataset.folie), ansicht:"tafel"}));
     $$("[data-fd]").forEach(b=>b.onclick=()=>folie(Number(b.dataset.fd)));
     $$("[data-frei]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); freigeben(b.dataset.frei); });
+    $$("[data-demo]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); demoZeigen(b.dataset.demo); });
     $$("[data-stopp]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); I("info").update({auf:null, ansicht:"tafel"}); });
     $$("[data-zeig]").forEach(b=>b.onclick=()=>I("info/ansicht").set("aufgabe"));
     const th=$("#thandy"); if(th) th.onchange=()=>{ th.blur(); I("info/tafelHandy").set(th.checked); };
@@ -690,6 +717,28 @@ function leitung(){
   }
   function teamsSetzen(n, leer){ const up={}; if(!n){ up.teams=null; spieler().forEach(([p])=>up[`spieler/${p}/team`]=null); return I().update(up); }
     const t={}; TEAMVORLAGE.slice(0,n).forEach((x,i)=>t["t"+i]=x); up.teams=t; mische(spieler()).forEach(([p,x],i)=>up[`spieler/${p}/team`]=leer?(x.team&&t[x.team]?x.team:null):"t"+(i%n)); I().update(up); }
+  /* Vormachen: Übungs-Handy am Beamer + kurze Schritte */
+  const VORMACHEN={
+    partner:["Oben steht dein Partner. <b>Geh zu ihm!</b>","🔵 <b>Blau</b> = du fragst. 🟠 <b>Orange</b> = du antwortest.","Die 💬-Sätze helfen dir.","Fertig? <b>Grüner Knopf</b>. Dann tauscht ihr."],
+    schlange:["Zwei Reihen: <b>A</b> und <b>B</b> stehen gegenüber.","A tippt <b>🗣️ Ich frage</b> und liest die Frage vor.","B tippt <b>👂 Ich antworte</b> und liest die Antwort vor.","A tippt die richtige Antwort – das Bild wird voller. <b>Dann umgekehrt.</b>","⏰ Wechsel: Reihe B geht <b>einen Schritt weiter</b>."],
+    bingo:["Tippe ein <b>Feld</b>.","Lies die Frage einer Person vor.","Sie sagt <b>„Ja“</b>? Tippe ihren Namen.","Jede Person nur <b>einmal</b>."],
+    haelften:["Lies deine Karte <b>laut</b>.","Such die Person mit der <b>anderen Hälfte</b>.","Gefunden? Tippe <b>🤝 Gefunden</b> und den Namen.","Lest den Satz <b>zusammen</b>."],
+    theater:["Oben steht <b>deine Rolle</b>.","<b>Blaue Sätze</b> = deine Sätze.","Tippe das richtige Wort in den Lücken.","Dann: üben – und vorspielen!"],
+    sprechen:["Ich ziehe einen Namen.","Auf deinem Handy steht die <b>Frage</b>.","<b>Steh auf</b> und antworte."],
+    bewegung:["Dein Handy zeigt einen <b>geheimen Auftrag</b>.","Mach ihn – <b>ohne zu sprechen</b>.","Die anderen sagen: <b>Was hast du gemacht?</b>"],
+    quiz:["Die Frage steht <b>an der Tafel</b>.","Tippe die <b>Farbe</b> mit der richtigen Antwort."],
+    wahl:["Lies die Aufgabe.","Tippe die <b>richtige Antwort</b>.","Falsch? Lies die Lösung. Die Aufgabe kommt <b>später noch einmal</b>."],
+    sortieren:["Lies den Satz.","Tippe den <b>richtigen Korb</b>.","Falsch? Lies die Lösung. Die Aufgabe kommt <b>später noch einmal</b>."],
+    bauen:["Tippe die Wörter in der <b>richtigen Reihenfolge</b>.","Falsches Wort? Tippe es oben an – es geht zurück.","Dann <b>Prüfen</b>."]
+  };
+  function demoZeigen(id){ const A=aufgabe(id); if(!A) return; let box=$("#demoBox"); if(!box){ box=document.createElement("div"); box.id="demoBox"; document.body.appendChild(box); }
+    const sc=Math.max(.6, Math.min(1.15, (innerHeight-110)/780)); const src=`${location.pathname}?demo=1&plan=${PLAN.id}&aid=${encodeURIComponent(id)}`;
+    box.innerHTML=`<div class="rahmen" style="width:${390*sc+20}px;height:${760*sc+20}px"><iframe id="demoF" src="${src}" style="transform:scale(${sc});transform-origin:0 0"></iframe></div>
+      <div class="r"><div class="small" style="opacity:.75;font-weight:800">🎓 VORMACHEN – so sieht euer Handy aus</div><h2 style="font-size:clamp(28px,3vw,48px);margin:6px 0 10px">${esc(A.titel)}</h2>
+      <ol>${(VORMACHEN[A.typ]||[]).map(x=>`<li>${x}</li>`).join("")}</ol>
+      <div class="row" style="margin-top:20px"><button class="btn gold" id="dneu">↺ Noch einmal</button>${(inf().auf||{}).id===id?"":`<button class="btn acc" id="dfrei">📲 Jetzt für alle freigeben</button>`}<button class="btn hell" id="dzu">✕ Schließen</button></div>
+      <p class="small" style="opacity:.7;margin-top:14px">Du kannst links im Handy selbst tippen – nichts wird gespeichert.</p></div>`;
+    $("#dneu").onclick=()=>{ $("#demoF").src=src; }; $("#dzu").onclick=()=>box.remove(); const fr=$("#dfrei"); if(fr) fr.onclick=()=>{ box.remove(); freigeben(id); }; }
   /* Wer macht mit? Wer ist gut? (nur für die Lehrkraft) */
   let statOffen=false;
   function statZeilen(){ return spieler().map(([p,x])=>{ const z={p, name:x.name, on:x.online!==false, ueb:0, erst:0, vers:0, qa:0, qr:0, bingo:0, paare:0, puzzle:0, karten:0, theater:0};
@@ -779,7 +828,7 @@ function solo(){
   const b0=P.get("block"); if(b0){ const bi=PLAN.bloecke.findIndex(B=>B.id===b0); if(bi>=0){ pos={b:bi, s:0}; return male(); } } uebersicht();
 }
 
-if(P.get("solo")) solo(); else if(!db) app.innerHTML=`<div class="wrap"><div class="card">Keine Verbindung. Bitte Seite neu laden.</div></div>`; else if(P.get("leitung")) leitung(); else handy();
+if(P.get("solo")) solo(); else if(P.get("demo")==="1") handy(); else if(!db) app.innerHTML=`<div class="wrap"><div class="card">Keine Verbindung. Bitte Seite neu laden.</div></div>`; else if(P.get("leitung")) leitung(); else handy();
 </script>
 </body>
 </html>
