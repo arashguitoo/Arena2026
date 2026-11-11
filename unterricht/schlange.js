@@ -13,8 +13,8 @@ window.SCHLANGE_TAFEL = { titel: "🚶 Steh auf! Das Schlangen-Puzzle", html: `<
   <li>Bei ⏰ <b>Wechsel</b>: Schlange B geht <b>einen Schritt weiter</b>. Die letzte Person geht nach vorne. Neuer Partner!</li></ol>
   <div class="zwei-sp"><div class="box-blau"><h3>🔵 A: Lenas Zimmer</h3><div class="bsp">Wo ist die Katze? – Die Katze liegt <b>unter dem</b> Bett.</div></div>
   <div class="box-gruen" style="background:#FFEDD5"><h3>🟠 B: Minas Woche</h3><div class="bsp">Was hat Mina am Montag gemacht? – Sie <b>hat</b> Fußball <b>gespielt</b>.</div></div></div>` };
-window.SCHLANGE_AUFGABE = { id: "sp1", typ: "schlange", minuten: 2, titel: "Schlangen-Puzzle: Frag und ergänze dein Bild",
-  anleitung: "1. A fragt, B antwortet mit der Karte. 2. A tippt die richtige Antwort – das Bild wird voller. 3. Dann fragt B. 4. Bei Wechsel: B geht einen Schritt weiter.",
+window.SCHLANGE_AUFGABE = { id: "sp1", typ: "schlange", minuten: 1.5, titel: "Schlangen-Puzzle: Frag und ergänze dein Bild",
+  anleitung: "Dein Handy sagt dir, ob du fragst oder antwortest. Die Lehrkraft gibt den Takt: A fragt – B fragt – Wechsel.",
   puzzles: {
     A: { titel: "Lenas Zimmer", art: "zimmer", frageHilfe: "Wo ist …? / Wo sind …?",
       orte: [ { id: "bett", e: "🛏️", n: "Bett" }, { id: "sofa", e: "🛋️", n: "Sofa" }, { id: "stuhl", e: "🪑", n: "Stuhl" }, { id: "regal", e: "📚", n: "Regal" },
