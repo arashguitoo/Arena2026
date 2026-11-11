@@ -240,38 +240,49 @@ function toast(t){ const d=document.createElement("div"); d.className="toast"; d
    ctx = {pid, ant:{i:{ok,v,n}}, setze(i,val), lokal, neu()}
    ========================================================= */
 function anleitung(A, steh){ return A.anleitung?`<div class="anl ${steh?"steh":""}"><b>${steh?"🚶 So geht es":"So geht es"}</b>${esc(A.anleitung)}</div>`:""; }
-function fortschritt(n, ant, cur){ return `<div class="fortschritt">${Array.from({length:n},(_,i)=>`<i class="${ant[i]&&ant[i].ok?"ok":i===cur?"jetzt":""}"></i>`).join("")}</div>`; }
-function aktuellerIndex(A, ant){ const L=itemsVon(A); for(let i=0;i<L.length;i++) if(!(ant[i]&&ant[i].ok)) return i; return -1; }
+function fortschritt(n, ok){ return `<div class="fortschritt">${Array.from({length:n},(_,i)=>`<i class="${i<ok?"ok":i===ok?"jetzt":""}"></i>`).join("")}</div>`; }
+/* Jede Person bekommt ihre eigene Reihenfolge. Falsch beantwortete Aufgaben kommen später noch einmal –
+   mit neu gemischten Antworten. So gibt es kein Muster und kein „Durchtippen“. */
+function reihenfolge(A, ctx){ return mischS(itemsVon(A).map((_,i)=>i), A.id+"|ord|"+((ctx&&(ctx.seed||ctx.pid))||"")); }
+function aktuellerIndex(A, ant, ctx){ const ord=reihenfolge(A, ctx);
+  for(const i of ord) if(!ant[i]) return i;
+  let best=-1; for(const i of ord) if(!ant[i].ok && (best<0 || (ant[i].n||0)<(ant[best].n||0))) best=i; return best; }
 function ersteVersuche(A, ant){ return itemsVon(A).filter((_,i)=>ant[i]&&ant[i].ok&&ant[i].n===1).length; }
+function loesungVon(A, it){ return A.typ==="sortieren"?(A.koerbe.find(k=>k.k===it.k)||{}).t:A.typ==="bauen"?(it.a[0].charAt(0).toUpperCase()+it.a[0].slice(1)+(it.p||"")):it.o[0]; }
 function uebungHtml(A, ctx){
-  const L=itemsVon(A), ant=ctx.ant||{}; const i=aktuellerIndex(A, ant);
+  const L=itemsVon(A), ant=ctx.ant||{}; const okN=L.filter((_,k)=>ant[k]&&ant[k].ok).length;
   let h=`<h2>${esc(A.titel)}</h2>`+anleitung(A);
-  if(i<0){ const e=ersteVersuche(A,ant); return h+fortschritt(L.length,ant,-1)+`<div class="card fertig"><div class="e">✅</div><h2>Fertig!</h2><p>${e} von ${L.length} beim ersten Versuch richtig.</p><p class="muted">${ctx.weiterText||"Schau zur Tafel oder hilf deinem Nachbarn."}</p>${ctx.weiterKnopf||""}</div>`; }
-  const it=L[i], a=ant[i]||{}; h+=fortschritt(L.length,ant,i)+`<div class="small muted" style="font-weight:800">${i+1} von ${L.length}</div>`;
-  if(A.typ==="wahl"||A.typ==="quiz"){ const opts=mischS(it.o, A.id+"|"+i+"|"+ctx.pid);
-    h+=`<div class="card"><div class="frage">${esc(it.f)}</div><div class="opts">${opts.map(o=>`<button class="opt ${a.falsch&&a.falsch["f"+it.o.indexOf(o)]?"falsch":""}" data-wahl="${esc(o)}" ${a.falsch&&a.falsch["f"+it.o.indexOf(o)]?"disabled":""}>${esc(o)}</button>`).join("")}</div>
-      ${a.n&&!a.ok?`<div class="tipp">💡 ${esc(it.tipp||"Lies den Satz noch einmal genau.")} – Versuch es noch einmal!</div>`:""}</div>`; }
-  if(A.typ==="sortieren"){ h+=`<div class="card"><div class="sortkarte">${esc(it.t)}</div><div class="korb2">${A.koerbe.map((k,ki)=>`<button data-wahl="${esc(k.k)}" ${a.falsch&&a.falsch["f"+ki]?'disabled style="opacity:.35"':""}>${esc(k.t)}</button>`).join("")}</div>
-      ${a.n&&!a.ok?`<div class="tipp">💡 Nicht ganz. ${A.hinweis?esc(A.hinweis):A.koerbe[0].k==="haben"?"Bewegung von A nach B oder Veränderung → sein.":"Bewegung → Wohin? Keine Bewegung → Wo?"} Versuch es noch einmal!</div>`:""}</div>`; }
-  if(A.typ==="bauen"){ const L2=ctx.lokal; const key=A.id+"|"+i; if(L2.bauKey!==key){ L2.bauKey=key; L2.gelegt=[]; }
-    const pool=mischS(it.w.map((w,j)=>({w,j})), key+"|"+ctx.pid);
+  const fb=ctx.lokal.fb; if(fb && fb.aid===A.id){ const it=L[fb.i];
+    return h+fortschritt(L.length,okN)+`<div class="card"><div class="frage">${esc(it.f||it.t||"Bau den Satz:")}</div>
+      <div class="opt falsch" style="text-decoration:none;opacity:1">❌ Deine Antwort: ${esc(fb.v)}</div>
+      <div class="opt ok" style="margin-top:8px">✅ Richtig ist: ${esc(loesungVon(A,it))}</div>
+      ${(()=>{ const t=it.tipp||A.hinweis||(A.typ==="sortieren"?(A.koerbe[0].k==="haben"?"Bewegung von A nach B oder Veränderung → sein. Sonst → haben.":"Bewegung → Wohin? (Akkusativ). Keine Bewegung → Wo? (Dativ)."):""); return t?`<div class="tipp">💡 ${esc(t)}</div>`:""; })()}
+      <p class="small muted">Diese Aufgabe kommt später noch einmal.</p><button class="btn wide" id="fbweiter">Verstanden – weiter ▶</button></div>`; }
+  const i=aktuellerIndex(A, ant, ctx);
+  if(i<0){ const e=ersteVersuche(A,ant); return h+fortschritt(L.length,L.length)+`<div class="card fertig"><div class="e">✅</div><h2>Fertig!</h2><p>${e} von ${L.length} beim ersten Versuch richtig.</p><p class="muted">${ctx.weiterText||"Schau zur Tafel oder hilf deinem Nachbarn."}</p>${ctx.weiterKnopf||""}</div>`; }
+  const it=L[i], a=ant[i]||{}; const nochmal=a.n&&!a.ok;
+  h+=fortschritt(L.length,okN)+`<div class="small muted" style="font-weight:800">${nochmal?"🔁 Noch einmal":`${okN+1} von ${L.length}`}</div>`;
+  const misch=A.id+"|"+i+"|"+(ctx.seed||ctx.pid)+"|"+(a.n||0);
+  if(A.typ==="wahl"||A.typ==="quiz"){ h+=`<div class="card"><div class="frage">${esc(it.f)}</div><div class="opts">${mischS(it.o, misch).map(o=>`<button class="opt" data-wahl="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`; }
+  if(A.typ==="sortieren"){ h+=`<div class="card"><div class="sortkarte">${esc(it.t)}</div><div class="korb2">${A.koerbe.map(k=>`<button data-wahl="${esc(k.k)}">${esc(k.t)}</button>`).join("")}</div></div>`; }
+  if(A.typ==="bauen"){ const L2=ctx.lokal; const key=A.id+"|"+i+"|"+(a.n||0); if(L2.bauKey!==key){ L2.bauKey=key; L2.gelegt=[]; }
+    const pool=mischS(it.w.map((w,j)=>({w,j})), misch);
     h+=`<div class="card"><p class="small muted" style="margin:0">Tippe die Wörter in der richtigen Reihenfolge:</p><div class="linie">${L2.gelegt.map((j,k)=>`<button class="kachel" data-raus="${k}">${esc(it.w[j])}</button>`).join("")}<b style="font-size:22px">${L2.gelegt.length===it.w.length?esc(it.p||""):""}</b></div>
       <div class="pool">${pool.map(x=>`<button class="kachel ${L2.gelegt.includes(x.j)?"weg":""}" data-rein="${x.j}">${esc(x.w)}</button>`).join("")}</div>
-      <div class="row"><button class="btn ok" id="pruef" ${L2.gelegt.length===it.w.length?"":"disabled"}>Prüfen</button><button class="btn ghost" id="leeren">↺ Neu</button></div>
-      ${a.n&&!a.ok?`<div class="tipp">💡 Noch nicht richtig. Wo steht das Verb? ${A.hinweis?esc(A.hinweis):A.id==="m2"?"Das Modalverb auf Position 2, das andere Verb am Ende.":"Verb auf Position 2. Dann: Wem? – Was?"}</div>`:""}</div>`; }
+      <div class="row"><button class="btn ok" id="pruef" ${L2.gelegt.length===it.w.length?"":"disabled"}>Prüfen</button><button class="btn ghost" id="leeren">↺ Neu</button></div></div>`; }
   return h;
 }
 function uebungBinden(A, ctx){
-  const L=itemsVon(A), ant=ctx.ant||{}; const i=aktuellerIndex(A, ant); if(i<0) return; const it=L[i]; const a=ant[i]||{};
-  $$("[data-wahl]").forEach(b=>b.onclick=()=>{ const v=b.dataset.wahl; const ok=okVon(A,it,v); const n=(a.n||0)+1;
-    const fk=A.typ==="sortieren"?A.koerbe.findIndex(k=>k.k===v):it.o.indexOf(v); const neu={ok, v, n}; if(!ok){ neu.falsch=Object.assign({}, a.falsch||{}, {["f"+fk]:true}); }
-    if(ok) toast(n===1?"✓ Richtig!":"✓ Jetzt richtig!"); ctx.setze(i, neu); });
+  const fw=$("#fbweiter"); if(fw){ fw.onclick=()=>{ ctx.lokal.fb=null; ctx.neu(); window.scrollTo(0,0); }; return; }
+  const L=itemsVon(A), ant=ctx.ant||{}; const i=aktuellerIndex(A, ant, ctx); if(i<0) return; const it=L[i]; const a=ant[i]||{};
+  const antwort=(ok, v, zeige)=>{ const n=(a.n||0)+1; if(ok) toast(n===1?"✓ Richtig!":"✓ Jetzt richtig!"); else ctx.lokal.fb={aid:A.id, i, v:zeige}; ctx.setze(i, {ok, v, n}); };
+  $$("[data-wahl]").forEach(b=>b.onclick=()=>{ const v=b.dataset.wahl; antwort(okVon(A,it,v), v, A.typ==="sortieren"?(A.koerbe.find(k=>k.k===v)||{}).t:v); });
   if(A.typ==="bauen"){ const L2=ctx.lokal;
     $$("[data-rein]").forEach(b=>b.onclick=()=>{ L2.gelegt.push(Number(b.dataset.rein)); ctx.neu(); });
     $$("[data-raus]").forEach(b=>b.onclick=()=>{ L2.gelegt.splice(Number(b.dataset.raus),1); ctx.neu(); });
     const le=$("#leeren"); if(le) le.onclick=()=>{ L2.gelegt=[]; ctx.neu(); };
-    const pr=$("#pruef"); if(pr) pr.onclick=()=>{ const satz=norm(L2.gelegt.map(j=>it.w[j]).join(" ")); const ok=it.a.map(norm).includes(satz); const n=(a.n||0)+1;
-      L2.gelegt=[]; L2.bauKey=null; if(ok) toast(n===1?"✓ Richtig!":"✓ Jetzt richtig!"); ctx.setze(i, {ok, v:satz, n}); };
+    const pr=$("#pruef"); if(pr) pr.onclick=()=>{ const roh=L2.gelegt.map(j=>it.w[j]).join(" "); const ok=it.a.map(norm).includes(norm(roh));
+      L2.gelegt=[]; L2.bauKey=null; antwort(ok, norm(roh), roh+(it.p||"")); };
   }
 }
 /* Schlangen-Puzzle: Bild */
@@ -427,19 +438,19 @@ function handy(){
       <p style="text-align:center;margin:6px 0 10px">${L==="A"?"<b>Du fragst zuerst.</b> Bei Wechsel bleibst du stehen.":"<b>Dein Partner fragt zuerst.</b> Bei Wechsel gehst du <b>einen Schritt weiter</b>."}</p>`;
     if(lokal.spT && lokal.spAid===A.id && !ok.has(lokal.spT)){ const T=PZ.teile.find(t=>t.id===lokal.spT); const a=ant[T.id]||{};
       binder=()=>{ $$("[data-spo]").forEach(b=>b.onclick=()=>{ const v=b.dataset.spo; const richtig=v===T.o[0]; const n=(a.n||0)+1; const neu={ok:richtig, n};
-          if(!richtig) neu.falsch=Object.assign({}, a.falsch||{}, {["f"+T.o.indexOf(v)]:true}); else { toast("✓ Richtig! Das Bild wird voller."); delete lokal.spT; }
+          delete lokal.spT; if(richtig) toast("✓ Richtig! Das Bild wird voller."); else lokal.spMsg="❌ Nicht richtig. Frag noch einmal genau: „Noch einmal, bitte!“";
           schreib(`sp/${A.id}/${me.pid}/${T.id}`, neu); male(true); });
         $("#zur").onclick=()=>{ delete lokal.spT; male(true); }; };
       return kopf+`<div class="card"><ol class="schritte" style="padding-left:20px;margin:0"><li>Frag deinen Partner:<div class="frage">„${esc(T.frage)}“</div></li><li>Hör gut zu.</li><li>Tippe die Antwort:</li></ol>
-        <p style="font-weight:800;margin:8px 0 6px">${T.e} ${esc(T.satz)}</p><div class="opts">${mischS(T.o, A.id+T.id+me.pid).map(o=>{ const f=a.falsch&&a.falsch["f"+T.o.indexOf(o)]; return `<button class="opt ${f?"falsch":""}" data-spo="${esc(o)}" ${f?"disabled":""}>${esc(o)}</button>`; }).join("")}</div>
-        ${a.n?`<div class="tipp">Nicht richtig. Frag noch einmal: „Noch einmal, bitte!“</div>`:""}
+        <p style="font-weight:800;margin:8px 0 6px">${T.e} ${esc(T.satz)}</p><div class="opts">${mischS(T.o, A.id+T.id+me.pid+"|"+(a.n||0)).map(o=>`<button class="opt" data-spo="${esc(o)}">${esc(o)}</button>`).join("")}</div>
         <button class="btn ghost wide" id="zur" style="margin-top:12px">← Partner weiß es nicht – zurück</button></div>`; }
     const fehlt=PZ.teile.filter(t=>!ok.has(t.id)); const meine=((SC.karten||{})[me.pid]||[]).map(id=>AND.teile.find(t=>t.id===id)).filter(Boolean);
-    binder=()=>$$("[data-spt]").forEach(b=>b.onclick=()=>{ lokal.spT=b.dataset.spt; lokal.spAid=A.id; male(true); });
+    const msg=lokal.spMsg;
+    binder=()=>$$("[data-spt]").forEach(b=>b.onclick=()=>{ lokal.spMsg=null; lokal.spT=b.dataset.spt; lokal.spAid=A.id; male(true); });
     return kopf+`<div class="card"><h3 style="margin:0 0 4px">💬 Deine Karten – dein Partner fragt dich:</h3>${meine.map(t=>`<div class="wkarte">„${esc(t.frage)}“<br>→ <b>${esc(t.karte)}</b></div>`).join("")}
       <p class="small muted" style="margin:6px 0 0">Er fragt etwas anderes? Sag: „Das weiß ich nicht. Frag weiter!“</p></div>
       <div class="card"><h2 style="margin:0">${L==="A"?"🏠":"📅"} ${esc(PZ.titel)} <span class="small muted">${ok.size}/${PZ.teile.length}</span></h2>${bildHtml(PZ, ok)}
-      ${fehlt.length?`<p style="font-weight:800;margin:10px 0 6px">❓ Das fehlt noch – tippe und frag:</p><div class="fragen">${fehlt.map(t=>`<button data-spt="${t.id}">❓ ${esc(t.frage)}</button>`).join("")}</div>`
+      ${msg?`<div class="tipp">${esc(msg)}</div>`:""}${fehlt.length?`<p style="font-weight:800;margin:10px 0 6px">❓ Das fehlt noch – tippe und frag:</p><div class="fragen">${fehlt.map(t=>`<button data-spt="${t.id}">❓ ${esc(t.frage)}</button>`).join("")}</div>`
         :`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">🎉 <b>Dein Bild ist fertig!</b> Hilf jetzt den anderen: Beantworte ihre Fragen.</div>`}</div>`; }
   function theater(A){ const TH=S.theater||{}; const gid=((S.spieler||{})[me.pid]||{}).tg; const G=((TH.gr)||{})[gid];
     if(TH.aid!==A.id || !G){ binder=()=>{}; return `<h2>${esc(A.titel)}</h2>${anleitung(A,true)}<div class="card fertig"><div class="e">🎭</div><p>Warte – du bekommst gleich eine Gruppe.</p></div>`; }
@@ -739,10 +750,11 @@ function solo(){
     else { const A=X.A; st.a=st.a||{};
       if(A.typ==="theater") return theaterSolo(A, h);
       const ant=st.a[A.id]||{}; const fertig=aktuellerIndex(A,ant)<0;
-      const ctx={pid:"solo", ant, lokal, setze:(i,v)=>{ st.a[A.id]=Object.assign({}, st.a[A.id]||{}, {[i]:v}); merke(); setTimeout(male, v.ok?500:0); }, neu:male, weiterText:"Super gemacht!", weiterKnopf:`<button class="btn" id="weiter">Weiter ▶</button> <button class="btn ghost" id="nochmal">↺ noch einmal</button>`};
+      st.seed=st.seed||{}; if(!st.seed[A.id]){ st.seed[A.id]=String(Math.random()).slice(2,10); merke(); }
+      const ctx={pid:"solo", seed:st.seed[A.id], ant, lokal, setze:(i,v)=>{ st.a[A.id]=Object.assign({}, st.a[A.id]||{}, {[i]:v}); merke(); setTimeout(male, v.ok?500:0); }, neu:male, weiterText:"Super gemacht!", weiterKnopf:`<button class="btn" id="weiter">Weiter ▶</button> <button class="btn ghost" id="nochmal">↺ noch einmal</button>`};
       const A2=A.typ==="quiz"?Object.assign({}, A, {typ:"wahl"}):A;
       app.innerHTML=h+uebungHtml(A2, ctx)+`</div>`; uebungBinden(A2, ctx);
-      const n=$("#nochmal"); if(n) n.onclick=()=>{ delete st.a[A.id]; merke(); male(); }; if(fertig){} }
+      const n=$("#nochmal"); if(n) n.onclick=()=>{ delete st.a[A.id]; if(st.seed) delete st.seed[A.id]; merke(); male(); }; if(fertig){} }
     bind(); }
   function bind(){ const w=$("#weiter"); if(w) w.onclick=()=>{ pos.s++; male(); window.scrollTo(0,0); }; const z=$("#zurueck"); if(z) z.onclick=uebersicht; }
   function theaterSolo(A, h){ st.th=st.th||{}; const sz=st.thSz;
