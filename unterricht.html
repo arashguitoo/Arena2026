@@ -242,8 +242,8 @@ const I=p=>db.ref(`${ROOT}/${PIN}${p?"/"+p:""}`);
 const app=$("#app");
 const PLAENE=window.UNTERRICHT_PLAENE||{};
 let PLAN=PLAENE[P.get("plan")||P.get("solo")||"wdh1"]||PLAENE.wdh1;
-const LIVE_NUR=["sprechen","bewegung","bingo","kugellager","haelften","partner","schlange","duell","werbinich","maler","luege"];
-const TYP={wahl:"✅ Auswählen", sortieren:"🧺 Sortieren", bauen:"🧩 Sätze bauen", quiz:"⚡ Quiz für alle", sprechen:"🎤 Blitzrunde", bewegung:"🤫 Bewegungsspiel", bingo:"🚶 Bingo im Raum", kugellager:"🚶 Kugellager", haelften:"🚶 Satzhälften", theater:"🎭 Theater", partner:"🗣️ Partner-Karten", schlange:"🚶 Schlangen-Puzzle", duell:"⚔️ Duell 1 gegen 1", werbinich:"❓ Wer bin ich?", maler:"🎨 Montagsmaler", luege:"🤥 Lügendetektor"};
+const LIVE_NUR=["sprechen","bewegung","bingo","kugellager","haelften","partner","schlange","duell","werbinich","maler","luege","kette"];
+const TYP={wahl:"✅ Auswählen", sortieren:"🧺 Sortieren", bauen:"🧩 Sätze bauen", quiz:"⚡ Quiz für alle", sprechen:"🎤 Blitzrunde", bewegung:"🤫 Bewegungsspiel", bingo:"🚶 Bingo im Raum", kugellager:"🚶 Kugellager", haelften:"🚶 Satzhälften", theater:"🎭 Theater", partner:"🗣️ Partner-Karten", schlange:"🚶 Schlangen-Puzzle", duell:"⚔️ Duell 1 gegen 1", werbinich:"❓ Wer bin ich?", maler:"🎨 Montagsmaler", luege:"🤥 Lügendetektor", kette:"📖 Kettengeschichte"};
 const QFARBE=["q0","q1","q2","q3"], QZ=["▲","●","■","◆"];
 function aufgabe(id){ for(const B of PLAN.bloecke) for(const A of B.aufgaben) if(A.id===id) return A; return null; }
 function blockVon(id){ return PLAN.bloecke.findIndex(B=>B.aufgaben.some(A=>A.id===id)); }
@@ -270,6 +270,7 @@ function duellStand(S, D){ const P={a:0,b:0}; for(let i=0;i<=Math.min(D.i, (D.q|
 /* Montagsmaler: Striche als "x,y x,y …" (0–1000) */
 function striche(cv, liste){ if(!cv) return; const c=cv.getContext("2d"); c.clearRect(0,0,cv.width,cv.height); c.lineCap="round"; c.lineJoin="round"; c.strokeStyle="#1E2A44"; c.lineWidth=cv.width/80;
   (liste||[]).forEach(st=>{ const pk=String(st).split(" ").map(x=>x.split(",").map(Number)).filter(x=>x.length===2); if(!pk.length) return; c.beginPath(); pk.forEach(([x,y],i)=>{ const X=x/1000*cv.width, Y=y/1000*cv.height; i?c.lineTo(X,Y):c.moveTo(X,Y); }); if(pk.length===1) c.lineTo(pk[0][0]/1000*cv.width+.1, pk[0][1]/1000*cv.height); c.stroke(); }); }
+const ketteSatz=w=>w.w.join(" ")+(w.p||".");
 const strichListe=(S,nr)=>Object.keys(((S.mz||{})[nr])||{}).sort().map(k=>S.mz[nr][k]);
 function warte(wer, text){ return `<div class="warte"><div class="e">⏳</div><h2>Warte auf ${wer}</h2>${text?`<p>${text}</p>`:""}</div>`; }
 function anleitung(A, steh){ return A.anleitung?`<details class="anl ${steh?"steh":""}" ${window.__anlOffen?"open":""}><summary>❓ So geht es</summary>${esc(A.anleitung)}</details>`:""; }
@@ -390,7 +391,8 @@ function handy(){
       if(A.typ==="werbinich"){ const W=S.wbi||{}; r.w=W; r.wg=((S.wg||{})[W.nr]||{})[me.pid]; }
       if(A.typ==="luege"){ const L=S.lu||{}; r.l=L; r.lg=(S.lg||{})[L.nr]; r.lv=((S.lv||{})[L.nr]||{})[me.pid]; if(L.pid===me.pid) r.lvn=Object.keys((S.lv||{})[L.nr]||{}).length; }
       if(A.typ==="maler"){ const M=S.ma||{}; r.m=M; if(M.pid!==me.pid){ r.mz=strichListe(S,M.nr).length; r.mg=((S.mg||{})[M.nr]||{})[me.pid]; } }
-      if(["werbinich","luege","maler"].includes(A.typ)) r.sp=spielerListe().map(([p,x])=>p+x.name).join();
+      if(A.typ==="kette"){ const K=S.ke||{}; r.k=K; r.kv=((((S.kv||{})[K.nr]||{})[(K.pfad||[]).length])||{})[me.pid]; }
+      if(["werbinich","luege","maler","kette"].includes(A.typ)) r.sp=spielerListe().map(([p,x])=>p+x.name).join();
       if(A.typ==="duell"){ r.du=S.duell; r.da=(S.du||{})[(S.duell||{}).nr]; r.sp=spielerListe().map(([p,x])=>p+x.name).join(); }
       if(A.typ==="schlange"){ r.sc=S.sch; r.sa=((S.sp||{})[A.id]||{})[me.pid]; } }
     return JSON.stringify(r); }
@@ -408,7 +410,7 @@ function handy(){
       app.innerHTML=h+warte("die Lehrkraft","👀 Schau zur Tafel.")+`</div>`; return; }
     const steh=!!(PLAN.bloecke[blockVon(A.id)]||{}).steh;
     if(steh) h+=`<div class="small" style="font-weight:800;margin-bottom:4px;color:var(--steh)">🚶 Steh auf!</div>`;
-    const fn={wahl:uebung, sortieren:uebung, bauen:uebung, quiz:quiz, sprechen:zug, bewegung:zug, bingo:bingo, kugellager:kugel, haelften:haelften, theater:theater, partner:partner, schlange:schlange, duell:duell, werbinich:werbinich, luege:luege, maler:maler}[A.typ];
+    const fn={wahl:uebung, sortieren:uebung, bauen:uebung, quiz:quiz, sprechen:zug, bewegung:zug, bingo:bingo, kugellager:kugel, haelften:haelften, theater:theater, partner:partner, schlange:schlange, duell:duell, werbinich:werbinich, luege:luege, maler:maler, kette:kette}[A.typ];
     app.innerHTML=h+(fn?fn(A):"")+`</div>`; binder(A);
   }
   let binder=()=>{};
@@ -493,6 +495,34 @@ function handy(){
     return kopf+`<div class="dranband" style="background:#2F6FDB">🗣️ Du fragst</div>${msg?`<div class="tipp">${esc(msg)}</div>`:""}<div class="card"><div class="small muted" style="font-weight:800">1 · Lies vor:</div><div class="frage">„${esc(T.frage)}“</div>
       <div class="small muted" style="font-weight:800;margin-top:12px">2 · Was sagt dein Partner?</div><div class="opts">${mischS(T.o, A.id+T.id+me.pid+"|"+(a.n||0)).map(o=>`<button class="opt" data-spo="${esc(o)}">${T.e} ${esc(o)}</button>`).join("")}</div>
       ${fehlt.length>1?`<button class="zurueck" id="andere" style="margin-top:6px">🤷 Er weiß es nicht → andere Frage ↻</button>`:""}</div>`+bild; }
+  function kette(A){ const K=S.ke||{}; binder=()=>{};
+    if(K.aid!==A.id||!K.k) return warte("die Lehrkraft","📖 Gleich beginnt die Geschichte.");
+    const N=A.knoten[K.k]; const step=(K.pfad||[]).length; const story=`<div class="card" style="font-size:18px;line-height:1.5">${N.ende?`<span style="font-size:34px">${N.e}</span> `:""}${esc(N.text)}</div>`;
+    if(N.ende) return `<div class="dranband" style="background:var(--ok)">📖 Ende der Geschichte!</div>`+story+warte("die Lehrkraft","Gleich beginnt eine neue Geschichte.");
+    if(!K.pid) return `<div class="dranband" style="background:var(--nacht)">📖 Die Geschichte</div>`+story+warte("die Lehrkraft","Sie zieht gleich eine Person.");
+    const gew=(typeof K.wahl==="number"&&K.wahl>=0)?N.wahl[K.wahl]:null; const n=nameVon(K.pid);
+    if(K.pid===me.pid){ const band=`<div class="dranband" style="background:var(--acc)">✋ Du entscheidest!</div>`;
+      if(!gew){ binder=()=>$$("[data-kw]").forEach(b=>b.onclick=()=>aktual("ke",{wahl:Number(b.dataset.kw), ok:false, n:0}));
+        return band+story+`<div class="frage mitte">${esc(N.frage)}</div>${N.wahl.map((w,i)=>`<button class="gross-btn" style="background:${["#2F6FDB","#F97316","#14A37F"][i]}" data-kw="${i}">${w.e} ${esc(w.label)}</button>`).join("")}`; }
+      if(!K.ok){ const key="ke|"+K.nr+"|"+step+"|"+K.wahl; if(lokal.bauKey!==key){ lokal.bauKey=key; lokal.gelegt=[]; }
+        const pool=mischS(gew.w.map((w,j)=>({w,j})), key+"|"+(K.n||0)); const G=lokal.gelegt;
+        binder=()=>{ $$("[data-rein]").forEach(b=>b.onclick=()=>{ G.push(Number(b.dataset.rein)); male(true); }); $$("[data-raus]").forEach(b=>b.onclick=()=>{ G.splice(Number(b.dataset.raus),1); male(true); });
+          const le=$("#leeren"); if(le) le.onclick=()=>{ lokal.gelegt=[]; male(true); };
+          const pr=$("#pruef"); if(pr) pr.onclick=()=>{ const ok=gew.a.includes(norm(G.map(j=>gew.w[j]).join(" "))); lokal.gelegt=[]; lokal.bauKey=null; if(ok){ toast("✓ Richtig! Lies laut vor."); aktual("ke",{ok:true}); } else { lokal.keFalsch=true; aktual("ke",{n:(K.n||0)+1}); } }; };
+        const f=lokal.keFalsch; lokal.keFalsch=false;
+        return band+`<div class="card"><div class="small muted" style="font-weight:800">Du hast gewählt: ${gew.e} ${esc(gew.label)}</div><div class="frage" style="font-size:20px">Bau jetzt den Satz:</div>
+          <div class="linie">${G.map((j,k)=>`<button class="kachel" data-raus="${k}">${esc(gew.w[j])}</button>`).join("")}<b style="font-size:22px">${G.length===gew.w.length?esc(gew.p||"."):""}</b></div>
+          <div class="pool">${pool.map(x=>`<button class="kachel ${G.includes(x.j)?"weg":""}" data-rein="${x.j}">${esc(x.w)}</button>`).join("")}</div>
+          <div class="row"><button class="btn ok" id="pruef" ${G.length===gew.w.length?"":"disabled"}>Prüfen</button><button class="btn ghost" id="leeren">↺ Neu</button></div>
+          ${f||(K.n||0)>0?`<div class="tipp">❌ Noch nicht richtig. Das Verb steht auf <b>Position 2</b>.${(K.n||0)>=2?` Der Satz beginnt mit: <b>„${esc(gew.w[0])}“</b>`:""}</div>`:""}</div>`; }
+      return band+`<div class="card mitte" style="border:4px solid var(--acc)"><div class="small muted" style="font-weight:800">🗣️ Lies laut vor:</div><div class="frage" style="font-size:26px">${esc(ketteSatz(gew))}</div></div>`+warte("die Lehrkraft","Gleich geht die Geschichte weiter.");
+    }
+    const band=`<div class="dranband" style="background:var(--nacht)">📖 ${esc(n)} entscheidet</div>`; const mein=((((S.kv||{})[K.nr]||{})[step])||{})[me.pid];
+    if(!gew){ binder=()=>$$("[data-kp]").forEach(b=>b.onclick=()=>schreib(`kv/${K.nr}/${step}/${me.pid}`, Number(b.dataset.kp)));
+      return band+story+`<div class="frage mitte" style="font-size:20px">${esc(N.frage)}<br><span class="muted" style="font-size:16px">Was wählt ${esc(n)}? Tippe!</span></div>${N.wahl.map((w,i)=>`<button class="opt ${mein===i?"an":""}" data-kp="${i}" style="margin-bottom:8px;width:100%">${w.e} ${esc(w.label)}</button>`).join("")}${mein!==undefined?`<p class="mitte muted">Du kannst noch ändern.</p>`:""}`; }
+    const tipp=mein===undefined?"":mein===K.wahl?`<div class="tipp" style="background:var(--ok-2);border-color:var(--ok)">✅ Richtig getippt!</div>`:`<div class="tipp">❌ Falsch getippt.</div>`;
+    if(!K.ok) return band+`<div class="card mitte"><div class="small muted" style="font-weight:800">${esc(n)} hat gewählt:</div><div class="frage">${gew.e} ${esc(gew.label)}</div>${tipp}</div>`+warte(esc(n),"Sie / Er baut jetzt den Satz.");
+    return band+`<div class="card mitte"><div class="small muted" style="font-weight:800">🗣️ Alle lesen laut:</div><div class="frage" style="font-size:24px">${esc(ketteSatz(gew))}</div>${tipp}</div>`+warte("die Fortsetzung"); }
   function werbinich(A){ const W=S.wbi||{}; binder=()=>{}; const B=A.begriffe;
     if(W.aid!==A.id||!W.pid) return warte("die Lehrkraft","❓ Gleich ziehe ich eine Person.");
     if(W.pid===me.pid){ const g=B[W.geheim]; return `<div class="dranband" style="background:var(--acc)">🤫 Du bist dran – geheim!</div><div class="card mitte"><div style="font-size:84px">${g.e}</div><div class="frage" style="font-size:30px">Du bist: ${esc(g.n)}</div>
@@ -587,10 +617,12 @@ function handy(){
     if(t==="duell") S.duell={aid:A.id, nr:1, a:"demo", b:"d1", q:[0,1,2], i:0, zeigen:false};
     if(t==="werbinich") S.wbi={aid:A.id, nr:1, pid:"d1", geheim:0, wahl:[3,0,5,1,7,2], zeigen:false};
     if(t==="luege") S.lu={aid:A.id, nr:1, pid:"demo"};
+    if(t==="kette") S.ke={aid:A.id, k:A.start, nr:1, pfad:[], pid:"demo", wahl:-1, ok:false, n:0};
     if(t==="maler") S.ma={aid:A.id, nr:1, pid:"demo", wort:0, opts:["die Schlüssel","der Schlüssel","das Fahrrad","der Fahrrad"]};
     const knopf=(txt,f)=>{ const b=document.createElement("button"); b.textContent=txt; b.className="btn ghost"; b.style.cssText="position:fixed;left:10px;right:10px;bottom:10px;z-index:60"; b.onclick=()=>{ f(); male(true); }; document.body.appendChild(b); };
     if(t==="werbinich") knopf("🔁 Vormachen: geheime Ansicht / Auflösen", ()=>{ const W=S.wbi; if(W.pid==="d1"&&!W.zeigen) W.pid="demo"; else if(W.pid==="demo"){ W.pid="d1"; W.zeigen=true; } else { W.zeigen=false; } });
     if(t==="luege") knopf("🔁 Vormachen: Ansicht der anderen / Auflösen", ()=>{ const L=S.lu; if(L.pid==="demo"){ if(!(S.lg||{})[1]) setzePfad(S,"lg/1",2); L.pid="d1"; } else if(!L.zeigen) L.zeigen=true; else { L.zeigen=false; L.pid="demo"; } });
+    if(t==="kette") knopf("🔁 Vormachen: Ansicht der anderen", ()=>{ const K=S.ke; if(K.pid==="demo"){ K.pid="d1"; K.wahl=-1; K.ok=false; } else if(K.wahl<0){ K.wahl=0; } else if(!K.ok){ K.ok=true; } else { K.pid="demo"; K.wahl=-1; K.ok=false; } });
     if(t==="maler") knopf("🔁 Vormachen: Ansicht der anderen / Auflösen", ()=>{ const M=S.ma; if(M.pid==="demo") M.pid="d1"; else if(!M.zeigen) M.zeigen=true; else { M.zeigen=false; M.pid="demo"; } });
     TIMER=S.timer; male(true);
     if(t==="duell"){ const b=document.createElement("button"); b.textContent="▶ Vormachen: Auflösen / nächste Frage"; b.className="btn ghost"; b.style.cssText="position:fixed;left:10px;right:10px;bottom:10px;z-index:60";
@@ -661,6 +693,7 @@ function leitung(){
     if(A.typ==="werbinich") I("wbi").set({aid:id, nr:(S.wbi||{}).nr||0});
     if(A.typ==="luege") I("lu").set({aid:id, nr:(S.lu||{}).nr||0});
     if(A.typ==="maler") I("ma").set({aid:id, nr:(S.ma||{}).nr||0});
+    if(A.typ==="kette") I("ke").set({aid:id, k:A.start, nr:((S.ke||{}).nr||0)+1, pfad:[], wahl:-1, ok:false, n:0});
     if(A.typ==="schlange"){ const li={}, ka={}; const L=mische(online().map(([p])=>p)); L.forEach((p,i)=>li[p]=i%2?"B":"A");
       ["A","B"].forEach(X=>{ const mem=L.filter(p=>li[p]===X); const pool=mische(A.puzzles[X==="A"?"B":"A"].teile.map(t=>t.id)); let j=0; mem.forEach(p=>{ ka[p]=[pool[j%pool.length], pool[(j+1)%pool.length]]; j+=2; }); });
       I("sch").set({aid:id, r:0, ph:"A", linie:li, karten:ka}); }
@@ -674,6 +707,12 @@ function leitung(){
     if(A.typ==="maler"){ const nr=((S.ma||{}).nr||0)+1; const benutzt=Object.values(S.mr||{}); let frei=A.woerter.map((_,i)=>i).filter(i=>!benutzt.includes(i)); if(!frei.length) frei=A.woerter.map((_,i)=>i); const w=frei[rnd(frei.length)];
       const o=mische(A.woerter.map((_,i)=>i).filter(i=>i!==w))[0]; const opts=mische([w,o].flatMap(i=>{ const [art,...r]=A.woerter[i].w.split(" "); const falsch=mische(["der","die","das"].filter(x=>x!==art))[0]; return [A.woerter[i].w, falsch+" "+r.join(" ")]; }));
       I().update({ma:{aid:A.id, nr, pid:p, wort:w, opts, zeigen:false}, [`mr/${nr}`]:A.woerter[w].w}); timerSetze(A.minuten||2); } }
+  function ketteZiehen(A){ const p=personZiehen("kette"); if(p) I("ke").update({pid:p, wahl:-1, ok:false, n:0}); timerSetze(A.minuten||3); }
+  function ketteWeiter(A){ const K=S.ke; const N=A.knoten[K.k]; const w=N.wahl[K.wahl]; const pf=Object.values(K.pfad||{}); const step=pf.length;
+    const up={[`ke/pfad/${step}`]:{k:K.k, w:K.wahl, pid:K.pid}, "ke/k":w.weiter, "ke/wahl":-1, "ke/ok":false, "ke/n":0, [`kr/${K.nr}/${step}`]:K.wahl,
+      [`stat/${K.pid}/kette`]:(Number(((S.stat||{})[K.pid]||{}).kette)||0)+1};
+    if(A.knoten[w.weiter].ende) up["ke/pid"]=null; else { const p=personZiehen("kette"); up["ke/pid"]=p||null; timerSetze(A.minuten||3); }
+    I().update(up); }
   let duellHist=[];
   function duellZiehen(A){ const ids=online().map(([p])=>p); if(ids.length<2) return; let pool=ids.filter(p=>!duellHist.includes(p)); if(pool.length<2){ duellHist=[]; pool=ids; }
     const a=pool[rnd(pool.length)]; const rest=pool.filter(p=>p!==a); const b=rest[rnd(rest.length)]; duellHist.push(a,b);
@@ -786,6 +825,15 @@ function leitung(){
           <div class="small" style="margin:6px 0">${mit.map(p=>{ const r=rollenVon(mit,p); const s=lueckenStand(SZ,r,W[p],r.includes(-2)); return `<div>${nm(p)} – <i>${esc(r.filter(x=>x>=0).map(x=>SZ.rollen[x]).join(" + ")||"Regie")}</i>${st===1?` <span class="muted">(${s.ok}/${s.n})</span>`:""}</div>`; }).join("")||'<span class="muted">leer</span>'}</div>
           <div class="row"><select data-szene="${gid}">${A.szenen.map(z=>`<option value="${z.id}" ${z.id===g.sz?"selected":""}>${z.icon} ${esc(z.titel)}</option>`).join("")}</select>${st===3?`<button class="btn sm steh" data-buehne="${gid}">🎬 Bühne</button>`:""}</div></div>`; }).join("")}</div>`;
       return h; }
+    if(A.typ==="kette"){ const K=S.ke||{}; if(K.aid!==A.id) return kopfA(A); const N=A.knoten[K.k]; const pf=Object.values(K.pfad||{}); const step=pf.length;
+      let h=`<div class="tafelinhalt" style="font-size:clamp(15px,1.4vw,21px);color:var(--muted)">${pf.slice(-2).map(x=>{ const NN=A.knoten[x.k]; const w=NN.wahl[x.w]; return `<div style="margin:6px 0">${esc(NN.text)} <b style="color:var(--ink)">→ ${nm(x.pid)}: „${esc(ketteSatz(w))}“</b></div>`; }).join("")}</div>
+        <div class="tafelinhalt" style="font-size:clamp(20px,2.2vw,34px);margin:10px 0">${N.ende?`<span style="font-size:1.6em">${N.e}</span> `:""}${esc(N.text)}</div>`;
+      if(N.ende) return kopfA(A)+h+`<div class="grossfrage">📖 ENDE</div><div class="row" style="justify-content:center"><button class="btn acc" id="ketteNeu" style="font-size:22px">🔄 Neue Geschichte</button></div>`;
+      const gew=(typeof K.wahl==="number"&&K.wahl>=0)?N.wahl[K.wahl]:null; const an=((S.kv||{})[K.nr]||{})[step]||{};
+      h+=`<div class="grossfrage" style="margin:6px 0">${K.pid?`✋ ${nm(K.pid)}: `:""}${esc(N.frage)}</div><div style="display:grid;grid-template-columns:repeat(${N.wahl.length},1fr);gap:14px">${N.wahl.map((w,i)=>`<div style="border-radius:18px;padding:14px;text-align:center;color:#fff;background:${["#2F6FDB","#F97316","#14A37F"][i]};${gew&&K.wahl!==i?"opacity:.3":""};${gew&&K.wahl===i?"outline:8px solid var(--gold)":""}"><div style="font-size:48px">${w.e}</div><b style="font-size:clamp(18px,1.8vw,28px)">${esc(w.label)}</b><div>${Object.values(an).filter(v=>v===i).length} Tipps</div></div>`).join("")}</div>`;
+      if(gew&&K.ok) h+=`<div class="tipp" style="font-size:clamp(20px,2.4vw,36px);margin-top:12px;background:var(--ok-2);border-color:var(--ok)">🗣️ Alle lesen laut: <b>„${esc(ketteSatz(gew))}“</b></div>`;
+      else if(gew) h+=`<p class="tafelinhalt mitte">${nm(K.pid)} baut jetzt den Satz …${(K.n||0)?` (${K.n}× falsch)`:""}</p>`;
+      return kopfA(A)+h+`<div class="row" style="margin-top:14px">${gew&&K.ok?`<button class="btn acc" id="ketteWeiter" style="font-size:22px">▶ Weiter – nächste Person</button>`:`<button class="btn acc" id="ketteZiehen" style="font-size:20px">🎲 ${K.pid?"Andere Person":"Person ziehen"}</button>`}${gew&&!K.ok?`<button class="btn ghost" id="ketteOk">✓ Satz gilt (mündlich)</button>`:""}</div>`; }
     if(["werbinich","luege","maler"].includes(A.typ)){ const node={werbinich:"wbi",luege:"lu",maler:"ma"}[A.typ]; const X=S[node]||{}; if(X.aid!==A.id) return kopfA(A);
       const zieh=`<button class="btn acc" id="rateZiehen" style="font-size:22px;min-height:60px">🎲 ${X.pid?"Nächste Person":"Person ziehen"}</button>`;
       if(!X.pid) return kopfA(A)+`<div class="row" style="justify-content:center;margin:24px 0">${zieh}</div>`;
@@ -876,7 +924,9 @@ function leitung(){
     $$("[data-sitz]").forEach(b=>b.onclick=()=>{ sitzListe.push(b.dataset.sitz); male(); });
     on("#sitzFertig", ()=>{ const g=[]; for(let i=0;i<sitzListe.length;i+=2) g.push(sitzListe.slice(i,i+2)); if(g.length>1 && g[g.length-1].length===1) g[g.length-2].push(g.pop()[0]); sitzModus=false; paareSetzen(A, g); });
     on("#duellZiehen", ()=>duellZiehen(A));
-    on("#rateZiehen", ()=>rateZiehen(A)); on("#rateAuf", ()=>I(`${{werbinich:"wbi",luege:"lu",maler:"ma"}[A.typ]}/zeigen`).set(true));
+    on("#rateZiehen", ()=>rateZiehen(A));
+    on("#ketteZiehen", ()=>ketteZiehen(A)); on("#ketteWeiter", ()=>ketteWeiter(A)); on("#ketteOk", ()=>I("ke/ok").set(true));
+    on("#ketteNeu", ()=>{ I("ke").set({aid:A.id, k:A.start, nr:((S.ke||{}).nr||0)+1, pfad:[], wahl:-1, ok:false, n:0}); }); on("#rateAuf", ()=>I(`${{werbinich:"wbi",luege:"lu",maler:"ma"}[A.typ]}/zeigen`).set(true));
     if(A.typ==="maler" && S.ma && S.ma.aid===A.id) striche($("#malTafel"), strichListe(S, S.ma.nr)); on("#duellAuf", ()=>I("duell/zeigen").set(true));
     on("#duellWeiter", ()=>{ const D=S.duell; if(D.i<2) I("duell").update({i:D.i+1, zeigen:false}); else I("duell/ende").set(true); });
     $$("[data-takt]").forEach(b=>b.onclick=()=>{ if(b.dataset.takt==="B") I("sch/ph").set("B"); else I("sch").update({r:(Number(S.sch.r)||0)+1, ph:"A"}); timerSetze(A.minuten||1.5); });
@@ -897,6 +947,7 @@ function leitung(){
     theater:["Oben steht <b>deine Rolle</b>.","<b>Blaue Sätze</b> = deine Sätze.","Tippe das richtige Wort in den Lücken.","Dann: üben – und vorspielen!"],
     sprechen:["Ich ziehe einen Namen.","Auf deinem Handy steht die <b>Frage</b>.","<b>Steh auf</b> und antworte."],
     bewegung:["Dein Handy zeigt einen <b>geheimen Auftrag</b>.","Mach ihn – <b>ohne zu sprechen</b>.","Die anderen sagen: <b>Was hast du gemacht?</b>"],
+    kette:["Ich ziehe <b>eine Person</b>. Sie <b>entscheidet</b>: Wie geht es weiter?","Alle anderen tippen vorher: <b>Was wählt sie?</b>","Sie baut den Satz aus <b>Wortkarten</b> – Verb auf Position 2.","Sie liest laut vor, <b>alle lesen mit</b>. Dann die nächste Person."],
     werbinich:["Ich ziehe <b>eine Person</b>. Ihr Handy zeigt einen <b>geheimen Beruf</b>.","Alle fragen mit <b>Ja/Nein-Fragen</b>: „Arbeitest du drinnen?“","Die Person sagt nur <b>Ja</b> oder <b>Nein</b>.","Alle tippen ihren Tipp. Ich löse auf."],
     luege:["Ich ziehe <b>eine Person</b>. Sie denkt sich <b>3 Sätze im Perfekt</b> aus.","Ein Satz ist <b>gelogen</b>. Sie tippt geheim: welcher.","Sie sagt laut: Satz 1, Satz 2, Satz 3.","Alle tippen: <b>1, 2 oder 3?</b> Ich löse auf."],
     maler:["Ich ziehe <b>eine Person</b>. Sie zeichnet am Handy – <b>ohne Buchstaben</b>.","Die Zeichnung kommt an die Tafel und auf alle Handys.","Alle tippen das Wort <b>mit Artikel</b>.","Ich löse auf. Alle sagen laut: <b>„Das ist der …“</b>"],
@@ -921,6 +972,8 @@ function leitung(){
       Object.values(S.qz||{}).forEach(fr=>Object.values(fr||{}).forEach(an=>{ const a=(an||{})[p]; if(a){ z.qa++; if(a.o===0) z.qr++; } }));
       Object.entries(S.wg||{}).forEach(([nr,an])=>{ const v=(an||{})[p]; if(v!==undefined){ z.qa++; if(v===(S.wr||{})[nr]) z.qr++; } });
       Object.entries(S.mg||{}).forEach(([nr,an])=>{ const v=(an||{})[p]; if(v){ z.qa++; if(v.s===(S.mr||{})[nr]) z.qr++; } });
+      Object.entries(S.kv||{}).forEach(([nr,st])=>Object.entries(st||{}).forEach(([step,an])=>{ const v=(an||{})[p]; const r=((S.kr||{})[nr]||{})[step]; if(v!==undefined && r!==undefined){ z.qa++; if(v===r) z.qr++; } }));
+      z.karten+=Number(((S.stat||{})[p]||{}).kette)||0;
       Object.entries(S.lv||{}).forEach(([nr,an])=>{ const v=(an||{})[p]; if(v!==undefined){ z.qa++; if(v===(S.lg||{})[nr]) z.qr++; } });
       Object.values(S.du||{}).forEach(fr=>Object.values(fr||{}).forEach(an=>{ const a=(an||{})[p]; if(a){ z.qa++; if(a.o===0) z.qr++; } }));
       Object.values(S.bingo||{}).forEach(b=>{ z.bingo+=Object.keys((b||{})[p]||{}).length; });

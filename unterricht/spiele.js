@@ -29,28 +29,76 @@ const MALER = { id: "g2", typ: "maler", minuten: 2, titel: "Montagsmaler – mit
 const LUEGE = { id: "g3", typ: "luege", minuten: 3, titel: "Lügendetektor – 3 Sätze im Perfekt",
   anleitung: "Eine Person sagt 3 Sätze im Perfekt über sich. Ein Satz ist gelogen! Hör gut zu und tippe: Welcher Satz war gelogen – 1, 2 oder 3?",
   hilfe: ["Gestern habe ich … gegessen / gespielt / gesehen.", "Am Wochenende bin ich nach … gefahren / gegangen.", "Letztes Jahr habe ich … gekauft / gelernt / besucht."] };
+
+const W_ = (e, label, w, a, weiter, p) => ({ e, label, w, a, weiter, p: p || "." });
+const KETTE = { id: "g5", typ: "kette", minuten: 3, titel: "Kettengeschichte: Leos verrückter Samstag",
+  anleitung: "Eine Person entscheidet, wie die Geschichte weitergeht, und baut den Satz aus den Wortkarten. Alle anderen tippen vorher: Was wird sie entscheiden? Danach lesen alle den Satz laut.",
+  start: "start",
+  knoten: {
+    start: { text: "Es ist Samstag. Leo ist um 9 Uhr aufgestanden und hat gefrühstückt. Dann hat sein Handy geklingelt. Mina hat geschrieben: „Kommst du heute nach Kiel?“", frage: "Was macht Leo?",
+      wahl: [ W_("🚆", "Er fährt nach Kiel.", ["Leo","fährt","mit","dem","Zug","nach","Kiel"], ["leo fährt mit dem zug nach kiel"], "kiel"),
+              W_("🛋️", "Er bleibt zu Hause.", ["Leo","bleibt","heute","zu","Hause"], ["leo bleibt heute zu hause","heute bleibt leo zu hause"], "hause") ] },
+    kiel: { text: "Leo ist zum Bahnhof gegangen. Der Zug ist pünktlich gekommen. In Kiel hat Mina am Gleis gewartet. „Hallo Leo! Was wollen wir machen?“", frage: "Wohin gehen Leo und Mina?",
+      wahl: [ W_("🛍️", "In die Stadt", ["Wir","wollen","in","die","Stadt","gehen"], ["wir wollen in die stadt gehen"], "stadt"),
+              W_("⛵", "An den Hafen", ["Wir","gehen","an","den","Hafen"], ["wir gehen an den hafen"], "hafen") ] },
+    hause: { text: "Leo hat Mina geantwortet: „Heute nicht, sorry.“ Er hat sich auf das Sofa gelegt. Aber dann hat es geklingelt! Sein Nachbar, Herr Berg, steht vor der Tür: „Leo, kannst du mir helfen?“", frage: "Was sagt Leo?",
+      wahl: [ W_("🤝", "Er hilft.", ["Ich","helfe","Ihnen","gern"], ["ich helfe ihnen gern","gern helfe ich ihnen"], "nachbar"),
+              W_("🙅", "Er hat keine Lust.", ["Ich","habe","leider","keine","Zeit"], ["ich habe leider keine zeit","leider habe ich keine zeit"], "sofa") ] },
+    stadt: { text: "Leo und Mina sind in die Stadt gegangen. In einem Geschäft hat Leo eine coole Jacke gesehen. Sie kostet 80 Euro. Aber Leo hat nur 50 Euro dabei.", frage: "Was macht Leo?",
+      wahl: [ W_("💳", "Er fragt Mina nach Geld.", ["Kannst","du","mir","30","Euro","leihen"], ["kannst du mir 30 euro leihen"], "jacke", "?"),
+              W_("🍦", "Er kauft lieber ein Eis.", ["Ich","kaufe","lieber","ein","Eis"], ["ich kaufe lieber ein eis","lieber kaufe ich ein eis"], "eis") ] },
+    hafen: { text: "Am Hafen hat ein großes Schiff gelegen. Ein Mann hat gerufen: „Wir machen eine Bootstour nach Laboe! Wer will mitfahren?“", frage: "Was machen Leo und Mina?",
+      wahl: [ W_("⛴️", "Sie fahren mit.", ["Wir","fahren","mit","dem","Schiff","nach","Laboe"], ["wir fahren mit dem schiff nach laboe"], "laboe"),
+              W_("🍦", "Sie essen lieber ein Eis.", ["Wir","essen","lieber","ein","Eis"], ["wir essen lieber ein eis","lieber essen wir ein eis"], "eis") ] },
+    nachbar: { text: "Leo ist mit Herrn Berg in den Garten gegangen. Sie haben zusammen einen schweren Tisch getragen. Herr Berg hat sich gefreut: „Danke! Möchtest du ein Stück Kuchen oder lieber 10 Euro?“", frage: "Was nimmt Leo?",
+      wahl: [ W_("🍰", "Den Kuchen", ["Ich","möchte","gern","ein","Stück","Kuchen"], ["ich möchte gern ein stück kuchen","gern möchte ich ein stück kuchen"], "e_kuchen"),
+              W_("💶", "Das Geld", ["Ich","nehme","gern","die","10","Euro"], ["ich nehme gern die 10 euro","gern nehme ich die 10 euro"], "e_geld") ] },
+    sofa: { text: "Leo hat den ganzen Tag Videos geschaut. Am Abend hat er Hunger bekommen. Aber der Kühlschrank ist leer!", frage: "Was macht Leo?",
+      wahl: [ W_("🍕", "Er bestellt eine Pizza.", ["Ich","bestelle","eine","Pizza"], ["ich bestelle eine pizza"], "e_pizza"),
+              W_("🛒", "Er geht einkaufen.", ["Ich","gehe","in","den","Supermarkt"], ["ich gehe in den supermarkt"], "e_markt") ] },
+    jacke: { text: "Mina hat Leo 30 Euro geliehen. Leo hat die Jacke gekauft – er sieht super aus! Aber jetzt hat er kein Geld mehr für den Zug nach Hause.", frage: "Was macht Leo?",
+      wahl: [ W_("📞", "Er ruft seinen Vater an.", ["Ich","rufe","meinen","Vater","an"], ["ich rufe meinen vater an"], "e_papa"),
+              W_("🚶", "Er geht zu Fuß.", ["Ich","gehe","zu","Fuß","nach","Hause"], ["ich gehe zu fuß nach hause"], "e_fuss") ] },
+    eis: { text: "Leo und Mina haben ein großes Eis gegessen. Plötzlich hat Leo seinen Deutschlehrer gesehen! Der Lehrer hat auch ein Eis gegessen.", frage: "Was machen Leo und Mina?",
+      wahl: [ W_("👋", "Sie sagen Hallo.", ["Guten","Tag","wie","geht","es","Ihnen"], ["guten tag wie geht es ihnen"], "e_lehrer", "?"),
+              W_("🙈", "Sie verstecken sich.", ["Wir","verstecken","uns","hinter","dem","Baum"], ["wir verstecken uns hinter dem baum"], "e_versteck") ] },
+    laboe: { ende: true, e: "🌞", text: "Leo und Mina sind mit dem Schiff nach Laboe gefahren. Sie haben am Strand Fußball gespielt und sind abends glücklich nach Hause gefahren. Ein perfekter Tag!" },
+    e_kuchen: { ende: true, e: "🍰", text: "Leo hat drei Stück Kuchen gegessen. Herr Berg hat gelacht: „Du kannst jeden Samstag helfen!“ Jetzt hat Leo einen neuen Freund." },
+    e_geld: { ende: true, e: "🚆", text: "Leo hat mit dem Geld ein Ticket gekauft und ist doch noch nach Kiel gefahren. Mina hat sich sehr gefreut!" },
+    e_pizza: { ende: true, e: "🍕", text: "Die Pizza ist nach 40 Minuten gekommen – aber mit Ananas! Leo hat sie trotzdem gegessen. Morgen will er wieder mit Mina nach Kiel fahren." },
+    e_markt: { ende: true, e: "🛒", text: "Im Supermarkt hat Leo Mina getroffen! Sie hat gesagt: „Ich bin auch nicht nach Kiel gefahren.“ Dann haben sie zusammen gekocht." },
+    e_papa: { ende: true, e: "🚗", text: "Leos Vater ist mit dem Auto nach Kiel gekommen. Er hat die Jacke gesehen und gesagt: „Schöne Jacke! Aber du hilfst mir morgen im Garten.“" },
+    e_fuss: { ende: true, e: "🥵", text: "Leo ist 30 Kilometer zu Fuß nach Plön gegangen. Um Mitternacht ist er angekommen. Seine Füße haben sehr wehgetan – aber die Jacke war super!" },
+    e_lehrer: { ende: true, e: "😄", text: "Der Lehrer hat gelacht: „Sehr gut, Leo! Du sprichst ja richtig Deutsch!“ Dann hat er für alle noch ein Eis gekauft." },
+    e_versteck: { ende: true, e: "🙈", text: "Leo und Mina haben sich hinter dem Baum versteckt. Aber der Lehrer hat sie gesehen und gerufen: „Ich sehe euch! Bis Montag!“" }
+  } };
 const tafel = (titel, html) => ({ titel, html });
 window.UNTERRICHT_PLAENE.spiele = {
   id: "spiele", titel: "Spielestunde: Raten & Sprechen am Platz", minuten: 90,
-  text: "Wer bin ich? · Montagsmaler mit Artikel · Lügendetektor im Perfekt · Duell 1 gegen 1 – alles am Platz, alle Handys spielen mit",
+  text: "Wer bin ich? · Montagsmaler mit Artikel · Kettengeschichte mit Entscheidungen · Lügendetektor im Perfekt · Duell 1 gegen 1 – alles am Platz, alle Handys spielen mit",
   bloecke: [
-    { id: "wbi", icon: "❓", titel: "Wer bin ich?", minuten: 25,
+    { id: "wbi", icon: "❓", titel: "Wer bin ich?", minuten: 20,
       tafel: [ tafel("❓ Wer bin ich?", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Ihr Handy zeigt einen <b>geheimen Beruf</b>.</li>
         <li>Alle anderen fragen – <b>nur Ja/Nein-Fragen</b>!</li><li>Die Person antwortet nur: <b>„Ja.“</b> oder <b>„Nein.“</b></li><li>Alle tippen am Handy: Wer ist sie? Ich löse auf.</li></ol>
         <div class="bsp">Arbeitest du drinnen? · Musst du früh aufstehen? · Darfst du ein Auto fahren? · Hilfst du Menschen?</div>
         <p class="hinweis">Achtung: Das Verb steht bei der Frage <b>vorne</b>!</p>`) ],
       aufgaben: [WBI] },
-    { id: "maler", icon: "🎨", titel: "Montagsmaler mit Artikel", minuten: 25,
+    { id: "maler", icon: "🎨", titel: "Montagsmaler mit Artikel", minuten: 20,
       tafel: [ tafel("🎨 Montagsmaler", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie zeichnet ein Wort am Handy – <b>ohne Buchstaben</b>.</li>
         <li>Die Zeichnung erscheint hier und auf allen Handys.</li><li>Alle tippen das Wort – <b>mit dem richtigen Artikel</b>!</li>
         <li>Ich löse auf. Alle sagen laut: <b>„Das ist der Schlüssel.“</b></li></ol>`) ],
       aufgaben: [MALER] },
-    { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 20,
+    { id: "kette", icon: "📖", titel: "Kettengeschichte mit Entscheidungen", minuten: 20,
+      tafel: [ tafel("📖 Kettengeschichte: Du entscheidest!", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie entscheidet: <b>Wie geht die Geschichte weiter?</b></li>
+        <li>Alle anderen tippen vorher: <b>Was wird sie wählen?</b></li><li>Die Person baut den Satz aus den <b>Wortkarten</b> – das Verb auf <b>Position 2</b>!</li>
+        <li>Sie liest den Satz laut vor. <b>Alle lesen mit.</b> Dann geht die Geschichte weiter – mit der nächsten Person.</li></ol>`) ],
+      aufgaben: [KETTE] },
+    { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 15,
       tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie überlegt sich <b>3 Sätze im Perfekt</b> über sich.</li>
         <li><b>Ein Satz ist gelogen.</b> Sie tippt geheim: Welcher?</li><li>Sie sagt die Sätze laut: <b>„Satz 1: … Satz 2: … Satz 3: …“</b></li><li>Alle stimmen ab: Welcher Satz war gelogen?</li></ol>
         <div class="bsp">Gestern habe ich Pizza gegessen. · Am Wochenende bin ich nach Kiel gefahren. · Letztes Jahr habe ich ein Pferd gekauft.</div>`) ],
       aufgaben: [LUEGE] },
-    { id: "duell", icon: "⚔️", titel: "Duell 1 gegen 1", minuten: 20, tafel: [window.DUELL_TAFEL],
+    { id: "duell", icon: "⚔️", titel: "Duell 1 gegen 1", minuten: 15, tafel: [window.DUELL_TAFEL],
       aufgaben: [window.duellAufgabe("g4", "Duell: alles gemischt", ["z1", "z3", "z7", "m1", "i1", "k1", "k2", "w2"], 20)] }
   ]
 };
