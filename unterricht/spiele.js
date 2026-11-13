@@ -32,7 +32,7 @@ const LUEGE = { id: "g3", typ: "luege", minuten: 3, titel: "Lügendetektor – 3
 
 const W_ = (e, label, w, a, weiter, p) => ({ e, label, w, a, weiter, p: p || "." });
 const KETTE = { id: "g5", typ: "kette", minuten: 3, titel: "Kettengeschichte: Leos verrückter Samstag",
-  anleitung: "Eine Person entscheidet, wie die Geschichte weitergeht, und baut den Satz aus den Wortkarten. Alle anderen tippen vorher: Was wird sie entscheiden? Danach lesen alle den Satz laut.",
+  anleitung: "Alle stimmen ab, wie die Geschichte weitergeht – die Mehrheit entscheidet. Dann baut eine gezogene Person den Satz aus den Wortkarten. Alle lesen den Satz laut.",
   start: "start",
   knoten: {
     start: { text: "Es ist Samstag. Leo ist um 9 Uhr aufgestanden und hat gefrühstückt. Dann hat sein Handy geklingelt. Mina hat geschrieben: „Kommst du heute nach Kiel?“", frage: "Was macht Leo?",
@@ -89,8 +89,8 @@ window.UNTERRICHT_PLAENE.spiele = {
         <li>Ich löse auf. Alle sagen laut: <b>„Das ist der Schlüssel.“</b></li></ol>`) ],
       aufgaben: [MALER] },
     { id: "kette", icon: "📖", titel: "Kettengeschichte mit Entscheidungen", minuten: 20,
-      tafel: [ tafel("📖 Kettengeschichte: Du entscheidest!", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie entscheidet: <b>Wie geht die Geschichte weiter?</b></li>
-        <li>Alle anderen tippen vorher: <b>Was wird sie wählen?</b></li><li>Die Person baut den Satz aus den <b>Wortkarten</b> – das Verb auf <b>Position 2</b>!</li>
+      tafel: [ tafel("📖 Kettengeschichte: Ihr entscheidet!", `<ol class="schritte"><li><b>Alle stimmen ab</b>: Wie geht die Geschichte weiter? Die <b>Mehrheit</b> entscheidet.</li>
+        <li>Dann ziehe ich <b>eine Person</b>.</li><li>Sie baut den Satz aus den <b>Wortkarten</b> – das Verb auf <b>Position 2</b>!</li>
         <li>Sie liest den Satz laut vor. <b>Alle lesen mit.</b> Dann geht die Geschichte weiter – mit der nächsten Person.</li></ol>`) ],
       aufgaben: [KETTE] },
     { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 15,
