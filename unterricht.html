@@ -723,7 +723,7 @@ function leitung(){
   function rateZiehen(A, fest){ const p=personZiehen(A.typ, fest); if(!p) return;
     if(A.typ==="werbinich"){ const W=S.wbi||{}; const nr=(W.nr||0)+1; const g=rnd(A.begriffe.length); const wahl=mische([g,...mische(A.begriffe.map((_,i)=>i).filter(i=>i!==g)).slice(0,5)]); I().update({wbi:{aid:A.id, nr, pid:p, geheim:g, wahl, zeigen:false}, [`wr/${nr}`]:g}); timerSetze(A.minuten||4); }
     if(A.typ==="luege"){ const nr=((S.lu||{}).nr||0)+1; I("lu").set({aid:A.id, nr, pid:p}); timerSetze(A.minuten||3); }
-    if(A.typ==="maler"){ const nr=((S.ma||{}).nr||0)+1; const benutzt=Object.values(S.mr||{}); let frei=A.woerter.map((_,i)=>i).filter(i=>!benutzt.includes(i)); if(!frei.length) frei=A.woerter.map((_,i)=>i); const w=frei[rnd(frei.length)];
+    if(A.typ==="maler"){ const nr=((S.ma||{}).nr||0)+1; const benutzt=Object.values(S.mr||{}); let frei=A.woerter.map((_,i)=>i).filter(i=>!benutzt.includes(A.woerter[i].w)); if(!frei.length) frei=A.woerter.map((_,i)=>i); const w=frei[rnd(frei.length)];
       const o=mische(A.woerter.map((_,i)=>i).filter(i=>i!==w))[0]; const opts=mische([w,o].flatMap(i=>{ const [art,...r]=A.woerter[i].w.split(" "); const falsch=mische(["der","die","das"].filter(x=>x!==art))[0]; return [A.woerter[i].w, falsch+" "+r.join(" ")]; }));
       I().update({ma:{aid:A.id, nr, pid:p, wort:w, opts, zeigen:false}, [`mr/${nr}`]:A.woerter[w].w}); timerSetze(A.minuten||2); } }
   function ketteAbstimmungEnde(A){ const K=S.ke; const N=A.knoten[K.k]; const step=Object.values(K.pfad||{}).length; const an=((S.kv||{})[K.nr]||{})[step]||{};
