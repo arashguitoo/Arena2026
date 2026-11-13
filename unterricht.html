@@ -372,7 +372,11 @@ function handy(){
       if(x && x.online!==false){ abgemeldet=false; return namenWahl(); } me={pid:p, name:namen[p]}; speichernMe(); });
   }
   function speichernMe(){ try{ localStorage.setItem(MEKEY(), JSON.stringify(me)); }catch(e){} los(); }
-  function los(){
+  let wachSperre=null;
+  async function wachHalten(){ try{ if("wakeLock" in navigator && document.visibilityState==="visible" && !wachSperre){ wachSperre=await navigator.wakeLock.request("screen"); wachSperre.addEventListener("release",()=>{ wachSperre=null; }); } }catch(e){} }
+  document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ wachHalten(); if(me && !SPIEGEL && !DEMO) try{ const r=I(`spieler/${me.pid}`); r.update({online:true}); r.child("online").onDisconnect().set(false); }catch(e){} } });
+  document.addEventListener("click", wachHalten, {once:true});
+  function los(){ wachHalten();
     if(!SPIEGEL){ const r=I(`spieler/${me.pid}`); r.update({name:me.name, ts:TS(), online:true}); try{ r.child("online").onDisconnect().set(false); }catch(e){} }
     I().on("value", s=>{ S=s.val()||{}; TIMER=S.timer||null; if(S.info&&S.info.plan&&PLAENE[S.info.plan]) PLAN=PLAENE[S.info.plan];
       if(!SPIEGEL && me){ if((S.spieler||{})[me.pid]) gesehen=true; else if(gesehen && S.info){ /* von der Lehrkraft abgemeldet */ I().off(); try{ localStorage.removeItem(MEKEY()); }catch(e){} me=null; gesehen=false; abgemeldet=true; sig=""; return namenWahl(); } }
@@ -705,8 +709,18 @@ function leitung(){
     if(A.typ==="theater"){ if(!S.theater||S.theater.aid!==id||!S.theater.gr) await gruppenBilden(A); else I("theater/schritt").set(1); if(A.schrittMin) timerSetze(A.schrittMin[0]); }
   }
   const zHist={};
-  function personZiehen(typ){ const ids=online().map(([p])=>p); if(!ids.length) return null; const h=zHist[typ]=zHist[typ]||[]; let pool=ids.filter(p=>!h.includes(p)); if(!pool.length){ h.length=0; pool=ids; } const p=pool[rnd(pool.length)]; h.push(p); return p; }
-  function rateZiehen(A){ const p=personZiehen(A.typ); if(!p) return;
+  /* Ziehen: jede Person kommt einmal dran, bevor jemand zum zweiten Mal dran ist (gespeichert, übersteht Neuladen).
+     Bevorzugt Handys, die gerade online sind – aber auch wer kurz offline war, wird nicht vergessen. */
+  function schonDran(typ){ return Object.values(((S.zh||{})[typ])||{}); }
+  function personZiehen(typ, fest){ const alle=spieler().map(([p])=>p); if(!alle.length) return null; const on=new Set(online().map(([p])=>p));
+    const akt={werbinich:(S.wbi||{}).pid, maler:(S.ma||{}).pid, luege:(S.lu||{}).pid, kette:(S.ke||{}).pid}[typ];
+    let h=schonDran(typ); let frei=alle.filter(p=>!h.includes(p));
+    if(!frei.length){ I(`zh/${typ}`).remove(); h=[]; frei=alle.filter(p=>p!==akt); if(!frei.length) frei=alle; }
+    let p=fest; if(!p){ const fon=frei.filter(p=>on.has(p)&&p!==akt); const pool=fon.length?fon:frei.filter(p=>p!==akt).length?frei.filter(p=>p!==akt):frei; p=pool[rnd(pool.length)]; }
+    I(`zh/${typ}`).push(p); return p; }
+  function personWahlHtml(typ){ const h=schonDran(typ); const L=spieler(); if(!L.length) return "";
+    return `<div style="margin-top:12px"><span class="small muted">Oder selbst wählen (✓ = war schon dran, ${h.length} von ${L.length}):</span><div class="row" style="margin-top:4px">${L.map(([p,x])=>`<button class="btn sm ${h.includes(p)?"ghost":""}" data-wahlp="${p}" style="${x.online===false?"opacity:.5":""}">${h.includes(p)?"✓ ":""}${esc(x.name)}</button>`).join("")}</div></div>`; }
+  function rateZiehen(A, fest){ const p=personZiehen(A.typ, fest); if(!p) return;
     if(A.typ==="werbinich"){ const W=S.wbi||{}; const nr=(W.nr||0)+1; const g=rnd(A.begriffe.length); const wahl=mische([g,...mische(A.begriffe.map((_,i)=>i).filter(i=>i!==g)).slice(0,5)]); I().update({wbi:{aid:A.id, nr, pid:p, geheim:g, wahl, zeigen:false}, [`wr/${nr}`]:g}); timerSetze(A.minuten||4); }
     if(A.typ==="luege"){ const nr=((S.lu||{}).nr||0)+1; I("lu").set({aid:A.id, nr, pid:p}); timerSetze(A.minuten||3); }
     if(A.typ==="maler"){ const nr=((S.ma||{}).nr||0)+1; const benutzt=Object.values(S.mr||{}); let frei=A.woerter.map((_,i)=>i).filter(i=>!benutzt.includes(i)); if(!frei.length) frei=A.woerter.map((_,i)=>i); const w=frei[rnd(frei.length)];
@@ -715,7 +729,7 @@ function leitung(){
   function ketteAbstimmungEnde(A){ const K=S.ke; const N=A.knoten[K.k]; const step=Object.values(K.pfad||{}).length; const an=((S.kv||{})[K.nr]||{})[step]||{};
     const z=N.wahl.map((_,i)=>Object.values(an).filter(v=>v===i).length); const max=Math.max(...z); const top=z.map((v,i)=>v===max?i:-1).filter(i=>i>=0); const wahl=top[rnd(top.length)];
     const p=personZiehen("kette"); I("ke").update({wahl, pid:p||null, ok:false, n:0}); timerSetze(A.minuten||3); }
-  function ketteZiehen(A){ const p=personZiehen("kette"); if(p) I("ke").update({pid:p, wahl:-1, ok:false, n:0}); timerSetze(A.minuten||3); }
+  function ketteZiehen(A, fest){ const p=personZiehen("kette", fest); if(p) I("ke").update({pid:p, wahl:-1, ok:false, n:0}); timerSetze(A.minuten||3); }
   function ketteWeiter(A){ const K=S.ke; const N=A.knoten[K.k]; const w=N.wahl[K.wahl]; const pf=Object.values(K.pfad||{}); const step=pf.length;
     const up={[`ke/pfad/${step}`]:{k:K.k, w:K.wahl, pid:K.pid}, "ke/k":w.weiter, "ke/wahl":-1, "ke/ok":false, "ke/n":0, [`kr/${K.nr}/${step}`]:K.wahl,
       [`stat/${K.pid}/kette`]:(Number(((S.stat||{})[K.pid]||{}).kette)||0)+1};
@@ -846,10 +860,10 @@ function leitung(){
       const knopf=gew&&K.ok?`<button class="btn acc" id="ketteWeiter" style="font-size:22px">▶ Weiter${MH?" – neue Abstimmung":" – nächste Person"}</button>`
         :MH&&!gew?`<button class="btn acc" id="ketteAbst" style="font-size:22px" ${Object.keys(an).length?"":"disabled"}>🗳️ Abstimmung beenden</button>`
         :`<button class="btn ${MH?"ghost":"acc"}" id="ketteZiehen" style="font-size:20px">🎲 ${K.pid?"Andere Person":"Person ziehen"}</button>`;
-      return kopfA(A)+h+`<div class="row" style="margin-top:14px">${knopf}${gew&&!K.ok?`<button class="btn ghost" id="ketteOk">✓ Satz gilt (mündlich)</button>`:""}</div>`; }
+      return kopfA(A)+h+`<div class="row" style="margin-top:14px">${knopf}${gew&&!K.ok?`<button class="btn ghost" id="ketteOk">✓ Satz gilt (mündlich)</button>`:""}</div>${(!MH||gew)&&!K.ok?personWahlHtml("kette"):""}`; }
     if(["werbinich","luege","maler"].includes(A.typ)){ const node={werbinich:"wbi",luege:"lu",maler:"ma"}[A.typ]; const X=S[node]||{}; if(X.aid!==A.id) return kopfA(A);
       const zieh=`<button class="btn acc" id="rateZiehen" style="font-size:22px;min-height:60px">🎲 ${X.pid?"Nächste Person":"Person ziehen"}</button>`;
-      if(!X.pid) return kopfA(A)+`<div class="row" style="justify-content:center;margin:24px 0">${zieh}</div>`;
+      if(!X.pid) return kopfA(A)+`<div class="row" style="justify-content:center;margin:24px 0">${zieh}</div>${personWahlHtml(A.typ)}`;
       const n=nm(X.pid); let h="";
       if(A.typ==="werbinich"){ const an=(S.wg||{})[X.nr]||{}; const B=A.begriffe;
         h=`<div class="grossname" style="font-size:clamp(40px,5vw,80px)">❓ Wer ist ${n}?</div><div class="row" style="justify-content:center;gap:10px;margin:10px 0">${A.fragen.map(f=>`<span class="chip" style="background:var(--soft);color:var(--ink);font-size:clamp(15px,1.4vw,22px)">${esc(f)}</span>`).join("")}</div>
@@ -866,7 +880,7 @@ function leitung(){
           <div>${X.opts.map(o=>{ const c=Object.values(an).filter(v=>v.s===o).length; const r=o===W.w; return `<div class="opt ${X.zeigen&&r?"ok":""}" style="font-size:clamp(20px,2vw,32px);margin-bottom:10px;${X.zeigen&&!r?"opacity:.35":""}">${esc(o)}${X.zeigen?` · ${c}`:""}</div>`; }).join("")}
           <p class="tafelinhalt">${Object.keys(an).length} von ${online().length-1} haben getippt.</p>
           ${X.zeigen?`<div class="tipp" style="font-size:clamp(18px,2vw,30px)">${W.e} Alle sagen laut: <b>„Das ist ${esc(W.w)}.“</b>${(()=>{ const r=Object.entries(an).filter(([,v])=>v.s===W.w).sort((a,b)=>(Number(a[1].t)||0)-(Number(b[1].t)||0)); return r.length?`<br>⚡ Am schnellsten: ${nm(r[0][0])}`:""; })()}</div>`:""}</div></div>`; }
-      return kopfA(A)+h+`<div class="row" style="margin-top:14px">${X.zeigen?"":`<button class="btn ok" id="rateAuf" style="font-size:20px" ${A.typ==="luege"&&!(S.lg||{})[X.nr]?"disabled":""}>✅ Auflösen</button>`}${zieh}</div>`; }
+      return kopfA(A)+h+`<div class="row" style="margin-top:14px">${X.zeigen?"":`<button class="btn ok" id="rateAuf" style="font-size:20px" ${A.typ==="luege"&&!(S.lg||{})[X.nr]?"disabled":""}>✅ Auflösen</button>`}${zieh}</div>${personWahlHtml(A.typ)}`; }
     if(A.typ==="duell"){ const D=S.duell||{}; if(D.aid!==A.id) return kopfA(A);
       const schon=duellHist.length?`<p class="small muted">Schon im Duell: ${[...new Set(duellHist)].map(nm).join(", ")}</p>`:"";
       if(!D.a) return kopfA(A)+`<div class="row" style="justify-content:center;margin:20px 0"><button class="btn acc" id="duellZiehen" style="font-size:24px;min-height:70px;padding:10px 30px">🎲 Duell ziehen</button></div>`+schon;
@@ -938,6 +952,7 @@ function leitung(){
     on("#sitzFertig", ()=>{ const g=[]; for(let i=0;i<sitzListe.length;i+=2) g.push(sitzListe.slice(i,i+2)); if(g.length>1 && g[g.length-1].length===1) g[g.length-2].push(g.pop()[0]); sitzModus=false; paareSetzen(A, g); });
     on("#duellZiehen", ()=>duellZiehen(A));
     on("#rateZiehen", ()=>rateZiehen(A));
+    $$("[data-wahlp]").forEach(b=>b.onclick=()=>{ if(A.typ==="kette") ketteZiehen(A, b.dataset.wahlp); else rateZiehen(A, b.dataset.wahlp); });
     on("#ketteZiehen", ()=>ketteZiehen(A)); on("#ketteAbst", ()=>ketteAbstimmungEnde(A));
     $$("[data-kmodus]").forEach(b=>b.onclick=()=>I("ke").update({modus:b.dataset.kmodus, pid:null})); on("#ketteWeiter", ()=>ketteWeiter(A)); on("#ketteOk", ()=>I("ke/ok").set(true));
     on("#ketteNeu", ()=>{ I("ke").set({aid:A.id, k:A.start, nr:((S.ke||{}).nr||0)+1, pfad:[], wahl:-1, ok:false, n:0, modus:(S.ke||{}).modus||"mehrheit"}); }); on("#rateAuf", ()=>I(`${{werbinich:"wbi",luege:"lu",maler:"ma"}[A.typ]}/zeigen`).set(true));
