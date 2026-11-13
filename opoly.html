@@ -79,6 +79,11 @@ body.board{background:var(--gruen);color:#fff}
 #qr img,#qr canvas{background:#fff;padding:10px;border-radius:12px}
 table{border-collapse:collapse;width:100%} td,th{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.14);text-align:left}
 td input{width:80px;min-height:36px}
+.warte{background:#EEF2FF;border:3px dashed #93A8E8;border-radius:20px;padding:20px 14px;text-align:center;margin:10px 0}
+.warte .e{font-size:54px;display:inline-block;animation:sanduhr 2.4s ease-in-out infinite}
+@keyframes sanduhr{0%,40%{transform:rotate(0)}50%,90%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
+.warte h3{margin:6px 0}
+.opt.ok{background:#E2F6EF;border-color:#14A37F} .opt.falsch{background:#FDE8E6;border-color:#E2483D}
 </style>
 </head>
 <body>
@@ -123,7 +128,7 @@ function zelle(i){ if(i<=6) return [1,i+1]; if(i<=11) return [i-5,7]; if(i<=18) 
    TEAMS AM HANDY
    ========================================================= */
 function spieler(){
-  const app=$("#app"); let me=null, S=null;
+  const app=$("#app"); let me=null, S=null, lokal={};
   try{ const c=JSON.parse(localStorage.getItem(CODE_KEY)||"null"); if(c&&c.code&&c.pid) me=c; }catch(e){}
   function pinScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">🎲</div><h2>Plön-Opoly</h2><p class="muted">Gib die PIN von der Leinwand ein.</p>
     <form id="pf"><input id="pin" class="pin-in" inputmode="numeric" maxlength="4" value="${esc(PIN)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
@@ -149,13 +154,19 @@ function spieler(){
         <div class="opts">${Z.ord.map(i=>`<button class="opt" data-antwort="${i}">${esc(q.o[i])}</button>`).join("")}</div></div>`; }
     else if(binDran && Z.phase==="kaufen"){ h+=`<div class="card" style="text-align:center;border:3px solid ${T.farbe}"><div style="font-size:50px">${f.icon}</div><h2>${esc(f.name)} kaufen?</h2><p>Preis: <b>${f.preis} €</b> · Miete: ${f.miete} €</p>
         <div class="row" style="justify-content:center"><button class="btn" id="kaufen" ${T.geld>=f.preis?"":"disabled"}>✓ Kaufen</button><button class="btn ghost" id="nicht">Nein, danke</button></div>${T.geld<f.preis?`<p class="small" style="color:var(--bad)">Ihr habt nicht genug Geld.</p>`:""}</div>`; }
-    else h+=`<div class="card" style="text-align:center"><div style="font-size:44px">${binDran?"🎲":"👀"}</div><h3>${binDran?"Ihr seid dran!":`Team ${esc(ZT.name||"")} ist dran`}</h3><p class="muted" style="margin:0">${esc(Z.text||"Schaut auf die Leinwand.")}</p></div>`;
+    else if(binDran && Z.phase==="sprechen") h+=`<div class="card" style="border:3px solid ${T.farbe}"><div style="font-size:44px;text-align:center">🗣️</div><h2>${esc(Z.aufgabe)}</h2>${Z.hilfe?`<p style="font-size:18px;background:#FFF7E0;border-radius:10px;padding:8px 12px">💬 ${esc(Z.hilfe)}</p>`:""}<p class="muted" style="margin:0">Sprecht laut! Die Lehrkraft gibt euch Geld.</p></div>`;
+    else if(!binDran && Z.phase==="frage"){ const q=f.fragen[Z.frage]; const key=`${S.runde}|${Z.team}|${Z.nach}|${Z.frage}`; const g=lokal[key];
+      h+=`<div class="card" style="border:3px dashed var(--line)"><div class="small muted">👀 Team ${esc(ZT.name||"")} antwortet – <b>rate mit!</b> (zählt nicht)</div><h2 style="margin-top:6px">${esc(q.f)}</h2>
+        <div class="opts">${Z.ord.map(i=>`<button class="opt ${g===i?(i===0?"ok":"falsch"):""}" data-rate="${i}" ${g!==undefined?"disabled":""}>${esc(q.o[i])}</button>`).join("")}</div>${g!==undefined?`<p class="muted" style="margin:8px 0 0">${g===0?"✅ Richtig geraten!":`❌ Richtig ist: „${esc(q.o[0])}“`}</p>`:""}</div>`; }
+    else if(binDran) h+=`<div class="card" style="text-align:center"><div style="font-size:44px">🎲</div><h3>Ihr seid dran!</h3><p class="muted" style="margin:0">${esc(Z.text||"Schaut auf die Leinwand.")}</p></div>`;
+    else h+=`<div class="warte"><div class="e">⏳</div><h3>Warte auf Team ${esc(ZT.name||"")}</h3><p class="muted" style="margin:0">${esc(Z.text||"Schaut auf die Leinwand.")}</p></div>`;
     const meins=Object.entries(S.besitz||{}).filter(([,o])=>o===t).map(([i])=>F[i]);
     h+=`<div class="card"><h3>🏠 Euer Besitz</h3>${meins.length?`<div class="besitz">${meins.map(x=>`<span style="background:${D.farben[x.farbe]}">${x.icon} ${esc(x.name)}</span>`).join("")}</div>`:`<p class="muted" style="margin:0">Noch nichts. Kauft Orte in Plön!</p>`}
       <p class="small muted" style="margin:10px 0 0">Gehört eine ganze Farbe euch, bekommt ihr doppelte Miete. Ihr könnt auch mit anderen Teams handeln – sprecht mit ihnen und sagt es der Lehrkraft.</p></div>
       <div class="card"><h3>💰 Alle Teams</h3>${teams(S).map(x=>`<div class="row" style="justify-content:space-between;padding:4px 0"><span>${S.teams[x].emoji} ${esc(S.teams[x].name)}</span><b>${S.teams[x].geld} €</b></div>`).join("")}</div>`;
     app.innerHTML=h+`</div>`;
     $$("[data-antwort]").forEach(b=>b.onclick=()=>antworten(S,+b.dataset.antwort));
+    $$("[data-rate]").forEach(b=>b.onclick=()=>{ lokal[`${S.runde}|${Z.team}|${Z.nach}|${Z.frage}`]=+b.dataset.rate; male(); });
     const k=$("#kaufen"); if(k) k.onclick=()=>kaufen(S,true); const n=$("#nicht"); if(n) n.onclick=()=>kaufen(S,false);
   }
   if(!db){ app.innerHTML="Keine Verbindung."; return; }
@@ -163,7 +174,7 @@ function spieler(){
 }
 /* gemeinsam: Antwort und Kauf (Handy oder Leinwand) */
 function antworten(S,i){ O("zug").transaction(z=>{ if(!z||z.phase!=="frage") return; z.antwort=i; const ok=i===0; const T=S.teams[z.team], f=F[z.nach];
-  if(ok){ z.phase="kaufen"; z.text=`Richtig! ${T.name} darf ${f.name} kaufen.`; } else { z.phase="fertig"; z.text=`Leider falsch. ${T.name} darf ${f.name} jetzt nicht kaufen.`; } return z; }); }
+  if(ok){ z.phase="kaufen"; z.text=`Richtig! ${T.name} darf ${f.name} kaufen.`; } else { z.phase="fertig"; z.text=`Leider falsch. Richtig ist: „${f.fragen[z.frage].o[0]}“. ${T.name} darf ${f.name} jetzt nicht kaufen.`; } return z; }); }
 function kaufen(S,ja){ const Z=S.zug; if(!Z||Z.phase!=="kaufen") return; const f=F[Z.nach], T=S.teams[Z.team];
   if(ja && T.geld>=f.preis && !(S.besitz||{})[Z.nach]){ O().update({[`teams/${Z.team}/geld`]:T.geld-f.preis, [`besitz/${Z.nach}`]:Z.team, "zug/phase":"fertig", "zug/text":`${T.name} hat ${f.name} gekauft! 🎉`});
     O("ticker").push({text:`${T.emoji} ${T.name} kauft ${f.icon} ${f.name} für ${f.preis} €`, ts:TS()}); }
@@ -215,9 +226,9 @@ function leitung(){
     const kopf=`<div class="gross">${T.emoji} Team ${esc(T.name)} ist dran</div>`;
     if(Z.phase==="wuerfeln") return `${kopf}<div class="wuerfel" id="wuerfel">🎲</div><button class="btn gold" id="wuerfeln" style="min-height:64px;font-size:24px;padding:10px 40px">🎲 Würfeln</button>`;
     let h=`${kopf}<div class="row" style="justify-content:center"><span class="wuerfel" style="font-size:clamp(40px,5vw,70px)">${WUERFEL[Z.wurf]||""}</span><span class="gross">→ ${f.icon} ${esc(f.name)}</span></div>`;
-    if(Z.phase==="frage"){ const q=f.fragen[Z.frage]; h+=`<div class="gross" style="color:var(--gold)">${esc(q.f)}</div><div class="mopts">${Z.ord.map((i,k)=>`<div data-lw-antwort="${i}" style="cursor:pointer">${"ABC"[k]} · ${esc(q.o[i])}</div>`).join("")}</div><div class="small" style="opacity:.75">Team ${esc(T.name)} antwortet am Handy (oder du tippst hier).</div>`; }
+    if(Z.phase==="frage"){ const q=f.fragen[Z.frage]; h+=`<div class="gross" style="color:var(--gold)">${esc(q.f)}</div><div class="mopts">${Z.ord.map((i,k)=>`<div data-lw-antwort="${i}" style="cursor:pointer">${"ABCD"[k]} · ${esc(q.o[i])}</div>`).join("")}</div><div class="small" style="opacity:.75">Team ${esc(T.name)} antwortet am Handy (oder du tippst hier). Alle anderen raten am Handy mit.</div>`; }
     else if(Z.phase==="kaufen") h+=`<div class="gross">✓ Richtig! Kauft ihr ${esc(f.name)} für ${f.preis} €?</div><div class="row"><button class="btn gold" id="lw-kaufen">Kaufen</button><button class="btn hell" id="lw-nicht">Nein</button></div>`;
-    else if(Z.phase==="sprechen") h+=`<div class="gross" style="color:var(--gold)">🗣️ ${esc(Z.aufgabe)}</div><div class="row"><button class="btn hell" data-sp="0">0 €</button><button class="btn" data-sp="50">+50 €</button><button class="btn gold" data-sp="100">+100 €</button></div>`;
+    else if(Z.phase==="sprechen") h+=`<div class="gross" style="color:var(--gold)">🗣️ ${esc(Z.aufgabe)}</div>${Z.hilfe?`<div class="gross" style="font-size:clamp(18px,2vw,28px);opacity:.85">💬 ${esc(Z.hilfe)}</div>`:""}<div class="row"><button class="btn hell" data-sp="0">0 €</button><button class="btn" data-sp="50">+50 €</button><button class="btn gold" data-sp="100">+100 €</button></div>`;
     else h+=`<div class="gross">${esc(Z.text||"")}</div>${Z.karte?`<div style="font-size:60px">${Z.karte}</div>`:""}`;
     if(Z.phase==="fertig") h+=`<button class="btn acc" id="weiter" style="min-height:56px;font-size:20px">▶ Nächstes Team</button>`;
     return h; }
@@ -247,7 +258,7 @@ function leitung(){
     if(von+w>=N){ geld+=D.ueberStart; tick.push(`${T.emoji} ${T.name} geht über Start: +${D.ueberStart} €`); }
     const up={}; const z={team:t, wurf:w, von, nach, phase:"fertig", text:""}; const f=F[nach]; const own=(S.besitz||{})[nach];
     if(f.typ==="ort"||f.typ==="bahn"){
-      if(own===undefined||own===null){ z.phase="frage"; z.frage=zufall(f.fragen.length); z.ord=mische([0,1,2]); }
+      if(own===undefined||own===null){ z.phase="frage"; z.frage=zufall(f.fragen.length); z.ord=mische(f.fragen[z.frage].o.map((_,i)=>i)); }
       else if(own===t){ z.text=`${f.name} gehört euch schon. 😎`; }
       else { const m=miete(S,nach); const zahlt=Math.min(m, Math.max(0,geld)); geld-=m; up[`teams/${own}/geld`]=(S.teams[own].geld||0)+m; z.text=`${f.name} gehört Team ${S.teams[own].name}. Miete: ${m} €.`; tick.push(`${T.emoji} ${T.name} zahlt ${m} € Miete an ${S.teams[own].emoji} ${S.teams[own].name}`); }
     } else if(f.typ==="ereignis"){ const k=D.ereignisse[zufall(D.ereignisse.length)]; z.karte=k.icon; z.text=k.text;
@@ -255,7 +266,7 @@ function leitung(){
       if(k.geschenkVonAllen){ teams(S).filter(x=>x!==t).forEach(x=>{ up[`teams/${x}/geld`]=(S.teams[x].geld||0)-k.geschenkVonAllen; geld+=k.geschenkVonAllen; }); }
       if(k.gehe!==undefined){ if(k.gehe<nach){ geld+=D.ueberStart; } z.nach=k.gehe; if(k.gehe===0) geld+=0; }
       tick.push(`${k.icon} ${T.emoji} ${T.name}: ${k.text}`);
-    } else if(f.typ==="sprechen"){ z.phase="sprechen"; z.aufgabe=D.sprechen[zufall(D.sprechen.length)]; }
+    } else if(f.typ==="sprechen"){ z.phase="sprechen"; const sp=D.sprechen[zufall(D.sprechen.length)]; z.aufgabe=sp.t||sp; z.hilfe=sp.h||""; }
     else if(f.typ==="polizei"){ geld-=D.polizei; z.text=f.text; tick.push(`🚓 ${T.emoji} ${T.name} zahlt ${D.polizei} € Strafe`); }
     else z.text=f.text||"";
     up[`teams/${t}/geld`]=geld; up[`teams/${t}/pos`]=z.nach; up.zug=z;
