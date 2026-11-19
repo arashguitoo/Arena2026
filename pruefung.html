@@ -160,8 +160,8 @@ function lernende(){
       app.innerHTML=kopf()+`<div class="wrap"><div class="card mitte"><div style="font-size:60px">✅</div><h2>Abgegeben. Danke!</h2><p>Deine Antworten sind gespeichert.<br>Bleib bitte ruhig sitzen, bis alle fertig sind.</p></div></div>`; return; }
     if(info.phase==="hoeren"){ const L=hoerItems(H); const n=L.filter((_,i)=>A["h-"+(i+1)]!==undefined).length;
       app.innerHTML=kopf(`<span class="small">${n}/${L.length}</span>`)+`<div class="wrap"><h2>Teil 1: Hören</h2><div class="info">${esc(H.info||"Die Lehrkraft spielt die Texte ab. Hör gut zu und tippe die richtige Antwort.")}</div>
-        ${L.map((it,i)=>{ const id="h-"+(i+1); const o=it.o||["a","b","c"]; const v=A[id]; return `<div class="aufg"><div class="nr">Aufgabe ${i+1}</div>${it.f?`<div class="f">${esc(it.f)}</div>`:""}
-          <div class="${o.every(x=>x.length<=2)?"buchst":"opts"}">${o.map((x,k)=>`<button class="${o.every(x=>x.length<=2)?"":"opt"} ${v===k?"an":""}" data-a="${id}" data-v="${k}">${esc(x)}</button>`).join("")}</div></div>`; }).join("")||'<div class="card">Noch keine Aufgaben.</div>'}
+        ${L.map((it,i)=>{ const id="h-"+(i+1); const o=it.o||["a","b","c"]; const v=A[id]; const kurz=o.every(x=>x.length<=2)||o.join()==="richtig,falsch"; const ord=kurz?o.map((_,k)=>k):mischS(o.map((_,k)=>k), id+"|"+me.pid); return `<div class="aufg"><div class="nr">Aufgabe ${i+1}</div>${it.f?`<div class="f">${esc(it.f)}</div>`:""}
+          <div class="${o.every(x=>x.length<=2)?"buchst":"opts"}">${ord.map(k=>`<button class="${o.every(x=>x.length<=2)?"":"opt"} ${v===k?"an":""}" data-a="${id}" data-v="${k}">${esc(o[k])}</button>`).join("")}</div></div>`; }).join("")||'<div class="card">Noch keine Aufgaben.</div>'}
         ${warte("die Lehrkraft","Nach dem Hören startet die Lehrkraft den nächsten Teil.")}</div>`;
       $$("[data-a]").forEach(b=>b.onclick=()=>speichere(b.dataset.a, Number(b.dataset.v))); window.scrollTo(0,sy); return; }
     /* Hauptteil */
@@ -223,8 +223,8 @@ function leitung(){
     oeffnen(c); }
   function vorlageDaten(){ const V=Object.values(window.HOER_VORLAGEN||{})[0];
     if(!V) return {hoeren:{info:"Die Lehrkraft spielt die Texte ab. Du hörst jeden Text zweimal. Tippe die richtige Antwort.", items:Array.from({length:8},()=>({f:"", o:["a","b","c"]}))}, hkey:{}, htrack:{}};
-    const ht={}; V.items.forEach((it,i)=>ht[i]=[it.t,it.q].filter(Boolean).join(" · "));
-    return {hoeren:{info:V.info, items:V.items.map(it=>({f:it.f, o:it.o.slice()}))}, hkey:{}, htrack:ht}; }
+    const ht={}, hk={}; V.items.forEach((it,i)=>{ ht[i]=[it.t,it.q].filter(Boolean).join(" · "); if(it.k!==undefined) hk[i]=it.k; });
+    return {hoeren:{info:V.info, items:V.items.map(it=>({f:it.f, o:it.o.slice()}))}, hkey:hk, htrack:ht}; }
   function ladeLoesung(test){ return new Promise(res=>{ if((window.PRUEFUNG_LOESUNGEN||{})[test]) return res(); const s=document.createElement("script"); s.src=`pruefung/${test}-loesung.js?v=${Date.now()}`; s.onload=res; s.onerror=res; document.head.appendChild(s); }); }
   async function oeffnen(c){ CODE=c; history.replaceState(null,"","?leitung=1&code="+c);
     R().on("value", async s=>{ S=s.val()||{}; if(S.info && !K){ await ladeLoesung(S.info.test); K=(window.PRUEFUNG_LOESUNGEN||{})[S.info.test]||{}; } male(); });
@@ -342,7 +342,7 @@ function leitung(){
       on("#hplus", ()=>{ E.items.push({f:"",o:["a","b","c"],t:""}); male(); });
       $$("[data-ht]").forEach(x=>x.oninput=()=>E.items[Number(x.dataset.ht)].t=x.value);
       $$("[data-vorlage]").forEach(b=>b.onclick=()=>{ if(!confirm("Alle Hör-Aufgaben durch die Vorlage ersetzen?")) return; const V=Object.values(window.HOER_VORLAGEN||{})[Number(b.dataset.vorlage)];
-        entwurf={info:V.info, items:V.items.map(it=>({f:it.f, o:it.o.slice(), k:undefined, t:[it.t,it.q].filter(Boolean).join(" · ")}))}; male(); }); on("#hminus", ()=>{ if(E.items.length>1){ E.items.pop(); male(); } });
+        entwurf={info:V.info, items:V.items.map(it=>({f:it.f, o:it.o.slice(), k:it.k, t:[it.t,it.q].filter(Boolean).join(" · ")}))}; male(); }); on("#hminus", ()=>{ if(E.items.length>1){ E.items.pop(); male(); } });
       on("#hverwerfen", ()=>{ entwurf=null; male(); });
       on("#hspeichern", ()=>{ const hk={}; E.items.forEach((it,i)=>{ if(it.k!==undefined) hk[i]=it.k; });
         const ht={}; E.items.forEach((it,i)=>{ if(it.t) ht[i]=it.t; });
