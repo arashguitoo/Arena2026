@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Prüfung</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#F4F1EA; --card:#fff; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3; --nacht:#1E2A44; --pri:#2F6FDB; --pri-2:#E3EDFF; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6; --gold:#F5B82E;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06); }
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit} input,select,textarea{color:#1E2A44;background:#fff}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px} .muted{color:var(--muted)} .small{font-size:14px} .mitte{text-align:center}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 90px} .breit{max-width:1400px;margin:0 auto;padding:14px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--schatten);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer;text-decoration:none}
+.btn.sm{min-height:34px;padding:4px 12px;font-size:15px;border-radius:10px} .btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.ok{background:var(--ok)} .btn.rot{background:var(--bad)} .btn.gold{background:var(--gold);color:var(--ink)} .btn.hell{background:rgba(255,255,255,.15);color:#fff}
+.btn.wide{width:100%} .btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.err{color:var(--bad);font-weight:700;min-height:22px;margin-top:8px}
+.codein{width:100%;font-family:var(--head);font-size:34px;letter-spacing:.25em;text-align:center;min-height:60px;border:2px solid var(--line);border-radius:12px;text-transform:uppercase}
+.namen{display:flex;flex-wrap:wrap;gap:8px} .namen button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;font-weight:700;cursor:pointer}
+.namen button:disabled{opacity:.35;text-decoration:line-through}
+.kopf{position:sticky;top:0;z-index:10;background:var(--nacht);color:#fff}
+.kopf .in{max-width:720px;margin:0 auto;padding:8px 12px;display:flex;gap:10px;align-items:center;min-height:56px}
+.kopf b{font-family:var(--head);font-size:18px} .kopf .r{margin-left:auto}
+.uhr{font-family:var(--head);font-weight:900;font-size:26px;background:var(--gold);color:var(--ink);border-radius:12px;padding:2px 12px;font-variant-numeric:tabular-nums}
+.uhr.knapp{background:var(--bad);color:#fff}
+.reiter{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;max-width:720px;margin:0 auto;scrollbar-width:none}
+.reiter button{flex:none;border:2px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap}
+.reiter button.an{border-color:var(--pri);background:var(--pri-2);color:var(--pri)} .reiter button.voll{border-color:var(--ok)}
+.info{background:var(--pri-2);border-radius:14px;padding:10px 14px;margin-bottom:12px}
+.text{background:#FFFDF6;border:2px solid #EFE6CC;border-radius:14px;padding:14px;font-size:17px;line-height:1.6;margin-bottom:12px}
+.aufg{background:#fff;border-radius:16px;padding:14px;box-shadow:var(--schatten);margin-bottom:10px}
+.aufg .nr{font-weight:800;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.aufg .f{font-weight:700;font-size:18px;margin:4px 0 10px}
+.opts{display:grid;gap:8px} .opt{border:3px solid var(--line);background:#fff;border-radius:12px;min-height:50px;padding:8px 12px;text-align:left;cursor:pointer;font-weight:600;font-size:17px}
+.opt.an{border-color:var(--pri);background:var(--pri-2)}
+.zwei{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.buchst{display:flex;gap:6px;flex-wrap:wrap} .buchst button{width:52px;height:52px;border-radius:12px;border:3px solid var(--line);background:#fff;font-family:var(--head);font-weight:900;font-size:22px;cursor:pointer}
+.buchst button.an{border-color:var(--pri);background:var(--pri);color:#fff}
+.anz{display:grid;gap:8px;margin-bottom:12px} .anz div{background:#FFFDF6;border:2px solid #EFE6CC;border-radius:12px;padding:10px 12px} .anz b{font-family:var(--head);font-size:20px;margin-right:6px}
+.linie{min-height:56px;border:3px dashed var(--line);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+.kachel{min-height:44px;padding:6px 12px;border-radius:10px;border:0;background:var(--pri);color:#fff;font-weight:700;font-size:18px;cursor:pointer} .kachel.weg{visibility:hidden}
+.pool{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.fuss{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:10px 12px;z-index:10}
+.fuss .in{max-width:720px;margin:0 auto;display:flex;gap:8px}
+.warte{background:#EEF2FF;border:3px dashed #93A8E8;border-radius:20px;padding:24px 16px;text-align:center;margin:10px 0}
+.warte .e{font-size:58px;display:inline-block;animation:sanduhr 2.4s ease-in-out infinite}
+@keyframes sanduhr{0%,40%{transform:rotate(0)}50%,90%{transform:rotate(180deg)}100%{transform:rotate(360deg)}}
+/* Lehrkraft */
+body.lk{background:#ECE8DF}
+.lkopf{background:var(--nacht);color:#fff;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.lkopf h1{margin:0;font-size:22px} .code{font-family:var(--head);font-weight:900;letter-spacing:.15em;background:var(--gold);color:var(--ink);border-radius:12px;padding:2px 14px;font-size:26px}
+.tabs{display:flex;gap:6px;margin:0 0 12px} .tabs button{border:0;border-radius:12px;padding:8px 16px;font-weight:800;cursor:pointer;background:#fff} .tabs button.an{background:var(--pri);color:#fff}
+table.t{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;font-size:15px}
+table.t th,table.t td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} table.t th{background:var(--soft);font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+table.t tr.klick{cursor:pointer} table.t tr.klick:hover{background:var(--soft)}
+.ja{color:var(--ok);font-weight:800} .nein{color:var(--bad);font-weight:800}
+.balken{height:12px;border-radius:6px;background:var(--line);overflow:hidden;min-width:80px} .balken i{display:block;height:100%;background:var(--ok)}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-weight:800;font-size:13px}
+.p-ok{background:var(--ok-2);color:var(--ok)} .p-bad{background:var(--bad-2);color:var(--bad)} .p-mid{background:#FFF4D6;color:#9A6B00}
+.punkte button{min-width:40px;min-height:36px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:800;cursor:pointer;margin:2px}
+.punkte button.an{background:var(--pri);color:#fff;border-color:var(--pri)}
+.raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+@media print{ .lkopf,.tabs,.noprint{display:none!important} body{background:#fff} .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid} }
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><div class="card">Einen Moment …</div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="pruefung/a2-l8-12.js"></script>
+<script>
+/* =========================================================
+   PRÜFUNG (Klick-Test mit Code)
+   Lernende:  pruefung.html  → Code eingeben → Namen wählen
+   Lehrkraft: pruefung.html?leitung=1  (Anmeldung wie auf der Lehrer-Seite)
+   Ablauf: warten → hoeren (Lehrkraft spielt die Texte ab) → haupt (60 Min., Uhr läuft automatisch) → ende
+   Daten: ligapruefung/ploen-jik/{CODE}/ info · hoeren · hkey · tn/{pid} · antw/{pid}/{aufgabe} · muendlich/{pid}
+   Lösungen stehen nur in pruefung/<test>-loesung.js und werden nur auf der Lehrkraft-Seite geladen.
+   ========================================================= */
+const KURS="ploen-jik", ROOT=`ligapruefung/${KURS}`;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash"};
+let db=null, auth=null, offset=0; try{ if(!firebase.apps||!firebase.apps.length) firebase.initializeApp(cfg); db=firebase.database(); try{ auth=firebase.auth(); }catch(e){} db.ref(".info/serverTimeOffset").on("value",s=>offset=Number(s.val())||0); }catch(e){}
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const jetzt=()=>Date.now()+offset; const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+const P=new URLSearchParams(location.search); const app=$("#app");
+let CODE=(P.get("code")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const R=p=>db.ref(`${ROOT}/${CODE}${p?"/"+p:""}`);
+function hash(s){ let h=2166136261; for(const c of String(s)){ h^=c.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
+function mischS(a,key){ let x=hash(key)||1; const r=()=>{ x^=x<<13; x^=x>>>17; x^=x<<5; return (x>>>0)/4294967296; }; a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const norm=s=>String(s||"").toLowerCase().replace(/[.,!?;:"„“]/g,"").replace(/\s+/g," ").trim();
+const mmss=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+const TEST=id=>(window.PRUEFUNGEN||{})[id];
+function restSek(info){ if(!info||!info.start) return null; const ende=Number(info.start)+((Number(info.dauer)||60)+(Number(info.extra)||0))*60000; return Math.max(0,Math.ceil((ende-jetzt())/1000)); }
+const BUCH="abcdefgh";
+function hoerItems(H){ return Object.values((H&&H.items)||{}); }
+/* Antworttext für Anzeige */
+function antwortText(it, v){ if(v===undefined||v===null||v==="") return "–";
+  if(it.typ==="mc"||it.typ==="rf"||it.typ==="hoeren") return it.o[v]!==undefined?it.o[v]:"–";
+  if(it.typ==="zu") return String(v);
+  if(it.typ==="satz"){ const ix=String(v).split(",").filter(x=>x!=="").map(Number); return ix.map(i=>it.w[i]).join(" ")+(ix.length===it.w.length?(it.p||""):" …"); }
+  return String(v); }
+
+/* =========================================================
+   LERNENDE
+   ========================================================= */
+function lernende(){
+  let me=null, info={}, H={}, A={}, ich={}, teilNr=0, satzLokal={};
+  const MEKEY=()=>`pr_me_${CODE}`;
+  function codeScreen(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh;text-align:center"><div style="font-size:56px">📝</div><h2>Prüfung</h2><p class="muted">Gib den Code ein. Du bekommst ihn von der Lehrkraft.</p>
+    <form id="cf"><input id="code" class="codein" maxlength="6" autocomplete="off" value="${esc(CODE)}"><button class="btn wide" style="margin-top:10px">Weiter</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#cf").onsubmit=e=>{ e.preventDefault(); CODE=$("#code").value.toUpperCase().replace(/[^A-Z0-9]/g,""); pruefe(); }; }
+  async function pruefe(){ if(CODE.length<4) return codeScreen(CODE?"Der Code ist zu kurz.":"");
+    let i=null; try{ i=(await R("info").once("value")).val(); }catch(e){}
+    if(!i) return codeScreen("Diesen Code gibt es nicht. Frag die Lehrkraft.");
+    history.replaceState(null,"","?code="+CODE);
+    try{ me=JSON.parse(localStorage.getItem(MEKEY())||"null"); }catch(e){}
+    if(me) return los(); namenWahl(); }
+  async function namenWahl(hinweis){
+    let namen={}, tn={}; try{ namen=(await db.ref(`jugendliga/${KURS}/public/names`).once("value")).val()||{}; tn=(await R("tn").once("value")).val()||{}; }catch(e){}
+    const ids=Object.keys(namen).sort((a,b)=>String(namen[a]).localeCompare(namen[b]));
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:4vh"><h2>Wer bist du?</h2><p class="muted">Tippe auf deinen Namen.</p>${hinweis?`<p class="err">${esc(hinweis)}</p>`:""}
+      <div class="namen">${ids.map(p=>{ const weg=tn[p]&&tn[p].online!==false; return `<button data-p="${p}" ${weg?"disabled":""}>${esc(namen[p])}</button>`; }).join("")}</div>
+      <p class="small muted" style="margin-top:12px">Durchgestrichen = schon angemeldet. Dein Name fehlt? Sag es der Lehrkraft.</p></div></div>`;
+    $$("[data-p]").forEach(b=>b.onclick=async()=>{ const p=b.dataset.p; const x=(await R(`tn/${p}`).once("value")).val(); if(x&&x.online!==false) return namenWahl("Dieser Name ist schon angemeldet.");
+      me={pid:p, name:namen[p]}; try{ localStorage.setItem(MEKEY(), JSON.stringify(me)); }catch(e){} los(); }); }
+  function los(){ const r=R(`tn/${me.pid}`); r.update({name:me.name, ts:TS(), online:true, raus:null}); try{ r.child("online").onDisconnect().set(false); }catch(e){}
+    document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"){ r.update({online:true}); try{ r.child("online").onDisconnect().set(false); }catch(e){} } });
+    try{ if(navigator.wakeLock) navigator.wakeLock.request("screen").catch(()=>{}); }catch(e){}
+    let gesehen=false;
+    R("info").on("value",s=>{ info=s.val()||{}; male(); });
+    R("hoeren").on("value",s=>{ H=s.val()||{}; male(); });
+    R(`antw/${me.pid}`).on("value",s=>{ A=s.val()||{}; male(); });
+    R(`tn/${me.pid}`).on("value",s=>{ const v=s.val(); if(v&&!v.raus) gesehen=true; else if(gesehen||(v&&v.raus)){ R().off(); try{ localStorage.removeItem(MEKEY()); }catch(e){} me=null; return namenWahl("Die Lehrkraft hat dich abgemeldet. Tippe noch einmal auf deinen Namen."); } ich=v||{}; male(); });
+    setInterval(tick,1000); }
+  function speichere(id, v){ if(gesperrt()) return; R(`antw/${me.pid}/${id}`).set(v); }
+  function gesperrt(){ return ich.abgegeben || info.phase==="ende" || (info.phase==="haupt" && restSek(info)===0); }
+  function tick(){ if(info.phase!=="haupt") return; const r=restSek(info); const u=$("#uhr"); if(u){ u.textContent=mmss(r); u.classList.toggle("knapp", r<300); }
+    if(r===0 && !ich.abgegeben && me){ R(`tn/${me.pid}`).update({abgegeben:true, abgabe:TS(), auto:true}); } }
+  const T=()=>TEST(info.test);
+  function kopf(rechts){ return `<div class="kopf"><div class="in"><b>📝 ${esc(me.name)}</b><span class="r">${rechts||""}</span></div></div>`; }
+  function warte(wer, text){ return `<div class="warte"><div class="e">⏳</div><h2>Warte auf ${wer}</h2>${text?`<p>${text}</p>`:""}</div>`; }
+  function male(){
+    if(!me) return; const ae=document.activeElement; const sy=window.scrollY;
+    if(!info.phase){ app.innerHTML=`<div class="wrap"><div class="card">Diese Prüfung gibt es nicht mehr.</div></div>`; return; }
+    if(info.phase==="warten"){ app.innerHTML=kopf()+`<div class="wrap"><div class="card mitte"><div style="font-size:52px">👋</div><h2>Hallo ${esc(me.name)}!</h2><p>Gleich beginnt die Prüfung.</p></div>${warte("die Lehrkraft","Lass dein Handy an und leg es vor dich.")}
+      <div class="card"><b>So geht die Prüfung:</b><ol style="margin:6px 0 0;padding-left:20px"><li>Hören: Die Lehrkraft spielt die Texte ab.</li><li>Danach hast du <b>60 Minuten</b> für Lesen, Grammatik, Sprachbausteine und Satzbau.</li><li>Du tippst nur – du musst nichts schreiben.</li><li>Am Ende tippst du <b>„Abgeben“</b>.</li></ol></div></div>`; return; }
+    if(ich.abgegeben || info.phase==="ende" || (info.phase==="haupt" && restSek(info)===0)){
+      app.innerHTML=kopf()+`<div class="wrap"><div class="card mitte"><div style="font-size:60px">✅</div><h2>Abgegeben. Danke!</h2><p>Deine Antworten sind gespeichert.<br>Bleib bitte ruhig sitzen, bis alle fertig sind.</p></div></div>`; return; }
+    if(info.phase==="hoeren"){ const L=hoerItems(H); const n=L.filter((_,i)=>A["h-"+(i+1)]!==undefined).length;
+      app.innerHTML=kopf(`<span class="small">${n}/${L.length}</span>`)+`<div class="wrap"><h2>Teil 1: Hören</h2><div class="info">${esc(H.info||"Die Lehrkraft spielt die Texte ab. Hör gut zu und tippe die richtige Antwort.")}</div>
+        ${L.map((it,i)=>{ const id="h-"+(i+1); const o=it.o||["a","b","c"]; const v=A[id]; return `<div class="aufg"><div class="nr">Aufgabe ${i+1}</div>${it.f?`<div class="f">${esc(it.f)}</div>`:""}
+          <div class="${o.every(x=>x.length<=2)?"buchst":"opts"}">${o.map((x,k)=>`<button class="${o.every(x=>x.length<=2)?"":"opt"} ${v===k?"an":""}" data-a="${id}" data-v="${k}">${esc(x)}</button>`).join("")}</div></div>`; }).join("")||'<div class="card">Noch keine Aufgaben.</div>'}
+        ${warte("die Lehrkraft","Nach dem Hören startet die Lehrkraft den nächsten Teil.")}</div>`;
+      $$("[data-a]").forEach(b=>b.onclick=()=>speichere(b.dataset.a, Number(b.dataset.v))); window.scrollTo(0,sy); return; }
+    /* Hauptteil */
+    const TT=T(); if(!TT){ app.innerHTML=`<div class="wrap"><div class="card">Test nicht gefunden.</div></div>`; return; }
+    const teile=TT.teile; teilNr=Math.min(teilNr, teile.length); const r=restSek(info);
+    const fertigIn=t=>t.items.filter(it=>{ const v=A[it.id]; return it.typ==="satz"?(v&&String(v).split(",").filter(x=>x!=="").length===it.w.length):v!==undefined; }).length;
+    let h=kopf(`<span id="uhr" class="uhr ${r<300?"knapp":""}">${mmss(r)}</span>`)+`<div style="background:#fff;border-bottom:1px solid var(--line)"><div class="reiter">${teile.map((t,i)=>`<button data-teil="${i}" class="${i===teilNr?"an":""} ${fertigIn(t)===t.items.length?"voll":""}">${esc(t.titel.split(":")[0])} ${fertigIn(t)}/${t.items.length}</button>`).join("")}<button data-teil="${teile.length}" class="${teilNr===teile.length?"an":""}">✅ Abgeben</button></div></div><div class="wrap">`;
+    if(teilNr===teile.length){ const offen=teile.reduce((a,t)=>a+t.items.length-fertigIn(t),0);
+      h+=`<h2>Übersicht</h2>${teile.map((t,i)=>`<div class="aufg row" style="justify-content:space-between"><b>${esc(t.titel)}</b><span>${fertigIn(t)} von ${t.items.length} ${fertigIn(t)===t.items.length?"✅":`<button class="btn sm ghost" data-teil="${i}">ansehen</button>`}</span></div>`).join("")}
+        <div class="card mitte">${offen?`<p><b>${offen} Aufgaben</b> hast du noch nicht beantwortet.</p>`:`<p>Du hast alles beantwortet. 👍</p>`}<button class="btn ok wide" id="abgeben" style="min-height:58px;font-size:20px">✅ Jetzt abgeben</button><p class="small muted">Danach kannst du nichts mehr ändern.</p></div></div>`;
+      app.innerHTML=h; binde(); $("#abgeben").onclick=()=>{ if(!confirm(offen?`Noch ${offen} Aufgaben offen. Wirklich abgeben?`:"Wirklich abgeben?")) return; R(`tn/${me.pid}`).update({abgegeben:true, abgabe:TS()}); }; return; }
+    const t=teile[teilNr];
+    h+=`<h2>${esc(t.titel)}</h2><div class="info">${esc(t.info)}</div>`;
+    if(t.anzeigen) h+=`<div class="anz">${Object.entries(t.anzeigen).map(([k,x])=>`<div><b>${k}</b>${esc(x)}</div>`).join("")}</div>`;
+    if(t.text) h+=`<div class="text">${t.text}</div>`;
+    h+=t.items.map((it,i)=>aufgabe(it,i,t)).join("");
+    h+=`</div><div class="fuss"><div class="in">${teilNr>0?`<button class="btn ghost" data-teil="${teilNr-1}">◀</button>`:""}<button class="btn wide" data-teil="${teilNr+1}">${teilNr+1<teile.length?`Weiter: ${esc(teile[teilNr+1].titel.split(":")[0])} ▶`:"Weiter: Übersicht & Abgeben ▶"}</button></div></div>`;
+    app.innerHTML=h; binde(); window.scrollTo(0,sy);
+  }
+  function aufgabe(it,i,t){ const v=A[it.id]; let h=`<div class="aufg"><div class="nr">Aufgabe ${i+1}</div>`;
+    if(it.text) h+=`<div class="text" style="margin-bottom:8px">${it.text}</div>`;
+    if(it.typ==="mc"){ const ord=mischS(it.o.map((_,k)=>k), it.id+"|"+me.pid); h+=`<div class="f">${esc(it.f)}</div><div class="opts">${ord.map(k=>`<button class="opt ${v===k?"an":""}" data-a="${it.id}" data-v="${k}">${esc(it.o[k])}</button>`).join("")}</div>`; }
+    if(it.typ==="rf") h+=`<div class="f">${esc(it.f)}</div><div class="zwei">${it.o.map((x,k)=>`<button class="opt ${v===k?"an":""}" data-a="${it.id}" data-v="${k}" style="text-align:center">${k===0?"✓ richtig":"✗ falsch"}</button>`).join("")}</div>`;
+    if(it.typ==="zu") h+=`<div class="f">${esc(it.f)}</div><div class="buchst">${Object.keys(t.anzeigen).map(k=>`<button class="${v===k?"an":""}" data-a="${it.id}" data-s="${k}">${k}</button>`).join("")}</div>`;
+    if(it.typ==="satz"){ const ix=v!==undefined&&v!==""?String(v).split(",").filter(x=>x!=="").map(Number):[]; const pool=mischS(it.w.map((_,k)=>k), it.id+"|"+me.pid);
+      h+=`<div class="linie">${ix.map((k,n)=>`<button class="kachel" data-raus="${it.id}" data-n="${n}">${esc(it.w[k])}</button>`).join("")}<b style="font-size:22px">${ix.length===it.w.length?esc(it.p||""):""}</b></div>
+        <div class="pool">${pool.map(k=>`<button class="kachel ${ix.includes(k)?"weg":""}" data-rein="${it.id}" data-k="${k}">${esc(it.w[k])}</button>`).join("")}</div>${ix.length?`<button class="btn sm ghost" data-leer="${it.id}">↺ neu</button>`:""}`; }
+    return h+`</div>`; }
+  function binde(){
+    $$("[data-teil]").forEach(b=>b.onclick=()=>{ teilNr=Number(b.dataset.teil); male(); window.scrollTo(0,0); });
+    $$("[data-a]").forEach(b=>b.onclick=()=>speichere(b.dataset.a, b.dataset.s!==undefined?b.dataset.s:Number(b.dataset.v)));
+    const ixVon=id=>{ const v=A[id]; return v!==undefined&&v!==""?String(v).split(",").filter(x=>x!=="").map(Number):[]; };
+    $$("[data-rein]").forEach(b=>b.onclick=()=>{ const id=b.dataset.rein; const ix=ixVon(id); ix.push(Number(b.dataset.k)); speichere(id, ix.join(",")); });
+    $$("[data-raus]").forEach(b=>b.onclick=()=>{ const id=b.dataset.raus; const ix=ixVon(id); ix.splice(Number(b.dataset.n),1); speichere(id, ix.join(",")); });
+    $$("[data-leer]").forEach(b=>b.onclick=()=>speichere(b.dataset.leer, ""));
+  }
+  if(CODE) pruefe(); else codeScreen();
+}
+
+/* =========================================================
+   LEHRKRAFT
+   ========================================================= */
+function leitung(){
+  document.body.classList.add("lk"); let S={}, tab="ablauf", detail=null, K=null, entwurf=null;
+  function login(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>📝 Prüfung leiten</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px"><button class="btn wide" style="margin-top:10px">Anmelden</button></form><div class="err">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  if(!auth) return login("Anmeldung nicht verfügbar.");
+  auth.onAuthStateChanged(u=>{ if(!u) return login(); if(CODE) oeffnen(CODE); else liste(); });
+  async function liste(){ let alle={}; try{ alle=(await db.ref(ROOT).once("value")).val()||{}; }catch(e){}
+    const L=Object.entries(alle).filter(([,x])=>x&&x.info).sort((a,b)=>(Number(b[1].info.erstellt)||0)-(Number(a[1].info.erstellt)||0));
+    app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:4vh"><h2>📝 Prüfungen</h2><p class="muted">Neue Prüfung erstellen oder eine alte Prüfung öffnen (Ergebnisse bleiben gespeichert).</p>
+      <div class="row">${Object.values(window.PRUEFUNGEN||{}).map(t=>`<button class="btn" data-neu="${t.id}">＋ Neu: ${esc(t.titel)}</button>`).join("")}</div></div>
+      ${L.map(([c,x])=>`<div class="card row" style="justify-content:space-between"><span><b class="code" style="font-size:18px">${c}</b> &nbsp;${esc((TEST(x.info.test)||{}).titel||x.info.test)} · ${new Date(Number(x.info.erstellt)||0).toLocaleDateString("de-DE")} · ${Object.keys(x.tn||{}).length} Personen · ${{warten:"wartet",hoeren:"Hören",haupt:"läuft",ende:"beendet"}[x.info.phase]||""}</span><button class="btn sm ghost" data-oeffnen="${c}">Öffnen</button></div>`).join("")}</div>`;
+    $$("[data-neu]").forEach(b=>b.onclick=()=>neu(b.dataset.neu)); $$("[data-oeffnen]").forEach(b=>b.onclick=()=>oeffnen(b.dataset.oeffnen)); }
+  async function neu(test){ const Z="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c="";
+    for(let v=0; v<20; v++){ c=Array.from({length:5},()=>Z[Math.floor(Math.random()*Z.length)]).join(""); const ex=(await db.ref(`${ROOT}/${c}/info`).once("value")).val(); if(!ex) break; }
+    CODE=c; await R().set({info:{test, phase:"warten", dauer:(TEST(test)||{}).dauer||60, extra:0, erstellt:TS()}, hoeren:{info:"Die Lehrkraft spielt die Texte ab. Du hörst jeden Text zweimal. Tippe die richtige Antwort.", items:Array.from({length:8},()=>({f:"", o:["a","b","c"]}))}, hkey:{}});
+    oeffnen(c); }
+  function ladeLoesung(test){ return new Promise(res=>{ if((window.PRUEFUNG_LOESUNGEN||{})[test]) return res(); const s=document.createElement("script"); s.src=`pruefung/${test}-loesung.js?v=${Date.now()}`; s.onload=res; s.onerror=res; document.head.appendChild(s); }); }
+  async function oeffnen(c){ CODE=c; history.replaceState(null,"","?leitung=1&code="+c);
+    R().on("value", async s=>{ S=s.val()||{}; if(S.info && !K){ await ladeLoesung(S.info.test); K=(window.PRUEFUNG_LOESUNGEN||{})[S.info.test]||{}; } male(); });
+    setInterval(()=>{ const u=$("#luhr"); if(u&&S.info&&S.info.phase==="haupt") u.textContent=mmss(restSek(S.info)); },1000); }
+  const tn=()=>Object.entries(S.tn||{}).filter(([,x])=>x&&x.name).sort((a,b)=>String(a[1].name).localeCompare(b[1].name));
+  /* ---------- Bewertung ---------- */
+  function bewerte(pid){ const T=TEST(S.info.test); const A=(S.antw||{})[pid]||{}; const teile=[]; const themen={};
+    const H=hoerItems(S.hoeren); const hk=S.hkey||{};
+    const hi=H.map((it,i)=>{ const id="h-"+(i+1); const k=hk[i]; const v=A[id]; return {id, it:{typ:"hoeren", f:it.f||`Aufgabe ${i+1}`, o:it.o||["a","b","c"]}, v, k, ok:k!==undefined&&k!==null&&v===Number(k), ohneSchluessel:k===undefined||k===null}; });
+    teile.push({id:"hoeren", titel:"Hören", items:hi, p:hi.filter(x=>x.ok).length, max:hi.length});
+    T.teile.forEach(t=>{ const its=t.items.map(it=>{ const v=A[it.id]; const k=K[it.id]; let ok=false;
+        if(it.typ==="mc"||it.typ==="rf") ok=v===k; if(it.typ==="zu") ok=v===k;
+        if(it.typ==="satz"){ const ix=v!==undefined&&v!==""?String(v).split(",").filter(x=>x!=="").map(Number):[]; ok=ix.length===it.w.length && (k||[]).includes(norm(ix.map(i=>it.w[i]).join(" "))); }
+        const th=it.thema||t.titel; themen[th]=themen[th]||{p:0,n:0}; themen[th].n++; if(ok) themen[th].p++;
+        return {id:it.id, it, v, k, ok}; });
+      teile.push({id:t.id, titel:t.titel, items:its, p:its.filter(x=>x.ok).length, max:its.length}); });
+    const M=(S.muendlich||{})[pid]||{}; const mmax=(T.muendlich||[]).reduce((a,m)=>a+m.max,0); const mp=(T.muendlich||[]).reduce((a,m)=>a+(Number(M[m.id])||0),0); const mBewertet=(T.muendlich||[]).some(m=>M[m.id]!==undefined);
+    const sp=teile.reduce((a,t)=>a+t.p,0), smax=teile.reduce((a,t)=>a+t.max,0);
+    const ges=sp+(mBewertet?mp:0), gmax=smax+(mBewertet?mmax:0);
+    return {teile, themen, sp, smax, mp, mmax, mBewertet, ges, gmax, proz:gmax?Math.round(ges/gmax*100):0}; }
+  const note=p=>p>=92?"1 · sehr gut":p>=81?"2 · gut":p>=67?"3 · befriedigend":p>=50?"4 · ausreichend":p>=30?"5 · mangelhaft":"6 · ungenügend";
+  const pill=(p)=>`<span class="pill ${p>=67?"p-ok":p>=50?"p-mid":"p-bad"}">${p} %</span>`;
+  /* ---------- Malen ---------- */
+  function male(){ const ae=document.activeElement; if(ae && ["INPUT","TEXTAREA","SELECT"].includes(ae.tagName) && tab!=="ablauf") return;
+    if(!S.info){ app.innerHTML=`<div class="wrap"><div class="card">Prüfung nicht gefunden.</div></div>`; return; }
+    const T=TEST(S.info.test); const ph=S.info.phase; const on=tn().filter(([,x])=>x.online!==false).length;
+    let h=`<div class="lkopf"><h1>📝 ${esc(T.titel)}</h1><span>Code:</span><span class="code">${CODE}</span><span class="small" style="opacity:.8">👥 ${tn().length} angemeldet · ${on} online</span>
+      <span style="margin-left:auto" class="row">${ph==="haupt"?`<span class="code" id="luhr" style="background:#fff">${mmss(restSek(S.info))}</span>`:""}<button class="btn sm hell" id="zurListe">☰ Alle Prüfungen</button></span></div><div class="breit">
+      <div class="tabs noprint">${[["ablauf","▶ Ablauf"],["hoeren","🎧 Hören einrichten"],["muendlich","🗣️ Mündlich"],["ergebnis","📊 Ergebnisse"]].map(([k,t])=>`<button data-tab="${k}" class="${tab===k?"an":""}">${t}</button>`).join("")}</div>`;
+    h+= tab==="ablauf"?ablauf(T): tab==="hoeren"?hoerenEdit(): tab==="muendlich"?muendlich(T): ergebnis(T);
+    app.innerHTML=h+`</div>`; binde(T);
+    if(tab==="ablauf" && ph==="warten"){ const q=$("#qr"); if(q&&window.QRCode){ q.innerHTML=""; new QRCode(q,{text:location.origin+location.pathname+"?code="+CODE,width:180,height:180}); } } }
+  function ablauf(T){ const ph=S.info.phase; const H=hoerItems(S.hoeren); const hkFehlt=H.some((_,i)=>(S.hkey||{})[i]===undefined);
+    const schritt=(n,t,akt,txt)=>`<div class="card" style="border-left:8px solid ${akt?"var(--pri)":"var(--line)"}"><b>${n}. ${t}</b><div class="small muted">${txt}</div></div>`;
+    let h=`<div class="raster" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
+      ${schritt(1,"Anmelden",ph==="warten",`Die Lernenden öffnen <b>${esc(location.host+location.pathname.replace(/[^/]*$/,""))}pruefung.html</b> und geben den Code <b>${CODE}</b> ein.`)}
+      ${schritt(2,"Hören",ph==="hoeren",`${H.length} Aufgaben · Du spielst die Texte ab.${hkFehlt?` <span class="nein">Lösungen fehlen noch!</span>`:""}`)}
+      ${schritt(3,"Hauptteil – 60 Min.",ph==="haupt",`Lesen, Grammatik, Sprachbausteine, Satzbau. Die Uhr läuft automatisch, danach wird automatisch abgegeben.`)}
+      ${schritt(4,"Ende",ph==="ende","Alle Antworten sind gesperrt. Ergebnisse ansehen, Mündlich bewerten.")}</div>
+      <div class="card row">${ph==="warten"?`<div id="qr"></div><button class="btn" data-phase="hoeren" style="font-size:20px">▶ Hören starten</button>`:""}
+        ${ph==="hoeren"?`<button class="btn ok" data-phase="haupt" style="font-size:20px">▶ Hören beenden – 60 Minuten starten</button>`:""}
+        ${ph==="haupt"?`<b>Restzeit: ${mmss(restSek(S.info))}</b><button class="btn ghost" id="plus5">＋5 Min.</button><button class="btn rot" data-phase="ende">⏹ Prüfung jetzt beenden</button>`:""}
+        ${ph==="ende"?`<b>Die Prüfung ist beendet.</b><button class="btn ghost" data-phase="haupt">↩ wieder öffnen</button><button class="btn" data-tab="ergebnis">📊 Ergebnisse</button>`:""}</div>`;
+    const teile=T.teile; const cnt=(A,t)=>t.items.filter(it=>A[it.id]!==undefined&&A[it.id]!=="").length;
+    h+=`<table class="t"><tr><th>Name</th><th>Status</th><th>Hören</th>${teile.map(t=>`<th>${esc(t.titel.split(":")[0])}</th>`).join("")}<th>Abgabe</th><th></th></tr>
+      ${tn().map(([p,x])=>{ const A=(S.antw||{})[p]||{}; const hn=H.filter((_,i)=>A["h-"+(i+1)]!==undefined).length;
+        return `<tr><td><b>${esc(x.name)}</b></td><td>${x.online===false?'<span class="muted">⚪ offline</span>':'🟢 online'}</td><td>${hn}/${H.length}</td>${teile.map(t=>`<td>${cnt(A,t)}/${t.items.length}</td>`).join("")}
+        <td>${x.abgegeben?`<span class="ja">✓ ${new Date(Number(x.abgabe)||0).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})}${x.auto?" (Zeit)":""}</span>`:"–"}</td>
+        <td class="noprint">${x.abgegeben?`<button class="btn sm ghost" data-oeffne="${p}">🔓 öffnen</button>`:""}<button class="btn sm ghost" data-ab="${p}" title="Handy abmelden – Antworten bleiben">↺</button></td></tr>`; }).join("")||'<tr><td colspan="9" class="muted">Noch niemand angemeldet.</td></tr>'}</table>`;
+    return h; }
+  function hoerenEdit(){ if(!entwurf) entwurf={info:(S.hoeren||{}).info||"", items:hoerItems(S.hoeren).map((it,i)=>({f:it.f||"", o:(it.o||["a","b","c"]).slice(), k:(S.hkey||{})[i]}))};
+    const E=entwurf; const gesperrt=S.info.phase!=="warten"&&S.info.phase!=="hoeren";
+    return `<div class="card"><h2>🎧 Hören einrichten</h2><p class="muted">Du spielst die Texte im Raum ab. Hier trägst du die Aufgaben und die richtigen Antworten ein. Ohne Fragetext erscheint auf dem Handy nur „Aufgabe 1: a / b / c“ – wie ein Antwortbogen zu deinem Aufgabenblatt.</p>
+      <label class="small"><b>Hinweis für die Lernenden</b></label><input id="hinfo" value="${esc(E.info)}" style="width:100%;min-height:42px;border:2px solid var(--line);border-radius:10px;padding:4px 10px">
+      <div class="row" style="margin-top:10px"><span>Anzahl Aufgaben:</span><button class="btn sm ghost" id="hminus">−</button><b>${E.items.length}</b><button class="btn sm ghost" id="hplus">＋</button>${gesperrt?`<span class="nein small">Achtung: Die Prüfung läuft schon – Änderungen nur bei Fehlern!</span>`:""}</div></div>
+      ${E.items.map((it,i)=>`<div class="card"><div class="row" style="justify-content:space-between"><b>Aufgabe ${i+1}</b><span class="small">Antworten: <button class="btn sm ${it.o.join()==="a,b,c"?"gold":"ghost"}" data-htyp="${i}|abc">a / b / c</button> <button class="btn sm ${it.o.join()==="richtig,falsch"?"gold":"ghost"}" data-htyp="${i}|rf">richtig / falsch</button> <button class="btn sm ${it.o.join()==="a,b,c,d"?"gold":"ghost"}" data-htyp="${i}|abcd">a–d</button></span></div>
+        <input data-hf="${i}" value="${esc(it.f)}" placeholder="Frage (optional), z. B. „Wann fährt der Zug?“" style="width:100%;min-height:40px;border:2px solid var(--line);border-radius:10px;padding:4px 10px;margin:8px 0">
+        <div class="row">${it.o.map((x,k)=>`<input data-ho="${i}|${k}" value="${esc(x)}" style="flex:1;min-width:120px;min-height:38px;border:2px solid ${Number(it.k)===k?"var(--ok)":"var(--line)"};border-radius:10px;padding:4px 10px">`).join("")}</div>
+        <div class="row" style="margin-top:6px"><span class="small">Richtig ist:</span>${it.o.map((x,k)=>`<button class="btn sm ${Number(it.k)===k?"ok":"ghost"}" data-hk="${i}|${k}">${esc(x||BUCH[k])}</button>`).join("")}</div></div>`).join("")}
+      <div class="card row"><button class="btn ok" id="hspeichern" style="font-size:18px">💾 Speichern</button><button class="btn ghost" id="hverwerfen">verwerfen</button><span class="small muted">Erst nach „Speichern“ sehen die Handys die Änderungen.</span></div>`; }
+  function muendlich(T){ const M=T.muendlich||[];
+    return `<div class="card"><h2>🗣️ Mündliche Prüfung</h2><p class="muted">Tippe die Punkte direkt an – sie werden sofort gespeichert. Hilfen: ${M.map(m=>`<br><b>${esc(m.titel)}</b> (max. ${m.max}): ${esc(m.hilfe)}`).join("")}</p></div>
+      <table class="t"><tr><th>Name</th>${M.map(m=>`<th>${esc(m.titel)}</th>`).join("")}<th>Summe</th><th>Notiz</th></tr>
+      ${tn().map(([p,x])=>{ const V=(S.muendlich||{})[p]||{}; const sum=M.reduce((a,m)=>a+(Number(V[m.id])||0),0);
+        return `<tr><td><b>${esc(x.name)}</b></td>${M.map(m=>`<td class="punkte">${Array.from({length:m.max+1},(_,k)=>`<button class="${Number(V[m.id])===k&&V[m.id]!==undefined?"an":""}" data-mp="${p}|${m.id}|${k}">${k}</button>`).join("")}</td>`).join("")}
+          <td><b>${M.some(m=>V[m.id]!==undefined)?sum:"–"}</b> / ${M.reduce((a,m)=>a+m.max,0)}</td><td><input data-mn="${p}" value="${esc(V.notiz||"")}" style="width:100%;min-width:140px;border:1px solid var(--line);border-radius:8px;padding:4px 8px"></td></tr>`; }).join("")}</table>`; }
+  function ergebnis(T){ if(!K) return `<div class="card">Lösungen werden geladen …</div>`;
+    const L=tn().map(([p,x])=>({p, x, b:bewerte(p)}));
+    if(detail){ const z=L.find(z=>z.p===detail); if(z) return einzel(T,z); detail=null; }
+    const teilNamen=L.length?L[0].b.teile.map(t=>t.titel.split(":")[0]):[];
+    let h=`<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="csv">⬇ Tabelle (CSV) herunterladen</button><button class="btn ghost" id="drucken">🖨 Drucken</button><span class="small muted">Tippe auf einen Namen für alle Einzelheiten.</span></div>
+      <table class="t"><tr><th>Name</th>${teilNamen.map(n=>`<th>${esc(n)}</th>`).join("")}<th>Schriftlich</th><th>Mündlich</th><th>Gesamt</th><th>Note</th></tr>
+      ${L.sort((a,b)=>b.b.proz-a.b.proz).map(({p,x,b})=>`<tr class="klick" data-detail="${p}"><td><b>${esc(x.name)}</b>${x.abgegeben?"":' <span class="small muted">(nicht abgegeben)</span>'}</td>${b.teile.map(t=>`<td>${t.p}/${t.max}</td>`).join("")}
+        <td>${b.sp}/${b.smax} ${pill(b.smax?Math.round(b.sp/b.smax*100):0)}</td><td>${b.mBewertet?`${b.mp}/${b.mmax}`:'<span class="muted">–</span>'}</td><td><b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</td><td>${note(b.proz)}</td></tr>`).join("")}</table>`;
+    if(L.length){ /* Klasse: Themen */
+      const th={}; L.forEach(({b})=>Object.entries(b.themen).forEach(([k,v])=>{ th[k]=th[k]||{p:0,n:0}; th[k].p+=v.p; th[k].n+=v.n; }));
+      h+=`<div class="raster" style="margin-top:14px"><div class="card"><h3>📚 Klasse: Themen (Durchschnitt)</h3>${Object.entries(th).sort((a,b)=>a[1].p/a[1].n-b[1].p/b[1].n).map(([k,v])=>{ const q=Math.round(v.p/v.n*100); return `<div class="row" style="margin:4px 0"><span style="width:190px">${esc(k)}</span><div class="balken" style="flex:1"><i style="width:${q}%;background:${q>=67?"var(--ok)":q>=50?"var(--gold)":"var(--bad)"}"></i></div><b style="width:50px;text-align:right">${q} %</b></div>`; }).join("")}</div>`;
+      const items=[]; L[0].b.teile.forEach((t,ti)=>t.items.forEach((x,ii)=>{ const r=L.filter(z=>z.b.teile[ti].items[ii].ok).length; items.push({t:t.titel, x, q:Math.round(r/L.length*100), falsch:L.filter(z=>!z.b.teile[ti].items[ii].ok).map(z=>z.b.teile[ti].items[ii].v)}); }));
+      h+=`<div class="card"><h3>❗ Schwierigste Aufgaben</h3>${items.sort((a,b)=>a.q-b.q).slice(0,10).map(z=>{ const fehl={}; z.falsch.forEach(v=>{ const k=antwortText(z.x.it,v); fehl[k]=(fehl[k]||0)+1; }); const top=Object.entries(fehl).sort((a,b)=>b[1]-a[1])[0];
+        return `<div style="margin:6px 0;border-bottom:1px solid var(--line);padding-bottom:6px"><div class="row" style="justify-content:space-between"><span class="small muted">${esc(z.t.split(":")[0])}</span>${pill(z.q)}</div><div>${esc(z.x.it.f||"")}</div><div class="small">✅ ${esc(loesungText(z.x))}${top?` · häufigster Fehler: „${esc(top[0])}“ (${top[1]}×)`:""}</div></div>`; }).join("")}</div></div>`; }
+    return h; }
+  function loesungText(x){ const it=x.it; if(x.k===undefined||x.k===null) return "keine Lösung eingetragen";
+    if(it.typ==="satz") return (x.k[0]||"").replace(/^./,c=>c.toUpperCase())+(it.p||""); if(it.typ==="zu") return String(x.k); return it.o[x.k]; }
+  function einzel(T,{p,x,b}){ const M=(S.muendlich||{})[p]||{};
+    return `<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="zurueck">◀ Alle Ergebnisse</button><button class="btn ghost" id="drucken">🖨 Drucken</button></div>
+      <div class="card"><h2>${esc(x.name)}</h2><div class="row"><span>Schriftlich: <b>${b.sp}/${b.smax}</b></span><span>Mündlich: <b>${b.mBewertet?`${b.mp}/${b.mmax}`:"noch nicht bewertet"}</b></span><span>Gesamt: <b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</span><span>Note: <b>${note(b.proz)}</b></span>
+        <span class="small muted">${x.abgegeben?`Abgabe ${new Date(Number(x.abgabe)||0).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})}${x.auto?" (Zeit abgelaufen)":""}`:"nicht abgegeben"}</span></div>${M.notiz?`<p class="small">📝 ${esc(M.notiz)}</p>`:""}</div>
+      <div class="raster"><div class="card"><h3>Stärken & Schwächen</h3>${Object.entries(b.themen).sort((a,c)=>a[1].p/a[1].n-c[1].p/c[1].n).map(([k,v])=>{ const q=Math.round(v.p/v.n*100); return `<div class="row" style="margin:4px 0"><span style="width:180px">${esc(k)}</span><div class="balken" style="flex:1"><i style="width:${q}%;background:${q>=67?"var(--ok)":q>=50?"var(--gold)":"var(--bad)"}"></i></div><b style="width:60px;text-align:right">${v.p}/${v.n}</b></div>`; }).join("")}</div>
+      <div class="card"><h3>Teile</h3>${b.teile.map(t=>`<div class="row" style="margin:4px 0"><span style="width:180px">${esc(t.titel)}</span><div class="balken" style="flex:1"><i style="width:${t.max?t.p/t.max*100:0}%"></i></div><b style="width:60px;text-align:right">${t.p}/${t.max}</b></div>`).join("")}</div></div>
+      ${b.teile.map(t=>`<div class="card"><h3>${esc(t.titel)} – ${t.p}/${t.max}</h3><table class="t"><tr><th>#</th><th>Aufgabe</th><th>Antwort</th><th>Lösung</th><th></th></tr>
+        ${t.items.map((z,i)=>`<tr><td>${i+1}</td><td>${esc(z.it.f||"")}${z.it.thema?`<div class="small muted">${esc(z.it.thema)}</div>`:""}</td><td>${esc(antwortText(z.it,z.v))}</td><td>${esc(loesungText(z))}</td><td>${z.ohneSchluessel?"?":z.ok?'<span class="ja">✓</span>':'<span class="nein">✗</span>'}</td></tr>`).join("")}</table></div>`).join("")}`; }
+  function binde(T){
+    const on=(s,f)=>{ const e=$(s); if(e) e.onclick=f; };
+    $$("[data-tab]").forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; detail=null; entwurf=null; male(); });
+    on("#zurListe", ()=>{ R().off(); CODE=""; history.replaceState(null,"","?leitung=1"); liste(); });
+    $$("[data-phase]").forEach(b=>b.onclick=()=>{ const ph=b.dataset.phase;
+      if(ph==="haupt" && S.info.phase==="hoeren"){ if(hoerItems(S.hoeren).some((_,i)=>(S.hkey||{})[i]===undefined) && !confirm("Beim Hören fehlen noch Lösungen. Trotzdem starten? (Du kannst sie später eintragen.)")) return; R("info").update({phase:"haupt", start:jetzt(), extra:0}); return; }
+      if(ph==="haupt" && S.info.phase==="ende"){ R("info").update({phase:"haupt"}); return; }
+      if(ph==="ende" && !confirm("Prüfung jetzt für alle beenden?")) return; R("info/phase").set(ph); });
+    on("#plus5", ()=>R("info/extra").set((Number(S.info.extra)||0)+5));
+    $$("[data-oeffne]").forEach(b=>b.onclick=()=>{ if(confirm("Abgabe wieder öffnen? Die Person kann dann weiterarbeiten.")) R(`tn/${b.dataset.oeffne}`).update({abgegeben:false, auto:null}); });
+    $$("[data-ab]").forEach(b=>b.onclick=()=>{ if(confirm("Handy abmelden? Die Antworten bleiben gespeichert.")) R(`tn/${b.dataset.ab}`).update({online:false, raus:true}); });
+    /* Hören */
+    const E=entwurf;
+    if(E){ const hi=$("#hinfo"); if(hi) hi.oninput=()=>E.info=hi.value;
+      $$("[data-hf]").forEach(x=>x.oninput=()=>E.items[Number(x.dataset.hf)].f=x.value);
+      $$("[data-ho]").forEach(x=>x.oninput=()=>{ const [i,k]=x.dataset.ho.split("|").map(Number); E.items[i].o[k]=x.value; });
+      $$("[data-hk]").forEach(b=>b.onclick=()=>{ const [i,k]=b.dataset.hk.split("|").map(Number); E.items[i].k=k; male(); });
+      $$("[data-htyp]").forEach(b=>b.onclick=()=>{ const [i,t]=b.dataset.htyp.split("|"); E.items[Number(i)].o={abc:["a","b","c"],rf:["richtig","falsch"],abcd:["a","b","c","d"]}[t].slice(); E.items[Number(i)].k=undefined; male(); });
+      on("#hplus", ()=>{ E.items.push({f:"",o:["a","b","c"]}); male(); }); on("#hminus", ()=>{ if(E.items.length>1){ E.items.pop(); male(); } });
+      on("#hverwerfen", ()=>{ entwurf=null; male(); });
+      on("#hspeichern", ()=>{ const hk={}; E.items.forEach((it,i)=>{ if(it.k!==undefined) hk[i]=it.k; });
+        R().update({hoeren:{info:E.info, items:E.items.map(it=>({f:it.f, o:it.o}))}, hkey:hk}).then(()=>{ entwurf=null; male(); alert("Gespeichert ✓"); }); }); }
+    /* Mündlich */
+    $$("[data-mp]").forEach(b=>b.onclick=()=>{ const [p,m,k]=b.dataset.mp.split("|"); const cur=((S.muendlich||{})[p]||{})[m]; R(`muendlich/${p}/${m}`).set(Number(cur)===Number(k)&&cur!==undefined?null:Number(k)); });
+    $$("[data-mn]").forEach(x=>x.onchange=()=>R(`muendlich/${x.dataset.mn}/notiz`).set(x.value));
+    /* Ergebnisse */
+    $$("[data-detail]").forEach(r=>r.onclick=()=>{ detail=r.dataset.detail; male(); window.scrollTo(0,0); });
+    on("#zurueck", ()=>{ detail=null; male(); }); on("#drucken", ()=>window.print());
+    on("#csv", ()=>{ const L=tn().map(([p,x])=>({x, b:bewerte(p)})); const kopf=["Name",...(L[0]?L[0].b.teile.map(t=>t.titel):[]),"Schriftlich","Mündlich","Gesamt","Prozent","Note"];
+      const zeilen=L.map(({x,b})=>[x.name,...b.teile.map(t=>`${t.p}/${t.max}`),`${b.sp}/${b.smax}`,b.mBewertet?`${b.mp}/${b.mmax}`:"",`${b.ges}/${b.gmax}`,b.proz,note(b.proz)]);
+      const csv=[kopf,...zeilen].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(";")).join("\n"); const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"})); a.download=`Pruefung_${CODE}.csv`; a.click(); });
+  }
+}
+
+if(!db) app.innerHTML=`<div class="wrap"><div class="card">Keine Verbindung. Bitte Seite neu laden.</div></div>`;
+else if(P.get("leitung")) leitung(); else lernende();
+</script>
+</body>
+</html>
