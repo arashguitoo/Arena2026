@@ -68,7 +68,8 @@ table.t tr.klick{cursor:pointer} table.t tr.klick:hover{background:var(--soft)}
 .punkte button{min-width:40px;min-height:36px;border-radius:10px;border:2px solid var(--line);background:#fff;font-weight:800;cursor:pointer;margin:2px}
 .punkte button.an{background:var(--pri);color:#fff;border-color:var(--pri)}
 .raster{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
-@media print{ .lkopf,.tabs,.noprint{display:none!important} body{background:#fff} .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid} }
+@media print{ .lkopf,.tabs,.noprint{display:none!important} body{background:#fff} .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid} .seite{break-before:page} .bericht .card{padding:8px 12px;margin:6px 0} .bericht .t td,.bericht .t th{padding:3px 6px;font-size:11px} .breit{max-width:none!important;padding:0!important} }
+.bericht h2{margin:.2em 0} .bericht .kz{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0} .bericht .kz div{border:1px solid var(--line);border-radius:12px;padding:8px 12px} .bericht .kz b{display:block;font-size:22px}
 </style>
 </head>
 <body>
@@ -235,6 +236,7 @@ function leitung(){
     const H=hoerItems(S.hoeren); const hk=S.hkey||{};
     const hi=H.map((it,i)=>{ const id="h-"+(i+1); const k=hk[i]; const v=A[id]; return {id, it:{typ:"hoeren", f:it.f||`Aufgabe ${i+1}`, o:it.o||["a","b","c"]}, v, k, ok:k!==undefined&&k!==null&&v===Number(k), ohneSchluessel:k===undefined||k===null}; });
     teile.push({id:"hoeren", titel:"Hören", items:hi, p:hi.filter(x=>x.ok).length, max:hi.length});
+    if(hi.length){ themen["Hören"]={p:hi.filter(x=>x.ok).length, n:hi.length}; }
     T.teile.forEach(t=>{ const its=t.items.map(it=>{ const v=A[it.id]; const k=K[it.id]; let ok=false;
         if(it.typ==="mc"||it.typ==="rf") ok=v===k; if(it.typ==="zu") ok=v===k;
         if(it.typ==="satz"){ const ix=v!==undefined&&v!==""?String(v).split(",").filter(x=>x!=="").map(Number):[]; ok=ix.length===it.w.length && (k||[]).includes(norm(ix.map(i=>it.w[i]).join(" "))); }
@@ -298,9 +300,10 @@ function leitung(){
           <td><b>${M.some(m=>V[m.id]!==undefined)?sum:"–"}</b> / ${M.reduce((a,m)=>a+m.max,0)}</td><td><input data-mn="${p}" value="${esc(V.notiz||"")}" style="width:100%;min-width:140px;border:1px solid var(--line);border-radius:8px;padding:4px 8px"></td></tr>`; }).join("")}</table>`; }
   function ergebnis(T){ if(!K) return `<div class="card">Lösungen werden geladen …</div>`;
     const L=tn().map(([p,x])=>({p, x, b:bewerte(p)}));
+    if(detail==="__bericht") return bericht(T,L);
     if(detail){ const z=L.find(z=>z.p===detail); if(z) return einzel(T,z); detail=null; }
     const teilNamen=L.length?L[0].b.teile.map(t=>t.titel.split(":")[0]):[];
-    let h=`<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="csv">⬇ Tabelle (CSV) herunterladen</button><button class="btn ghost" id="drucken">🖨 Drucken</button><span class="small muted">Tippe auf einen Namen für alle Einzelheiten.</span></div>
+    let h=`<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="csv">⬇ Tabelle (CSV) herunterladen</button><button class="btn" id="bericht">📄 Bericht (zum Drucken / als PDF)</button><button class="btn ghost" id="drucken">🖨 Drucken</button><span class="small muted">Tippe auf einen Namen für alle Einzelheiten.</span></div>
       <table class="t"><tr><th>Name</th>${teilNamen.map(n=>`<th>${esc(n)}</th>`).join("")}${(T.muendlich||[]).length?"<th>Schriftlich</th><th>Mündlich</th>":""}<th>Gesamt</th><th>Note</th></tr>
       ${L.sort((a,b)=>b.b.proz-a.b.proz).map(({p,x,b})=>`<tr class="klick" data-detail="${p}"><td><b>${esc(x.name)}</b>${x.abgegeben?"":' <span class="small muted">(nicht abgegeben)</span>'}</td>${b.teile.map(t=>`<td>${t.p}/${t.max}</td>`).join("")}
         ${(T.muendlich||[]).length?`<td>${b.sp}/${b.smax} ${pill(b.smax?Math.round(b.sp/b.smax*100):0)}</td><td>${b.mBewertet?`${b.mp}/${b.mmax}`:'<span class="muted">–</span>'}</td>`:""}<td><b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</td><td>${note(b.proz)}</td></tr>`).join("")}</table>`;
@@ -311,6 +314,38 @@ function leitung(){
       h+=`<div class="card"><h3>❗ Schwierigste Aufgaben</h3>${items.sort((a,b)=>a.q-b.q).slice(0,10).map(z=>{ const fehl={}; z.falsch.forEach(v=>{ const k=antwortText(z.x.it,v); fehl[k]=(fehl[k]||0)+1; }); const top=Object.entries(fehl).sort((a,b)=>b[1]-a[1])[0];
         return `<div style="margin:6px 0;border-bottom:1px solid var(--line);padding-bottom:6px"><div class="row" style="justify-content:space-between"><span class="small muted">${esc(z.t.split(":")[0])}</span>${pill(z.q)}</div><div>${esc(z.x.it.f||"")}</div><div class="small">✅ ${esc(loesungText(z.x))}${top?` · häufigster Fehler: „${esc(top[0])}“ (${top[1]}×)`:""}</div></div>`; }).join("")}</div></div>`; }
     return h; }
+  function bericht(T,L){ const wann=new Date(Number(S.info.start||S.info.erstellt)||0).toLocaleDateString("de-DE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fb=q=>q>=67?"var(--ok)":q>=50?"var(--gold)":"var(--bad)";
+    const balken=(k,p,n)=>{ const q=n?Math.round(p/n*100):0; return `<tr><td>${esc(k)}</td><td style="white-space:nowrap">${p}/${n}</td><td style="width:30%"><div class="balken"><i style="width:${q}%;background:${fb(q)}"></i></div></td><td style="text-align:right;white-space:nowrap"><b>${q} %</b></td></tr>`; };
+    const tab=(titel,rows)=>`<div class="card"><h3>${titel}</h3><table class="t">${rows}</table></div>`;
+    const sort=[...L].sort((a,b)=>b.b.proz-a.b.proz); const n=L.length;
+    const schnitt=n?Math.round(L.reduce((a,z)=>a+z.b.proz,0)/n):0;
+    const noten={}; L.forEach(z=>{ const k=note(z.b.proz).split(" ")[0]; noten[k]=(noten[k]||0)+1; });
+    const th={}; L.forEach(({b})=>Object.entries(b.themen).forEach(([k,v])=>{ th[k]=th[k]||{p:0,n:0}; th[k].p+=v.p; th[k].n+=v.n; }));
+    const thS=Object.entries(th).sort((a,b)=>a[1].p/a[1].n-b[1].p/b[1].n);
+    const schwach=thS.filter(([,v])=>v.p/v.n<0.6).map(([k])=>k), stark=thS.filter(([,v])=>v.p/v.n>=0.8).map(([k])=>k).reverse();
+    const teilSum=n?L[0].b.teile.map((t,ti)=>({t:t.titel, p:L.reduce((a,z)=>a+z.b.teile[ti].p,0), n:L.reduce((a,z)=>a+z.b.teile[ti].max,0)})):[];
+    const items=[]; if(n) L[0].b.teile.forEach((t,ti)=>t.items.forEach((x,ii)=>{ const r=L.filter(z=>z.b.teile[ti].items[ii].ok).length; const fehl={}; L.filter(z=>!z.b.teile[ti].items[ii].ok).forEach(z=>{ const k=antwortText(z.b.teile[ti].items[ii].it,z.b.teile[ti].items[ii].v); fehl[k]=(fehl[k]||0)+1; }); items.push({t:t.titel, x, q:Math.round(r/n*100), top:Object.entries(fehl).sort((a,b)=>b[1]-a[1])[0]}); }));
+    let h=`<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="zurueck">◀ Alle Ergebnisse</button><button class="btn" id="drucken">🖨 Drucken / als PDF speichern</button><span class="small muted">Tipp: Im Druckfenster „Als PDF speichern“ wählen. Jede Person beginnt auf einer neuen Seite.</span></div>
+      <div class="bericht"><div class="card"><h2>📄 Bericht: ${esc(T.titel)}</h2><div class="muted">${esc(wann)} · Code ${CODE} · Jugendintegrationskurs Plön</div>
+      <div class="kz"><div>Teilnehmende<b>${n}</b></div><div>Abgegeben<b>${L.filter(z=>z.x.abgegeben).length}</b></div><div>Durchschnitt<b>${schnitt} %</b></div><div>Bestanden (≥ 50 %)<b>${L.filter(z=>z.b.proz>=50).length} von ${n}</b></div></div>
+      <div class="small"><b>Notenverteilung:</b> ${["1","2","3","4","5","6"].map(k=>`Note ${k}: ${noten[k]||0}`).join(" · ")}</div></div>
+      <div class="card"><h3>Ergebnisse der Klasse</h3><table class="t"><tr><th>Name</th>${n?L[0].b.teile.map(t=>`<th>${esc(t.titel.split(":")[0])}</th>`).join(""):""}<th>Gesamt</th><th>Note</th></tr>
+        ${sort.map(({x,b})=>`<tr><td><b>${esc(x.name)}</b>${x.abgegeben?"":' <span class="small muted">(nicht abgegeben)</span>'}</td>${b.teile.map(t=>`<td>${t.p}/${t.max}</td>`).join("")}<td><b>${b.ges}/${b.gmax}</b> (${b.proz} %)</td><td>${note(b.proz)}</td></tr>`).join("")}</table></div>
+      ${tab("Teile (Klasse)", teilSum.map(z=>balken(z.t,z.p,z.n)).join(""))}${tab("Themen (Klasse) – schwächstes zuerst", thS.map(([k,v])=>balken(k,v.p,v.n)).join(""))}
+      <div class="card"><h3>Fazit für den Unterricht</h3>
+        <p><b>Das klappt gut:</b> ${stark.length?stark.map(esc).join(", "):"–"}</p>
+        <p><b>Bitte wiederholen:</b> ${schwach.length?schwach.map(esc).join(", "):"Kein Thema liegt unter 60 %."}</p></div>
+      <div class="card"><h3>Schwierigste Aufgaben</h3><table class="t"><tr><th>Teil</th><th>Aufgabe</th><th>Lösung</th><th>Häufigster Fehler</th><th>richtig</th></tr>
+        ${items.sort((a,b)=>a.q-b.q).slice(0,10).map(z=>`<tr><td>${esc(z.t.split(":")[0])}</td><td>${esc(z.x.it.f||"")}</td><td>${esc(loesungText(z.x))}</td><td>${z.top?(z.top[0]==="–"?`keine Antwort (${z.top[1]}×)`:`„${esc(z.top[0])}“ (${z.top[1]}×)`):"–"}</td><td>${z.q} %</td></tr>`).join("")}</table></div>`;
+    h+=sort.map(({p,x,b})=>{ const ts=Object.entries(b.themen).sort((a,c)=>a[1].p/a[1].n-c[1].p/c[1].n);
+      const gut=ts.filter(([,v])=>v.p/v.n>=0.8).map(([k])=>k).reverse(), ueben=ts.filter(([,v])=>v.p/v.n<0.6).map(([k])=>k);
+      const fehler=b.teile.flatMap(t=>t.items.filter(z=>!z.ok&&!z.ohneSchluessel).map(z=>({t:t.titel, z})));
+      return `<div class="seite"><div class="card"><h2>${esc(x.name)}</h2><div class="kz"><div>Punkte<b>${b.ges}/${b.gmax}</b></div><div>Prozent<b>${b.proz} %</b></div><div>Note<b>${note(b.proz)}</b></div><div>Abgabe<b style="font-size:16px">${x.abgegeben?new Date(Number(x.abgabe)||0).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})+" Uhr"+(x.auto?" (Zeit)":""):"nicht abgegeben"}</b></div></div>
+        <p><b>Stärken:</b> ${gut.length?gut.map(esc).join(", "):"–"}<br><b>Üben:</b> ${ueben.length?ueben.map(esc).join(", "):"–"}</p></div>
+        ${tab("Teile", b.teile.map(t=>balken(t.titel,t.p,t.max)).join(""))}${tab("Themen – schwächstes zuerst", ts.map(([k,v])=>balken(k,v.p,v.n)).join(""))}
+        <div class="card"><h3>Fehler (${fehler.length})</h3>${fehler.length?`<table class="t"><tr><th>Teil</th><th>Aufgabe</th><th>Antwort</th><th>Richtig</th></tr>${fehler.map(({t,z})=>`<tr><td>${esc(t.split(":")[0])}</td><td>${esc(z.it.f||"")}</td><td>${antwortText(z.it,z.v)==="–"?'<span class="muted">keine Antwort</span>':esc(antwortText(z.it,z.v))}</td><td>${esc(loesungText(z))}</td></tr>`).join("")}</table>`:"<p>Keine Fehler. 👍</p>"}</div></div>`; }).join("");
+    return h+`</div>`; }
   function loesungText(x){ const it=x.it; if(x.k===undefined||x.k===null) return "keine Lösung eingetragen";
     if(it.typ==="satz") return (x.k[0]||"").replace(/^./,c=>c.toUpperCase())+(it.p||""); if(it.typ==="zu") return String(x.k); return it.o[x.k]; }
   function einzel(T,{p,x,b}){ const M=(S.muendlich||{})[p]||{};
@@ -352,7 +387,7 @@ function leitung(){
     $$("[data-mn]").forEach(x=>x.onchange=()=>R(`muendlich/${x.dataset.mn}/notiz`).set(x.value));
     /* Ergebnisse */
     $$("[data-detail]").forEach(r=>r.onclick=()=>{ detail=r.dataset.detail; male(); window.scrollTo(0,0); });
-    on("#zurueck", ()=>{ detail=null; male(); }); on("#drucken", ()=>window.print());
+    on("#zurueck", ()=>{ detail=null; male(); }); on("#bericht", ()=>{ detail="__bericht"; male(); window.scrollTo(0,0); }); on("#drucken", ()=>window.print());
     on("#csv", ()=>{ const L=tn().map(([p,x])=>({x, b:bewerte(p)})); const kopf=["Name",...(L[0]?L[0].b.teile.map(t=>t.titel):[]),"Schriftlich","Mündlich","Gesamt","Prozent","Note"];
       const zeilen=L.map(({x,b})=>[x.name,...b.teile.map(t=>`${t.p}/${t.max}`),`${b.sp}/${b.smax}`,b.mBewertet?`${b.mp}/${b.mmax}`:"",`${b.ges}/${b.gmax}`,b.proz,note(b.proz)]);
       const csv=[kopf,...zeilen].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(";")).join("\n"); const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob(["﻿"+csv],{type:"text/csv"})); a.download=`Pruefung_${CODE}.csv`; a.click(); });
