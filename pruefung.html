@@ -248,7 +248,7 @@ function leitung(){
     const T=TEST(S.info.test); const ph=S.info.phase; const on=tn().filter(([,x])=>x.online!==false).length;
     let h=`<div class="lkopf"><h1>📝 ${esc(T.titel)}</h1><span>Code:</span><span class="code">${CODE}</span><span class="small" style="opacity:.8">👥 ${tn().length} angemeldet · ${on} online</span>
       <span style="margin-left:auto" class="row">${ph==="haupt"?`<span class="code" id="luhr" style="background:#fff">${mmss(restSek(S.info))}</span>`:""}<button class="btn sm hell" id="zurListe">☰ Alle Prüfungen</button></span></div><div class="breit">
-      <div class="tabs noprint">${[["ablauf","▶ Ablauf"],["hoeren","🎧 Hören einrichten"],["muendlich","🗣️ Mündlich"],["ergebnis","📊 Ergebnisse"]].map(([k,t])=>`<button data-tab="${k}" class="${tab===k?"an":""}">${t}</button>`).join("")}</div>`;
+      <div class="tabs noprint">${[["ablauf","▶ Ablauf"],["hoeren","🎧 Hören einrichten"],...((T.muendlich||[]).length?[["muendlich","🗣️ Mündlich"]]:[]),["ergebnis","📊 Ergebnisse"]].map(([k,t])=>`<button data-tab="${k}" class="${tab===k?"an":""}">${t}</button>`).join("")}</div>`;
     h+= tab==="ablauf"?ablauf(T): tab==="hoeren"?hoerenEdit(): tab==="muendlich"?muendlich(T): ergebnis(T);
     app.innerHTML=h+`</div>`; binde(T);
     if(tab==="ablauf" && ph==="warten"){ const q=$("#qr"); if(q&&window.QRCode){ q.innerHTML=""; new QRCode(q,{text:location.origin+location.pathname+"?code="+CODE,width:180,height:180}); } } }
@@ -258,7 +258,7 @@ function leitung(){
       ${schritt(1,"Anmelden",ph==="warten",`Die Lernenden öffnen <b>${esc(location.host+location.pathname.replace(/[^/]*$/,""))}pruefung.html</b> und geben den Code <b>${CODE}</b> ein.`)}
       ${schritt(2,"Hören",ph==="hoeren",`${H.length} Aufgaben · Du spielst die Texte ab.${hkFehlt?` <span class="nein">Lösungen fehlen noch!</span>`:""}`)}
       ${schritt(3,"Hauptteil – 60 Min.",ph==="haupt",`Lesen, Grammatik, Sprachbausteine, Satzbau. Die Uhr läuft automatisch, danach wird automatisch abgegeben.`)}
-      ${schritt(4,"Ende",ph==="ende","Alle Antworten sind gesperrt. Ergebnisse ansehen, Mündlich bewerten.")}</div>
+      ${schritt(4,"Ende",ph==="ende","Alle Antworten sind gesperrt. Ergebnisse ansehen.")}</div>
       <div class="card row">${ph==="warten"?`<div id="qr"></div><button class="btn" data-phase="hoeren" style="font-size:20px">▶ Hören starten</button>`:""}
         ${ph==="hoeren"?`<button class="btn ok" data-phase="haupt" style="font-size:20px">▶ Hören beenden – 60 Minuten starten</button>`:""}
         ${ph==="haupt"?`<b>Restzeit: ${mmss(restSek(S.info))}</b><button class="btn ghost" id="plus5">＋5 Min.</button><button class="btn rot" data-phase="ende">⏹ Prüfung jetzt beenden</button>`:""}
@@ -291,9 +291,9 @@ function leitung(){
     if(detail){ const z=L.find(z=>z.p===detail); if(z) return einzel(T,z); detail=null; }
     const teilNamen=L.length?L[0].b.teile.map(t=>t.titel.split(":")[0]):[];
     let h=`<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="csv">⬇ Tabelle (CSV) herunterladen</button><button class="btn ghost" id="drucken">🖨 Drucken</button><span class="small muted">Tippe auf einen Namen für alle Einzelheiten.</span></div>
-      <table class="t"><tr><th>Name</th>${teilNamen.map(n=>`<th>${esc(n)}</th>`).join("")}<th>Schriftlich</th><th>Mündlich</th><th>Gesamt</th><th>Note</th></tr>
+      <table class="t"><tr><th>Name</th>${teilNamen.map(n=>`<th>${esc(n)}</th>`).join("")}${(T.muendlich||[]).length?"<th>Schriftlich</th><th>Mündlich</th>":""}<th>Gesamt</th><th>Note</th></tr>
       ${L.sort((a,b)=>b.b.proz-a.b.proz).map(({p,x,b})=>`<tr class="klick" data-detail="${p}"><td><b>${esc(x.name)}</b>${x.abgegeben?"":' <span class="small muted">(nicht abgegeben)</span>'}</td>${b.teile.map(t=>`<td>${t.p}/${t.max}</td>`).join("")}
-        <td>${b.sp}/${b.smax} ${pill(b.smax?Math.round(b.sp/b.smax*100):0)}</td><td>${b.mBewertet?`${b.mp}/${b.mmax}`:'<span class="muted">–</span>'}</td><td><b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</td><td>${note(b.proz)}</td></tr>`).join("")}</table>`;
+        ${(T.muendlich||[]).length?`<td>${b.sp}/${b.smax} ${pill(b.smax?Math.round(b.sp/b.smax*100):0)}</td><td>${b.mBewertet?`${b.mp}/${b.mmax}`:'<span class="muted">–</span>'}</td>`:""}<td><b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</td><td>${note(b.proz)}</td></tr>`).join("")}</table>`;
     if(L.length){ /* Klasse: Themen */
       const th={}; L.forEach(({b})=>Object.entries(b.themen).forEach(([k,v])=>{ th[k]=th[k]||{p:0,n:0}; th[k].p+=v.p; th[k].n+=v.n; }));
       h+=`<div class="raster" style="margin-top:14px"><div class="card"><h3>📚 Klasse: Themen (Durchschnitt)</h3>${Object.entries(th).sort((a,b)=>a[1].p/a[1].n-b[1].p/b[1].n).map(([k,v])=>{ const q=Math.round(v.p/v.n*100); return `<div class="row" style="margin:4px 0"><span style="width:190px">${esc(k)}</span><div class="balken" style="flex:1"><i style="width:${q}%;background:${q>=67?"var(--ok)":q>=50?"var(--gold)":"var(--bad)"}"></i></div><b style="width:50px;text-align:right">${q} %</b></div>`; }).join("")}</div>`;
@@ -305,7 +305,7 @@ function leitung(){
     if(it.typ==="satz") return (x.k[0]||"").replace(/^./,c=>c.toUpperCase())+(it.p||""); if(it.typ==="zu") return String(x.k); return it.o[x.k]; }
   function einzel(T,{p,x,b}){ const M=(S.muendlich||{})[p]||{};
     return `<div class="row noprint" style="margin-bottom:10px"><button class="btn ghost" id="zurueck">◀ Alle Ergebnisse</button><button class="btn ghost" id="drucken">🖨 Drucken</button></div>
-      <div class="card"><h2>${esc(x.name)}</h2><div class="row"><span>Schriftlich: <b>${b.sp}/${b.smax}</b></span><span>Mündlich: <b>${b.mBewertet?`${b.mp}/${b.mmax}`:"noch nicht bewertet"}</b></span><span>Gesamt: <b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</span><span>Note: <b>${note(b.proz)}</b></span>
+      <div class="card"><h2>${esc(x.name)}</h2><div class="row">${(T.muendlich||[]).length?`<span>Schriftlich: <b>${b.sp}/${b.smax}</b></span><span>Mündlich: <b>${b.mBewertet?`${b.mp}/${b.mmax}`:"noch nicht bewertet"}</b></span>`:""}<span>Gesamt: <b>${b.ges}/${b.gmax}</b> ${pill(b.proz)}</span><span>Note: <b>${note(b.proz)}</b></span>
         <span class="small muted">${x.abgegeben?`Abgabe ${new Date(Number(x.abgabe)||0).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})}${x.auto?" (Zeit abgelaufen)":""}`:"nicht abgegeben"}</span></div>${M.notiz?`<p class="small">📝 ${esc(M.notiz)}</p>`:""}</div>
       <div class="raster"><div class="card"><h3>Stärken & Schwächen</h3>${Object.entries(b.themen).sort((a,c)=>a[1].p/a[1].n-c[1].p/c[1].n).map(([k,v])=>{ const q=Math.round(v.p/v.n*100); return `<div class="row" style="margin:4px 0"><span style="width:180px">${esc(k)}</span><div class="balken" style="flex:1"><i style="width:${q}%;background:${q>=67?"var(--ok)":q>=50?"var(--gold)":"var(--bad)"}"></i></div><b style="width:60px;text-align:right">${v.p}/${v.n}</b></div>`; }).join("")}</div>
       <div class="card"><h3>Teile</h3>${b.teile.map(t=>`<div class="row" style="margin:4px 0"><span style="width:180px">${esc(t.titel)}</span><div class="balken" style="flex:1"><i style="width:${t.max?t.p/t.max*100:0}%"></i></div><b style="width:60px;text-align:right">${t.p}/${t.max}</b></div>`).join("")}</div></div>

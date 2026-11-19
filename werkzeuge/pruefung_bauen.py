@@ -114,10 +114,7 @@ teil("satzbau", "Satzbau", "Tippe die Wörter in der richtigen Reihenfolge. Fals
      [satz(f"s-{i+1}", w, a, p, t) for i, (w, a, p, t) in enumerate(SZ)])
 
 TEST = {"id": "a2-l8-12", "titel": "Test A2 · Lektion 8–12", "dauer": 60, "teile": teile,
-        "muendlich": [{"id": "m1", "titel": "Teil 1: Sich vorstellen", "max": 3, "hilfe": "Name, Alter, Herkunft, Wohnort, Sprachen, Hobbys"},
-                      {"id": "m2", "titel": "Teil 2: Über ein Erlebnis sprechen (Perfekt)", "max": 4, "hilfe": "z. B. Wochenende, letzter Geburtstag, erste Tage in Plön"},
-                      {"id": "m3", "titel": "Teil 3: Gemeinsam etwas planen", "max": 4, "hilfe": "z. B. Party, Picknick, Ausflug – Vorschläge machen, reagieren"},
-                      {"id": "m4", "titel": "Aussprache & Wortschatz", "max": 4, "hilfe": "verständlich, passende Wörter, ganze Sätze"}]}
+        "muendlich": []}
 head = "/* Automatisch erzeugt mit werkzeuge/pruefung_bauen.py – bitte dort ändern. */\n"
 open(os.path.join(ziel, "a2-l8-12.js"), "w").write(head + "window.PRUEFUNGEN = window.PRUEFUNGEN || {};\nwindow.PRUEFUNGEN[\"a2-l8-12\"] = " + J(TEST) + ";\n")
 open(os.path.join(ziel, "a2-l8-12-loesung.js"), "w").write(head + "window.PRUEFUNG_LOESUNGEN = window.PRUEFUNG_LOESUNGEN || {};\nwindow.PRUEFUNG_LOESUNGEN[\"a2-l8-12\"] = " + J(key) + ";\n")
