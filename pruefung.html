@@ -78,6 +78,7 @@ table.t tr.klick{cursor:pointer} table.t tr.klick:hover{background:var(--soft)}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="pruefung/a2-l8-12.js"></script>
+<script src="pruefung/hoeren-vorlage.js"></script>
 <script>
 /* =========================================================
    PRÜFUNG (Klick-Test mit Code)
@@ -218,8 +219,12 @@ function leitung(){
     $$("[data-neu]").forEach(b=>b.onclick=()=>neu(b.dataset.neu)); $$("[data-oeffnen]").forEach(b=>b.onclick=()=>oeffnen(b.dataset.oeffnen)); }
   async function neu(test){ const Z="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c="";
     for(let v=0; v<20; v++){ c=Array.from({length:5},()=>Z[Math.floor(Math.random()*Z.length)]).join(""); const ex=(await db.ref(`${ROOT}/${c}/info`).once("value")).val(); if(!ex) break; }
-    CODE=c; await R().set({info:{test, phase:"warten", dauer:(TEST(test)||{}).dauer||60, extra:0, erstellt:TS()}, hoeren:{info:"Die Lehrkraft spielt die Texte ab. Du hörst jeden Text zweimal. Tippe die richtige Antwort.", items:Array.from({length:8},()=>({f:"", o:["a","b","c"]}))}, hkey:{}});
+    CODE=c; await R().set({info:{test, phase:"warten", dauer:(TEST(test)||{}).dauer||60, extra:0, erstellt:TS()}, ...vorlageDaten()});
     oeffnen(c); }
+  function vorlageDaten(){ const V=Object.values(window.HOER_VORLAGEN||{})[0];
+    if(!V) return {hoeren:{info:"Die Lehrkraft spielt die Texte ab. Du hörst jeden Text zweimal. Tippe die richtige Antwort.", items:Array.from({length:8},()=>({f:"", o:["a","b","c"]}))}, hkey:{}, htrack:{}};
+    const ht={}; V.items.forEach((it,i)=>ht[i]=[it.t,it.q].filter(Boolean).join(" · "));
+    return {hoeren:{info:V.info, items:V.items.map(it=>({f:it.f, o:it.o.slice()}))}, hkey:{}, htrack:ht}; }
   function ladeLoesung(test){ return new Promise(res=>{ if((window.PRUEFUNG_LOESUNGEN||{})[test]) return res(); const s=document.createElement("script"); s.src=`pruefung/${test}-loesung.js?v=${Date.now()}`; s.onload=res; s.onerror=res; document.head.appendChild(s); }); }
   async function oeffnen(c){ CODE=c; history.replaceState(null,"","?leitung=1&code="+c);
     R().on("value", async s=>{ S=s.val()||{}; if(S.info && !K){ await ladeLoesung(S.info.test); K=(window.PRUEFUNG_LOESUNGEN||{})[S.info.test]||{}; } male(); });
@@ -263,6 +268,9 @@ function leitung(){
         ${ph==="hoeren"?`<button class="btn ok" data-phase="haupt" style="font-size:20px">▶ Hören beenden – 60 Minuten starten</button>`:""}
         ${ph==="haupt"?`<b>Restzeit: ${mmss(restSek(S.info))}</b><button class="btn ghost" id="plus5">＋5 Min.</button><button class="btn rot" data-phase="ende">⏹ Prüfung jetzt beenden</button>`:""}
         ${ph==="ende"?`<b>Die Prüfung ist beendet.</b><button class="btn ghost" data-phase="haupt">↩ wieder öffnen</button><button class="btn" data-tab="ergebnis">📊 Ergebnisse</button>`:""}</div>`;
+    if(ph==="warten"||ph==="hoeren"){ const tr=S.htrack||{}; let last=null;
+      h+=`<div class="card"><h3>🎵 Abspielliste Hören <span class="small muted">(nur hier sichtbar, nicht auf den Handys)</span></h3><table class="t"><tr><th>#</th><th>Track</th><th>Aufgabe</th><th>Lösung</th></tr>${H.map((it,i)=>{ const t=tr[i]||""; const neu=t!==last; last=t; const k=(S.hkey||{})[i];
+        return `<tr${neu&&i?' style="border-top:3px solid var(--line)"':""}><td>${i+1}</td><td>${neu?`<b>${esc(t||"–")}</b>`:'<span class="muted">″</span>'}</td><td>${esc(it.f||"")}</td><td>${k!==undefined&&k!==null?esc((it.o||[])[k]||""):'<span class="nein">fehlt</span>'}</td></tr>`; }).join("")}</table></div>`; }
     const teile=T.teile; const cnt=(A,t)=>t.items.filter(it=>A[it.id]!==undefined&&A[it.id]!=="").length;
     h+=`<table class="t"><tr><th>Name</th><th>Status</th><th>Hören</th>${teile.map(t=>`<th>${esc(t.titel.split(":")[0])}</th>`).join("")}<th>Abgabe</th><th></th></tr>
       ${tn().map(([p,x])=>{ const A=(S.antw||{})[p]||{}; const hn=H.filter((_,i)=>A["h-"+(i+1)]!==undefined).length;
@@ -270,16 +278,18 @@ function leitung(){
         <td>${x.abgegeben?`<span class="ja">✓ ${new Date(Number(x.abgabe)||0).toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"})}${x.auto?" (Zeit)":""}</span>`:"–"}</td>
         <td class="noprint">${x.abgegeben?`<button class="btn sm ghost" data-oeffne="${p}">🔓 öffnen</button>`:""}<button class="btn sm ghost" data-ab="${p}" title="Handy abmelden – Antworten bleiben">↺</button></td></tr>`; }).join("")||'<tr><td colspan="9" class="muted">Noch niemand angemeldet.</td></tr>'}</table>`;
     return h; }
-  function hoerenEdit(){ if(!entwurf) entwurf={info:(S.hoeren||{}).info||"", items:hoerItems(S.hoeren).map((it,i)=>({f:it.f||"", o:(it.o||["a","b","c"]).slice(), k:(S.hkey||{})[i]}))};
+  function hoerenEdit(){ if(!entwurf) entwurf={info:(S.hoeren||{}).info||"", items:hoerItems(S.hoeren).map((it,i)=>({f:it.f||"", o:(it.o||["a","b","c"]).slice(), k:(S.hkey||{})[i], t:(S.htrack||{})[i]||""}))};
+    const VL=Object.values(window.HOER_VORLAGEN||{});
     const E=entwurf; const gesperrt=S.info.phase!=="warten"&&S.info.phase!=="hoeren";
     return `<div class="card"><h2>🎧 Hören einrichten</h2><p class="muted">Du spielst die Texte im Raum ab. Hier trägst du die Aufgaben und die richtigen Antworten ein. Ohne Fragetext erscheint auf dem Handy nur „Aufgabe 1: a / b / c“ – wie ein Antwortbogen zu deinem Aufgabenblatt.</p>
       <label class="small"><b>Hinweis für die Lernenden</b></label><input id="hinfo" value="${esc(E.info)}" style="width:100%;min-height:42px;border:2px solid var(--line);border-radius:10px;padding:4px 10px">
-      <div class="row" style="margin-top:10px"><span>Anzahl Aufgaben:</span><button class="btn sm ghost" id="hminus">−</button><b>${E.items.length}</b><button class="btn sm ghost" id="hplus">＋</button>${gesperrt?`<span class="nein small">Achtung: Die Prüfung läuft schon – Änderungen nur bei Fehlern!</span>`:""}</div></div>
+      <div class="row" style="margin-top:10px"><span>Anzahl Aufgaben:</span><button class="btn sm ghost" id="hminus">−</button><b>${E.items.length}</b><button class="btn sm ghost" id="hplus">＋</button>${VL.map((v,n)=>`<button class="btn sm ghost" data-vorlage="${n}">📥 Vorlage laden: ${esc(v.titel)}</button>`).join("")}${gesperrt?`<span class="nein small">Achtung: Die Prüfung läuft schon – Änderungen nur bei Fehlern!</span>`:""}</div></div>
       ${E.items.map((it,i)=>`<div class="card"><div class="row" style="justify-content:space-between"><b>Aufgabe ${i+1}</b><span class="small">Antworten: <button class="btn sm ${it.o.join()==="a,b,c"?"gold":"ghost"}" data-htyp="${i}|abc">a / b / c</button> <button class="btn sm ${it.o.join()==="richtig,falsch"?"gold":"ghost"}" data-htyp="${i}|rf">richtig / falsch</button> <button class="btn sm ${it.o.join()==="a,b,c,d"?"gold":"ghost"}" data-htyp="${i}|abcd">a–d</button></span></div>
         <input data-hf="${i}" value="${esc(it.f)}" placeholder="Frage (optional), z. B. „Wann fährt der Zug?“" style="width:100%;min-height:40px;border:2px solid var(--line);border-radius:10px;padding:4px 10px;margin:8px 0">
+        <div class="row" style="margin-bottom:8px"><span class="small">🎵 Track (nur für dich):</span><input data-ht="${i}" value="${esc(it.t||"")}" placeholder="z. B. AB-CD 2 · Track 45" style="flex:1;min-width:160px;min-height:36px;border:2px dashed var(--line);border-radius:10px;padding:4px 10px"></div>
         <div class="row">${it.o.map((x,k)=>`<input data-ho="${i}|${k}" value="${esc(x)}" style="flex:1;min-width:120px;min-height:38px;border:2px solid ${Number(it.k)===k?"var(--ok)":"var(--line)"};border-radius:10px;padding:4px 10px">`).join("")}</div>
         <div class="row" style="margin-top:6px"><span class="small">Richtig ist:</span>${it.o.map((x,k)=>`<button class="btn sm ${Number(it.k)===k?"ok":"ghost"}" data-hk="${i}|${k}">${esc(x||BUCH[k])}</button>`).join("")}</div></div>`).join("")}
-      <div class="card row"><button class="btn ok" id="hspeichern" style="font-size:18px">💾 Speichern</button><button class="btn ghost" id="hverwerfen">verwerfen</button><span class="small muted">Erst nach „Speichern“ sehen die Handys die Änderungen.</span></div>`; }
+      <div class="card row"><button class="btn ok" id="hspeichern" style="font-size:18px">💾 Speichern</button><button class="btn ghost" id="hverwerfen">verwerfen</button>${VL.some(v=>(v.extra||[]).length)?`<div class="small muted" style="flex-basis:100%">Weitere Hörübungen im Buch (nicht als Klick-Aufgabe umgebaut): ${VL.flatMap(v=>v.extra||[]).map(esc).join(" · ")}</div>`:""}<span class="small muted">Erst nach „Speichern“ sehen die Handys die Änderungen.</span></div>`; }
   function muendlich(T){ const M=T.muendlich||[];
     return `<div class="card"><h2>🗣️ Mündliche Prüfung</h2><p class="muted">Tippe die Punkte direkt an – sie werden sofort gespeichert. Hilfen: ${M.map(m=>`<br><b>${esc(m.titel)}</b> (max. ${m.max}): ${esc(m.hilfe)}`).join("")}</p></div>
       <table class="t"><tr><th>Name</th>${M.map(m=>`<th>${esc(m.titel)}</th>`).join("")}<th>Summe</th><th>Notiz</th></tr>
@@ -329,10 +339,14 @@ function leitung(){
       $$("[data-ho]").forEach(x=>x.oninput=()=>{ const [i,k]=x.dataset.ho.split("|").map(Number); E.items[i].o[k]=x.value; });
       $$("[data-hk]").forEach(b=>b.onclick=()=>{ const [i,k]=b.dataset.hk.split("|").map(Number); E.items[i].k=k; male(); });
       $$("[data-htyp]").forEach(b=>b.onclick=()=>{ const [i,t]=b.dataset.htyp.split("|"); E.items[Number(i)].o={abc:["a","b","c"],rf:["richtig","falsch"],abcd:["a","b","c","d"]}[t].slice(); E.items[Number(i)].k=undefined; male(); });
-      on("#hplus", ()=>{ E.items.push({f:"",o:["a","b","c"]}); male(); }); on("#hminus", ()=>{ if(E.items.length>1){ E.items.pop(); male(); } });
+      on("#hplus", ()=>{ E.items.push({f:"",o:["a","b","c"],t:""}); male(); });
+      $$("[data-ht]").forEach(x=>x.oninput=()=>E.items[Number(x.dataset.ht)].t=x.value);
+      $$("[data-vorlage]").forEach(b=>b.onclick=()=>{ if(!confirm("Alle Hör-Aufgaben durch die Vorlage ersetzen?")) return; const V=Object.values(window.HOER_VORLAGEN||{})[Number(b.dataset.vorlage)];
+        entwurf={info:V.info, items:V.items.map(it=>({f:it.f, o:it.o.slice(), k:undefined, t:[it.t,it.q].filter(Boolean).join(" · ")}))}; male(); }); on("#hminus", ()=>{ if(E.items.length>1){ E.items.pop(); male(); } });
       on("#hverwerfen", ()=>{ entwurf=null; male(); });
       on("#hspeichern", ()=>{ const hk={}; E.items.forEach((it,i)=>{ if(it.k!==undefined) hk[i]=it.k; });
-        R().update({hoeren:{info:E.info, items:E.items.map(it=>({f:it.f, o:it.o}))}, hkey:hk}).then(()=>{ entwurf=null; male(); alert("Gespeichert ✓"); }); }); }
+        const ht={}; E.items.forEach((it,i)=>{ if(it.t) ht[i]=it.t; });
+        R().update({hoeren:{info:E.info, items:E.items.map(it=>({f:it.f, o:it.o}))}, hkey:hk, htrack:ht}).then(()=>{ entwurf=null; male(); alert("Gespeichert ✓"); }); }); }
     /* Mündlich */
     $$("[data-mp]").forEach(b=>b.onclick=()=>{ const [p,m,k]=b.dataset.mp.split("|"); const cur=((S.muendlich||{})[p]||{})[m]; R(`muendlich/${p}/${m}`).set(Number(cur)===Number(k)&&cur!==undefined?null:Number(k)); });
     $$("[data-mn]").forEach(x=>x.onchange=()=>R(`muendlich/${x.dataset.mn}/notiz`).set(x.value));
