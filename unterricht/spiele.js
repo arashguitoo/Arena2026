@@ -258,7 +258,7 @@ window.UNTERRICHT_PLAENE.spiele = {
       tafel: [ tafel("📖 Kettengeschichte: Ihr entscheidet!", `<ol class="schritte"><li><b>Alle stimmen ab</b>: Wie geht die Geschichte weiter? Die <b>Mehrheit</b> entscheidet.</li>
         <li>Dann ziehe ich <b>eine Person</b>.</li><li>Sie baut den Satz aus den <b>Wortkarten</b> – das Verb auf <b>Position 2</b>!</li>
         <li>Sie liest den Satz laut vor. <b>Alle lesen mit.</b> Dann geht die Geschichte weiter – mit der nächsten Person.</li></ol>`) ],
-      aufgaben: [KETTE] },
+      aufgaben: [...(window.KETTEN_NEU || []), KETTE] },
     { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 15,
       tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie überlegt sich <b>3 Sätze über sich</b>.</li>
         <li><b>Ein Satz ist gelogen.</b> Sie tippt geheim: Welcher?</li><li>Sie sagt die Sätze laut: <b>„Satz 1: … Satz 2: … Satz 3: …“</b></li><li>Alle stimmen ab: Welcher Satz war gelogen?</li></ol>

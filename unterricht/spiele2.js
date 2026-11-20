@@ -204,6 +204,11 @@ window.UNTERRICHT_PLAENE.spiele2 = {
         <li>Alle anderen fragen – <b>nur Ja/Nein-Fragen</b>!</li><li>Die Person antwortet nur: <b>„Ja.“</b> oder <b>„Nein.“</b></li><li>Alle tippen am Handy: Wer ist sie? Ich löse auf.</li></ol>
         <p class="hinweis">Achtung: Das Verb steht bei der Frage <b>vorne</b>: <b>Bist</b> du groß? <b>Kannst</b> du fliegen?</p>`) ],
       aufgaben: window.SPIELE_WBI },
+    { id: "kette", icon: "📖", titel: "Kettengeschichte (neu)", minuten: 20,
+      tafel: [ tafel("📖 Kettengeschichte: Ihr entscheidet!", `<ol class="schritte"><li><b>Alle stimmen ab</b>: Wie geht die Geschichte weiter? Die <b>Mehrheit</b> entscheidet.</li>
+        <li>Dann ziehe ich <b>eine Person</b>.</li><li>Sie baut den Satz aus den <b>Wortkarten</b> – das Verb auf <b>Position 2</b>!</li>
+        <li>Sie liest den Satz laut vor. <b>Alle lesen mit.</b> Dann geht die Geschichte weiter.</li></ol>`) ],
+      aufgaben: window.KETTEN_NEU || [] },
     { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 15,
       tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie sagt <b>3 Sätze über sich</b> – über heute, früher oder später.</li>
         <li><b>Ein Satz ist gelogen.</b> Sie tippt geheim: Welcher?</li><li>Alle stimmen ab: Welcher Satz war gelogen?</li></ol>
