@@ -8,13 +8,20 @@
 const W1 = window.UNTERRICHT_PLAENE.wdh1;
 const WBI = { id: "g1", typ: "werbinich", minuten: 4, titel: "Wer bin ich? – Berufe raten",
   anleitung: "Eine Person hat einen geheimen Beruf. Alle fragen mit Ja/Nein-Fragen. Tippe deinen Tipp am Handy – du darfst ihn ändern, bis die Lehrkraft auflöst.",
-  fragen: ["Arbeitest du drinnen?", "Musst du früh aufstehen?", "Hilfst du Menschen?", "Trägst du eine Uniform?", "Darfst du ein Auto fahren?", "Arbeitest du mit Essen?", "Kannst du gut rechnen?", "Arbeitest du mit Kindern?"],
-  begriffe: [
-    { n: "Ärztin", e: "👩‍⚕️" }, { n: "Polizist", e: "👮" }, { n: "Koch", e: "🧑‍🍳" }, { n: "Lehrerin", e: "👩‍🏫" },
-    { n: "Busfahrer", e: "🚌" }, { n: "Friseurin", e: "💇" }, { n: "Fußballer", e: "⚽" }, { n: "Bäcker", e: "🥖" },
-    { n: "Feuerwehrmann", e: "🚒" }, { n: "Verkäuferin", e: "🛒" }, { n: "Pilotin", e: "✈️" }, { n: "Mechaniker", e: "🔧" },
-    { n: "Bauer", e: "🚜" }, { n: "Sängerin", e: "🎤" }, { n: "Programmierer", e: "💻" }, { n: "Krankenpfleger", e: "🏥" }
-  ] };
+  fragen: ["Arbeitest du drinnen?", "Arbeitest du draußen?", "Musst du früh aufstehen?", "Hilfst du Menschen?", "Trägst du eine Uniform?", "Darfst du ein Auto fahren?", "Arbeitest du mit Essen?", "Arbeitest du mit Kindern?", "Arbeitest du mit Tieren?", "Arbeitest du am Computer?", "Arbeitest du in der Nacht?", "Machst du etwas mit den Händen?", "Ist deine Arbeit gefährlich?", "Brauchst du ein Studium?"],
+  begriffe: [{"n": "Ärztin", "e": "👩‍⚕️"}, {"n": "Polizist", "e": "👮"}, {"n": "Koch", "e": "🧑‍🍳"}, {"n": "Lehrerin", "e": "👩‍🏫"}, {"n": "Busfahrer", "e": "🚌"}, {"n": "Friseurin", "e": "💇"}, {"n": "Fußballer", "e": "⚽"}, {"n": "Bäcker", "e": "🥖"}, {"n": "Feuerwehrmann", "e": "🚒"}, {"n": "Verkäuferin", "e": "🛒"}, {"n": "Pilotin", "e": "✈️"}, {"n": "Mechaniker", "e": "🔧"}, {"n": "Bauer", "e": "🚜"}, {"n": "Sängerin", "e": "🎤"}, {"n": "Programmierer", "e": "💻"}, {"n": "Krankenpfleger", "e": "🏥"}, {"n": "Zahnärztin", "e": "🦷"}, {"n": "Tierarzt", "e": "🐶"}, {"n": "Apothekerin", "e": "💊"}, {"n": "Kellner", "e": "🍽️"}, {"n": "Taxifahrerin", "e": "🚕"}, {"n": "Lkw-Fahrer", "e": "🚛"}, {"n": "Postbote", "e": "📬"}, {"n": "Elektriker", "e": "💡"}, {"n": "Installateurin", "e": "🚿"}, {"n": "Tischler", "e": "🪚"}, {"n": "Gärtnerin", "e": "🌷"}, {"n": "Fischer", "e": "🎣"}, {"n": "Kapitänin", "e": "⚓"}, {"n": "Soldat", "e": "🪖"}, {"n": "Richterin", "e": "⚖️"}, {"n": "Anwalt", "e": "💼"}, {"n": "Journalistin", "e": "📰"}, {"n": "Fotograf", "e": "📸"}, {"n": "Schauspielerin", "e": "🎭"}, {"n": "Tänzer", "e": "💃"}, {"n": "Musiker", "e": "🎸"}, {"n": "Schriftstellerin", "e": "✍️"}, {"n": "Bibliothekar", "e": "📚"}, {"n": "Kassiererin", "e": "🧾"}, {"n": "Metzger", "e": "🥩"}, {"n": "Konditorin", "e": "🎂"}, {"n": "Erzieherin", "e": "🧸"}, {"n": "Hausmeister", "e": "🔑"}, {"n": "Reinigungskraft", "e": "🧹"}, {"n": "Architektin", "e": "📐"}, {"n": "Ingenieur", "e": "⚙️"}, {"n": "Wissenschaftlerin", "e": "🔬"}, {"n": "Astronaut", "e": "🚀"}, {"n": "Bauarbeiter", "e": "👷"}, {"n": "Lokführerin", "e": "🚆"}, {"n": "Fahrradkurier", "e": "🚴"}, {"n": "Schneiderin", "e": "🧵"}, {"n": "Optiker", "e": "👓"}, {"n": "Bankkaufmann", "e": "🏦"}, {"n": "Bürokauffrau", "e": "🗂️"}, {"n": "Altenpflegerin", "e": "👵"}, {"n": "Hebamme", "e": "👶"}, {"n": "Sanitäter", "e": "🚑"}, {"n": "Trainerin", "e": "🏋️"}, {"n": "Youtuber", "e": "🎥"}, {"n": "Dolmetscher", "e": "🗣️"}, {"n": "Tierpflegerin", "e": "🦁"}, {"n": "Imker", "e": "🐝"}, {"n": "Zauberer", "e": "🎩"}, {"n": "Malerin", "e": "🎨"}] };
+const WBI_TIERE = { id: "g1t", typ: "werbinich", minuten: 4, titel: "Wer bin ich? – Tiere",
+  anleitung: "Eine Person ist ein geheimes Tier. Alle fragen mit Ja/Nein-Fragen. Tippe deinen Tipp am Handy.",
+  fragen: ["Kannst du fliegen?", "Kannst du schwimmen?", "Lebst du im Wasser?", "Lebst du in Deutschland?", "Bist du groß?", "Hast du vier Beine?", "Hast du Federn?", "Frisst du Fleisch?", "Lebst du auf dem Bauernhof?", "Lebst du im Zoo?", "Bist du gefährlich?", "Bist du ein Haustier?"],
+  begriffe: [{"n": "der Hund", "e": "🐕"}, {"n": "die Katze", "e": "🐈"}, {"n": "das Pferd", "e": "🐎"}, {"n": "die Kuh", "e": "🐄"}, {"n": "das Schwein", "e": "🐖"}, {"n": "das Schaf", "e": "🐑"}, {"n": "die Ziege", "e": "🐐"}, {"n": "das Huhn", "e": "🐔"}, {"n": "die Ente", "e": "🦆"}, {"n": "der Hase", "e": "🐇"}, {"n": "die Maus", "e": "🐁"}, {"n": "der Elefant", "e": "🐘"}, {"n": "der Löwe", "e": "🦁"}, {"n": "der Tiger", "e": "🐅"}, {"n": "die Giraffe", "e": "🦒"}, {"n": "der Affe", "e": "🐒"}, {"n": "der Bär", "e": "🐻"}, {"n": "der Eisbär", "e": "🐻‍❄️"}, {"n": "der Pinguin", "e": "🐧"}, {"n": "der Wal", "e": "🐋"}, {"n": "der Delfin", "e": "🐬"}, {"n": "der Hai", "e": "🦈"}, {"n": "der Fisch", "e": "🐟"}, {"n": "das Krokodil", "e": "🐊"}, {"n": "die Schlange", "e": "🐍"}, {"n": "die Schildkröte", "e": "🐢"}, {"n": "der Frosch", "e": "🐸"}, {"n": "die Biene", "e": "🐝"}, {"n": "der Schmetterling", "e": "🦋"}, {"n": "die Spinne", "e": "🕷️"}, {"n": "die Ameise", "e": "🐜"}, {"n": "der Adler", "e": "🦅"}, {"n": "die Eule", "e": "🦉"}, {"n": "der Papagei", "e": "🦜"}, {"n": "das Kamel", "e": "🐫"}, {"n": "das Zebra", "e": "🦓"}, {"n": "das Känguru", "e": "🦘"}, {"n": "der Fuchs", "e": "🦊"}, {"n": "der Wolf", "e": "🐺"}, {"n": "der Igel", "e": "🦔"}, {"n": "das Eichhörnchen", "e": "🐿️"}, {"n": "der Hirsch", "e": "🦌"}, {"n": "der Krebs", "e": "🦀"}, {"n": "der Oktopus", "e": "🐙"}, {"n": "das Nashorn", "e": "🦏"}, {"n": "das Nilpferd", "e": "🦛"}, {"n": "der Panda", "e": "🐼"}, {"n": "der Koala", "e": "🐨"}, {"n": "der Dinosaurier", "e": "🦖"}] };
+const WBI_ESSEN = { id: "g1e", typ: "werbinich", minuten: 4, titel: "Wer bin ich? – Essen & Trinken",
+  anleitung: "Eine Person ist ein geheimes Essen oder Getränk. Alle fragen mit Ja/Nein-Fragen. Tippe deinen Tipp am Handy.",
+  fragen: ["Bist du süß?", "Bist du Obst?", "Bist du Gemüse?", "Bist du ein Getränk?", "Bist du rot?", "Isst man dich zum Frühstück?", "Bist du warm?", "Wächst du auf einem Baum?", "Kommst du von einem Tier?", "Bist du gesund?", "Bist du gelb?", "Kann man dich im Supermarkt kaufen?"],
+  begriffe: [{"n": "der Apfel", "e": "🍎"}, {"n": "die Banane", "e": "🍌"}, {"n": "die Erdbeere", "e": "🍓"}, {"n": "die Wassermelone", "e": "🍉"}, {"n": "die Traube", "e": "🍇"}, {"n": "die Zitrone", "e": "🍋"}, {"n": "die Orange", "e": "🍊"}, {"n": "die Kirsche", "e": "🍒"}, {"n": "die Ananas", "e": "🍍"}, {"n": "die Tomate", "e": "🍅"}, {"n": "die Kartoffel", "e": "🥔"}, {"n": "die Karotte", "e": "🥕"}, {"n": "die Gurke", "e": "🥒"}, {"n": "die Zwiebel", "e": "🧅"}, {"n": "der Knoblauch", "e": "🧄"}, {"n": "der Mais", "e": "🌽"}, {"n": "der Reis", "e": "🍚"}, {"n": "die Nudeln", "e": "🍝"}, {"n": "die Pizza", "e": "🍕"}, {"n": "der Döner", "e": "🥙"}, {"n": "der Burger", "e": "🍔"}, {"n": "die Pommes", "e": "🍟"}, {"n": "das Brot", "e": "🍞"}, {"n": "das Brötchen", "e": "🥖"}, {"n": "der Käse", "e": "🧀"}, {"n": "das Ei", "e": "🥚"}, {"n": "die Milch", "e": "🥛"}, {"n": "der Kaffee", "e": "☕"}, {"n": "der Tee", "e": "🍵"}, {"n": "das Wasser", "e": "💧"}, {"n": "der Saft", "e": "🧃"}, {"n": "die Schokolade", "e": "🍫"}, {"n": "das Eis", "e": "🍦"}, {"n": "der Kuchen", "e": "🍰"}, {"n": "die Suppe", "e": "🍲"}, {"n": "der Salat", "e": "🥗"}, {"n": "das Hähnchen", "e": "🍗"}, {"n": "die Wurst", "e": "🌭"}, {"n": "der Honig", "e": "🍯"}, {"n": "das Popcorn", "e": "🍿"}, {"n": "die Nuss", "e": "🥜"}, {"n": "der Pfannkuchen", "e": "🥞"}] };
+const WBI_ORTE = { id: "g1o", typ: "werbinich", minuten: 4, titel: "Wer bin ich? – Orte in der Stadt",
+  anleitung: "Eine Person ist ein geheimer Ort. Alle fragen mit Ja/Nein-Fragen. Tippe deinen Tipp am Handy.",
+  fragen: ["Bist du drinnen?", "Kann man bei dir etwas kaufen?", "Muss man bei dir Eintritt bezahlen?", "Gibt es dich in Plön?", "Kann man bei dir essen?", "Arbeiten bei dir Ärzte?", "Gehen Kinder zu dir?", "Ist es bei dir laut?", "Bist du in der Natur?", "Kann man bei dir Sport machen?", "Gehst du jeden Tag zu mir?", "Bist du am Wasser?"],
+  begriffe: [{"n": "der Bahnhof", "e": "🚉"}, {"n": "der Supermarkt", "e": "🛒"}, {"n": "die Schule", "e": "🏫"}, {"n": "das Krankenhaus", "e": "🏥"}, {"n": "die Apotheke", "e": "💊"}, {"n": "die Bank", "e": "🏦"}, {"n": "die Post", "e": "📮"}, {"n": "das Kino", "e": "🎬"}, {"n": "das Schwimmbad", "e": "🏊"}, {"n": "der Park", "e": "🌳"}, {"n": "der Strand", "e": "🏖️"}, {"n": "der Flughafen", "e": "✈️"}, {"n": "die Bäckerei", "e": "🥐"}, {"n": "das Restaurant", "e": "🍽️"}, {"n": "das Café", "e": "☕"}, {"n": "die Bibliothek", "e": "📚"}, {"n": "das Museum", "e": "🏛️"}, {"n": "die Kirche", "e": "⛪"}, {"n": "die Moschee", "e": "🕌"}, {"n": "das Rathaus", "e": "🏢"}, {"n": "die Polizei", "e": "🚓"}, {"n": "der Zoo", "e": "🦒"}, {"n": "das Stadion", "e": "🏟️"}, {"n": "das Hotel", "e": "🏨"}, {"n": "der Spielplatz", "e": "🛝"}, {"n": "die Tankstelle", "e": "⛽"}, {"n": "der Friseur", "e": "💈"}, {"n": "das Fitnessstudio", "e": "🏋️"}, {"n": "der Bauernhof", "e": "🚜"}, {"n": "das Schloss", "e": "🏰"}, {"n": "der Hafen", "e": "⚓"}, {"n": "der Wald", "e": "🌲"}, {"n": "der Berg", "e": "⛰️"}, {"n": "der See", "e": "🏞️"}, {"n": "die Disco", "e": "🪩"}, {"n": "die Arztpraxis", "e": "🩺"}] };
 const MALER = { id: "g2", typ: "maler", minuten: 2, titel: "Montagsmaler – mit Artikel!",
   anleitung: "Eine Person zeichnet am Handy – ohne Buchstaben! Alle sehen die Zeichnung und tippen das richtige Wort mit Artikel. Danach sagen alle laut: „Das ist der / die / das …“",
   woerter: [
@@ -161,8 +168,26 @@ const MALER = { id: "g2", typ: "maler", minuten: 2, titel: "Montagsmaler – mit
     { w: "die Kirche", e: "⛪" },
     { w: "das Zelt", e: "⛺" },
     { w: "der Brief", e: "✉️" },
-    { w: "die Zeitung", e: "📰" }
+    { w: "die Zeitung", e: "📰" },
+    { w: "die Leiter", e: "🪜" },
+    { w: "die Torte", e: "🎂" },
+    { w: "der Teller", e: "🍽️" },
+    { w: "die Tasse", e: "☕" },
+    { w: "das Glas", e: "🥛" },
+    { w: "der Vulkan", e: "🌋" },
+    { w: "die Biene", e: "🐝" },
+    { w: "die Schnecke", e: "🐌" },
+    { w: "der Pilz", e: "🍄" },
+    { w: "der Schneemann", e: "⛄" },
+    { w: "der Drache", e: "🐉" },
+    { w: "das Gespenst", e: "👻" },
+    { w: "der Roboter", e: "🤖" },
+    { w: "der Fuchs", e: "🦊" },
+    { w: "die Eule", e: "🦉" },
+    { w: "der Igel", e: "🦔" },
+    { w: "der Pinguin", e: "🐧" }
   ] };
+window.SPIELE_WBI = [WBI, WBI_TIERE, WBI_ESSEN, WBI_ORTE];
 const LUEGE = { id: "g3", typ: "luege", minuten: 3, titel: "Lügendetektor – 3 Sätze im Perfekt",
   anleitung: "Eine Person sagt 3 Sätze im Perfekt über sich. Ein Satz ist gelogen! Hör gut zu und tippe: Welcher Satz war gelogen – 1, 2 oder 3?",
   hilfe: ["Gestern habe ich …", "Letztes Wochenende bin ich …", "Als Kind habe ich …", "Letzten Sommer bin ich …", "Einmal habe ich …", "In meinem Heimatland habe ich …", "Heute Morgen bin ich …", "Letztes Jahr habe ich …"] };
@@ -219,7 +244,7 @@ window.UNTERRICHT_PLAENE.spiele = {
         <li>Alle anderen fragen – <b>nur Ja/Nein-Fragen</b>!</li><li>Die Person antwortet nur: <b>„Ja.“</b> oder <b>„Nein.“</b></li><li>Alle tippen am Handy: Wer ist sie? Ich löse auf.</li></ol>
         <div class="bsp">Arbeitest du drinnen? · Musst du früh aufstehen? · Darfst du ein Auto fahren? · Hilfst du Menschen?</div>
         <p class="hinweis">Achtung: Das Verb steht bei der Frage <b>vorne</b>!</p>`) ],
-      aufgaben: [WBI] },
+      aufgaben: [WBI, WBI_TIERE, WBI_ESSEN, WBI_ORTE] },
     { id: "maler", icon: "🎨", titel: "Montagsmaler mit Artikel", minuten: 20,
       tafel: [ tafel("🎨 Montagsmaler", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie zeichnet ein Wort am Handy – <b>ohne Buchstaben</b>.</li>
         <li>Die Zeichnung erscheint hier und auf allen Handys.</li><li>Alle tippen das Wort – <b>mit dem richtigen Artikel</b>!</li>

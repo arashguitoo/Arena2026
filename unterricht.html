@@ -748,7 +748,8 @@ function leitung(){
   function personWahlHtml(typ){ const h=schonDran(typ); const L=spieler(); if(!L.length) return "";
     return `<div style="margin-top:12px"><span class="small muted">Oder selbst wählen (✓ = war schon dran, ${h.length} von ${L.length}):</span><div class="row" style="margin-top:4px">${L.map(([p,x])=>`<button class="btn sm ${h.includes(p)?"ghost":""}" data-wahlp="${p}" style="${x.online===false?"opacity:.5":""}">${h.includes(p)?"✓ ":""}${esc(x.name)}</button>`).join("")}</div></div>`; }
   function rateZiehen(A, fest){ const p=personZiehen(A.typ, fest); if(!p) return;
-    if(A.typ==="werbinich"){ const W=S.wbi||{}; const nr=(W.nr||0)+1; const g=rnd(A.begriffe.length); const wahl=mische([g,...mische(A.begriffe.map((_,i)=>i).filter(i=>i!==g)).slice(0,5)]); I().update({wbi:{aid:A.id, nr, pid:p, geheim:g, wahl, zeigen:false}, [`wr/${nr}`]:g}); timerSetze(A.minuten||4); }
+    if(A.typ==="werbinich"){ const W=S.wbi||{}; const nr=(W.nr||0)+1; const alleI=A.begriffe.map((_,i)=>i); const schon=Object.values(((S.wu||{})[A.id])||{}); let frei=alleI.filter(i=>!schon.includes(i)); if(!frei.length) frei=alleI;
+      const g=frei[rnd(frei.length)]; const wahl=mische([g,...mische(alleI.filter(i=>i!==g)).slice(0,5)]); I().update({wbi:{aid:A.id, nr, pid:p, geheim:g, wahl, zeigen:false}, [`wr/${nr}`]:g, ...(frei.length===alleI.length&&schon.length?{[`wu/${A.id}`]:{[nr]:g}}:{[`wu/${A.id}/${nr}`]:g})}); timerSetze(A.minuten||4); }
     if(A.typ==="luege"){ const nr=((S.lu||{}).nr||0)+1; I("lu").set({aid:A.id, nr, pid:p}); timerSetze(A.minuten||3); }
     if(A.typ==="maler"){ const nr=((S.ma||{}).nr||0)+1; const benutzt=Object.values(S.mr||{}); let frei=A.woerter.map((_,i)=>i).filter(i=>!benutzt.includes(A.woerter[i].w)); if(!frei.length) frei=A.woerter.map((_,i)=>i); const w=frei[rnd(frei.length)];
       const andere=mische(A.woerter.map((_,i)=>i).filter(i=>i!==w)); const o=andere[0];
