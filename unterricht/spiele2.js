@@ -181,7 +181,7 @@ const SCHARADE = { id: "g7", typ: "maler", modus: "scharade", minuten: 2, titel:
 
 window.UNTERRICHT_PLAENE.spiele2 = {
   id: "spiele2", titel: "Spielestunde 2: Profi-Quiz, Malen, Scharade, Lügendetektor", minuten: 75,
-  text: "Wer wird Deutsch-Profi? (alle gleichzeitig, 3 Leben) · Montagsmaler · Malen mit 2 Bildern (zusammengesetzte Wörter) · Scharade · Lügendetektor mit Satzanfängen",
+  text: "Wer wird Deutsch-Profi? (alle gleichzeitig, 3 Leben) · Montagsmaler · Malen mit 2 Bildern (zusammengesetzte Wörter) · Scharade · Lügendetektor mit Satzanfängen (alle Zeiten)",
   bloecke: [
     { id: "profi", icon: "🏆", titel: "Wer wird Deutsch-Profi?", minuten: 15,
       tafel: [ tafel("🏆 Wer wird Deutsch-Profi?", `<ol class="schritte"><li><b>Alle</b> spielen gleichzeitig am Handy.</li><li>Jede Person hat <b>3 Leben</b>: ❤️❤️❤️</li>
@@ -205,9 +205,9 @@ window.UNTERRICHT_PLAENE.spiele2 = {
         <p class="hinweis">Achtung: Das Verb steht bei der Frage <b>vorne</b>: <b>Bist</b> du groß? <b>Kannst</b> du fliegen?</p>`) ],
       aufgaben: window.SPIELE_WBI },
     { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 15,
-      tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie sagt <b>3 Sätze im Perfekt</b> über sich.</li>
+      tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie sagt <b>3 Sätze über sich</b> – über heute, früher oder später.</li>
         <li><b>Ein Satz ist gelogen.</b> Sie tippt geheim: Welcher?</li><li>Alle stimmen ab: Welcher Satz war gelogen?</li></ol>
-        <div class="bsp">Gestern habe ich … · Letztes Wochenende bin ich … · Als Kind habe ich … · Einmal habe ich …</div>`) ],
+        <div class="bsp">Ich habe … · Ich kann … · Mein Lieblingsessen ist … · Gestern habe ich … · Als Kind war ich … · Nächstes Jahr will ich …</div>`) ],
       aufgaben: [LUEGE] }
   ]
 };

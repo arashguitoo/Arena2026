@@ -2,7 +2,7 @@
    PLAN „Spielestunde“ – Ratespiele am Platz (alle Handys spielen mit)
    werbinich: eine Person hat einen geheimen Beruf, alle fragen mit Ja/Nein und tippen ihren Tipp
    maler:     eine Person zeichnet am Handy, alle sehen die Zeichnung und tippen das Wort mit Artikel
-   luege:     eine Person sagt 3 Sätze im Perfekt, einer ist gelogen – alle stimmen ab
+   luege:     eine Person sagt 3 Sätze über sich, einer ist gelogen – alle stimmen ab
    ========================================================= */
 (function(){
 const W1 = window.UNTERRICHT_PLAENE.wdh1;
@@ -187,10 +187,14 @@ const MALER = { id: "g2", typ: "maler", minuten: 2, titel: "Montagsmaler – mit
     { w: "der Igel", e: "🦔" },
     { w: "der Pinguin", e: "🐧" }
   ] };
-window.SPIELE_WBI = [WBI, WBI_TIERE, WBI_ESSEN, WBI_ORTE];
-const LUEGE = { id: "g3", typ: "luege", minuten: 3, titel: "Lügendetektor – 3 Sätze im Perfekt",
-  anleitung: "Eine Person sagt 3 Sätze im Perfekt über sich. Ein Satz ist gelogen! Hör gut zu und tippe: Welcher Satz war gelogen – 1, 2 oder 3?",
-  hilfe: ["Gestern habe ich …", "Letztes Wochenende bin ich …", "Als Kind habe ich …", "Letzten Sommer bin ich …", "Einmal habe ich …", "In meinem Heimatland habe ich …", "Heute Morgen bin ich …", "Letztes Jahr habe ich …"] };
+const WBI_MIX = { id: "g1m", typ: "werbinich", minuten: 4, titel: "Wer bin ich? – Gemischt (alles)",
+  anleitung: "Eine Person hat einen geheimen Begriff: Beruf, Tier, Essen oder Ort – alles gemischt! Alle fragen mit Ja/Nein-Fragen. Tippe deinen Tipp am Handy.",
+  fragen: ["Bist du ein Mensch?", "Bist du ein Tier?", "Kann man dich essen?", "Bist du ein Ort?", "Bist du groß?", "Bist du drinnen?", "Gibt es dich in Plön?", "Arbeitest du?", "Kannst du schwimmen?", "Bist du süß?", "Kann man dich kaufen?", "Hast du Beine?"],
+  begriffe: [...WBI.begriffe, ...WBI_TIERE.begriffe, ...WBI_ESSEN.begriffe, ...WBI_ORTE.begriffe] };
+window.SPIELE_WBI = [WBI_MIX, WBI, WBI_TIERE, WBI_ESSEN, WBI_ORTE];
+const LUEGE = { id: "g3", typ: "luege", minuten: 3, titel: "Lügendetektor – 3 Sätze über mich",
+  anleitung: "Eine Person sagt 3 Sätze über sich – über heute, früher oder später. Ein Satz ist gelogen! Hör gut zu und tippe: Welcher Satz war gelogen – 1, 2 oder 3?",
+  hilfe: ["Ich habe …", "Ich kann …", "Ich mag kein…", "Mein Lieblingsessen ist …", "Ich spiele gern …", "Ich war schon einmal in …", "Gestern habe ich …", "Letztes Wochenende bin ich …", "Als Kind war ich …", "Als Kind hatte ich …", "Ich möchte später …", "Nächstes Jahr will ich …", "Ich habe Angst vor …", "Ich muss jeden Tag …", "Zu Hause habe ich …", "Mein Vater / Meine Mutter ist …"] };
 
 const W_ = (e, label, w, a, weiter, p) => ({ e, label, w, a, weiter, p: p || "." });
 const KETTE = { id: "g5", typ: "kette", minuten: 3, titel: "Kettengeschichte: Leos verrückter Samstag",
@@ -237,14 +241,14 @@ const KETTE = { id: "g5", typ: "kette", minuten: 3, titel: "Kettengeschichte: Le
 const tafel = (titel, html) => ({ titel, html });
 window.UNTERRICHT_PLAENE.spiele = {
   id: "spiele", titel: "Spielestunde: Raten & Sprechen am Platz", minuten: 90,
-  text: "Wer bin ich? · Montagsmaler mit Artikel · Kettengeschichte mit Entscheidungen · Lügendetektor im Perfekt · Duell 1 gegen 1 – alles am Platz, alle Handys spielen mit",
+  text: "Wer bin ich? · Montagsmaler mit Artikel · Kettengeschichte mit Entscheidungen · Lügendetektor · Duell 1 gegen 1 – alles am Platz, alle Handys spielen mit",
   bloecke: [
     { id: "wbi", icon: "❓", titel: "Wer bin ich?", minuten: 20,
       tafel: [ tafel("❓ Wer bin ich?", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Ihr Handy zeigt einen <b>geheimen Beruf</b>.</li>
         <li>Alle anderen fragen – <b>nur Ja/Nein-Fragen</b>!</li><li>Die Person antwortet nur: <b>„Ja.“</b> oder <b>„Nein.“</b></li><li>Alle tippen am Handy: Wer ist sie? Ich löse auf.</li></ol>
         <div class="bsp">Arbeitest du drinnen? · Musst du früh aufstehen? · Darfst du ein Auto fahren? · Hilfst du Menschen?</div>
         <p class="hinweis">Achtung: Das Verb steht bei der Frage <b>vorne</b>!</p>`) ],
-      aufgaben: [WBI, WBI_TIERE, WBI_ESSEN, WBI_ORTE] },
+      aufgaben: [WBI, WBI_TIERE, WBI_ESSEN, WBI_ORTE, WBI_MIX] },
     { id: "maler", icon: "🎨", titel: "Montagsmaler mit Artikel", minuten: 20,
       tafel: [ tafel("🎨 Montagsmaler", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie zeichnet ein Wort am Handy – <b>ohne Buchstaben</b>.</li>
         <li>Die Zeichnung erscheint hier und auf allen Handys.</li><li>Alle tippen das Wort – <b>mit dem richtigen Artikel</b>!</li>
@@ -256,7 +260,7 @@ window.UNTERRICHT_PLAENE.spiele = {
         <li>Sie liest den Satz laut vor. <b>Alle lesen mit.</b> Dann geht die Geschichte weiter – mit der nächsten Person.</li></ol>`) ],
       aufgaben: [KETTE] },
     { id: "luege", icon: "🤥", titel: "Lügendetektor", minuten: 15,
-      tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie überlegt sich <b>3 Sätze im Perfekt</b> über sich.</li>
+      tafel: [ tafel("🤥 Lügendetektor", `<ol class="schritte"><li>Ich ziehe <b>eine Person</b>. Sie überlegt sich <b>3 Sätze über sich</b>.</li>
         <li><b>Ein Satz ist gelogen.</b> Sie tippt geheim: Welcher?</li><li>Sie sagt die Sätze laut: <b>„Satz 1: … Satz 2: … Satz 3: …“</b></li><li>Alle stimmen ab: Welcher Satz war gelogen?</li></ol>
         <div class="bsp">Gestern habe ich Pizza gegessen. · Am Wochenende bin ich nach Kiel gefahren. · Letztes Jahr habe ich ein Pferd gekauft.</div>`) ],
       aufgaben: [LUEGE] },

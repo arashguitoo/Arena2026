@@ -564,7 +564,7 @@ function handy(){
     if(L.pid===me.pid){ const band=`<div class="dranband" style="background:var(--acc)">🤥 Du bist dran!</div>`;
       if(L.zeigen){ const r=Object.values(st).filter(v=>v===geheim).length; return band+`<div class="card fertig"><div class="e">${r<=Object.keys(st).length/2?"😎":"🙈"}</div><h2>${r} von ${Object.keys(st).length} haben es erraten.</h2></div>`; }
       if(!geheim){ binder=()=>$$("[data-lg]").forEach(b=>b.onclick=()=>schreib(`lg/${L.nr}`, Number(b.dataset.lg)));
-        return band+`<div class="card"><ol class="schritte" style="padding-left:20px;margin:0;font-size:18px"><li>Denk dir <b>3 Sätze im Perfekt</b> über dich aus.</li><li><b>Ein Satz</b> ist gelogen.</li><li>Tippe geheim: Welcher Satz ist gelogen?</li></ol></div>
+        return band+`<div class="card"><ol class="schritte" style="padding-left:20px;margin:0;font-size:18px"><li>Denk dir <b>3 Sätze über dich</b> aus.</li><li><b>Ein Satz</b> ist gelogen.</li><li>Tippe geheim: Welcher Satz ist gelogen?</li></ol></div>
           <div class="drei">${[1,2,3].map(k=>`<button class="gross-btn" style="background:var(--pri)" data-lg="${k}">${k}</button>`).join("")}</div>`+hilfe; }
       return band+`<div class="card mitte"><div class="frage">Sag jetzt laut:<br>„Satz 1: … Satz 2: … Satz 3: …“</div><p style="font-size:18px">🤫 Gelogen ist Satz <b>${geheim}</b> – nicht verraten!</p><p class="muted">${Object.keys(st).length} haben schon abgestimmt.</p></div>`+hilfe; }
     const band=`<div class="dranband" style="background:var(--nacht)">🤥 ${esc(n)} erzählt</div>`;
@@ -908,7 +908,7 @@ function leitung(){
       if(A.typ==="luege"){ const an=(S.lv||{})[X.nr]||{}; const g=(S.lg||{})[X.nr];
         h=`<div class="grossname" style="font-size:clamp(40px,5vw,80px)">🤥 ${n} erzählt</div>`;
         h+=`<div class="row" style="justify-content:center;gap:10px;margin:6px 0 12px">${(A.hilfe||[]).map(f=>`<span class="chip" style="background:var(--soft);color:var(--ink);font-size:clamp(15px,1.4vw,22px)">${esc(f)}</span>`).join("")}</div>`;
-        if(!g) h+=`<p class="grossfrage">${n} überlegt sich 3 Sätze im Perfekt …</p>`;
+        if(!g) h+=`<p class="grossfrage">${n} überlegt sich 3 Sätze …</p>`;
         else { h+=`<p class="grossfrage">„Satz 1 … Satz 2 … Satz 3 …“ – Welcher war gelogen?</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">${[1,2,3].map(k=>`<div style="border-radius:18px;padding:16px;text-align:center;color:#fff;background:${["#E2483D","#2F6FDB","#14A37F"][k-1]};${X.zeigen&&k!==g?"opacity:.35":""};${X.zeigen&&k===g?"outline:8px solid var(--gold)":""}"><div style="font-family:var(--head);font-weight:900;font-size:60px">${k}</div>${X.zeigen?`<b style="font-size:22px">${Object.values(an).filter(v=>v===k).length} Stimmen</b>`:""}</div>`).join("")}</div>
           <p class="tafelinhalt mitte">${Object.keys(an).length} von ${online().length-1} haben abgestimmt.</p>`; if(X.zeigen) h+=`<div class="tipp" style="font-size:clamp(18px,2vw,30px)">🤥 Gelogen war Satz <b>${g}</b>!</div>`; } }
       if(A.typ==="maler"){ const an=(S.mg||{})[X.nr]||{}; const W=A.woerter[X.wort]; const SCH=A.modus==="scharade", ZW=A.modus==="zwei"&&W.z;
@@ -1019,7 +1019,7 @@ function leitung(){
     bewegung:["Dein Handy zeigt einen <b>geheimen Auftrag</b>.","Mach ihn – <b>ohne zu sprechen</b>.","Die anderen sagen: <b>Was hast du gemacht?</b>"],
     kette:["<b>Alle stimmen ab</b>: Wie geht die Geschichte weiter?","Die <b>Mehrheit</b> entscheidet.","Dann ziehe ich <b>eine Person</b>. Sie baut den Satz aus <b>Wortkarten</b> – Verb auf Position 2.","Sie liest laut vor, <b>alle lesen mit</b>. Dann die nächste Abstimmung."],
     werbinich:["Ich ziehe <b>eine Person</b>. Ihr Handy zeigt einen <b>geheimen Beruf</b>.","Alle fragen mit <b>Ja/Nein-Fragen</b>: „Arbeitest du drinnen?“","Die Person sagt nur <b>Ja</b> oder <b>Nein</b>.","Alle tippen ihren Tipp. Ich löse auf."],
-    luege:["Ich ziehe <b>eine Person</b>. Sie denkt sich <b>3 Sätze im Perfekt</b> aus.","Ein Satz ist <b>gelogen</b>. Sie tippt geheim: welcher.","Sie sagt laut: Satz 1, Satz 2, Satz 3.","Alle tippen: <b>1, 2 oder 3?</b> Ich löse auf."],
+    luege:["Ich ziehe <b>eine Person</b>. Sie denkt sich <b>3 Sätze über sich</b> aus.","Ein Satz ist <b>gelogen</b>. Sie tippt geheim: welcher.","Sie sagt laut: Satz 1, Satz 2, Satz 3.","Alle tippen: <b>1, 2 oder 3?</b> Ich löse auf."],
     maler:["Ich ziehe <b>eine Person</b>. Sie zeichnet am Handy – <b>ohne Buchstaben</b>.","Die Zeichnung kommt an die Tafel und auf alle Handys.","Alle tippen das Wort <b>mit Artikel</b>.","Ich löse auf. Alle sagen laut: <b>„Das ist der …“</b>"],
     duell:["Ich ziehe <b>2 Namen</b>. Die beiden <b>stehen auf</b>.","Alle sehen die gleiche Frage – <b>alle tippen</b> eine Antwort.","Ich löse auf. Die zwei im Duell <b>lesen den Satz laut vor</b>.","3 Fragen – dann setzen sie sich. <b>Nächstes Duell!</b>"],
     quiz:["Die Frage steht <b>an der Tafel</b>.","Tippe die <b>Farbe</b> mit der richtigen Antwort."],
