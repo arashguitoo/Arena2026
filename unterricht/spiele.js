@@ -165,7 +165,7 @@ const MALER = { id: "g2", typ: "maler", minuten: 2, titel: "Montagsmaler – mit
   ] };
 const LUEGE = { id: "g3", typ: "luege", minuten: 3, titel: "Lügendetektor – 3 Sätze im Perfekt",
   anleitung: "Eine Person sagt 3 Sätze im Perfekt über sich. Ein Satz ist gelogen! Hör gut zu und tippe: Welcher Satz war gelogen – 1, 2 oder 3?",
-  hilfe: ["Gestern habe ich … gegessen / gespielt / gesehen.", "Am Wochenende bin ich nach … gefahren / gegangen.", "Letztes Jahr habe ich … gekauft / gelernt / besucht."] };
+  hilfe: ["Gestern habe ich …", "Letztes Wochenende bin ich …", "Als Kind habe ich …", "Letzten Sommer bin ich …", "Einmal habe ich …", "In meinem Heimatland habe ich …", "Heute Morgen bin ich …", "Letztes Jahr habe ich …"] };
 
 const W_ = (e, label, w, a, weiter, p) => ({ e, label, w, a, weiter, p: p || "." });
 const KETTE = { id: "g5", typ: "kette", minuten: 3, titel: "Kettengeschichte: Leos verrückter Samstag",
