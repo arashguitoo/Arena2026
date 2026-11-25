@@ -219,6 +219,7 @@ body.beamer .layout{grid-template-columns:1fr} body.beamer .seite{display:none}
 <script src="unterricht/ketten.js"></script>
 <script src="unterricht/spiele.js"></script>
 <script src="unterricht/spiele2.js"></script>
+<script src="unterricht/auto30.js"></script>
 <script src="nachzuegler.js"></script>
 <script src="lernwelt.js"></script>
 <script>
@@ -684,6 +685,7 @@ function leitung(){
     try{ localStorage.setItem("unt_leitung_pin",PIN); }catch(e){}
     history.replaceState(null,"","?leitung=1&pin="+PIN);
     I().on("value", s=>{ S=s.val()||{}; TIMER=S.timer||null; if(S.info&&PLAENE[S.info.plan]) PLAN=PLAENE[S.info.plan]; pflege(); male(); einsichtMalen(); nachzuegler(); statMalen(); });
+    setInterval(autoQuiz, 400);
     setInterval(()=>{ const r=tRest(S.timer); if(S.timer&&!S.timer.pause&&r===0&&zuletztPiep!==S.timer.ende){ zuletztPiep=S.timer.ende; piep(); } const z=$("#planzeit"); if(z) z.innerHTML=planzeit(); },1000);
     document.addEventListener("keydown", e=>{ if(["INPUT","SELECT","TEXTAREA"].includes((e.target||{}).tagName)) return;
       if(e.key==="ArrowRight") folie(1); if(e.key==="ArrowLeft") folie(-1); if(e.key==="b"||e.key==="B"){ beamer=!beamer; document.body.classList.toggle("beamer",beamer); } });
@@ -703,6 +705,40 @@ function leitung(){
       else if(neu.length>=2 && !gr.length) paareBilden(A); }
     if(A.typ==="kugellager" && S.kugel && S.kugel.aid===A.id){ const kr=S.kugel.kreis||{}; const fehlt=online().filter(([p])=>!kr[p]); if(fehlt.length){ const up={}; let ni=Object.values(kr).filter(x=>x==="i").length, na=Object.values(kr).filter(x=>x==="a").length; fehlt.forEach(([p])=>{ const k=ni<=na?"i":"a"; up[p]=k; k==="i"?ni++:na++; }); I("kugel/kreis").update(up); } }
   }
+  /* ---------- Selbstläufer-Quiz: Fragen, Zeit, Auflösung und Teamstand laufen automatisch ---------- */
+  function quizStand(A, Q){ const an=(S.qz||{})[A.id]||{}; const bis=Math.min(Q.zeigen?Q.i:Q.i-1, A.items.length-1); const r={}; let n=0;
+    for(let k=0;k<=bis;k++){ n++; Object.entries(an[k]||{}).forEach(([p,x])=>{ if(x&&x.o===0) r[p]=(r[p]||0)+1; }); }
+    const T=Object.entries(S.teams||{}); const teams=T.map(([k,t])=>{ const m=spieler().filter(([,x])=>x.team===k); const pkt=m.reduce((a,[p])=>a+(r[p]||0),0); const mx=m.length*n;
+      return {k, t, m:m.length, pkt, proz:mx?Math.round(pkt/mx*100):0}; }).filter(z=>z.m).sort((a,b)=>b.proz-a.proz||b.pkt-a.pkt);
+    return {r, n, teams}; }
+  function standHtml(A, Q, gross){ const St=quizStand(A,Q);
+    if(St.teams.length) return `<div class="balkenliste" style="margin-top:12px">${St.teams.map((z,i)=>`<div class="bz" style="font-size:${gross?"clamp(20px,2.2vw,34px)":"clamp(16px,1.6vw,24px)"}"><span>${i===0&&St.n?"👑 ":""}${z.t.e||""} ${esc(z.t.n||z.k)}</span><div class="bal"><i style="width:${z.proz}%;background:${z.t.f||"var(--pri)"}"></i></div><span><b>${z.proz} %</b> <span class="small">(${z.pkt} ✓)</span></span></div>`).join("")}</div>`;
+    const top=spieler().map(([p,x])=>[x.name, St.r[p]||0]).sort((a,b)=>b[1]-a[1]).slice(0,5); return `<div class="balkenliste" style="margin-top:12px">${top.map(([n,v])=>`<div class="bz"><span>${esc(n)}</span><div class="bal"><i style="width:${St.n?v/St.n*100:0}%"></i></div><span>${v}</span></div>`).join("")}</div>`; }
+  function quizAuto(A, Q, T){ const L=A.items.length;
+    if(Q.i>=L){ const St=quizStand(A,{i:L-1, zeigen:true}); const sieg=St.teams[0];
+      const top=spieler().map(([p,x])=>[x.name, St.r[p]||0]).sort((a,b)=>b[1]-a[1]).slice(0,3);
+      return `<h2 style="font-size:clamp(30px,4vw,60px)">🏆 ${sieg?`${sieg.t.e||""} ${esc(sieg.t.n||sieg.k)} gewinnt!`:"Fertig!"}</h2>${standHtml(A,{i:L-1,zeigen:true},true)}
+        <p class="tafelinhalt" style="margin-top:14px">⭐ Beste Spieler: ${top.map(([n,v])=>`<b>${esc(n)}</b> (${v})`).join(" · ")}</p><button class="btn ghost" data-quiz="0" style="margin-top:14px">↺ noch einmal</button>`; }
+    const it=A.items[Q.i]; const opts=mischS(it.o.map((o,j)=>({o,j})), A.id+"|q|"+Q.i); const an=((S.qz||{})[A.id]||{})[Q.i]||{}; const cnt=j=>Object.values(an).filter(x=>x.o===j).length;
+    const neueRunde=Q.i===0||A.items[Q.i-1].r!==it.r; const RT=(A.runden||{})[it.r]||"";
+    const rest=Q.pause?Math.ceil((Number(Q.rest)||0)/1000):Math.max(0,Math.ceil(((Number(Q.ende)||0)-Date.now())/1000));
+    return `${neueRunde&&!Q.zeigen?`<div class="tipp" style="font-size:clamp(22px,2.6vw,40px);text-align:center;font-weight:900">🎉 Runde ${it.r}: ${esc(RT)}</div>`:""}
+      <div class="row" style="justify-content:space-between"><span class="small muted" style="font-weight:800">Runde ${it.r} · ${esc(RT)} · Frage ${Q.i+1} von ${L}</span>
+        <span style="font-family:var(--head);font-weight:900;font-size:clamp(30px,3.4vw,54px);color:${Q.zeigen?"var(--ok)":"var(--acc)"}" id="qcount">${Q.pause?"⏸":Q.zeigen?"✅":"⏱ "+rest}</span></span></div>
+      <div class="grossfrage" style="text-align:left">${esc(it.f)}</div>
+      <div class="qboard">${opts.map((x,k)=>`<div class="${QFARBE[k]} ${Q.zeigen?(x.j===0?"richtig":"daneben"):""}"><span>${QZ[k]} ${esc(x.o)}</span>${Q.zeigen?`<span>${cnt(x.j)}</span>`:""}</div>`).join("")}</div>
+      <p class="tafelinhalt" style="margin:8px 0">${Object.keys(an).length} von ${online().length} haben geantwortet.</p>
+      ${standHtml(A,Q,false)}
+      <div class="row" style="margin-top:12px"><button class="btn ghost" id="qpause">${Q.pause?"▶ Weiter":"⏸ Pause"}</button><button class="btn ghost" id="qskip">⏭ ${Q.zeigen?"Nächste Frage":"Jetzt auflösen"}</button><button class="btn ghost" data-quiz="${L}">🏁 Ende</button><span class="small muted">Läuft automatisch: ${A.sek||25} Sek. pro Frage, dann ${A.pause||7} Sek. Lösung.</span></div>`; }
+  function quizStart(A, n){ const now=Date.now(); I("quiz").set({aid:A.id, i:n, zeigen:false, ende:now+(A.sek||25)*1000}); }
+  let autoLetzte="";
+  function autoQuiz(){ const inf=S.info||{}; if(!inf.auf||!inf.auf.id) return; const A=aufgabe(inf.auf.id); if(!A||!A.auto) return; const Q=S.quiz||{};
+    if(Q.aid!==A.id||Q.i===undefined||Q.i<0||Q.i>=A.items.length) return; const now=Date.now();
+    const el=$("#qcount"); if(el&&!Q.pause&&!Q.zeigen) el.textContent="⏱ "+Math.max(0,Math.ceil(((Number(Q.ende)||0)-now)/1000));
+    if(Q.pause) return; const key=Q.i+"|"+(Q.zeigen?1:0); if(autoLetzte===key) return;
+    if(!Q.zeigen){ const an=((S.qz||{})[A.id]||{})[Q.i]||{}; const on=online(); const alle=on.length>0&&on.every(([p])=>an[p]);
+      if(now>=Number(Q.ende) || (alle && now>=Number(Q.ende)-(A.sek||25)*1000+3000)){ autoLetzte=key; I("quiz").update({zeigen:true, tz:now}); } }
+    else if(now-(Number(Q.tz)||now)>=(A.pause||7)*1000){ autoLetzte=key; quizStart(A, Q.i+1); } }
   function nachzuegler(){ const A=aktA(); const T=Object.entries(S.teams||{});
     if(A && A.typ==="theater" && S.theater && S.theater.aid===A.id){ const gr=Object.entries(S.theater.gr||{});
       return Nachzuegler.update({aktiv:true, spieler:S.spieler, feld:"tg", wort:"Gruppe", plural:"Gruppen", frage:"in welche Theater-Gruppe?", gruppen:gr.map(([k,g],i)=>{ const sz=szeneVon(A,g.sz); return {k, name:`${i+1} ${sz.titel}`, emoji:sz.icon, farbe:"#F97316"}; }), setze:(p,k)=>I(`spieler/${p}`).update({tg:k, tr:Date.now()})}); }
@@ -845,6 +881,7 @@ function leitung(){
         const sort=L.sort((a,b)=>(LV.f[a[0]]||0)-(LV.f[b[0]]||0)||(LV.r[b[0]]||0)-(LV.r[a[0]]||0)); const best=sort.length?[(LV.f[sort[0][0]]||0),(LV.r[sort[0][0]]||0)]:null;
         const sieger=sort.filter(([p])=>best&&(LV.f[p]||0)===best[0]&&(LV.r[p]||0)===best[1]);
         return `<h2>🏆 ${sieger.length?sieger.map(([,x])=>esc(x.name)).join(" & "):"–"}</h2><div class="lebenraster">${sort.map(([p,x])=>`<div class="${LV.drin(p)?"":"raus"}"><span>${esc(x.name)}</span><span class="herzen">${LV.herzen(p)}</span><span class="small">${LV.r[p]||0} ✓</span></div>`).join("")}</div><button class="btn ghost" data-quiz="0" style="margin-top:14px">↺ noch einmal</button>`; }
+      if(A.auto) return quizAuto(A,Q,T);
       if(Q.i>=A.items.length){ const r={}; A.items.forEach((_,k)=>Object.entries(((S.qz||{})[A.id]||{})[k]||{}).forEach(([p,x])=>{ if(x.o===0) r[p]=(r[p]||0)+1; }));
         return `<h2>⚡ Quiz fertig!</h2>${T.length?`<div class="row">${T.map(([k,t])=>{ const m=online().filter(([,x])=>x.team===k); const s=m.reduce((a,[p])=>a+(r[p]||0),0); return `<span class="chip" style="background:${t.f};color:#fff;font-size:22px">${t.e} ${esc(t.n)}: ${m.length?Math.round(s/(m.length*A.items.length)*100):0}% richtig</span>`; }).join("")}</div>`:""}
           <div class="balkenliste">${online().map(([p,x])=>`<div class="bz"><span>${esc(x.name)}</span><div class="bal"><i style="width:${(r[p]||0)/A.items.length*100}%"></i></div><span>${r[p]||0}/${A.items.length}</span></div>`).join("")}</div><button class="btn ghost" data-quiz="0" style="margin-top:14px">↺ noch einmal</button>`; }
@@ -978,7 +1015,9 @@ function leitung(){
     $$("[data-zeig]").forEach(b=>b.onclick=()=>I("info/ansicht").set("aufgabe"));
     const th=$("#thandy"); if(th) th.onchange=()=>{ th.blur(); I("info/tafelHandy").set(th.checked); };
     const A=aktA(); if(!A) return;
-    $$("[data-quiz]").forEach(b=>b.onclick=()=>{ const n=Number(b.dataset.quiz); if(n===0){ I(`qz/${A.id}`).remove(); I(`qd/${A.id}`).remove(); } I("quiz").set({aid:A.id, i:n, zeigen:false}); });
+    $$("[data-quiz]").forEach(b=>b.onclick=()=>{ const n=Number(b.dataset.quiz); if(n===0){ I(`qz/${A.id}`).remove(); I(`qd/${A.id}`).remove(); } if(A.auto&&n<A.items.length){ autoLetzte=""; quizStart(A,n); } else I("quiz").set({aid:A.id, i:n, zeigen:false}); });
+    on("#qpause", ()=>{ const Q=S.quiz||{}; const now=Date.now(); if(!Q.pause) I("quiz").update({pause:true, rest:Q.zeigen?0:Math.max(0,(Number(Q.ende)||0)-now)}); else { autoLetzte=""; I("quiz").update({pause:false, ende:now+(Number(Q.rest)||0), tz:now}); } });
+    on("#qskip", ()=>{ const Q=S.quiz||{}; autoLetzte=""; if(!Q.zeigen) I("quiz").update({zeigen:true, tz:Date.now(), pause:false}); else quizStart(A, Q.i+1); });
     on("#aufloesen", ()=>{ const Q=S.quiz||{};
       if(A.leben && Q.aid===A.id){ const LV=quizLeben(S,A,Q); const an=((S.qz||{})[A.id]||{})[Q.i]||{}; const d={};
         spieler().forEach(([p,x])=>{ if(LV.drin(p) && (x.online!==false || an[p])) d[p]=true; });
