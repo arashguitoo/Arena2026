@@ -21,7 +21,7 @@ window.CHALLENGE = {
       m("„Morgen ___ ich nach Kiel.“", "fahre", "fahren", "fährt"),
       m("Welcher Satz ist richtig?", "Heute gehe ich ins Kino.", "Heute ich gehe ins Kino.", "Ich heute gehe ins Kino."),
       m("Welcher Satz ist richtig?", "Am Montag habe ich Deutschkurs.", "Am Montag ich habe Deutschkurs.", "Habe am Montag ich Deutschkurs."),
-      m("Wo steht das Verb im deutschen Satz?", "auf Position 2", "immer am Ende", "immer am Anfang") ] },
+      m("Wo steht das Verb im deutschen Satz?", "an Platz 2", "immer am Ende", "immer am Anfang") ] },
     { id: "l3", e: "⏮️", titel: "Perfekt: haben oder sein?", thema: "perfekt", items: [
       m("„Ich ___ Fußball gespielt.“", "habe", "bin", "hat"), m("„Wir ___ nach Kiel gefahren.“", "sind", "haben", "seid"),
       m("„Er ___ um 7 Uhr aufgestanden.“", "ist", "hat", "sind"), m("„Hast du schon ___?“ (essen)", "gegessen", "geesst", "essen"),

@@ -82,9 +82,9 @@ const TS=()=>firebase.database.ServerValue.TIMESTAMP;
 let CODE=(P.get("code")||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 const R=p=>db.ref(`ligasozial/${KURS}/${CODE}${p?"/"+p:""}`);
 const TYPEN={
+  story:{e:"📸", t:"Mein Wochenende in Fotos", h:"2 bis 4 Fotos von deinem Wochenende. Schreib zu jedem Foto einen Satz im Perfekt: Was hast du gemacht?", text:false, story:true,
+    anf:["Am Samstag habe ich …","Am Sonntag bin ich …","Hier habe ich … gegessen.","Hier bin ich mit … nach … gefahren.","Das war super / lustig / langweilig."]},
   kind:{e:"👶", t:"Wer bin ich als Kind?", h:"Lade ein Foto von dir als Kind hoch. Die anderen raten, wer das ist! Dein Name bleibt geheim.", text:false},
-  wochenende:{e:"🏖️", t:"Mein Wochenende", h:"Ein Foto von deinem Wochenende und 2–3 Sätze im Perfekt.", text:true,
-    anf:["Am Samstag habe ich …","Am Sonntag bin ich …","Ich habe … gegessen.","Ich bin mit … nach … gefahren.","Es war super / langweilig / lustig."]},
   hobby:{e:"⭐", t:"Das mache ich gern", h:"Ein Foto von deinem Hobby (z. B. Ball, Gitarre, Essen …) und 2–3 Sätze.", text:true,
     anf:["Mein Hobby ist …","Ich spiele gern …","Ich kann gut …","Am liebsten esse ich …","Ich mag … nicht."]},
   frage:{e:"❓", t:"Rate mal!", h:"Ein Foto von etwas (kein Gesicht). Die anderen raten: Was ist das? Wo ist das?", text:true,
@@ -95,14 +95,14 @@ const KOMM=["Wie schön!","Cool!","Wo war das?","Das will ich auch!","Ich auch!"
 const zeitText=t=>{ const d=new Date(Number(t)||0); return d.toLocaleDateString("de-DE",{weekday:"short",day:"numeric",month:"numeric"})+" "+d.toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"}); };
 
 /* Bild verkleinern (max. 900 px, JPEG) – damit es schnell lädt und wenig Platz braucht */
-function bildLesen(file){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>{ const img=new Image(); img.onload=()=>{ const m=900; let w=img.width, h=img.height; const f=Math.min(1, m/Math.max(w,h)); w=Math.round(w*f); h=Math.round(h*f);
+function bildLesen(file, max){ return new Promise((res,rej)=>{ const fr=new FileReader(); fr.onload=()=>{ const img=new Image(); img.onload=()=>{ const m=max||900; let w=img.width, h=img.height; const f=Math.min(1, m/Math.max(w,h)); w=Math.round(w*f); h=Math.round(h*f);
   const c=document.createElement("canvas"); c.width=w; c.height=h; c.getContext("2d").drawImage(img,0,0,w,h); let q=.8, d=c.toDataURL("image/jpeg",q); while(d.length>350000&&q>.35){ q-=.1; d=c.toDataURL("image/jpeg",q); } res(d); }; img.onerror=rej; img.src=fr.result; }; fr.onerror=rej; fr.readAsDataURL(file); }); }
 
 /* =========================================================
    LERNENDE
    ========================================================= */
 function lernende(){
-  let me=null, NAMEN={}, FREI={}, tab="feed", neu={typ:null, bild:null, text:""}, fehler="", sendet=false;
+  let me=null, NAMEN={}, FREI={}, tab="feed", neu={typ:null, bild:null, text:"", story:[]}, fehler="", sendet=false;
   const MEKEY="soz_me";
   try{ const m=JSON.parse(localStorage.getItem(MEKEY)||"null"); if(m&&(!CODE||m.code===CODE)){ me=m; CODE=m.code; } }catch(e){}
   if(me) start(); else codeScreen();
@@ -127,7 +127,8 @@ function lernende(){
   function postHtml(id, x, gross){ const T=TYPEN[x.typ]||TYPEN.hobby; const kind=x.typ==="kind"; const meinP=x.pid===me.pid;
     const re=x.reakt||{}; const ko=x.kom||{}; const tp=x.tipps||{}; const mein=tp[me.pid];
     let h=`<div class="post"><div class="ph"><div class="av">${T.e}</div><div><b>${kind&&!x.zeigen?"❓ Wer ist das?":esc(x.name)}</b><div class="small muted">${esc(T.t)} · ${zeitText(x.frei)}</div></div></div>`;
-    if(x.bild) h+=`<img src="${x.bild}" alt="">`;
+    if(x.story) h+=x.story.map((z,i)=>`<img src="${z.b}" alt=""><div class="tx"><span style="font-weight:900;color:var(--pri)">${i+1}.</span> ${esc(z.t)}</div>`).join("")+(x.orig?`<div class="tx"><div class="korr">✏️ von der Lehrkraft korrigiert</div></div>`:"");
+    else if(x.bild) h+=`<img src="${x.bild}" alt="">`;
     if(x.text) h+=`<div class="tx">${esc(x.text)}${x.orig?`<div class="korr">✏️ von der Lehrkraft korrigiert</div>`:""}</div>`;
     if(kind){ h+=`<div class="rate">`;
       if(x.zeigen){ const r=Object.entries(tp).filter(([,v])=>v===x.pid).map(([p])=>NAMEN[p]||"?");
@@ -146,6 +147,11 @@ function lernende(){
     if(!neu.typ) return `<h2>Was möchtest du posten?</h2><div class="typen">${Object.entries(TYPEN).map(([k,T])=>`<button data-typ="${k}"><span class="e">${T.e}</span><span><b>${esc(T.t)}</b><br><span class="small muted">${esc(T.h)}</span></span></button>`).join("")}</div>
       <p class="small muted" style="margin-top:12px">🔒 Die Lehrkraft schaut jeden Beitrag zuerst an. Erst nach der Freigabe sehen ihn die anderen. Nur Fotos von dir oder von Sachen – keine Fotos von anderen Personen ohne Erlaubnis.</p>`;
     const T=TYPEN[neu.typ];
+    if(T.story){ let h=`<div class="row" style="justify-content:space-between"><h2>${T.e} ${esc(T.t)}</h2><button class="btn sm ghost" id="zurueck">◀ zurück</button></div><div class="info">${esc(T.h)}</div>`;
+      h+=neu.story.map((z,i)=>`<div class="card"><div class="row" style="justify-content:space-between"><b>Foto ${i+1}</b><button class="btn sm ghost" data-sweg="${i}">🗑</button></div><img class="vorschau" src="${z.b}">
+        <div class="anf">${T.anf.map((a,k)=>`<button data-sanf="${i}|${k}">${esc(a)}</button>`).join("")}</div><textarea data-st="${i}" maxlength="160" style="min-height:64px" placeholder="Was hast du hier gemacht?">${esc(z.t)}</textarea></div>`).join("");
+      if(neu.story.length<4) h+=`<label class="btn ${neu.story.length?"ghost":""} wide" style="margin-bottom:12px">📷 ${neu.story.length?"Noch ein Foto":"Erstes Foto wählen"} (${neu.story.length}/4)<input type="file" accept="image/*" id="sdatei" style="display:none"></label>`;
+      return h+`${fehler?`<p style="color:var(--bad);font-weight:700">${esc(fehler)}</p>`:""}<button class="btn ok wide" id="senden" style="min-height:56px;font-size:19px" ${sendet?"disabled":""}>${sendet?"Wird gesendet …":"📤 An die Lehrkraft senden"}</button>`; }
     let h=`<div class="row" style="justify-content:space-between"><h2>${T.e} ${esc(T.t)}</h2><button class="btn sm ghost" id="zurueck">◀ zurück</button></div><div class="info">${esc(T.h)}</div>
       <div class="card"><b>1. Foto</b>${neu.bild?`<img class="vorschau" src="${neu.bild}">`:""}<label class="btn ${neu.bild?"ghost":""} wide" style="margin-top:6px">📷 ${neu.bild?"Anderes Foto":"Foto wählen"}<input type="file" accept="image/*" id="datei" style="display:none"></label></div>`;
     if(T.text) h+=`<div class="card"><b>2. Text</b><div class="small muted">Tippe auf einen Satzanfang oder schreib selbst:</div><div class="anf">${T.anf.map((a,i)=>`<button data-anf="${i}">${esc(a)}</button>`).join("")}</div>
@@ -160,16 +166,23 @@ function lernende(){
     $$("[data-tipp]").forEach(b=>b.onclick=()=>{ const [id,p]=b.dataset.tipp.split("|"); R(`frei/${id}/tipps/${me.pid}`).set(p); });
     $$("[data-re]").forEach(b=>b.onclick=()=>{ const [id,e]=b.dataset.re.split("|"); const alt=((FREI[id]||{}).reakt||{})[me.pid]; R(`frei/${id}/reakt/${me.pid}`).set(alt===e?null:e); });
     $$("[data-kom]").forEach(s=>s.onchange=()=>R(`frei/${s.dataset.kom}/kom/${me.pid}`).set(s.value===""?null:Number(s.value)));
-    $$("[data-typ]").forEach(b=>b.onclick=()=>{ neu={typ:b.dataset.typ, bild:null, text:""}; male(); });
-    const z=$("#zurueck"); if(z) z.onclick=()=>{ neu={typ:null,bild:null,text:""}; male(); };
+    $$("[data-typ]").forEach(b=>b.onclick=()=>{ neu={typ:b.dataset.typ, bild:null, text:"", story:[]}; male(); });
+    const z=$("#zurueck"); if(z) z.onclick=()=>{ neu={typ:null,bild:null,text:"",story:[]}; male(); };
+    $$("[data-st]").forEach(t=>t.oninput=()=>neu.story[Number(t.dataset.st)].t=t.value);
+    $$("[data-sweg]").forEach(b=>b.onclick=()=>{ neu.story.splice(Number(b.dataset.sweg),1); male(); });
+    $$("[data-sanf]").forEach(b=>b.onclick=()=>{ const [i,k]=b.dataset.sanf.split("|").map(Number); const a=TYPEN[neu.typ].anf[k].replace(/ …$/,""); const z=neu.story[i]; z.t=(z.t.trim()?z.t.trim()+" ":"")+a+" "; male(); const tt=$(`[data-st="${i}"]`); if(tt){ tt.focus(); tt.selectionStart=tt.selectionEnd=tt.value.length; } });
+    const sd=$("#sdatei"); if(sd) sd.onchange=async()=>{ const f=sd.files[0]; if(!f) return; fehler=""; try{ neu.story.push({b:await bildLesen(f, 700), t:""}); }catch(e){ fehler="Das Foto geht leider nicht. Versuch ein anderes."; } male(); };
     const t=$("#text"); if(t) t.oninput=()=>neu.text=t.value;
     $$("[data-anf]").forEach(b=>b.onclick=()=>{ const a=TYPEN[neu.typ].anf[Number(b.dataset.anf)].replace(/ …$/,""); neu.text=(neu.text.trim()?neu.text.trim()+" ":"")+a+" "; male(); const tt=$("#text"); if(tt){ tt.focus(); tt.selectionStart=tt.selectionEnd=tt.value.length; } });
     const d=$("#datei"); if(d) d.onchange=async()=>{ const f=d.files[0]; if(!f) return; fehler=""; try{ neu.bild=await bildLesen(f); }catch(e){ fehler="Das Foto geht leider nicht. Versuch ein anderes."; } male(); };
-    const s=$("#senden"); if(s) s.onclick=async()=>{ const T=TYPEN[neu.typ]; if(!neu.bild) { fehler="Bitte wähle zuerst ein Foto."; return male(); } if(T.text && neu.text.trim().length<5){ fehler="Bitte schreib noch einen Satz."; return male(); }
+    const s=$("#senden"); if(s) s.onclick=async()=>{ const T=TYPEN[neu.typ];
+      if(T.story){ if(neu.story.length<2){ fehler="Bitte wähle mindestens 2 Fotos."; return male(); } if(neu.story.some(z=>z.t.trim().length<5)){ fehler="Bitte schreib zu jedem Foto einen Satz."; return male(); } neu.bild=neu.story[0].b; }
+      else if(!neu.bild) { fehler="Bitte wähle zuerst ein Foto."; return male(); } if(T.text && neu.text.trim().length<5){ fehler="Bitte schreib noch einen Satz."; return male(); }
       sendet=true; male(); const ref=R("eingang").push();
-      try{ await ref.set({pid:me.pid, name:me.name, typ:neu.typ, text:T.text?neu.text.trim().slice(0,300):"", bild:neu.bild, ts:TS()});
+      try{ const daten={pid:me.pid, name:me.name, typ:neu.typ, text:T.text?neu.text.trim().slice(0,300):"", bild:T.story?"":neu.bild, ts:TS()}; if(T.story) daten.story=neu.story.map(z=>({b:z.b, t:z.t.trim().slice(0,160)}));
+        if(T.story) daten.bild="story"; await ref.set(daten);
         const W=meineWartend(); W.push({id:ref.key, typ:neu.typ}); try{ localStorage.setItem("soz_warte_"+CODE, JSON.stringify(W.slice(-20))); }catch(e){}
-        sendet=false; neu={typ:null,bild:null,text:""}; tab="meins"; male(); }
+        sendet=false; neu={typ:null,bild:null,text:"",story:[]}; tab="meins"; male(); }
       catch(e){ sendet=false; fehler="Senden hat nicht geklappt. Versuch es noch einmal."; male(); } };
   }
 }
@@ -196,16 +209,18 @@ function leitung(){
     const E=Object.entries(EIN).filter(([,x])=>x&&x.typ).sort((a,b)=>(Number(a[1].ts)||0)-(Number(b[1].ts)||0));
     const F=Object.entries(FREI).filter(([,x])=>x&&x.typ).sort((a,b)=>(Number(b[1].frei)||0)-(Number(a[1].frei)||0));
     let h=`<div class="lkopf"><h1>📱 Klassen-Netz</h1><span>Klassen-Code:</span><span class="code">${CODE}</span><span class="small" style="opacity:.8">${esc(location.host+location.pathname)}</span>
-      <span style="margin-left:auto" class="row"><button class="btn sm" id="bKind" style="background:var(--lila)">🎬 Beamer: Kinderfotos raten</button><button class="btn sm ghost" id="bAlle">🎬 Beamer: alle Beiträge</button></span></div><div class="breit">
+      <span style="margin-left:auto" class="row"><button class="btn sm" id="bKind" style="background:var(--lila)">🎬 Beamer: Kinderfotos raten</button><button class="btn sm" id="bStory" style="background:var(--ok)">🎬 Beamer: Wochenend-Fotos</button><button class="btn sm ghost" id="bAlle">🎬 Beamer: andere Beiträge</button></span></div><div class="breit">
       <div class="ltabs"><button data-ltab="eingang" class="${tab==="eingang"?"an":""}">📥 Eingang (${E.length})</button><button data-ltab="frei" class="${tab==="frei"?"an":""}">✅ Freigegeben (${F.length})</button><button data-ltab="qr" class="${tab==="qr"?"an":""}">🔗 Code & QR</button></div>`;
     if(tab==="eingang") h+=E.length?`<div class="raster">${E.map(([id,x])=>{ const T=TYPEN[x.typ]||{}; return `<div class="card"><div class="row" style="justify-content:space-between"><b>${T.e} ${esc(x.name)}</b><span class="small muted">${esc(T.t)} · ${zeitText(x.ts)}</span></div>
-        ${x.bild?`<img src="${x.bild}" style="width:100%;max-height:320px;object-fit:contain;background:#111;border-radius:12px;margin:8px 0">`:""}
+        ${x.story?x.story.map((z,i)=>`<img src="${z.b}" style="width:100%;max-height:220px;object-fit:contain;background:#111;border-radius:12px;margin:8px 0 4px"><textarea data-korrs="${id}|${i}" style="min-height:52px">${esc(korr[id+"|"+i]!==undefined?korr[id+"|"+i]:z.t)}</textarea>`).join("")+`<div class="small muted">Du kannst die Sätze korrigieren.</div>`
+          :x.bild?`<img src="${x.bild}" style="width:100%;max-height:320px;object-fit:contain;background:#111;border-radius:12px;margin:8px 0">`:""}
         ${T.text?`<textarea data-korr="${id}" style="min-height:70px">${esc(korr[id]!==undefined?korr[id]:x.text)}</textarea><div class="small muted">Du kannst den Text korrigieren. Die Jugendlichen sehen „von der Lehrkraft korrigiert“.</div>`:""}
         <div class="row" style="margin-top:8px"><button class="btn ok" data-frei="${id}">✅ Freigeben</button><button class="btn rot" data-weg="${id}">✖ Ablehnen</button></div></div>`; }).join("")}</div>`
       :`<div class="card muted">Keine neuen Beiträge. Neue Einreichungen erscheinen hier automatisch.</div>`;
     if(tab==="frei") h+=F.length?`<div class="raster">${F.map(([id,x])=>{ const T=TYPEN[x.typ]||{}; const tp=x.tipps||{}; const r=Object.values(tp).filter(v=>v===x.pid).length;
         return `<div class="card"><div class="row" style="justify-content:space-between"><b>${T.e} ${esc(x.name)}</b><span class="small muted">${esc(T.t)}</span></div>
-        ${x.bild?`<img src="${x.bild}" style="width:100%;max-height:240px;object-fit:contain;background:#111;border-radius:12px;margin:8px 0">`:""}${x.text?`<p>${esc(x.text)}</p>`:""}
+        ${x.story?`<div class="row">${x.story.map(z=>`<img src="${z.b}" style="width:23%;aspect-ratio:1;object-fit:cover;border-radius:8px">`).join("")}</div>${x.story.map((z,i)=>`<div class="small">${i+1}. ${esc(z.t)}</div>`).join("")}`
+          :x.bild?`<img src="${x.bild}" style="width:100%;max-height:240px;object-fit:contain;background:#111;border-radius:12px;margin:8px 0">`:""}${x.text?`<p>${esc(x.text)}</p>`:""}
         <div class="small muted">${Object.keys(x.reakt||{}).length} Reaktionen · ${Object.keys(x.kom||{}).length} Kommentare${x.typ==="kind"?` · ${Object.keys(tp).length} Tipps, ${r} richtig`:""}</div>
         <div class="row" style="margin-top:8px">${x.typ==="kind"?`<button class="btn sm ${x.zeigen?"ghost":""}" data-zeig="${id}">${x.zeigen?"🙈 Wieder verstecken":"👶 Auflösen"}</button>`:""}<button class="btn sm rot" data-loesch="${id}">🗑 Löschen</button></div></div>`; }).join("")}</div>`
       :`<div class="card muted">Noch nichts freigegeben.</div>`;
@@ -216,21 +231,25 @@ function leitung(){
   function binde(){
     $$("[data-ltab]").forEach(b=>b.onclick=()=>{ tab=b.dataset.ltab; male(); });
     $$("[data-korr]").forEach(t=>{ t.oninput=()=>korr[t.dataset.korr]=t.value; t.onblur=()=>setTimeout(male,50); });
+    $$("[data-korrs]").forEach(t=>{ t.oninput=()=>korr[t.dataset.korrs]=t.value; t.onblur=()=>setTimeout(male,50); });
     $$("[data-frei]").forEach(b=>b.onclick=async()=>{ const id=b.dataset.frei; const x=EIN[id]; if(!x) return; const neuT=korr[id]!==undefined?korr[id].trim():x.text;
       const post={pid:x.pid, name:x.name, typ:x.typ, text:neuT||"", bild:x.bild||"", ts:x.ts||null, frei:TS()}; if(neuT!==x.text&&x.text) post.orig=x.text;
+      if(x.story){ post.bild=""; post.story=x.story.map((z,i)=>{ const k=id+"|"+i; const t=korr[k]!==undefined?korr[k].trim():z.t; if(t!==z.t) post.orig=true; delete korr[k]; return {b:z.b, t}; }); }
       await R(`frei/${id}`).set(post); await R(`eingang/${id}`).remove(); delete korr[id]; });
     $$("[data-weg]").forEach(b=>b.onclick=()=>{ if(confirm("Beitrag ablehnen und löschen?")) R(`eingang/${b.dataset.weg}`).remove(); });
     $$("[data-zeig]").forEach(b=>b.onclick=()=>R(`frei/${b.dataset.zeig}/zeigen`).set(!(FREI[b.dataset.zeig]||{}).zeigen));
     $$("[data-loesch]").forEach(b=>b.onclick=()=>{ if(confirm("Beitrag für alle löschen?")) R(`frei/${b.dataset.loesch}`).remove(); });
     const nc=$("#neuCode"); if(nc) nc.onclick=async()=>{ if(!confirm("Wirklich einen neuen Code erzeugen?")) return; await G("code").remove(); location.reload(); };
     const bk=$("#bKind"); if(bk) bk.onclick=()=>{ beamer={art:"kind", i:0}; beamerMalen(); };
-    const ba=$("#bAlle"); if(ba) ba.onclick=()=>{ beamer={art:"alle", i:0}; beamerMalen(); }; }
+    const ba=$("#bAlle"); if(ba) ba.onclick=()=>{ beamer={art:"alle", i:0}; beamerMalen(); };
+    const bs=$("#bStory"); if(bs) bs.onclick=()=>{ beamer={art:"story", i:0}; beamerMalen(); }; }
   /* ---------- Beamer: ein Beitrag groß, Tipps live ---------- */
-  function beamerMalen(){ const L=Object.entries(FREI).filter(([,x])=>x&&x.typ&&(beamer.art==="alle"||x.typ==="kind")).sort((a,b)=>(Number(a[1].frei)||0)-(Number(b[1].frei)||0));
-    if(!L.length){ const k=beamer.art==="kind"; beamer=null; alert(k?"Noch keine Kinderfotos freigegeben.":"Noch keine Beiträge freigegeben."); return male(); }
+  function beamerMalen(){ const L0=Object.entries(FREI).filter(([,x])=>x&&x.typ&&(beamer.art==="alle"?x.typ!=="kind":beamer.art==="story"?x.typ==="story":x.typ==="kind")).sort((a,b)=>(Number(a[1].frei)||0)-(Number(b[1].frei)||0));
+    const L=L0.flatMap(([id,x])=>x.story?x.story.map((z,i)=>[id, Object.assign({}, x, {bild:z.b, text:z.t, nr:`Foto ${i+1} von ${x.story.length}`})]):[[id,x]]);
+    if(!L.length){ beamer=null; alert("Dazu ist noch nichts freigegeben."); return male(); }
     beamer.i=Math.max(0,Math.min(beamer.i,L.length-1)); const [id,x]=L[beamer.i]; const T=TYPEN[x.typ]||{}; const kind=x.typ==="kind"; const tp=x.tipps||{};
     const zaehl={}; Object.values(tp).forEach(p=>zaehl[p]=(zaehl[p]||0)+1); const top=Object.entries(zaehl).sort((a,b)=>b[1]-a[1]).slice(0,5);
-    app.innerHTML=`<div class="beamer"><div class="row" style="justify-content:space-between"><h2>${T.e} ${kind&&!x.zeigen?"Wer ist das?":esc(x.name)}</h2><span style="font-size:22px">${beamer.i+1} / ${L.length}</span></div>
+    app.innerHTML=`<div class="beamer"><div class="row" style="justify-content:space-between"><h2>${T.e} ${kind&&!x.zeigen?"Wer ist das?":esc(x.name)}${x.nr?` <span style="font-size:.5em;opacity:.8">· ${x.nr}</span>`:""}</h2><span style="font-size:22px">${beamer.i+1} / ${L.length}</span></div>
       <div class="bild">${x.bild?`<img src="${x.bild}">`:""}</div>
       ${x.text?`<div class="txt">${esc(x.text)}</div>`:""}
       ${kind?`<div style="font-size:24px;margin-top:8px">${x.zeigen?`👶 Das ist <b style="color:var(--gold)">${esc(x.name)}</b>! · Richtig geraten: ${Object.entries(tp).filter(([,v])=>v===x.pid).map(([p])=>esc(NAMEN[p]||"?")).join(", ")||"niemand"}`:`📱 ${Object.keys(tp).length} Tipps · ${top.map(([p,n])=>`${esc(NAMEN[p]||"?")} (${n})`).join(" · ")}`}</div>`:""}
