@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1E2A44">
+<meta name="robots" content="noindex, nofollow">
+<title>Challenge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{ --bg:#F4F1EA; --card:#fff; --ink:#1E2A44; --muted:#6B7280; --line:#E5E0D5; --soft:#FAF8F3; --nacht:#1E2A44; --pri:#2F6FDB; --pri-2:#E3EDFF; --ok:#14A37F; --ok-2:#E2F6EF; --bad:#E2483D; --bad-2:#FDE8E6; --gold:#F5B82E;
+  --head:"Outfit",system-ui,sans-serif; --body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; --schatten:0 1px 0 var(--line),0 8px 24px rgba(30,42,68,.06); }
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.45}
+body:not(.lk){-webkit-user-select:none;user-select:none}
+button,input,select{font:inherit;color:inherit} input,select{background:#fff;color:var(--ink)}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0 0 8px} .muted{color:var(--muted)} .small{font-size:14px} .mitte{text-align:center}
+.wrap{max-width:620px;margin:0 auto;padding:12px 12px 40px} .breit{max-width:1200px;margin:0 auto;padding:14px}
+.card{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--schatten);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:10px 18px;border-radius:12px;border:0;background:var(--pri);color:#fff;font-weight:700;cursor:pointer}
+.btn.ghost{background:var(--pri-2);color:var(--pri)} .btn.ok{background:var(--ok)} .btn.wide{width:100%} .btn.sm{min-height:34px;padding:4px 12px;font-size:15px} .btn:disabled{opacity:.45}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.kopf{position:sticky;top:0;z-index:10;background:var(--nacht);color:#fff}
+.kopf .in{max-width:620px;margin:0 auto;padding:8px 12px;display:flex;gap:10px;align-items:center;min-height:54px} .kopf b{font-family:var(--head);font-size:18px} .kopf .r{margin-left:auto;font-size:14px;opacity:.9}
+.held{background:linear-gradient(135deg,#1E2A44,#2F6FDB);color:#fff;border-radius:20px;padding:18px;margin-bottom:12px}
+.held h2{font-size:26px} .uhr{font-family:var(--head);font-weight:900;font-size:24px}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.lv{border:3px solid var(--line);background:#fff;border-radius:16px;padding:12px;text-align:left;cursor:pointer;min-height:96px;position:relative}
+.lv .e{font-size:30px} .lv b{display:block;font-size:15px;line-height:1.25;margin-top:4px} .lv.ok{border-color:var(--ok);background:var(--ok-2)} .lv .haken{position:absolute;top:8px;right:10px;font-size:22px}
+.lv.mix{border-color:var(--gold);background:#FFF8E1}
+.fort{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:6px 0 10px} .fort i{display:block;height:100%;background:var(--ok)}
+.frage{font-family:var(--head);font-weight:800;font-size:22px;margin:6px 0 14px}
+.opts{display:grid;gap:10px} .opt{border:3px solid var(--line);background:#fff;border-radius:14px;min-height:56px;padding:10px 14px;text-align:left;cursor:pointer;font-weight:700;font-size:18px}
+.opt.ok{border-color:var(--ok);background:var(--ok-2)} .opt.falsch{border-color:var(--bad);background:var(--bad-2)}
+.linie{min-height:60px;border:3px dashed var(--line);border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0}
+.pool{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0} .kachel{min-height:46px;padding:6px 12px;border-radius:10px;border:0;background:var(--pri);color:#fff;font-weight:700;font-size:18px;cursor:pointer} .kachel.weg{visibility:hidden}
+.melde{border-radius:14px;padding:10px 14px;margin-top:12px;font-weight:800;font-size:18px} .melde.ok{background:var(--ok-2);color:var(--ok)} .melde.falsch{background:var(--bad-2);color:var(--bad)}
+.namen{display:flex;flex-wrap:wrap;gap:8px} .namen button{border:2px solid var(--line);background:#fff;border-radius:999px;padding:9px 16px;font-weight:700;cursor:pointer}
+body.lk{background:#ECE8DF}
+.lkopf{background:var(--nacht);color:#fff;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;position:sticky;top:0;z-index:20} .lkopf h1{margin:0;font-size:22px}
+.ltabs{display:flex;gap:6px;margin:0 0 12px} .ltabs button{border:0;border-radius:12px;padding:8px 16px;font-weight:800;cursor:pointer;background:#fff} .ltabs button.an{background:var(--pri);color:#fff}
+table.t{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;font-size:15px}
+table.t th,table.t td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left} table.t th{background:var(--soft);font-size:12.5px;text-transform:uppercase}
+.podest{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin:30px 0}
+.podest div{width:min(28vw,260px);border-radius:18px 18px 0 0;color:#fff;text-align:center;padding:14px;font-family:var(--head)} .podest .n{font-size:clamp(22px,2.6vw,42px);font-weight:900} .podest .pl{font-size:clamp(40px,5vw,80px)}
+.verdeckt{filter:blur(14px)}
+</style>
+</head>
+<body>
+<div id="app"><div class="wrap"><div class="card">Einen Moment …</div></div></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="hilfe.js"></script>
+<script src="challenge/w1.js"></script>
+<script>
+/* =========================================================
+   WOCHENEND-CHALLENGE (allein am Handy)
+   Lernende: challenge.html – Level spielen, Punkte sind VERSTECKT (nur ✓ pro Level).
+   Lehrkraft: challenge.html?leitung=1 – Rangliste, Siegerehrung am Beamer, Hilfe-Sprachen zuteilen.
+   Punkte: pro Aufgabe beim 1. Versuch richtig 10, Level geschafft +20 (nur beim ersten Mal). Mix: 2 pro richtige Antwort (max. 300).
+   Daten: ligachallenge/ploen-jik/{id}/ sp/{pid} · erg/{pid}/{level} {p,f,ts} · mix/{pid} {p,n,ts}
+   ========================================================= */
+const KURS="ploen-jik", C=window.CHALLENGE;
+const cfg={apiKey:"AIzaSyBDChXlm34Kr7Gg0Dw458GiiwoLnWJAnxM",authDomain:"lern-deutsch-arash.firebaseapp.com",databaseURL:"https://lern-deutsch-arash-default-rtdb.europe-west1.firebasedatabase.app",projectId:"lern-deutsch-arash"};
+let db=null, auth=null, offset=0; try{ if(!firebase.apps||!firebase.apps.length) firebase.initializeApp(cfg); db=firebase.database(); try{ auth=firebase.auth(); }catch(e){} db.ref(".info/serverTimeOffset").on("value",s=>offset=Number(s.val())||0); }catch(e){}
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const P=new URLSearchParams(location.search); const app=$("#app"); const jetzt=()=>Date.now()+offset; const TS=()=>firebase.database.ServerValue.TIMESTAMP;
+const R=p=>db.ref(`ligachallenge/${KURS}/${C.id}${p?"/"+p:""}`);
+const vorbei=()=>jetzt()>=C.ende;
+function mische(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const norm=s=>String(s||"").toLowerCase().replace(/[.,!?;:"„“]/g,"").replace(/\s+/g," ").trim();
+const restText=()=>{ const ms=Math.max(0,C.ende-jetzt()); const t=Math.floor(ms/86400000), h=Math.floor(ms/3600000)%24, m=Math.floor(ms/60000)%60; return t?`${t} Tage ${h} Std.`:`${h} Std. ${m} Min.`; };
+const ALLE=C.level.flatMap(L=>L.items.map((it,i)=>({...it, lid:L.id, thema:L.thema, key:L.id+"_"+i})));
+
+/* =========================================================
+   LERNENDE
+   ========================================================= */
+function lernende(){
+  let me=null, ERG={}, MIX={}, spiel=null, fertigSicht=false;
+  try{ me=JSON.parse(localStorage.getItem("ch_me_"+C.id)||"null"); }catch(e){}
+  if(me) start(); else namenWahl();
+  async function namenWahl(){ let namen={}; try{ namen=(await db.ref(`jugendliga/${KURS}/public/names`).once("value")).val()||{}; }catch(e){}
+    const ids=Object.keys(namen).sort((a,b)=>String(namen[a]).localeCompare(namen[b]));
+    app.innerHTML=`<div class="wrap"><div class="held" style="margin-top:3vh"><h2>🏆 ${esc(C.titel)}</h2><p style="margin:0">Spiel allein am Handy – so viel du willst! Bis <b>Dienstag, 8:30 Uhr</b>.<br>Wer gewinnt? Das erfahrt ihr im Unterricht. 🤫</p></div>
+      <div class="card"><h3>Wer bist du?</h3><div class="namen">${ids.map(p=>`<button data-p="${p}">${esc(namen[p])}</button>`).join("")}</div></div></div>`;
+    $$("[data-p]").forEach(b=>b.onclick=()=>{ me={pid:b.dataset.p, name:namen[b.dataset.p]}; try{ localStorage.setItem("ch_me_"+C.id, JSON.stringify(me)); }catch(e){} start(); }); }
+  function start(){ R(`sp/${me.pid}`).update({name:me.name, ts:TS()});
+    R(`erg/${me.pid}`).on("value",s=>{ ERG=s.val()||{}; if(!spiel&&!fertigSicht) male(); });
+    R(`mix/${me.pid}`).on("value",s=>{ MIX=s.val()||{}; });
+    if(window.HILFE) HILFE.laden(db, KURS, me.pid);
+    setInterval(()=>{ const u=$("#rest"); if(u) u.textContent=restText(); if(vorbei()&&spiel){ spiel=null; male(); } }, 20000);
+    male(); }
+  function male(){ if(!me) return; fertigSicht=false;
+    let h=`<div class="kopf"><div class="in"><b>🏆 Challenge</b><span class="r">${esc(me.name)}</span></div></div><div class="wrap">`;
+    if(vorbei()) { app.innerHTML=h+`<div class="held mitte"><div style="font-size:60px">🏁</div><h2>Die Challenge ist vorbei!</h2><p>Wer gewonnen hat, erfahrt ihr im Unterricht. 🤫</p><p>Du hast <b>${Object.keys(ERG).length} von ${C.level.length}</b> Level geschafft.</p></div></div>`; return; }
+    if(spiel) return spielMalen(h);
+    const fertig=C.level.filter(L=>ERG[L.id]).length;
+    h+=`<div class="held"><h2>🏆 ${esc(C.titel)}</h2><div>Noch <span class="uhr" id="rest">${restText()}</span></div><div class="small" style="opacity:.9;margin-top:4px">Bis Dienstag, 8:30 Uhr · Die Punkte sind geheim – erst im Unterricht gibt es die Siegerehrung! 🤫</div></div>
+      <div class="card" style="padding:12px 16px"><b>${fertig} von ${C.level.length} Level geschafft</b><div class="fort"><i style="width:${fertig/C.level.length*100}%"></i></div><span class="small muted">Tipp: Jede Aufgabe zählt beim <b>ersten Versuch</b>. Lies genau! Bei 💡 findest du eine Erklärung.</span></div>
+      <div class="levels">${C.level.map((L,i)=>`<button class="lv ${ERG[L.id]?"ok":""}" data-lv="${i}"><span class="e">${L.e}</span>${ERG[L.id]?`<span class="haken">✅</span>`:""}<b>${i+1}. ${esc(L.titel)}</b><span class="small muted">${L.items.length} Aufgaben</span></button>`).join("")}
+        <button class="lv mix" data-mix="1"><span class="e">🎲</span><b>Endlos-Mix</b><span class="small muted">Gemischt aus allen Themen – so oft du willst!</span></button></div></div>`;
+    app.innerHTML=h;
+    $$("[data-lv]").forEach(b=>b.onclick=()=>starteLevel(C.level[Number(b.dataset.lv)]));
+    $(".lv.mix").onclick=()=>starteMix(); }
+  function starteLevel(L){ spiel={L, mix:false, queue:mische(L.items.map((it,i)=>({...it, key:L.id+"_"+i}))), gesamt:L.items.length, richtig1:0, fehler:0, erst:{}, akt:null, gelegt:[], fb:null}; naechste(); }
+  function starteMix(){ const q=mische(ALLE).slice(0,10); spiel={L:{id:"mix", titel:"Endlos-Mix", e:"🎲"}, mix:true, queue:q, gesamt:q.length, richtig1:0, fehler:0, erst:{}, akt:null, gelegt:[], fb:null}; naechste(); }
+  function naechste(){ spiel.akt=spiel.queue.shift()||null; spiel.gelegt=[]; spiel.fb=null; spiel.ord=null; spiel.pool=null; if(!spiel.akt) return fertig(); male(); window.scrollTo(0,0); }
+  async function fertig(){ const S=spiel; const L=S.L;
+    if(!S.mix && !ERG[L.id]) await R(`erg/${me.pid}/${L.id}`).set({p:S.richtig1*10+20, f:S.fehler, r:S.richtig1, ts:TS()});
+    if(S.mix){ const alt=Number(MIX.p)||0; await R(`mix/${me.pid}`).set({p:Math.min(300, alt+S.richtig1*2), n:(Number(MIX.n)||0)+1, ts:TS()}); }
+    spiel=null; fertigSicht=true;
+    app.innerHTML=`<div class="kopf"><div class="in"><b>🏆 Challenge</b><span class="r">${esc(me.name)}</span></div></div><div class="wrap"><div class="card mitte"><div style="font-size:64px">${S.fehler===0?"🌟":"🎉"}</div><h2>${esc(L.titel)} geschafft!</h2>
+      <p style="font-size:18px">${S.fehler===0?"Alles beim ersten Versuch richtig – super!":`Gut gemacht! Du hast alle Aufgaben gelöst.`}</p><p class="small muted">Deine Punkte bleiben geheim bis zur Siegerehrung. 🤫</p>
+      <div class="row" style="justify-content:center"><button class="btn" id="zurueck">Zur Übersicht ▶</button>${S.mix?`<button class="btn ghost" id="mixNochmal">🎲 Noch ein Mix</button>`:""}</div></div></div>`;
+    $("#zurueck").onclick=()=>male(); const mn=$("#mixNochmal"); if(mn) mn.onclick=()=>starteMix(); }
+  function antworte(ok, w){ const S=spiel; const k=S.akt.key; const erst=S.erst[k]===undefined; if(erst) S.erst[k]=ok;
+    if(erst&&ok) S.richtig1++; if(ok) S.geloest=(S.geloest||0)+1; if(!ok){ if(erst) S.fehler++; S.queue.push(S.akt); } S.fb={ok, w}; male(); }
+  function spielMalen(h){ const S=spiel; const it=S.akt; const geloest=S.geloest||0;
+    h+=`<div class="row" style="justify-content:space-between"><b>${S.L.e} ${esc(S.L.titel)}</b><button class="btn sm ghost" id="abbruch">✖ Abbrechen</button></div><div class="fort"><i style="width:${Math.max(0,geloest)/S.gesamt*100}%"></i></div>
+      <div class="card">${window.HILFE&&it.thema?HILFE.knopf(it.thema):(window.HILFE&&S.L.thema?HILFE.knopf(S.L.thema):"")}`;
+    if(it.t==="m"){ if(!S.ord) S.ord={o:mische(it.o.map((_,j)=>j))};
+      h+=`<div class="frage">${esc(it.f)}</div><div class="opts">${S.ord.o.map(j=>`<button class="opt ${S.fb?(j===0?"ok":S.fb.w===j?"falsch":""):""}" data-o="${j}" ${S.fb?"disabled":""}>${esc(it.o[j])}</button>`).join("")}</div>`;
+      if(S.fb) h+=`<div class="melde ${S.fb.ok?"ok":"falsch"}">${S.fb.ok?"✅ Richtig!":"❌ Richtig ist: "+esc(it.o[0])+"<br><span class='small'>Die Aufgabe kommt später noch einmal.</span>"}</div>`; }
+    else { if(!S.pool) S.pool={o:mische(it.w.map((_,j)=>j))}; const G=S.gelegt;
+      h+=`<div class="frage">🏗️ Bau den Satz!</div><div class="linie">${G.map((j,k)=>`<button class="kachel" data-raus="${k}" ${S.fb?"disabled":""}>${esc(it.w[j])}</button>`).join("")}${G.length===it.w.length?`<b style="font-size:22px">${esc(it.p)}</b>`:""}</div>
+        <div class="pool">${S.pool.o.map(j=>`<button class="kachel ${G.includes(j)?"weg":""}" data-rein="${j}" ${S.fb?"disabled":""}>${esc(it.w[j])}</button>`).join("")}</div>
+        ${S.fb?"":`<div class="row"><button class="btn ghost" id="leeren" style="flex:1">↺ neu</button><button class="btn" id="pruef" style="flex:2" ${G.length===it.w.length?"":"disabled"}>✓ Prüfen</button></div>`}`;
+      if(S.fb) h+=`<div class="melde ${S.fb.ok?"ok":"falsch"}">${S.fb.ok?"✅ Richtig!":"❌ Richtig ist: "+esc(it.w.join(" ")+it.p)+"<br><span class='small'>Die Aufgabe kommt später noch einmal.</span>"}</div>`; }
+    if(S.fb) h+=`<button class="btn wide" id="weiter" style="margin-top:12px;min-height:54px;font-size:19px">Weiter ▶</button>`;
+    app.innerHTML=h+`</div></div>`;
+    if(window.HILFE) HILFE.binden(app);
+    $("#abbruch").onclick=()=>{ if(confirm("Level abbrechen? Dein Fortschritt in diesem Level geht verloren.")){ spiel=null; male(); } };
+    $$("[data-o]").forEach(b=>b.onclick=()=>{ const j=Number(b.dataset.o); antworte(j===0, j); });
+    $$("[data-rein]").forEach(b=>b.onclick=()=>{ spiel.gelegt.push(Number(b.dataset.rein)); male(); });
+    $$("[data-raus]").forEach(b=>b.onclick=()=>{ spiel.gelegt.splice(Number(b.dataset.raus),1); male(); });
+    const l=$("#leeren"); if(l) l.onclick=()=>{ spiel.gelegt=[]; male(); };
+    const p=$("#pruef"); if(p) p.onclick=()=>{ const s=spiel.gelegt.map(j=>it.w[j]).join(" "); antworte(it.a.map(norm).includes(norm(s))); };
+    const w=$("#weiter"); if(w) w.onclick=naechste; }
+}
+
+/* =========================================================
+   LEHRKRAFT
+   ========================================================= */
+function leitung(){
+  document.body.classList.add("lk"); let SP={}, ERG={}, MIX={}, NAMEN={}, HS={}, tab="rang", platz=0;
+  function login(f){ app.innerHTML=`<div class="wrap"><div class="card" style="margin-top:8vh"><h2>🏆 Challenge – Übersicht</h2><p class="muted">Anmeldung wie auf der Lehrer-Seite.</p>
+    <form id="lf"><input id="lm" type="email" placeholder="E-Mail" style="width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:8px"><input id="lp" type="password" placeholder="Passwort" style="width:100%;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:6px 12px"><button class="btn wide" style="margin-top:10px">Anmelden</button></form><div style="color:var(--bad);font-weight:700;margin-top:8px">${esc(f||"")}</div></div></div>`;
+    $("#lf").onsubmit=e=>{ e.preventDefault(); auth.signInWithEmailAndPassword($("#lm").value.trim(),$("#lp").value).catch(()=>login("E-Mail oder Passwort stimmt nicht.")); }; }
+  if(!auth) return login("Anmeldung nicht verfügbar.");
+  auth.onAuthStateChanged(u=>{ if(!u) return login();
+    db.ref(`jugendliga/${KURS}/public/names`).on("value",s=>{ NAMEN=s.val()||{}; male(); });
+    db.ref(`jugendliga/${KURS}/public/hilfe`).on("value",s=>{ HS=s.val()||{}; male(); });
+    R("sp").on("value",s=>{ SP=s.val()||{}; male(); }); R("erg").on("value",s=>{ ERG=s.val()||{}; male(); }); R("mix").on("value",s=>{ MIX=s.val()||{}; male(); });
+    setInterval(()=>{ if(tab==="rang") male(); }, 30000); });
+  function liste(){ return Object.keys(Object.assign({}, SP, ERG)).map(p=>{ const e=ERG[p]||{}; const lv=Object.values(e); const lp=lv.reduce((a,x)=>a+(Number(x.p)||0),0); const mp=Number((MIX[p]||{}).p)||0;
+      const f=lv.reduce((a,x)=>a+(Number(x.f)||0),0); const last=Math.max(0,...lv.map(x=>Number(x.ts)||0), Number((MIX[p]||{}).ts)||0, Number((SP[p]||{}).ts)||0);
+      return {p, name:(SP[p]||{}).name||NAMEN[p]||"?", lv:lv.length, lp, mp, ges:lp+mp, f, mixN:Number((MIX[p]||{}).n)||0, last}; }).sort((a,b)=>b.ges-a.ges||b.lv-a.lv); }
+  function male(){ if(document.activeElement&&document.activeElement.tagName==="SELECT") return;
+    const L=liste(); const ende=new Date(C.ende);
+    let h=`<div class="lkopf"><h1>🏆 ${esc(C.titel)}</h1><span class="small">${vorbei()?"✅ beendet":"läuft noch "+restText()} · bis ${ende.toLocaleString("de-DE",{weekday:"short",day:"numeric",month:"numeric",hour:"2-digit",minute:"2-digit"})}</span><span class="small" style="margin-left:auto;opacity:.85">Link für die Jugendlichen: <b>${esc(location.host+location.pathname)}</b></span></div><div class="breit">
+      <div class="ltabs"><button data-t="rang" class="${tab==="rang"?"an":""}">📊 Rangliste</button><button data-t="sieg" class="${tab==="sieg"?"an":""}">🥇 Siegerehrung (Beamer)</button><button data-t="hilfe" class="${tab==="hilfe"?"an":""}">🌍 Hilfe-Sprachen</button></div>`;
+    if(tab==="rang") h+=`<div class="card"><p class="small muted" style="margin-top:0">Nur du siehst die Punkte. Pro Aufgabe beim 1. Versuch richtig: 10 · Level geschafft: +20 · Endlos-Mix: 2 pro richtige Antwort (max. 300).</p>
+      <table class="t"><tr><th>#</th><th>Name</th><th>Level</th><th>Level-Punkte</th><th>Mix</th><th>Gesamt</th><th>Fehler</th><th>Zuletzt aktiv</th></tr>
+      ${L.map((z,i)=>`<tr><td>${i+1}</td><td><b>${esc(z.name)}</b></td><td>${z.lv} / ${C.level.length}</td><td>${z.lp}</td><td>${z.mp} <span class="small muted">(${z.mixN}×)</span></td><td><b>${z.ges}</b></td><td>${z.f}</td><td class="small">${z.last?new Date(z.last).toLocaleString("de-DE",{weekday:"short",hour:"2-digit",minute:"2-digit"}):"–"}</td></tr>`).join("")||'<tr><td colspan="8" class="muted">Noch niemand hat gespielt.</td></tr>'}</table></div>
+      <div class="card"><h3>Level im Überblick</h3><table class="t"><tr><th>Level</th><th>geschafft von</th><th>Ø Fehler</th></tr>${C.level.map(Lv=>{ const z=Object.values(ERG).map(e=>e[Lv.id]).filter(Boolean); return `<tr><td>${Lv.e} ${esc(Lv.titel)}</td><td>${z.length}</td><td>${z.length?(z.reduce((a,x)=>a+(Number(x.f)||0),0)/z.length).toFixed(1):"–"}</td></tr>`; }).join("")}</table></div>`;
+    if(tab==="sieg"){ const top=L.slice(0,3); const farbe=["#F5B82E","#9CA3AF","#B45309"], hoehe=[260,200,150]; const ord=[1,0,2];
+      h+=`<div class="card mitte" style="background:var(--nacht);color:#fff"><h1 style="font-size:clamp(30px,4vw,60px)">🏆 Siegerehrung</h1><p>Tippe auf „Nächster Platz“ – erst Platz 3, dann 2, dann 1.</p>
+        <div class="podest">${ord.map(i=>top[i]?`<div style="background:${farbe[i]};height:${hoehe[i]}px"><div class="pl">${["🥇","🥈","🥉"][i]}</div><div class="n ${platz>=3-i?"":"verdeckt"}">${platz>=3-i?esc(top[i].name):"???"}</div>${platz>=3-i?`<div>${top[i].ges} Punkte · ${top[i].lv} Level</div>`:""}</div>`:"").join("")}</div>
+        <div class="row" style="justify-content:center"><button class="btn" id="naechster" style="font-size:20px" ${platz>=3?"disabled":""}>🎉 Nächster Platz</button><button class="btn ghost" id="zuruecksetzen">↺ Zurück</button></div>
+        ${platz>=3&&L.length>3?`<p style="margin-top:16px">Auch toll: ${L.slice(3,8).map(z=>esc(z.name)).join(" · ")}</p>`:""}</div>`; }
+    if(tab==="hilfe"){ const ids=Object.keys(NAMEN).sort((a,b)=>String(NAMEN[a]).localeCompare(NAMEN[b])); const S=(window.HILFE||{}).SPRACHEN||{};
+      h+=`<div class="card"><h3>🌍 Wer bekommt die Grammatik-Hilfe in welcher Sprache?</h3><p class="small muted">Die Hilfe erscheint beim 💡-Knopf: erst Deutsch, darunter die Sprache. Wird sofort gespeichert. „nur Deutsch“ = keine Übersetzung.</p>
+        <table class="t"><tr><th>Name</th><th>Sprache</th></tr>${ids.map(p=>`<tr><td><b>${esc(NAMEN[p])}</b></td><td><select data-hs="${p}" style="border:2px solid var(--line);border-radius:10px;padding:6px 10px"><option value="">nur Deutsch</option>${Object.entries(S).map(([k,x])=>`<option value="${k}" ${HS[p]===k?"selected":""}>${x.n}</option>`).join("")}</select></td></tr>`).join("")}</table></div>
+        <div class="card"><h3>Vorschau</h3><p class="small muted">So sieht die Hilfe aus (Beispiel: Verb):</p><div id="vorschau"></div></div>`; }
+    app.innerHTML=h+`</div>`;
+    $$("[data-t]").forEach(b=>b.onclick=()=>{ tab=b.dataset.t; male(); });
+    const n=$("#naechster"); if(n) n.onclick=()=>{ platz++; male(); }; const z=$("#zuruecksetzen"); if(z) z.onclick=()=>{ platz=0; male(); };
+    $$("[data-hs]").forEach(s=>s.onchange=()=>{ db.ref(`jugendliga/${KURS}/public/hilfe/${s.dataset.hs}`).set(s.value||null).catch(()=>alert("Speichern hat nicht geklappt – bist du angemeldet?")); s.blur(); });
+    const v=$("#vorschau"); if(v&&window.HILFE){ v.innerHTML=Object.keys(HILFE.SPRACHEN).map(k=>{ HILFE.setzeSprache(k); return HILFE.box("verb"); }).join(""); HILFE.setzeSprache(""); } }
+}
+if(!db) app.innerHTML=`<div class="wrap"><div class="card">Keine Verbindung.</div></div>`;
+else if(P.get("leitung")) leitung(); else lernende();
+</script>
+</body>
+</html>

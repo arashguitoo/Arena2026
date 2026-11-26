@@ -220,6 +220,9 @@ body.beamer .layout{grid-template-columns:1fr} body.beamer .seite{display:none}
 <script src="unterricht/spiele.js"></script>
 <script src="unterricht/spiele2.js"></script>
 <script src="unterricht/auto30.js"></script>
+<script src="hilfe.js"></script>
+<script src="challenge/w1.js"></script>
+<script src="unterricht/tag5.js"></script>
 <script src="nachzuegler.js"></script>
 <script src="lernwelt.js"></script>
 <script>
@@ -298,7 +301,7 @@ function ersteVersuche(A, ant){ return itemsVon(A).filter((_,i)=>ant[i]&&ant[i].
 function loesungVon(A, it){ return A.typ==="sortieren"?(A.koerbe.find(k=>k.k===it.k)||{}).t:A.typ==="bauen"?(it.a[0].charAt(0).toUpperCase()+it.a[0].slice(1)+(it.p||"")):it.o[0]; }
 function uebungHtml(A, ctx){
   const L=itemsVon(A), ant=ctx.ant||{}; const okN=L.filter((_,k)=>ant[k]&&ant[k].ok).length;
-  let h=`<h2>${esc(A.titel)}</h2>`+anleitung(A);
+  let h=`<h2>${esc(A.titel)}</h2>`+anleitung(A)+(A.hilfe&&window.HILFE?`<div style="margin:6px 0">${HILFE.knopf(A.hilfe)}</div>`:"");
   const fb=ctx.lokal.fb; if(fb && fb.aid===A.id){ const it=L[fb.i];
     return h+fortschritt(L.length,okN)+`<div class="card"><div class="frage">${esc(it.f||it.t||"Bau den Satz:")}</div>
       <div class="opt falsch" style="text-decoration:none;opacity:1">❌ Deine Antwort: ${esc(fb.v)}</div>
@@ -320,6 +323,7 @@ function uebungHtml(A, ctx){
   return h;
 }
 function uebungBinden(A, ctx){
+  if(window.HILFE) HILFE.binden();
   const fw=$("#fbweiter"); if(fw){ fw.onclick=()=>{ ctx.lokal.fb=null; ctx.neu(); window.scrollTo(0,0); }; return; }
   const L=itemsVon(A), ant=ctx.ant||{}; const i=aktuellerIndex(A, ant, ctx); if(i<0) return; const it=L[i]; const a=ant[i]||{};
   const antwort=(ok, v, zeige)=>{ const n=(a.n||0)+1; if(ok) toast(n===1?"✓ Richtig!":"✓ Jetzt richtig!"); else ctx.lokal.fb={aid:A.id, i, v:zeige}; ctx.setze(i, {ok, v, n}); };
@@ -389,7 +393,7 @@ function handy(){
   document.addEventListener("visibilitychange", ()=>{ if(document.visibilityState==="visible"){ wachHalten(); if(me && !SPIEGEL && !DEMO) try{ const r=I(`spieler/${me.pid}`); r.update({online:true}); r.child("online").onDisconnect().set(false); }catch(e){} } });
   document.addEventListener("click", wachHalten, {once:true});
   function los(){ wachHalten();
-    if(!SPIEGEL){ const r=I(`spieler/${me.pid}`); r.update({name:me.name, ts:TS(), online:true}); try{ r.child("online").onDisconnect().set(false); }catch(e){} }
+    if(!SPIEGEL){ const r=I(`spieler/${me.pid}`); r.update({name:me.name, ts:TS(), online:true}); try{ r.child("online").onDisconnect().set(false); }catch(e){} if(window.HILFE) HILFE.laden(db, KURS, me.pid); }
     I().on("value", s=>{ S=s.val()||{}; TIMER=S.timer||null; if(S.info&&S.info.plan&&PLAENE[S.info.plan]) PLAN=PLAENE[S.info.plan];
       if(!SPIEGEL && me){ if((S.spieler||{})[me.pid]) gesehen=true; else if(gesehen && S.info){ /* von der Lehrkraft abgemeldet */ I().off(); try{ localStorage.removeItem(MEKEY()); }catch(e){} me=null; gesehen=false; abgemeldet=true; sig=""; return namenWahl(); } }
       male(); });
