@@ -50,6 +50,7 @@ table.t th,table.t td{padding:7px 9px;border-bottom:1px solid var(--line);text-a
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>window.UNTERRICHT_PLAENE = window.UNTERRICHT_PLAENE || {};</script>
 <script src="unterricht/auto30.js"></script>
+<script src="unterricht/freitag-team.js"></script>
 <script>
 /* =========================================================
    TEAM-SPIEL ZUM ALLEIN-SPIELEN
@@ -64,7 +65,8 @@ let db=null; try{ if(!firebase.apps||!firebase.apps.length) firebase.initializeA
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const P=new URLSearchParams(location.search); const app=$("#app");
-const d=new Date(); const TAG=P.get("runde")||`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`;
+const SET=(window.TEAMSPIEL_SETS||{})[P.get("set")]||null;
+const d=new Date(); const TAG=(P.get("runde")||`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,"0")}${String(d.getDate()).padStart(2,"0")}`)+(SET?"_"+P.get("set"):"");
 const R=p=>db.ref(`ligaspiel/${KURS}/${TAG}${p?"/"+p:""}`);
 const TEAMS=[{k:"t0",n:"Ostsee",e:"🌊",f:"#2F6FDB"},{k:"t1",n:"Wald",e:"🌲",f:"#14A37F"},{k:"t2",n:"Sonne",e:"☀️",f:"#E59E0B"},{k:"t3",n:"Feuer",e:"🔥",f:"#E2483D"}].slice(0, Math.max(2, Math.min(4, Number(P.get("teams"))||2)));
 function hash(s){ let h=2166136261; for(const c of String(s)){ h^=c.charCodeAt(0); h=Math.imul(h,16777619); } return h>>>0; }
@@ -72,9 +74,9 @@ function mischS(a,key){ let x=hash(key)||1; const r=()=>{ x^=x<<13; x^=x>>>17; x
 const norm=s=>String(s||"").toLowerCase().replace(/[.,!?;:"„“]/g,"").replace(/\s+/g," ").trim();
 
 /* ---------- Aufgaben: Team-Quiz (5 Runden) + Sätze bauen ---------- */
-const QZ=((((window.UNTERRICHT_PLAENE.auto30||{}).bloecke||[])[0]||{}).aufgaben||[])[0]||{items:[],runden:{}};
+const QZ=SET?{items:SET.items, runden:SET.runden}:((((window.UNTERRICHT_PLAENE.auto30||{}).bloecke||[])[0]||{}).aufgaben||[])[0]||{items:[],runden:{}};
 const S_=(w,p,...alt)=>({w, p:p||".", a:[w.join(" ").toLowerCase(), ...alt]});
-const SAETZE=[
+const SAETZE=SET?SET.saetze:[
   S_(["Ich","habe","nichts","gekauft"]),
   S_(["Hast","du","etwas","gegessen"],"?"),
   S_(["Wir","haben","alles","verstanden"],".","alles haben wir verstanden"),
@@ -88,7 +90,7 @@ const SAETZE=[
   S_(["Ich","gebe","meiner","Mutter","ein","Geschenk"]),
   S_(["Wann","bist","du","heute","aufgestanden"],"?")
 ];
-const RUNDEN=Object.assign({}, QZ.runden||{}, {6:"Sätze bauen"});
+const RUNDEN=Object.assign({6:"Sätze bauen"}, QZ.runden||{});
 const ALLE=[...QZ.items.map((it,i)=>({id:"q"+i, r:it.r, typ:"q", it})), ...SAETZE.map((it,i)=>({id:"s"+i, r:6, typ:"s", it}))];
 const AUF=Object.fromEntries(ALLE.map(x=>[x.id,x]));
 const PUNKTE=x=>x.typ==="s"?2:1;
@@ -189,7 +191,7 @@ function leitung(){
   R("sp").on("value",s=>{ SP=s.val()||{}; male(); }); R("ant").on("value",s=>{ ANT=s.val()||{}; male(); });
   function male(){ const st=teamStand().sort((a,b)=>b.schnitt-a.schnitt); const best=st.length?st[0].schnitt:0; const maxS=Math.max(1,...st.map(z=>z.schnitt));
     const L=Object.entries(SP).filter(([,x])=>x&&x.name).map(([p,x])=>({p, x, pkt:punkteVon(p), n:Object.keys(ANT[p]||{}).filter(k=>AUF[k]).length})).sort((a,b)=>b.pkt-a.pkt);
-    app.innerHTML=`<div class="breit"><div class="card"><h1>🎮 Team-Spiel – Stand ${TAG.slice(6,8)}.${TAG.slice(4,6)}.</h1><p class="muted">Die Lernenden öffnen <b>${esc(location.host+location.pathname)}</b>. Jede richtige Antwort beim ersten Versuch zählt (Sätze bauen: 2 Punkte). Gewertet wird der Durchschnitt pro Person.</p>
+    app.innerHTML=`<div class="breit"><div class="card"><h1>🎮 Team-Spiel – Stand ${TAG.slice(6,8)}.${TAG.slice(4,6)}.</h1><p class="muted">Die Lernenden öffnen <b>${esc(location.host+location.pathname)}${SET?"?set="+esc(P.get("set")):""}</b>. Jede richtige Antwort beim ersten Versuch zählt (Sätze bauen: 2 Punkte). Gewertet wird der Durchschnitt pro Person.</p>
       <div class="balken">${st.map((z,i)=>`<div class="z"><span>${i===0&&best>0?"👑 ":""}${z.e} ${esc(z.n)}</span><div class="bal"><i style="width:${z.schnitt/maxS*100}%;background:${z.f}"></i></div><span>Ø ${z.schnitt} <span class="small muted">(${z.m})</span></span></div>`).join("")}</div></div>
       <div class="card"><table class="t"><tr><th>Name</th><th>Team</th><th>Punkte</th><th>Geschafft</th></tr>${L.map(z=>{ const t=TEAMS.find(t=>t.k===z.x.team)||{}; return `<tr><td><b>${esc(z.x.name)}</b></td><td><span class="chip" style="background:${t.f}">${t.e||""} ${esc(t.n||"")}</span></td><td>${z.pkt} / ${MAX}</td><td>${z.n} / ${ALLE.length}${z.n>=ALLE.length?" 🏁":""}</td></tr>`; }).join("")||'<tr><td colspan="4" class="muted">Noch niemand dabei.</td></tr>'}</table></div>
       <div class="card"><button class="btn rot" id="reset">🗑 Neues Spiel (alle Punkte von heute löschen)</button> <span class="small muted">Danach wählen alle ihren Namen neu.</span></div></div>`;

@@ -222,6 +222,7 @@ body.beamer .layout{grid-template-columns:1fr} body.beamer .seite{display:none}
 <script src="unterricht/auto30.js"></script>
 <script src="hilfe.js"></script>
 <script src="challenge/w1.js"></script>
+<script src="unterricht/freitag.js"></script>
 <script src="unterricht/tag5.js"></script>
 <script src="nachzuegler.js"></script>
 <script src="lernwelt.js"></script>
@@ -809,7 +810,8 @@ function leitung(){
   let duellHist=[];
   function duellZiehen(A){ const ids=online().map(([p])=>p); if(ids.length<2) return; let pool=ids.filter(p=>!duellHist.includes(p)); if(pool.length<2){ duellHist=[]; pool=ids; }
     const a=pool[rnd(pool.length)]; const rest=pool.filter(p=>p!==a); const b=rest[rnd(rest.length)]; duellHist.push(a,b);
-    const q=mische(A.pool.map((_,i)=>i)).slice(0, A.fragen||3); I("duell").set({aid:A.id, nr:((S.duell||{}).nr||0)+1, a, b, q, i:0, zeigen:false}); timerSetze(A.minuten>5?3:A.minuten); }
+    const anz=A.fragen||3; const schon=Object.values(((S.dq||{})[A.id])||{}).flatMap(x=>Object.values(x||{})); let frei=A.pool.map((_,i)=>i).filter(i=>!schon.includes(i)); const reset=frei.length<anz; if(reset) frei=A.pool.map((_,i)=>i);
+    const q=mische(frei).slice(0, anz); const nr=((S.duell||{}).nr||0)+1; I().update({duell:{aid:A.id, nr, a, b, q, i:0, zeigen:false}, ...(reset?{[`dq/${A.id}`]:{[nr]:q}}:{[`dq/${A.id}/${nr}`]:q})}); timerSetze(A.minuten>5?3:A.minuten); }
   let paarHist=new Set(), sitzModus=false, sitzListe=[];
   function paareSetzen(A, gruppen){ const up={}; const alt=S.paar; if(alt && alt.gr) Object.values(alt.gr).forEach(G=>Object.values(G.m||{}).forEach(p=>{ up[`stat/${p}/karten`]=(Number(((S.stat||{})[p]||{}).karten)||0)+(Number(G.k)||0); }));
     const gr={}; gruppen.forEach((g,i)=>gr["g"+i]={m:g, k:0}); up.paar={aid:A.id, runde:((alt&&alt.aid===A.id?alt.runde:0)||0)+1, gr}; I().update(up); timerSetze(A.minuten||5); }
