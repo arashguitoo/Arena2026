@@ -216,21 +216,21 @@ body.beamer .layout{grid-template-columns:1fr} body.beamer .seite{display:none}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="unterricht/schlange.js?v=20261127b"></script>
-<script src="unterricht/wdh1.js?v=20261127b"></script>
-<script src="unterricht/duell.js?v=20261127b"></script>
-<script src="unterricht/wdh2.js?v=20261127b"></script>
-<script src="unterricht/ketten.js?v=20261127b"></script>
-<script src="unterricht/spiele.js?v=20261127b"></script>
-<script src="unterricht/spiele2.js?v=20261127b"></script>
-<script src="unterricht/auto30.js?v=20261127b"></script>
-<script src="hilfe.js?v=20261127b"></script>
-<script src="challenge/w1.js?v=20261127b"></script>
-<script src="unterricht/freitag.js?v=20261127b"></script>
-<script src="unterricht/freitag2.js?v=20261127b"></script>
-<script src="unterricht/tag5.js?v=20261127b"></script>
-<script src="nachzuegler.js?v=20261127b"></script>
-<script src="lernwelt.js?v=20261127b"></script>
+<script src="unterricht/schlange.js?v=20261127c"></script>
+<script src="unterricht/wdh1.js?v=20261127c"></script>
+<script src="unterricht/duell.js?v=20261127c"></script>
+<script src="unterricht/wdh2.js?v=20261127c"></script>
+<script src="unterricht/ketten.js?v=20261127c"></script>
+<script src="unterricht/spiele.js?v=20261127c"></script>
+<script src="unterricht/spiele2.js?v=20261127c"></script>
+<script src="unterricht/auto30.js?v=20261127c"></script>
+<script src="hilfe.js?v=20261127c"></script>
+<script src="challenge/w1.js?v=20261127c"></script>
+<script src="unterricht/freitag.js?v=20261127c"></script>
+<script src="unterricht/freitag2.js?v=20261127c"></script>
+<script src="unterricht/tag5.js?v=20261127c"></script>
+<script src="nachzuegler.js?v=20261127c"></script>
+<script src="lernwelt.js?v=20261127c"></script>
 <script>
 /* =========================================================
    LIVE-UNTERRICHT – Lehrtafel + Aufgaben freigeben (wie der Persisch-Live-Unterricht)
@@ -937,7 +937,7 @@ function leitung(){
         <div class="row" style="margin-top:8px">${Object.entries(S.teams).map(([k,t])=>`<span class="chip" style="background:${t.f};color:#fff">${t.e} ${esc(t.n)}: ${spieler().filter(([,x])=>x.team===k).length}</span>`).join("")}</div>`:""}
       <p style="margin-top:18px"><button class="btn acc" id="starten">▶ Unterricht starten</button></p></div></div></div>`; }
   function seite(){ const i=inf(); const b=i.block||0; const auf=(i.auf||{}).id;
-    return `<div class="planzeit" id="planzeit">${planzeit()||"⏱ Zeitplan startet mit dem Unterricht"}</div>`+PLAN.bloecke.map((B,bi)=>{ const an=bi===b; const t0=PLAN.bloecke.slice(0,bi).reduce((a,x)=>a+x.minuten,0);
+    return `<details style="margin-bottom:8px"><summary class="small" style="cursor:pointer;font-weight:800">📂 Plan wechseln (jetzt: ${esc(PLAN.titel.split(":")[0])})</summary><div class="row" style="margin-top:6px">${Object.values(PLAENE).map(pl=>`<button class="btn sm ${pl.id===PLAN.id?"gold":"ghost"}" data-plan="${pl.id}">${esc(pl.titel.split(":")[0])}</button>`).join("")}</div></details>`+`<div class="planzeit" id="planzeit">${planzeit()||"⏱ Zeitplan startet mit dem Unterricht"}</div>`+PLAN.bloecke.map((B,bi)=>{ const an=bi===b; const t0=PLAN.bloecke.slice(0,bi).reduce((a,x)=>a+x.minuten,0);
       let h=`<div class="blk ${an?"an":""} ${B.steh?"steh":""} ${bi<b?"vorbei":""}"><div class="bh" data-block="${bi}">${B.icon} ${esc(B.titel)}<span class="m">${t0}–${t0+B.minuten}′</span></div>`;
       if(an) h+=`<div class="bi"><h4>Tafel</h4>${B.tafel.map((F,fi)=>`<div class="li ${i.ansicht!=="aufgabe"&&i.folie===fi?"an":""}" data-folie="${fi}">🖼️ ${esc(F.titel)}</div>`).join("")}
         <h4>Aufgaben</h4>${B.aufgaben.map(A=>`<div class="li ${auf===A.id?"an":""}" ${auf===A.id?'data-zeig="1"':""}>${esc(TYP[A.typ]||A.typ)}<span class="small muted">${A.minuten?A.minuten+"′":""}</span><span class="r"><button class="btn sm ghost" data-demo="${A.id}" title="Vormachen: Übungs-Handy am Beamer zeigen">🎓</button>${auf===A.id?`<button class="btn sm ghost" data-stopp="1">⏹</button>`:`<button class="btn sm ${B.steh?"steh":""}" data-frei="${A.id}">📲 frei</button>`}</span></div><div class="small muted" style="margin:-3px 0 4px 8px">${esc(A.titel)}</div>`).join("")}
