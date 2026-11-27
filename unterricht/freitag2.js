@@ -58,4 +58,106 @@ FR.blocksNeu = [
       <div class="bsp">„Das ist ein Tier. Es sagt Wau-wau.“ → <b>der Hund</b></div><p class="hinweis">Tipp: „Das ist ein Ding / ein Ort / ein Mensch …“, „Man braucht es für …“, „Es ist …“</p>` } ],
     aufgaben: [FR.tabu] }
 ];
+
+/* ---------- Kettengeschichte mit Namen aus der Klasse und 3 Wegen am Anfang ---------- */
+const WW = (e, label, ww, weiter, p, ...alt) => ({ e, label, w: ww, a: [ww.join(" ").toLowerCase(), ...alt], weiter, p: p || "." });
+const K = (text, frage, ...wahl) => ({ text, frage, wahl });
+const E = (e, text) => ({ ende: true, e, text });
+FR.ketteNamen = { id: "fk2", typ: "kette", minuten: 3, titel: "Kettengeschichte: Unser Samstag (mit euren Namen!)",
+  anleitung: "In dieser Geschichte spielen zwei Personen aus unserer Klasse mit! Alle stimmen ab, wie es weitergeht – am Anfang gibt es 3 Wege. Dann baut eine gezogene Person den Satz aus den Wortkarten.",
+  start: "start", knoten: {
+    start: K("Es ist Samstag, 10 Uhr. {A} und {B} haben heute frei. {A} schreibt eine Nachricht: „Was machen wir heute?“", "Was machen {A} und {B}?",
+      WW("🎄", "Auf den Weihnachtsmarkt", ["Wir","gehen","auf","den","Weihnachtsmarkt"], "m1", ".", "auf den weihnachtsmarkt gehen wir"),
+      WW("⛸️", "Schlittschuh laufen", ["Wir","gehen","heute","Schlittschuh","laufen"], "e1", ".", "heute gehen wir schlittschuh laufen"),
+      WW("🎮", "Zu Hause bleiben", ["Wir","bleiben","heute","zu","Hause"], "h1", ".", "heute bleiben wir zu hause")),
+    m1: K("{A} und {B} sind mit dem Bus nach Kiel gefahren. Auf dem Weihnachtsmarkt riecht es nach Lebkuchen. {A} hat 20 Euro dabei.", "Was machen sie zuerst?",
+      WW("🎠", "Karussell fahren", ["Wir","fahren","zuerst","Karussell"], "m_kar", ".", "zuerst fahren wir karussell"),
+      WW("🌭", "Etwas essen", ["Wir","kaufen","etwas","zu","essen"], "m_ess"),
+      WW("🎁", "Ein Geschenk kaufen", ["Wir","kaufen","ein","Geschenk"], "m_ges", ".", "ein geschenk kaufen wir")),
+    m_kar: K("Das Karussell hat sich sehr schnell gedreht. Danach war {B} ganz schlecht. „Ich möchte jetzt nichts essen“, hat {B} gesagt.", "Was sagt {A}?",
+      WW("🥤", "Möchtest du etwas trinken?", ["Möchtest","du","etwas","trinken"], "e_trinken", "?"),
+      WW("🪑", "Wir setzen uns auf die Bank.", ["Wir","setzen","uns","auf","die","Bank"], "e_bank", ".", "auf die bank setzen wir uns")),
+    m_ess: K("{A} hat zwei Würstchen gekauft. Dann hat {A} ins Portemonnaie geschaut: leer! {A} hat alles ausgegeben.", "Was macht {A}?",
+      WW("🙏", "{B} fragen", ["{A}","fragt","{B}","nach","Geld"], "e_geld"),
+      WW("📞", "Zu Hause anrufen", ["{A}","ruft","zu","Hause","an"], "e_anruf")),
+    m_ges: K("An einem Stand gibt es Mützen, Tassen und Kerzen. {B} sucht ein Geschenk für die Lehrerin.", "Was fragt {B}?",
+      WW("☕", "Welche Tasse gefällt dir?", ["Welche","Tasse","gefällt","dir"], "e_tasse", "?"),
+      WW("🕯️", "Was kostet die Kerze?", ["Was","kostet","die","Kerze"], "e_kerze", "?")),
+    e1: K("Auf der Eisbahn in Kiel sind viele Leute. {A} kann sehr gut Schlittschuh laufen. Aber {B} fällt immer wieder hin!", "Was macht {A}?",
+      WW("🤝", "{B} helfen", ["{A}","hilft","{B}"], "e_hilf"),
+      WW("😂", "Laut lachen", ["{A}","lacht","sehr","laut"], "e_lacht"),
+      WW("☕", "Kakao holen", ["{A}","holt","zwei","Kakao"], "e_kakao")),
+    h1: K("{A} und {B} spielen bei {A} Videospiele. Um 13 Uhr haben beide großen Hunger. Aber im Kühlschrank sind nur Eier und Käse.", "Was machen sie?",
+      WW("🍕", "Pizza bestellen", ["Wir","bestellen","eine","Pizza"], "e_pizza"),
+      WW("🍳", "Zusammen kochen", ["Wir","kochen","etwas","zusammen"], "h_koch"),
+      WW("🛒", "Einkaufen gehen", ["Wir","gehen","in","den","Supermarkt"], "e_markt")),
+    h_koch: K("{A} und {B} haben Rührei mit Käse gemacht. Aber plötzlich riecht es komisch … Das Rührei ist schwarz!", "Was sagt {B}?",
+      WW("😩", "Ich habe keinen Hunger mehr.", ["Ich","habe","keinen","Hunger","mehr"], "e_koch1"),
+      WW("📱", "Lass uns doch Pizza bestellen!", ["Lass","uns","doch","Pizza","bestellen"], "e_koch2", "!")),
+    e_trinken: E("🥤", "{A} hat zwei Kinderpunsch gekauft. {B} hat gesagt: „Danke, jetzt geht es mir besser!“ Zum Schluss haben beide noch eine rote Mütze gekauft."),
+    e_bank: E("👴", "Auf der Bank hat ein alter Mann gesessen. Er hat von früher erzählt: „Früher gab es hier viel Schnee!“ {A} und {B} haben eine Stunde zugehört."),
+    e_geld: E("😂", "{B} hat gelacht: „Du hast alles für Würstchen ausgegeben?“ und hat 5 Euro geliehen. {A} hat versprochen: „Morgen bekommst du es zurück!“"),
+    e_anruf: E("🚌", "Der große Bruder ist mit dem Bus gekommen und hat Geld mitgebracht. Am Ende haben alle drei zusammen Crêpes gegessen."),
+    e_tasse: E("⭐", "„Die da – mit den Sternen!“ Am Montag hat sich die Lehrerin sehr über die Tasse gefreut."),
+    e_kerze: E("💝", "„Die Kerze kostet 12,99 Euro.“ – „Zu teuer!“ Am Ende hat {B} ein Lebkuchenherz gekauft: „Für die beste Lehrerin!“"),
+    e_hilf: E("🏅", "{A} hat {B} an die Hand genommen. Nach einer Stunde konnte {B} schon allein fahren. Beide waren sehr stolz!"),
+    e_lacht: E("🤣", "{A} hat so laut gelacht – und ist dann selbst hingefallen! Jetzt haben beide gelacht."),
+    e_kakao: E("☕", "{A} hat zwei heiße Kakao geholt. Danach hatte {B} wieder Kraft und ist zehn Runden gefahren!"),
+    e_pizza: E("🍕", "Die Pizza ist nach 40 Minuten gekommen. {A} und {B} haben die ganze Pizza gegessen und dann einen Film gesehen. Ein fauler, aber schöner Samstag!"),
+    e_markt: E("🛒", "Im Supermarkt hat {B} Chips, Cola und Schokolade gekauft. {A} hat gesagt: „Das ist kein Mittagessen!“ Aber es hat gut geschmeckt."),
+    e_koch1: E("🪟", "{A} hat das Fenster aufgemacht. Dann haben beide nur Brot mit Käse gegessen. „Nächstes Mal kocht deine Mutter!“, hat {B} gesagt."),
+    e_koch2: E("📞", "Die Pizza war in 30 Minuten da. „Kochen lernen wir nächste Woche!“, haben beide gesagt.")
+  } };
+
+/* ---------- WhatsApp-Planung in Gruppen ---------- */
+const C = (msgs, frage, ...wahl) => ({ msgs, frage, wahl });
+const O = (t, weiter, set) => ({ t, weiter, set: set || {} });
+FR.chat = { id: "fc", typ: "chat", minuten: 20, titel: "WhatsApp: Wir planen das Wochenende!", gruppe: "Wochenende 🎉", freund: { n: "Mina", e: "👧" },
+  anleitung: "Jede Gruppe hat einen eigenen WhatsApp-Chat mit Mina. Lest die Nachrichten. Bei jeder Antwort stimmt ihr ab – die Mehrheit entscheidet, und der Chat geht in eurer Gruppe anders weiter. Am Ende berichtet jede Gruppe: Was habt ihr geplant?",
+  start: "start",
+  plan: ["🎯 Was: {akt}", "📅 Wann: {tag} um {zeit}", "📍 Treffpunkt: {ort}", "🚌 Wie: {fahr}", "🎒 Mitbringen: {mit}", "☔ Problem: {problem}"],
+  bericht: ["Wir wollen am {tag} {aktS}.", "Wir treffen uns um {zeit} {ort}.", "Wir fahren {fahr}.", "Mina bringt Chips mit. Wir bringen {mit} mit.", "Es gab ein Problem: {problem} – deshalb {loesung}."],
+  knoten: {
+    start: C(["Hey Leute! 👋 Was machen wir am Wochenende?", "Ich habe Samstag und Sonntag frei 😊"], "Was antwortet ihr?",
+      O("Lass uns ins Kino gehen! 🎬", "kino", { akt: "Kino", aktS: "ins Kino gehen" }),
+      O("Wollen wir Schlittschuh laufen? ⛸️", "eis", { akt: "Eisbahn in Kiel", aktS: "Schlittschuh laufen" }),
+      O("Gehen wir auf den Weihnachtsmarkt! 🎄", "markt", { akt: "Weihnachtsmarkt", aktS: "auf den Weihnachtsmarkt gehen" })),
+    kino: C(["Super Idee, {letzter}! 😍", "Welchen Film wollt ihr sehen? Es gibt eine Komödie und einen Actionfilm."], "Was antwortet ihr?",
+      O("Die Komödie! Ich will lachen 😂", "tag", { akt: "Kino – eine Komödie" }),
+      O("Den Actionfilm! 💥", "tag", { akt: "Kino – ein Actionfilm" }),
+      O("Egal, Hauptsache Popcorn! 🍿", "tag", { akt: "Kino mit viel Popcorn" })),
+    eis: C(["Cool, {letzter}! Die Eisbahn in Kiel ist am Wochenende offen.", "Aber ich kann nicht gut Schlittschuh laufen 😅"], "Was antwortet ihr?",
+      O("Kein Problem, wir helfen dir! 🤝", "tag"),
+      O("Dann gehen wir lieber ins Schwimmbad! 🏊", "tag", { akt: "Schwimmbad", aktS: "ins Schwimmbad gehen" })),
+    markt: C(["Ja! 🎄 Ich will unbedingt Crêpes essen!", "Habt ihr genug Geld dabei?"], "Was antwortet ihr?",
+      O("Ja, ich habe 20 Euro. 💶", "tag"),
+      O("Nein, ich habe kein Geld 😬", "geld")),
+    geld: C(["Kein Problem, {letzter}! Ich lade dich auf einen Crêpe ein 😊"], "Was antwortet ihr?",
+      O("Danke, Mina! Du bist die Beste! ❤️", "tag"),
+      O("Danke, aber ich bringe Brote von zu Hause mit 🥪", "tag")),
+    tag: C(["Okay! Und wann treffen wir uns? 🕐"], "Was antwortet ihr?",
+      O("Am Samstag um 15 Uhr.", "ort", { tag: "Samstag", zeit: "15 Uhr" }),
+      O("Am Sonntag um 11 Uhr.", "ort", { tag: "Sonntag", zeit: "11 Uhr" }),
+      O("Am Samstagabend um 18 Uhr.", "ort", { tag: "Samstag", zeit: "18 Uhr" })),
+    ort: C(["{tag} um {zeit} passt mir 👍", "Wo treffen wir uns?"], "Was antwortet ihr?",
+      O("Am Bahnhof in Plön 🚉", "problem", { ort: "am Bahnhof in Plön", fahr: "mit dem Zug" }),
+      O("An der Bushaltestelle 🚌", "problem", { ort: "an der Bushaltestelle", fahr: "mit dem Bus" }),
+      O("Bei mir zu Hause 🏠", "problem", { ort: "bei mir zu Hause", fahr: "mit dem Fahrrad" })),
+    problem: C(["Oh nein! 😱 Ich habe gerade den Wetterbericht gesehen:", "Am Wochenende regnet es den ganzen Tag! ☔"], "Was macht ihr jetzt?",
+      O("Egal, wir nehmen Regenschirme mit! ☂️", "mit", { problem: "Es regnet", loesung: "nehmen wir Regenschirme mit" }),
+      O("Dann machen wir lieber einen Filmabend bei mir! 🍿", "mit", { problem: "Es regnet", loesung: "machen wir einen Filmabend", akt: "Filmabend zu Hause", aktS: "einen Filmabend machen", ort: "bei mir zu Hause", fahr: "gar nicht – wir gehen zu Fuß" }),
+      O("Wir fragen meinen Bruder – er fährt uns mit dem Auto! 🚗", "mit", { problem: "Es regnet", loesung: "fährt uns mein Bruder mit dem Auto", fahr: "mit dem Auto" })),
+    mit: C(["Gute Idee, {letzter}! 👍", "Wer bringt was mit? Ich bringe Chips mit 🥔"], "Was antwortet ihr?",
+      O("Ich bringe Getränke mit 🥤", "ende", { mit: "Getränke" }),
+      O("Ich bringe Kuchen mit 🍰", "ende", { mit: "Kuchen" }),
+      O("Ich bringe gute Laune mit 😎", "ende", { mit: "gute Laune" })),
+    ende: { ende: true, msgs: ["Perfekt! Ich freue mich so! 🥳", "Bis {tag}! 👋"] }
+  } };
+FR.blocksNeu = (FR.blocksNeu || []).concat([
+  { id: "chat", icon: "💬", titel: "NEU: WhatsApp – Wochenende planen (Gruppen)", minuten: 25,
+    tafel: [ { titel: "💬 WhatsApp: Wir planen das Wochenende!", html: `<ol class="schritte"><li>Ihr seid in <b>Gruppen</b>. Jede Gruppe hat einen eigenen Chat mit <b>Mina</b> 👧.</li>
+      <li>Lest Minas Nachrichten. Dann <b>stimmt ihr ab</b>: Was antworten wir? Die Mehrheit entscheidet.</li><li>Jede Gruppe entscheidet anders – jeder Chat geht <b>anders</b> weiter!</li>
+      <li>Am Ende <b>berichtet</b> jede Gruppe: „Wir wollen am Samstag … Wir treffen uns um … Wir fahren …“</li></ol>` } ],
+    aufgaben: [FR.chat] }
+]);
 })();

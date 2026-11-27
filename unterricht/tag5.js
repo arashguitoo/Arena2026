@@ -45,7 +45,7 @@ window.UNTERRICHT_PLAENE.tag5 = {
     { id: "pause2", icon: "☕", titel: "Pause", minuten: 15, tafel: [ tafel("☕ Pause", `<p class="grossfrage">15 Minuten Pause!</p>`) ], aufgaben: [] },
     { id: "kette", icon: "📖", titel: "Kettengeschichte: Auf dem Weihnachtsmarkt", minuten: 20,
       tafel: [ tafel("📖 Kettengeschichte: Ihr entscheidet!", `<ol class="schritte"><li><b>Alle stimmen ab</b>: Wie geht die Geschichte weiter?</li><li>Dann ziehe ich <b>eine Person</b>. Sie baut den Satz aus den Wortkarten – das Verb an <b>Platz 2</b>!</li><li>Sie liest den Satz laut vor. Alle lesen mit.</li></ol>`) ],
-      aufgaben: [FR.kette].filter(Boolean) },
+      aufgaben: [FR.ketteNamen, FR.kette].filter(Boolean) },
     { id: "duell", icon: "⚔️", titel: "Duell 1 gegen 1", minuten: 15, tafel: [window.DUELL_TAFEL].filter(Boolean),
       aufgaben: [FR.duell || finde("g4")].filter(Boolean) },
     { id: "scharade", icon: "🎭", titel: "Scharade", minuten: 15,
