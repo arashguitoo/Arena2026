@@ -59,6 +59,7 @@ body.lk{background:#ECE8DF}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="namecheck.js?v=1"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 /* =========================================================
@@ -159,10 +160,11 @@ function lernende(){
     h+=`${fehler?`<p style="color:var(--bad);font-weight:700">${esc(fehler)}</p>`:""}<button class="btn ok wide" id="senden" style="min-height:56px;font-size:19px" ${sendet?"disabled":""}>${sendet?"Wird gesendet …":"📤 An die Lehrkraft senden"}</button>`;
     return h; }
   function meins(){ const L=liste().filter(([,x])=>x.pid===me.pid); const W=meineWartend().filter(w=>!FREI[w.id]);
-    return `<h2>🙋 Meine Beiträge</h2>${W.length?`<div class="card">⏳ <b>${W.length}</b> ${W.length===1?"Beitrag wartet":"Beiträge warten"} auf die Freigabe:<br><span class="small muted">${W.map(w=>esc((TYPEN[w.typ]||{}).t||"")).join(" · ")}</span></div>`:""}
+    return `<p class="small muted" style="text-align:right;margin:0">Nicht ${esc(me.name)}? <a href="#" id="nameNeu">Namen ändern</a></p><h2>🙋 Meine Beiträge</h2>${W.length?`<div class="card">⏳ <b>${W.length}</b> ${W.length===1?"Beitrag wartet":"Beiträge warten"} auf die Freigabe:<br><span class="small muted">${W.map(w=>esc((TYPEN[w.typ]||{}).t||"")).join(" · ")}</span></div>`:""}
       ${L.length?L.map(([id,x])=>postHtml(id,x)).join(""):`<div class="card muted">Noch nichts freigegeben.</div>`}`; }
   function binde(){
     $$("[data-tab]").forEach(b=>b.onclick=()=>{ tab=b.dataset.tab; fehler=""; male(); window.scrollTo(0,0); });
+    const nn=$("#nameNeu"); if(nn) nn.onclick=e=>{ e.preventDefault(); try{ localStorage.removeItem(MEKEY); }catch(x){} location.reload(); };
     $$("[data-tipp]").forEach(b=>b.onclick=()=>{ const [id,p]=b.dataset.tipp.split("|"); R(`frei/${id}/tipps/${me.pid}`).set(p); });
     $$("[data-re]").forEach(b=>b.onclick=()=>{ const [id,e]=b.dataset.re.split("|"); const alt=((FREI[id]||{}).reakt||{})[me.pid]; R(`frei/${id}/reakt/${me.pid}`).set(alt===e?null:e); });
     $$("[data-kom]").forEach(s=>s.onchange=()=>R(`frei/${s.dataset.kom}/kom/${me.pid}`).set(s.value===""?null:Number(s.value)));
