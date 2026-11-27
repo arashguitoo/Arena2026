@@ -102,7 +102,12 @@ const css=`.hilfe-knopf{border:2px solid #F5B82E;background:#FFF7E0;color:#7A530
 .hilfe-box{background:#FFFBEB;border:2px solid #F5B82E;border-radius:14px;padding:10px 12px;margin:8px 0;font-size:16px;line-height:1.5}
 .hilfe-bsp{font-style:italic;color:#7A5300;margin-top:4px} .hilfe-ueb{margin-top:8px;padding-top:8px;border-top:1px dashed #F5B82E;font-size:17px} .hilfe-spr{display:inline-block;font-size:12px;font-weight:800;background:#F5B82E;color:#1E2A44;border-radius:999px;padding:0 8px;margin:0 6px}`;
 try{ const st=document.createElement("style"); st.textContent=css; document.head.appendChild(st); }catch(e){}
-window.HILFE = { THEMEN:T, SPRACHEN, knopf, box, binden, setzeSprache:c=>{ SPR=SPRACHEN[c]?c:""; }, sprache:()=>SPR,
+/* Thema aus einem Titel/Text erraten (für Übungen ohne festes Thema) */
+const MUSTER=[[/\b(etwas|nichts|alles)\b/i,"etwas"],[/welcher\?|der da\b|„welche[rsnm]?\s/i,"welch"],[/wohin|wo\s*\/|wo\?\s*oder|wo oder/i,"wowohin"],[/dativ|\bwem\b/i,"dativ"],[/akkusativ|\bwen\b/i,"akkusativ"],
+  [/imperativ|aufforderung/i,"imperativ"],[/modal|können|müssen|dürfen|wollen|möchten/i,"modal"],[/trennbar/i,"trennbar"],[/perfekt|partizip|vergangen|haben oder sein|haben\/sein/i,"perfekt"],
+  [/präposition|nach,? zu|zum|zur\b/i,"praep"],[/satzbau|satz bauen|sätze bauen|reihenfolge|position|satzklammer/i,"satzbau"],[/artikel|der, die, das|der\/die\/das|plural/i,"artikel"],[/präsens|verb|konjug/i,"verb"],[/nomen/i,"nomen"]];
+function thema(text, nebenbei){ for(const t of [String(text||""), String(nebenbei||"")]) for(const [re,k] of MUSTER) if(re.test(t)) return k; return ""; }
+window.HILFE = { THEMEN:T, SPRACHEN, knopf, box, binden, thema, setzeSprache:c=>{ SPR=SPRACHEN[c]?c:""; }, sprache:()=>SPR,
   /* liest die Sprache, die die Lehrkraft für diese Person eingestellt hat */
   laden:(db, kurs, pid, cb)=>{ try{ db.ref(`jugendliga/${kurs}/public/hilfe/${pid}`).on("value", s=>{ SPR=SPRACHEN[s.val()]?s.val():""; if(cb) cb(SPR); }); }catch(e){} } };
 })();

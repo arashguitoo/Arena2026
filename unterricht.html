@@ -302,7 +302,7 @@ function ersteVersuche(A, ant){ return itemsVon(A).filter((_,i)=>ant[i]&&ant[i].
 function loesungVon(A, it){ return A.typ==="sortieren"?(A.koerbe.find(k=>k.k===it.k)||{}).t:A.typ==="bauen"?(it.a[0].charAt(0).toUpperCase()+it.a[0].slice(1)+(it.p||"")):it.o[0]; }
 function uebungHtml(A, ctx){
   const L=itemsVon(A), ant=ctx.ant||{}; const okN=L.filter((_,k)=>ant[k]&&ant[k].ok).length;
-  let h=`<h2>${esc(A.titel)}</h2>`+anleitung(A)+(A.hilfe&&window.HILFE?`<div style="margin:6px 0">${HILFE.knopf(A.hilfe)}</div>`:"");
+  let h=`<h2>${esc(A.titel)}</h2>`+anleitung(A)+((()=>{ if(!window.HILFE) return ""; const th=A.hilfe||HILFE.thema(A.titel, A.anleitung); return th?`<div style="margin:6px 0">${HILFE.knopf(th)}</div>`:""; })());
   const fb=ctx.lokal.fb; if(fb && fb.aid===A.id){ const it=L[fb.i];
     return h+fortschritt(L.length,okN)+`<div class="card"><div class="frage">${esc(it.f||it.t||"Bau den Satz:")}</div>
       <div class="opt falsch" style="text-decoration:none;opacity:1">❌ Deine Antwort: ${esc(fb.v)}</div>

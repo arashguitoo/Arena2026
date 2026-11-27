@@ -51,6 +51,7 @@ table.t th,table.t td{padding:7px 9px;border-bottom:1px solid var(--line);text-a
 <script>window.UNTERRICHT_PLAENE = window.UNTERRICHT_PLAENE || {};</script>
 <script src="unterricht/auto30.js"></script>
 <script src="unterricht/freitag-team.js"></script>
+<script src="hilfe.js"></script>
 <script>
 /* =========================================================
    TEAM-SPIEL ZUM ALLEIN-SPIELEN
@@ -126,7 +127,7 @@ function lernende(){
       me={pid:p, name:namen[p]}; try{ localStorage.setItem(MEKEY, JSON.stringify(me)); }catch(e){}
       await R(`sp/${p}`).set({name:namen[p], team, ts:firebase.database.ServerValue.TIMESTAMP}); los(); }); }
 
-  function los(){ app.innerHTML=`<div class="wrap"><div class="card">Einen Moment …</div></div>`; setTimeout(()=>{ if(!gestartet) starte(); }, 400);
+  function los(){ if(window.HILFE&&me) HILFE.laden(db, KURS, me.pid); app.innerHTML=`<div class="wrap"><div class="card">Einen Moment …</div></div>`; setTimeout(()=>{ if(!gestartet) starte(); }, 400);
     setTimeout(()=>{ if(!gestartet && me && !SP[me.pid]){ try{ localStorage.removeItem(MEKEY); }catch(e){} me=null; namenWahl(); } }, 4000); }
 
   function starte(){ if(gestartet||!me) return; if(!SP[me.pid]){ return; } gestartet=true;
@@ -155,7 +156,8 @@ function lernende(){
         <div class="card"><h3>Teamstand (Punkte pro Person)</h3>${st.map((z,i)=>`<div style="display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin:6px 0"><span>${i===0?"👑 ":""}${z.e} ${esc(z.n)}</span><span>Ø ${z.schnitt} <span class="small muted">(${z.pkt} Punkte, ${z.m} Personen)</span></span></div>`).join("")}</div>
         <p class="mitte muted">Der Teamstand läuft live weiter, bis alle fertig sind.</p></div>`; return; }
     const X=AUF[akt]; const neu=a[akt]===undefined; const RT=RUNDEN[X.r]||"";
-    let h=kopf()+`<div class="wrap"><div class="runde">Runde ${X.r}: ${esc(RT)}${neu?"":" · Wiederholung (ohne Punkte)"}</div><div class="fort"><i style="width:${fertigAnz/ALLE.length*100}%"></i></div><div class="card">`;
+    const TH=window.HILFE?(X.typ==="s"?"satzbau":HILFE.thema(X.it.f, RT)):"";
+    let h=kopf()+`<div class="wrap"><div class="runde">Runde ${X.r}: ${esc(RT)}${neu?"":" · Wiederholung (ohne Punkte)"}</div><div class="fort"><i style="width:${fertigAnz/ALLE.length*100}%"></i></div><div class="card">${TH?HILFE.knopf(TH):""}`;
     const fb=lokal.feedback;
     if(X.typ==="q"){ const it=X.it; const ord=mischS(it.o.map((_,j)=>j), akt+"|"+me.pid+"|"+(neu?0:1));
       h+=`<div class="frage">${esc(it.f)}</div><div class="opts">${ord.map(j=>`<button class="opt ${fb?(j===0?"ok":fb.w===j?"falsch":""):""}" data-o="${j}" ${fb?"disabled":""}>${esc(it.o[j])}</button>`).join("")}</div>`;
@@ -167,7 +169,7 @@ function lernende(){
       if(fb) h+=`<div class="melde ${fb.ok?"ok":"falsch"}">${fb.ok?(neu?"✅ Richtig! +2 für dein Team":"✅ Richtig!"):"❌ Richtig ist: "+esc(it.w.join(" ")+it.p)}</div>`; }
     if(fb) h+=`<button class="btn wide" id="weiterBtn" style="margin-top:12px;min-height:54px;font-size:19px">Weiter ▶</button>`;
     h+=`</div><p class="small muted mitte">${fertigAnz} von ${ALLE.length} geschafft${queue.length?"":" · letzte Aufgabe"}</p></div>`;
-    app.innerHTML=h; binde(); }
+    app.innerHTML=h; binde(); if(window.HILFE) HILFE.binden(app); }
 
   function antworte(ok, w){ const a=ANT[me.pid]||{}; const neu=a[akt]===undefined;
     lokal.feedback={ok, w};
