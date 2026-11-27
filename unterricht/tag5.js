@@ -57,7 +57,8 @@ window.UNTERRICHT_PLAENE.tag5 = {
         tafel("📸 Mein Wochenende in Fotos", `<ol class="schritte"><li>Öffne: <b>${URL("sozial.html")}</b> – Klassen-Code: <b>steht an der Tafel</b></li><li>Mach am Wochenende <b>2 bis 4 Fotos</b>: Essen, Ausflug, Sport, Familie, …</li>
           <li>Schreib zu jedem Foto <b>einen Satz im Perfekt</b>: „Am Samstag habe ich …“, „Hier bin ich … gefahren.“</li><li>Ich schaue alles an und gebe es frei. Am Dienstag zeigen wir die Fotos am Beamer – und du erzählst!</li></ol>
           <p class="hinweis">Nur Fotos von dir oder von Sachen – keine anderen Personen ohne Erlaubnis.</p>`) ],
-      aufgaben: [] }
+      aufgaben: [] },
+    ...((window.FREITAG || {}).blocksNeu || [])
   ]
 };
 })();
